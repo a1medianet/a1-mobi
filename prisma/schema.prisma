@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id           String        @id @default(cuid())
+  slug         String        @unique
+  name         String
+  defaultLocale String       @default("ar")
+  baseCurrency String        @default("USD")
+  branches     Branch[]
+  users        User[]
+  roles        Role[]
+  featureFlags FeatureFlag[]
+  auditEvents  AuditEvent[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Branch {
+  id        String   @id @default(cuid())
+  tenantId  String
+  code      String
+  name      String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  users     User[]
+  auditEvents AuditEvent[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+}
+model User {
+  id           String      @id @default(cuid())
+  tenantId     String
+  branchId     String?
+  email        String
+  displayName  String
+  passwordHash String
+  locale       String      @default("ar")
+  isActive     Boolean     @default(true)
+  tenant       Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch       Branch?     @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  userRoles    UserRole[]
+  sessions     Session[]
+  auditEvents  AuditEvent[] @relation("AuditActor")
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@unique([tenantId, email])
+  @@index([tenantId, branchId])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([userId, expiresAt])
+}
+
+model Role {
+  id          String           @id @default(cuid())
+  tenantId    String
+  code        String
+  name        String
+  isSystem    Boolean          @default(false)
+  tenant      Tenant           @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  userRoles   UserRole[]
+  permissions RolePermission[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+}
+model Permission {
+  id          String           @id @default(cuid())
+  code        String           @unique
+  description String
+  roles       RolePermission[]
+  createdAt   DateTime         @default(now())
+}
+
+model UserRole {
+  userId    String
+  roleId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  assignedAt DateTime @default(now())
+
+  @@id([userId, roleId])
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  grantedAt    DateTime   @default(now())
+
+  @@id([roleId, permissionId])
+}
+
+model FeatureFlag {
+  id        String   @id @default(cuid())
+  tenantId  String
+  key       String
+  enabled   Boolean  @default(false)
+  config    Json?
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([tenantId, key])
+  @@index([tenantId])
+}
+model AuditEvent {
+  id         String   @id @default(cuid())
+  tenantId   String
+  branchId   String?
+  actorId    String
+  action     String
+  entityType String
+  entityId   String
+  before     Json?
+  after      Json?
+  reason     String?
+  requestId  String?
+  ipAddress  String?
+  userAgent  String?
+  occurredAt DateTime @default(now())
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch     Branch?  @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  actor      User     @relation("AuditActor", fields: [actorId], references: [id], onDelete: Restrict)
+
+  @@index([tenantId, occurredAt])
+  @@index([tenantId, entityType, entityId])
+  @@index([actorId, occurredAt])
+}
