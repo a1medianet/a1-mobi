@@ -18,6 +18,19 @@ model Tenant {
   roles        Role[]
   featureFlags FeatureFlag[]
   auditEvents  AuditEvent[]
+  categories   Category[]
+  products     Product[]
+  barcodes     Barcode[]
+  manufacturers Manufacturer[]
+  deviceFamilies DeviceFamily[]
+  deviceModels DeviceModel[]
+  deviceVariants DeviceVariant[]
+  serializedDevices SerializedDevice[]
+  suppliers    Supplier[]
+  purchases    Purchase[]
+  stockLocations StockLocation[]
+  stockMovements StockMovement[]
+  stockCounts  StockCount[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 }
@@ -30,6 +43,10 @@ model Branch {
   tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   users     User[]
   auditEvents AuditEvent[]
+  purchases Purchase[]
+  stockLocations StockLocation[]
+  stockMovements StockMovement[]
+  stockCounts StockCount[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -147,4 +164,326 @@ model AuditEvent {
   @@index([tenantId, occurredAt])
   @@index([tenantId, entityType, entityId])
   @@index([actorId, occurredAt])
+}
+
+
+enum ProductType {
+  DEVICE
+  PART
+  ACCESSORY
+  SERVICE
+}
+
+enum SerializedDeviceStatus {
+  IN_STOCK
+  RESERVED
+  SOLD
+  RETURNED
+  IN_REPAIR
+  QUARANTINED
+}
+
+enum PurchaseStatus {
+  DRAFT
+  RECEIVED
+  CANCELLED
+}
+
+enum StockMovementType {
+  PURCHASE_RECEIPT
+  SALE
+  RETURN
+  TRANSFER
+  REPAIR_USE
+  ADJUSTMENT
+  COUNT_VARIANCE
+}
+
+enum StockCountStatus {
+  DRAFT
+  COUNTING
+  POSTED
+  CANCELLED
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  tenantId  String
+  nameAr    String
+  nameEn    String
+  code      String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  products  Product[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+}
+
+model Product {
+  id             String      @id @default(cuid())
+  tenantId       String
+  categoryId     String
+  sku            String
+  nameAr         String
+  nameEn         String
+  type           ProductType
+  isSerialized   Boolean     @default(false)
+  costAmount     Decimal     @default(0) @db.Decimal(18, 4)
+  basePrice      Decimal     @default(0) @db.Decimal(18, 4)
+  minimumPrice   Decimal     @default(0) @db.Decimal(18, 4)
+  lowStockLevel  Decimal     @default(0) @db.Decimal(18, 3)
+  isActive       Boolean     @default(true)
+  tenant         Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  category       Category    @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  barcodes       Barcode[]
+  serializedDevices SerializedDevice[]
+  purchaseLines  PurchaseLine[]
+  stockMovements StockMovement[]
+  countLines     StockCountLine[]
+  compatibilities ProductCompatibility[]
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  @@unique([tenantId, sku])
+  @@index([tenantId, categoryId, type])
+}
+
+model Barcode {
+  id         String   @id @default(cuid())
+  tenantId   String
+  productId  String
+  value      String
+  isInternal Boolean  @default(false)
+  isPrimary  Boolean  @default(false)
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([tenantId, value])
+  @@index([tenantId, productId])
+}
+
+model Manufacturer {
+  id        String   @id @default(cuid())
+  tenantId  String
+  code      String
+  name      String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  families  DeviceFamily[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([tenantId, code])
+}
+
+model DeviceFamily {
+  id             String       @id @default(cuid())
+  tenantId       String
+  manufacturerId String
+  name           String
+  tenant         Tenant       @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  manufacturer   Manufacturer @relation(fields: [manufacturerId], references: [id], onDelete: Restrict)
+  models         DeviceModel[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([tenantId, manufacturerId, name])
+}
+
+model DeviceModel {
+  id        String          @id @default(cuid())
+  tenantId  String
+  familyId  String
+  name      String
+  tenant    Tenant          @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  family    DeviceFamily    @relation(fields: [familyId], references: [id], onDelete: Restrict)
+  variants  DeviceVariant[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  @@unique([tenantId, familyId, name])
+}
+
+model DeviceVariant {
+  id             String       @id @default(cuid())
+  tenantId       String
+  modelId        String
+  name           String
+  storage        String?
+  color          String?
+  tenant         Tenant       @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  model          DeviceModel  @relation(fields: [modelId], references: [id], onDelete: Restrict)
+  devices        SerializedDevice[]
+  compatibleParts ProductCompatibility[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([tenantId, modelId, name])
+}
+
+model ProductCompatibility {
+  productId       String
+  deviceVariantId String
+  source          String   @default("manual")
+  confidence      Decimal? @db.Decimal(5, 4)
+  notes           String?
+  product         Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  deviceVariant   DeviceVariant @relation(fields: [deviceVariantId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+
+  @@id([productId, deviceVariantId])
+}
+
+model Supplier {
+  id        String   @id @default(cuid())
+  tenantId  String
+  code      String
+  name      String
+  phone     String?
+  email     String?
+  isActive  Boolean  @default(true)
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  purchases Purchase[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([tenantId, code])
+}
+
+model Purchase {
+  id          String         @id @default(cuid())
+  tenantId    String
+  branchId    String
+  supplierId  String
+  reference   String
+  status      PurchaseStatus @default(DRAFT)
+  currency    String         @default("USD")
+  exchangeRate Decimal       @default(1) @db.Decimal(18, 6)
+  receivedAt  DateTime?
+  tenant      Tenant         @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch      Branch         @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  supplier    Supplier       @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  lines       PurchaseLine[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@unique([tenantId, reference])
+  @@index([tenantId, branchId, status])
+}
+
+model PurchaseLine {
+  id           String   @id @default(cuid())
+  purchaseId   String
+  productId    String
+  quantity     Decimal  @db.Decimal(18, 3)
+  unitCost     Decimal  @db.Decimal(18, 4)
+  purchase     Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  createdAt    DateTime @default(now())
+
+  @@index([purchaseId, productId])
+}
+
+model StockLocation {
+  id          String   @id @default(cuid())
+  tenantId    String
+  branchId    String
+  code        String
+  name        String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch      Branch   @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  devices     SerializedDevice[]
+  outbound    StockMovement[] @relation("StockFrom")
+  inbound     StockMovement[] @relation("StockTo")
+  counts      StockCount[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([tenantId, code])
+  @@index([tenantId, branchId])
+}
+
+model SerializedDevice {
+  id              String                 @id @default(cuid())
+  tenantId        String
+  productId       String
+  variantId       String
+  stockLocationId String?
+  imei            String?
+  serialNumber    String?
+  status          SerializedDeviceStatus @default(IN_STOCK)
+  unitCost        Decimal                @db.Decimal(18, 4)
+  tenant          Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  product         Product                @relation(fields: [productId], references: [id], onDelete: Restrict)
+  variant         DeviceVariant          @relation(fields: [variantId], references: [id], onDelete: Restrict)
+  stockLocation   StockLocation?         @relation(fields: [stockLocationId], references: [id], onDelete: SetNull)
+  movements       StockMovement[]
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+
+  @@unique([tenantId, imei])
+  @@unique([tenantId, serialNumber])
+  @@index([tenantId, productId, status])
+}
+
+model StockMovement {
+  id                 String            @id @default(cuid())
+  tenantId           String
+  branchId           String
+  productId          String
+  serializedDeviceId String?
+  fromLocationId     String?
+  toLocationId       String?
+  type               StockMovementType
+  quantity           Decimal           @db.Decimal(18, 3)
+  unitCost           Decimal?          @db.Decimal(18, 4)
+  reason             String?
+  referenceType      String?
+  referenceId        String?
+  idempotencyKey     String
+  tenant             Tenant            @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch             Branch            @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  product            Product           @relation(fields: [productId], references: [id], onDelete: Restrict)
+  serializedDevice   SerializedDevice? @relation(fields: [serializedDeviceId], references: [id], onDelete: Restrict)
+  fromLocation       StockLocation?    @relation("StockFrom", fields: [fromLocationId], references: [id], onDelete: Restrict)
+  toLocation         StockLocation?    @relation("StockTo", fields: [toLocationId], references: [id], onDelete: Restrict)
+  occurredAt         DateTime          @default(now())
+
+  @@unique([tenantId, idempotencyKey])
+  @@index([tenantId, productId, occurredAt])
+  @@index([tenantId, serializedDeviceId])
+}
+
+model StockCount {
+  id          String           @id @default(cuid())
+  tenantId    String
+  branchId    String
+  locationId  String
+  status      StockCountStatus @default(DRAFT)
+  startedAt   DateTime         @default(now())
+  postedAt    DateTime?
+  tenant      Tenant           @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch      Branch           @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  location    StockLocation    @relation(fields: [locationId], references: [id], onDelete: Restrict)
+  lines       StockCountLine[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@index([tenantId, branchId, status])
+}
+
+model StockCountLine {
+  id          String     @id @default(cuid())
+  stockCountId String
+  productId   String
+  expectedQty Decimal    @db.Decimal(18, 3)
+  countedQty  Decimal    @db.Decimal(18, 3)
+  reason      String?
+  stockCount  StockCount @relation(fields: [stockCountId], references: [id], onDelete: Cascade)
+  product     Product    @relation(fields: [productId], references: [id], onDelete: Restrict)
+  createdAt   DateTime   @default(now())
+
+  @@unique([stockCountId, productId])
 }
