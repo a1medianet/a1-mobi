@@ -15,6 +15,9 @@ export const PERMISSIONS = [
   "reports.read",
   "cost.read",
   "profit.read",
+  "device-trust.read",
+  "device-trust.report",
+  "device-trust.override",
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number];

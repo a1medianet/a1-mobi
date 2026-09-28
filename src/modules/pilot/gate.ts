@@ -2,7 +2,8 @@ export const PILOT_EVIDENCE_KEYS = [
   "stock-entry", "purchase-imei", "barcode-imei-sale", "price-override",
   "mixed-currency", "return-exchange", "repair-lifecycle", "debt-partial-payment",
   "topup-settlement", "day-close", "seller-cost-denied", "sensitive-audit",
-  "reports-reconciled", "scanner-physical", "printer-physical", "store-day-uat",
+  "reports-reconciled", "device-trust-workflows", "scanner-physical", "printer-physical",
+  "store-day-uat", "device-trust-legal-privacy",
 ] as const;
 
 export type PilotEvidenceKey = (typeof PILOT_EVIDENCE_KEYS)[number];

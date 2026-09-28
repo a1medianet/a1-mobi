@@ -8,133 +8,140 @@ datasource db {
 }
 
 model Tenant {
-  id           String        @id @default(cuid())
-  slug         String        @unique
-  name         String
-  defaultLocale String       @default("ar")
-  baseCurrency String        @default("USD")
-  branches     Branch[]
-  users        User[]
-  roles        Role[]
-  featureFlags FeatureFlag[]
-  auditEvents  AuditEvent[]
-  categories   Category[]
-  products     Product[]
-  barcodes     Barcode[]
-  manufacturers Manufacturer[]
-  deviceFamilies DeviceFamily[]
-  deviceModels DeviceModel[]
-  deviceVariants DeviceVariant[]
-  serializedDevices SerializedDevice[]
-  suppliers    Supplier[]
-  purchases    Purchase[]
-  stockLocations StockLocation[]
-  stockMovements StockMovement[]
-  stockCounts  StockCount[]
-  sales        Sale[]
-  payments     Payment[]
-  invoices     Invoice[]
-  returns      SaleReturn[]
-  exchanges    Exchange[]
-  repairOrders RepairOrder[]
-  repairParts  RepairPart[]
-  repairApprovals RepairApproval[]
-  warranties   Warranty[]
-  attachments  Attachment[]
-  customers    Customer[]
-  customerDevices CustomerDevice[]
-  debtAccounts DebtAccount[]
-  debtEntries  DebtEntry[]
-  cashSessions CashSession[]
-  cashMovements CashMovement[]
-  exchangeRates ExchangeRate[]
-  topUpProviders TopUpProvider[]
-  topUpServices TopUpService[]
-  topUpTransactions TopUpTransaction[]
-  providerSettlements ProviderSettlement[]
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  id                    String                 @id @default(cuid())
+  slug                  String                 @unique
+  name                  String
+  defaultLocale         String                 @default("ar")
+  baseCurrency          String                 @default("USD")
+  branches              Branch[]
+  users                 User[]
+  roles                 Role[]
+  featureFlags          FeatureFlag[]
+  auditEvents           AuditEvent[]
+  categories            Category[]
+  products              Product[]
+  barcodes              Barcode[]
+  manufacturers         Manufacturer[]
+  deviceFamilies        DeviceFamily[]
+  deviceModels          DeviceModel[]
+  deviceVariants        DeviceVariant[]
+  serializedDevices     SerializedDevice[]
+  suppliers             Supplier[]
+  purchases             Purchase[]
+  stockLocations        StockLocation[]
+  stockMovements        StockMovement[]
+  stockCounts           StockCount[]
+  sales                 Sale[]
+  payments              Payment[]
+  invoices              Invoice[]
+  returns               SaleReturn[]
+  exchanges             Exchange[]
+  repairOrders          RepairOrder[]
+  repairParts           RepairPart[]
+  repairApprovals       RepairApproval[]
+  warranties            Warranty[]
+  attachments           Attachment[]
+  customers             Customer[]
+  customerDevices       CustomerDevice[]
+  debtAccounts          DebtAccount[]
+  debtEntries           DebtEntry[]
+  cashSessions          CashSession[]
+  cashMovements         CashMovement[]
+  exchangeRates         ExchangeRate[]
+  topUpProviders        TopUpProvider[]
+  topUpServices         TopUpService[]
+  topUpTransactions     TopUpTransaction[]
+  providerSettlements   ProviderSettlement[]
+  deviceIncidentReports DeviceIncidentReport[]
+  deviceTrustChecks     DeviceTrustCheck[]
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
 }
 
 model Branch {
-  id        String   @id @default(cuid())
-  tenantId  String
-  code      String
-  name      String
-  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  users     User[]
-  auditEvents AuditEvent[]
-  purchases Purchase[]
-  stockLocations StockLocation[]
-  stockMovements StockMovement[]
-  stockCounts StockCount[]
-  sales Sale[]
-  payments Payment[]
-  invoices Invoice[]
-  returns SaleReturn[]
-  exchanges Exchange[]
-  repairOrders RepairOrder[]
-  repairParts RepairPart[]
-  repairStatusEvents RepairStatusEvent[]
-  repairApprovals RepairApproval[]
-  warranties Warranty[]
-  attachments Attachment[]
-  createdCustomers Customer[]
-  debtEntries DebtEntry[]
-  cashSessions CashSession[]
-  cashMovements CashMovement[]
-  exchangeRates ExchangeRate[]
-  topUpTransactions TopUpTransaction[]
+  id                  String               @id @default(cuid())
+  tenantId            String
+  code                String
+  name                String
+  tenant              Tenant               @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  users               User[]
+  auditEvents         AuditEvent[]
+  purchases           Purchase[]
+  stockLocations      StockLocation[]
+  stockMovements      StockMovement[]
+  stockCounts         StockCount[]
+  sales               Sale[]
+  payments            Payment[]
+  invoices            Invoice[]
+  returns             SaleReturn[]
+  exchanges           Exchange[]
+  repairOrders        RepairOrder[]
+  repairParts         RepairPart[]
+  repairStatusEvents  RepairStatusEvent[]
+  repairApprovals     RepairApproval[]
+  warranties          Warranty[]
+  attachments         Attachment[]
+  createdCustomers    Customer[]
+  debtEntries         DebtEntry[]
+  cashSessions        CashSession[]
+  cashMovements       CashMovement[]
+  exchangeRates       ExchangeRate[]
+  topUpTransactions   TopUpTransaction[]
   providerSettlements ProviderSettlement[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  deviceTrustChecks   DeviceTrustCheck[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
 
   @@unique([tenantId, code])
   @@index([tenantId])
 }
+
 model User {
-  id           String      @id @default(cuid())
-  tenantId     String
-  branchId     String?
-  email        String
-  displayName  String
-  passwordHash String
-  locale       String      @default("ar")
-  isActive     Boolean     @default(true)
-  tenant       Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  branch       Branch?     @relation(fields: [branchId], references: [id], onDelete: SetNull)
-  userRoles    UserRole[]
-  sessions     Session[]
-  auditEvents  AuditEvent[] @relation("AuditActor")
-  sales        Sale[] @relation("SaleActor")
-  approvedSaleLines SaleLine[] @relation("PriceOverrideActor")
-  processedReturns SaleReturn[] @relation("ReturnActor")
-  assignedRepairs RepairOrder[] @relation("RepairTechnician")
-  repairStatusEvents RepairStatusEvent[] @relation("RepairStatusActor")
-  repairApprovals RepairApproval[] @relation("RepairApprovalActor")
-  createdRepairOrders RepairOrder[] @relation("RepairCreatedBy")
-  openedCashSessions CashSession[] @relation("CashOpenedBy")
-  closedCashSessions CashSession[] @relation("CashClosedBy")
-  approvedCashSessions CashSession[] @relation("CashVarianceApprover")
-  cashMovements CashMovement[]
-  setExchangeRates ExchangeRate[]
-  topUpTransactions TopUpTransaction[]
-  providerSettlements ProviderSettlement[]
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  id                          String                 @id @default(cuid())
+  tenantId                    String
+  branchId                    String?
+  email                       String
+  displayName                 String
+  passwordHash                String
+  locale                      String                 @default("ar")
+  isActive                    Boolean                @default(true)
+  tenant                      Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch                      Branch?                @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  userRoles                   UserRole[]
+  sessions                    Session[]
+  auditEvents                 AuditEvent[]           @relation("AuditActor")
+  sales                       Sale[]                 @relation("SaleActor")
+  approvedSaleLines           SaleLine[]             @relation("PriceOverrideActor")
+  processedReturns            SaleReturn[]           @relation("ReturnActor")
+  assignedRepairs             RepairOrder[]          @relation("RepairTechnician")
+  repairStatusEvents          RepairStatusEvent[]    @relation("RepairStatusActor")
+  repairApprovals             RepairApproval[]       @relation("RepairApprovalActor")
+  createdRepairOrders         RepairOrder[]          @relation("RepairCreatedBy")
+  openedCashSessions          CashSession[]          @relation("CashOpenedBy")
+  closedCashSessions          CashSession[]          @relation("CashClosedBy")
+  approvedCashSessions        CashSession[]          @relation("CashVarianceApprover")
+  cashMovements               CashMovement[]
+  setExchangeRates            ExchangeRate[]
+  topUpTransactions           TopUpTransaction[]
+  providerSettlements         ProviderSettlement[]
+  reportedDeviceIncidents     DeviceIncidentReport[] @relation("IncidentReporter")
+  performedDeviceTrustChecks  DeviceTrustCheck[]     @relation("TrustCheckActor")
+  overriddenDeviceTrustChecks DeviceTrustCheck[]     @relation("TrustCheckOverrideActor")
+  createdAt                   DateTime               @default(now())
+  updatedAt                   DateTime               @updatedAt
 
   @@unique([tenantId, email])
   @@index([tenantId, branchId])
 }
 
 model Session {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   userId    String
-  tokenHash String   @unique
+  tokenHash String    @unique
   expiresAt DateTime
   revokedAt DateTime?
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
 
   @@index([userId, expiresAt])
 }
@@ -154,6 +161,7 @@ model Role {
   @@unique([tenantId, code])
   @@index([tenantId])
 }
+
 model Permission {
   id          String           @id @default(cuid())
   code        String           @unique
@@ -163,10 +171,10 @@ model Permission {
 }
 
 model UserRole {
-  userId    String
-  roleId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  userId     String
+  roleId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role       Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
   assignedAt DateTime @default(now())
 
   @@id([userId, roleId])
@@ -195,6 +203,7 @@ model FeatureFlag {
   @@unique([tenantId, key])
   @@index([tenantId])
 }
+
 model AuditEvent {
   id         String   @id @default(cuid())
   tenantId   String
@@ -218,7 +227,6 @@ model AuditEvent {
   @@index([tenantId, entityType, entityId])
   @@index([actorId, occurredAt])
 }
-
 
 enum ProductType {
   DEVICE
@@ -260,47 +268,47 @@ enum StockCountStatus {
 }
 
 model Category {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   tenantId  String
   nameAr    String
   nameEn    String
   code      String
-  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   products  Product[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@unique([tenantId, code])
   @@index([tenantId])
 }
 
 model Product {
-  id             String      @id @default(cuid())
-  tenantId       String
-  categoryId     String
-  sku            String
-  nameAr         String
-  nameEn         String
-  type           ProductType
-  isSerialized   Boolean     @default(false)
-  costAmount     Decimal     @default(0) @db.Decimal(18, 4)
-  basePrice      Decimal     @default(0) @db.Decimal(18, 4)
-  minimumPrice   Decimal     @default(0) @db.Decimal(18, 4)
-  lowStockLevel  Decimal     @default(0) @db.Decimal(18, 3)
-  isActive       Boolean     @default(true)
-  tenant         Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  category       Category    @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  barcodes       Barcode[]
+  id                String                 @id @default(cuid())
+  tenantId          String
+  categoryId        String
+  sku               String
+  nameAr            String
+  nameEn            String
+  type              ProductType
+  isSerialized      Boolean                @default(false)
+  costAmount        Decimal                @default(0) @db.Decimal(18, 4)
+  basePrice         Decimal                @default(0) @db.Decimal(18, 4)
+  minimumPrice      Decimal                @default(0) @db.Decimal(18, 4)
+  lowStockLevel     Decimal                @default(0) @db.Decimal(18, 3)
+  isActive          Boolean                @default(true)
+  tenant            Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  category          Category               @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  barcodes          Barcode[]
   serializedDevices SerializedDevice[]
-  purchaseLines  PurchaseLine[]
-  stockMovements StockMovement[]
-  countLines     StockCountLine[]
-  compatibilities ProductCompatibility[]
-  saleLines      SaleLine[]
-  returnLines    SaleReturnLine[]
-  repairParts     RepairPart[]
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  purchaseLines     PurchaseLine[]
+  stockMovements    StockMovement[]
+  countLines        StockCountLine[]
+  compatibilities   ProductCompatibility[]
+  saleLines         SaleLine[]
+  returnLines       SaleReturnLine[]
+  repairParts       RepairPart[]
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
 
   @@unique([tenantId, sku])
   @@index([tenantId, categoryId, type])
@@ -322,28 +330,28 @@ model Barcode {
 }
 
 model Manufacturer {
-  id        String   @id @default(cuid())
+  id        String         @id @default(cuid())
   tenantId  String
   code      String
   name      String
-  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  tenant    Tenant         @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   families  DeviceFamily[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
 
   @@unique([tenantId, code])
 }
 
 model DeviceFamily {
-  id             String       @id @default(cuid())
+  id             String        @id @default(cuid())
   tenantId       String
   manufacturerId String
   name           String
-  tenant         Tenant       @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  manufacturer   Manufacturer @relation(fields: [manufacturerId], references: [id], onDelete: Restrict)
+  tenant         Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  manufacturer   Manufacturer  @relation(fields: [manufacturerId], references: [id], onDelete: Restrict)
   models         DeviceModel[]
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
   @@unique([tenantId, manufacturerId, name])
 }
@@ -363,19 +371,19 @@ model DeviceModel {
 }
 
 model DeviceVariant {
-  id             String       @id @default(cuid())
-  tenantId       String
-  modelId        String
-  name           String
-  storage        String?
-  color          String?
-  tenant         Tenant       @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  model          DeviceModel  @relation(fields: [modelId], references: [id], onDelete: Restrict)
-  devices        SerializedDevice[]
+  id              String                 @id @default(cuid())
+  tenantId        String
+  modelId         String
+  name            String
+  storage         String?
+  color           String?
+  tenant          Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  model           DeviceModel            @relation(fields: [modelId], references: [id], onDelete: Restrict)
+  devices         SerializedDevice[]
   compatibleParts ProductCompatibility[]
   customerDevices CustomerDevice[]
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
 
   @@unique([tenantId, modelId, name])
 }
@@ -383,83 +391,83 @@ model DeviceVariant {
 model ProductCompatibility {
   productId       String
   deviceVariantId String
-  source          String   @default("manual")
-  confidence      Decimal? @db.Decimal(5, 4)
+  source          String        @default("manual")
+  confidence      Decimal?      @db.Decimal(5, 4)
   notes           String?
-  product         Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product         Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
   deviceVariant   DeviceVariant @relation(fields: [deviceVariantId], references: [id], onDelete: Cascade)
-  createdAt       DateTime @default(now())
+  createdAt       DateTime      @default(now())
 
   @@id([productId, deviceVariantId])
 }
 
 model Supplier {
-  id        String   @id @default(cuid())
+  id        String     @id @default(cuid())
   tenantId  String
   code      String
   name      String
   phone     String?
   email     String?
-  isActive  Boolean  @default(true)
-  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  isActive  Boolean    @default(true)
+  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   purchases Purchase[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
   @@unique([tenantId, code])
 }
 
 model Purchase {
-  id          String         @id @default(cuid())
-  tenantId    String
-  branchId    String
-  supplierId  String
-  reference   String
-  status      PurchaseStatus @default(DRAFT)
-  currency    String         @default("USD")
-  exchangeRate Decimal       @default(1) @db.Decimal(18, 6)
-  receivedAt  DateTime?
-  tenant      Tenant         @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  branch      Branch         @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  supplier    Supplier       @relation(fields: [supplierId], references: [id], onDelete: Restrict)
-  lines       PurchaseLine[]
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  id           String         @id @default(cuid())
+  tenantId     String
+  branchId     String
+  supplierId   String
+  reference    String
+  status       PurchaseStatus @default(DRAFT)
+  currency     String         @default("USD")
+  exchangeRate Decimal        @default(1) @db.Decimal(18, 6)
+  receivedAt   DateTime?
+  tenant       Tenant         @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch       Branch         @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  supplier     Supplier       @relation(fields: [supplierId], references: [id], onDelete: Restrict)
+  lines        PurchaseLine[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 
   @@unique([tenantId, reference])
   @@index([tenantId, branchId, status])
 }
 
 model PurchaseLine {
-  id           String   @id @default(cuid())
-  purchaseId   String
-  productId    String
-  quantity     Decimal  @db.Decimal(18, 3)
-  unitCost     Decimal  @db.Decimal(18, 4)
-  purchase     Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
-  product      Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
-  createdAt    DateTime @default(now())
+  id         String   @id @default(cuid())
+  purchaseId String
+  productId  String
+  quantity   Decimal  @db.Decimal(18, 3)
+  unitCost   Decimal  @db.Decimal(18, 4)
+  purchase   Purchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  createdAt  DateTime @default(now())
 
   @@index([purchaseId, productId])
 }
 
 model StockLocation {
-  id          String   @id @default(cuid())
+  id          String             @id @default(cuid())
   tenantId    String
   branchId    String
   code        String
   name        String
-  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  branch      Branch   @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  tenant      Tenant             @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch      Branch             @relation(fields: [branchId], references: [id], onDelete: Restrict)
   devices     SerializedDevice[]
-  outbound    StockMovement[] @relation("StockFrom")
-  inbound     StockMovement[] @relation("StockTo")
+  outbound    StockMovement[]    @relation("StockFrom")
+  inbound     StockMovement[]    @relation("StockTo")
   counts      StockCount[]
-  saleLines    SaleLine[]
-  returnLines  SaleReturnLine[]
-  repairParts  RepairPart[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  saleLines   SaleLine[]
+  returnLines SaleReturnLine[]
+  repairParts RepairPart[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
 
   @@unique([tenantId, code])
   @@index([tenantId, branchId])
@@ -521,33 +529,33 @@ model StockMovement {
 }
 
 model StockCount {
-  id          String           @id @default(cuid())
-  tenantId    String
-  branchId    String
-  locationId  String
-  status      StockCountStatus @default(DRAFT)
-  startedAt   DateTime         @default(now())
-  postedAt    DateTime?
-  tenant      Tenant           @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  branch      Branch           @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  location    StockLocation    @relation(fields: [locationId], references: [id], onDelete: Restrict)
-  lines       StockCountLine[]
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  id         String           @id @default(cuid())
+  tenantId   String
+  branchId   String
+  locationId String
+  status     StockCountStatus @default(DRAFT)
+  startedAt  DateTime         @default(now())
+  postedAt   DateTime?
+  tenant     Tenant           @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch     Branch           @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  location   StockLocation    @relation(fields: [locationId], references: [id], onDelete: Restrict)
+  lines      StockCountLine[]
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
 
   @@index([tenantId, branchId, status])
 }
 
 model StockCountLine {
-  id          String     @id @default(cuid())
+  id           String     @id @default(cuid())
   stockCountId String
-  productId   String
-  expectedQty Decimal    @db.Decimal(18, 3)
-  countedQty  Decimal    @db.Decimal(18, 3)
-  reason      String?
-  stockCount  StockCount @relation(fields: [stockCountId], references: [id], onDelete: Cascade)
-  product     Product    @relation(fields: [productId], references: [id], onDelete: Restrict)
-  createdAt   DateTime   @default(now())
+  productId    String
+  expectedQty  Decimal    @db.Decimal(18, 3)
+  countedQty   Decimal    @db.Decimal(18, 3)
+  reason       String?
+  stockCount   StockCount @relation(fields: [stockCountId], references: [id], onDelete: Cascade)
+  product      Product    @relation(fields: [productId], references: [id], onDelete: Restrict)
+  createdAt    DateTime   @default(now())
 
   @@unique([stockCountId, productId])
 }
@@ -609,7 +617,7 @@ model Sale {
   branch         Branch       @relation(fields: [branchId], references: [id], onDelete: Restrict)
   actor          User         @relation("SaleActor", fields: [actorId], references: [id], onDelete: Restrict)
   customer       Customer?    @relation(fields: [customerId], references: [id], onDelete: Restrict)
-  debtEntries     DebtEntry[]
+  debtEntries    DebtEntry[]
   lines          SaleLine[]
   payments       Payment[]
   invoice        Invoice?
@@ -626,89 +634,89 @@ model Sale {
 }
 
 model SaleLine {
-  id                    String            @id @default(cuid())
-  saleId                String
-  productId             String
-  stockLocationId       String
-  serializedDeviceId    String?
-  quantity              Decimal           @db.Decimal(18, 3)
-  baseUnitPrice         Decimal           @db.Decimal(18, 4)
-  minimumUnitPrice      Decimal           @db.Decimal(18, 4)
-  finalUnitPrice        Decimal           @db.Decimal(18, 4)
-  unitCost              Decimal           @db.Decimal(18, 4)
-  lineTotal             Decimal           @db.Decimal(18, 4)
-  priceOverrideActorId  String?
-  priceOverrideReason   String?
-  sale                  Sale              @relation(fields: [saleId], references: [id], onDelete: Cascade)
-  product               Product           @relation(fields: [productId], references: [id], onDelete: Restrict)
-  stockLocation         StockLocation     @relation(fields: [stockLocationId], references: [id], onDelete: Restrict)
-  serializedDevice      SerializedDevice? @relation(fields: [serializedDeviceId], references: [id], onDelete: Restrict)
-  priceOverrideActor    User?             @relation("PriceOverrideActor", fields: [priceOverrideActorId], references: [id], onDelete: Restrict)
-  returnLines           SaleReturnLine[]
-  createdAt             DateTime          @default(now())
+  id                   String            @id @default(cuid())
+  saleId               String
+  productId            String
+  stockLocationId      String
+  serializedDeviceId   String?
+  quantity             Decimal           @db.Decimal(18, 3)
+  baseUnitPrice        Decimal           @db.Decimal(18, 4)
+  minimumUnitPrice     Decimal           @db.Decimal(18, 4)
+  finalUnitPrice       Decimal           @db.Decimal(18, 4)
+  unitCost             Decimal           @db.Decimal(18, 4)
+  lineTotal            Decimal           @db.Decimal(18, 4)
+  priceOverrideActorId String?
+  priceOverrideReason  String?
+  sale                 Sale              @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  product              Product           @relation(fields: [productId], references: [id], onDelete: Restrict)
+  stockLocation        StockLocation     @relation(fields: [stockLocationId], references: [id], onDelete: Restrict)
+  serializedDevice     SerializedDevice? @relation(fields: [serializedDeviceId], references: [id], onDelete: Restrict)
+  priceOverrideActor   User?             @relation("PriceOverrideActor", fields: [priceOverrideActorId], references: [id], onDelete: Restrict)
+  returnLines          SaleReturnLine[]
+  createdAt            DateTime          @default(now())
 
   @@index([saleId, productId])
   @@index([serializedDeviceId])
 }
 
 model Payment {
-  id           String        @id @default(cuid())
-  tenantId     String
-  branchId     String
-  saleId       String?
+  id            String        @id @default(cuid())
+  tenantId      String
+  branchId      String
+  saleId        String?
   repairOrderId String?
-  method       PaymentMethod
-  currency     String
-  amount       Decimal       @db.Decimal(18, 4)
-  exchangeRate Decimal       @db.Decimal(18, 6)
-  baseAmount   Decimal       @db.Decimal(18, 4)
-  status       PaymentStatus @default(POSTED)
-  reference    String?
-  tenant       Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  branch       Branch        @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  sale         Sale?         @relation(fields: [saleId], references: [id], onDelete: Restrict)
-  debtEntry    DebtEntry?
-  repairOrder  RepairOrder?  @relation(fields: [repairOrderId], references: [id], onDelete: Restrict)
-  paidAt       DateTime      @default(now())
+  method        PaymentMethod
+  currency      String
+  amount        Decimal       @db.Decimal(18, 4)
+  exchangeRate  Decimal       @db.Decimal(18, 6)
+  baseAmount    Decimal       @db.Decimal(18, 4)
+  status        PaymentStatus @default(POSTED)
+  reference     String?
+  tenant        Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch        Branch        @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  sale          Sale?         @relation(fields: [saleId], references: [id], onDelete: Restrict)
+  debtEntry     DebtEntry?
+  repairOrder   RepairOrder?  @relation(fields: [repairOrderId], references: [id], onDelete: Restrict)
+  paidAt        DateTime      @default(now())
 
   @@index([tenantId, branchId, paidAt])
   @@index([saleId, status])
 }
 
 model Invoice {
-  id         String        @id @default(cuid())
-  tenantId   String
-  branchId   String
-  saleId     String        @unique
-  number     String
-  status     InvoiceStatus @default(ISSUED)
-  snapshot   Json
-  tenant     Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  branch     Branch        @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  sale       Sale          @relation(fields: [saleId], references: [id], onDelete: Restrict)
-  issuedAt   DateTime      @default(now())
+  id       String        @id @default(cuid())
+  tenantId String
+  branchId String
+  saleId   String        @unique
+  number   String
+  status   InvoiceStatus @default(ISSUED)
+  snapshot Json
+  tenant   Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch   Branch        @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  sale     Sale          @relation(fields: [saleId], references: [id], onDelete: Restrict)
+  issuedAt DateTime      @default(now())
 
   @@unique([tenantId, number])
 }
 
 model SaleReturn {
-  id             String       @id @default(cuid())
+  id             String           @id @default(cuid())
   tenantId       String
   branchId       String
   saleId         String
   actorId        String
   number         String
-  status         ReturnStatus @default(POSTED)
+  status         ReturnStatus     @default(POSTED)
   reason         String
-  refundBase     Decimal      @db.Decimal(18, 4)
+  refundBase     Decimal          @db.Decimal(18, 4)
   idempotencyKey String
-  tenant         Tenant       @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  branch         Branch       @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  sale           Sale         @relation(fields: [saleId], references: [id], onDelete: Restrict)
-  actor          User         @relation("ReturnActor", fields: [actorId], references: [id], onDelete: Restrict)
+  tenant         Tenant           @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch         Branch           @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  sale           Sale             @relation(fields: [saleId], references: [id], onDelete: Restrict)
+  actor          User             @relation("ReturnActor", fields: [actorId], references: [id], onDelete: Restrict)
   lines          SaleReturnLine[]
   exchanges      Exchange[]
-  occurredAt     DateTime     @default(now())
+  occurredAt     DateTime         @default(now())
 
   @@unique([tenantId, number])
   @@unique([tenantId, idempotencyKey])
@@ -788,7 +796,7 @@ enum AttachmentKind {
 }
 
 model RepairOrder {
-  id                 String       @id @default(cuid())
+  id                 String              @id @default(cuid())
   tenantId           String
   branchId           String
   createdById        String
@@ -796,7 +804,7 @@ model RepairOrder {
   serializedDeviceId String?
   customerId         String?
   number             String
-  status             RepairStatus @default(INTAKE)
+  status             RepairStatus        @default(INTAKE)
   customerName       String
   customerPhone      String
   deviceDescription  String
@@ -805,35 +813,35 @@ model RepairOrder {
   accessories        Json
   reportedIssue      String
   diagnosis          String?
-  estimateAmount     Decimal?     @db.Decimal(18, 4)
-  serviceAmount      Decimal      @default(0) @db.Decimal(18, 4)
-  laborCost          Decimal      @default(0) @db.Decimal(18, 4)
-  directCost         Decimal      @default(0) @db.Decimal(18, 4)
-  partsCost          Decimal      @default(0) @db.Decimal(18, 4)
-  finalPrice         Decimal      @default(0) @db.Decimal(18, 4)
-  paidTotal          Decimal      @default(0) @db.Decimal(18, 4)
-  balanceDue         Decimal      @default(0) @db.Decimal(18, 4)
-  baseCurrency       String       @default("USD")
+  estimateAmount     Decimal?            @db.Decimal(18, 4)
+  serviceAmount      Decimal             @default(0) @db.Decimal(18, 4)
+  laborCost          Decimal             @default(0) @db.Decimal(18, 4)
+  directCost         Decimal             @default(0) @db.Decimal(18, 4)
+  partsCost          Decimal             @default(0) @db.Decimal(18, 4)
+  finalPrice         Decimal             @default(0) @db.Decimal(18, 4)
+  paidTotal          Decimal             @default(0) @db.Decimal(18, 4)
+  balanceDue         Decimal             @default(0) @db.Decimal(18, 4)
+  baseCurrency       String              @default("USD")
   warrantyDays       Int?
-  intakeAt           DateTime     @default(now())
+  intakeAt           DateTime            @default(now())
   approvedAt         DateTime?
   readyAt            DateTime?
   deliveredAt        DateTime?
-  tenant             Tenant       @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  branch             Branch       @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  createdBy          User         @relation("RepairCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
-  technician         User?        @relation("RepairTechnician", fields: [technicianId], references: [id], onDelete: Restrict)
-  serializedDevice   SerializedDevice? @relation(fields: [serializedDeviceId], references: [id], onDelete: Restrict)
-  customer           Customer?    @relation(fields: [customerId], references: [id], onDelete: Restrict)
-  debtEntries         DebtEntry[]
+  tenant             Tenant              @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch             Branch              @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  createdBy          User                @relation("RepairCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  technician         User?               @relation("RepairTechnician", fields: [technicianId], references: [id], onDelete: Restrict)
+  serializedDevice   SerializedDevice?   @relation(fields: [serializedDeviceId], references: [id], onDelete: Restrict)
+  customer           Customer?           @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  debtEntries        DebtEntry[]
   statusEvents       RepairStatusEvent[]
   parts              RepairPart[]
   approvals          RepairApproval[]
   payments           Payment[]
   warranties         Warranty[]
   attachments        Attachment[]
-  createdAt          DateTime     @default(now())
-  updatedAt          DateTime     @updatedAt
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
 
   @@unique([tenantId, number])
   @@index([tenantId, branchId, status])
@@ -842,17 +850,17 @@ model RepairOrder {
 }
 
 model RepairStatusEvent {
-  id            String       @id @default(cuid())
+  id            String        @id @default(cuid())
   repairOrderId String
   branchId      String
   actorId       String
   fromStatus    RepairStatus?
   toStatus      RepairStatus
   note          String?
-  repairOrder   RepairOrder  @relation(fields: [repairOrderId], references: [id], onDelete: Cascade)
-  branch        Branch       @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  actor         User         @relation("RepairStatusActor", fields: [actorId], references: [id], onDelete: Restrict)
-  occurredAt    DateTime     @default(now())
+  repairOrder   RepairOrder   @relation(fields: [repairOrderId], references: [id], onDelete: Cascade)
+  branch        Branch        @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  actor         User          @relation("RepairStatusActor", fields: [actorId], references: [id], onDelete: Restrict)
+  occurredAt    DateTime      @default(now())
 
   @@index([repairOrderId, occurredAt])
 }
@@ -942,7 +950,7 @@ enum DebtEntryKind {
 }
 
 model Customer {
-  id              String   @id @default(cuid())
+  id              String           @id @default(cuid())
   tenantId        String
   createdBranchId String
   name            String
@@ -950,14 +958,14 @@ model Customer {
   phoneNormalized String
   email           String?
   notes           String?
-  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  createdBranch   Branch   @relation(fields: [createdBranchId], references: [id], onDelete: Restrict)
+  tenant          Tenant           @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  createdBranch   Branch           @relation(fields: [createdBranchId], references: [id], onDelete: Restrict)
   devices         CustomerDevice[]
   sales           Sale[]
   repairs         RepairOrder[]
   debtAccount     DebtAccount?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 
   @@unique([tenantId, phoneNormalized])
   @@index([tenantId, name])
@@ -985,40 +993,40 @@ model CustomerDevice {
 }
 
 model DebtAccount {
-  id        String      @id @default(cuid())
-  tenantId  String
-  customerId String     @unique
-  balance   Decimal     @default(0) @db.Decimal(18, 4)
-  currency  String      @default("USD")
-  tenant    Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  customer  Customer    @relation(fields: [customerId], references: [id], onDelete: Restrict)
-  entries   DebtEntry[]
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  id         String      @id @default(cuid())
+  tenantId   String
+  customerId String      @unique
+  balance    Decimal     @default(0) @db.Decimal(18, 4)
+  currency   String      @default("USD")
+  tenant     Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  customer   Customer    @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  entries    DebtEntry[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 
   @@index([tenantId, balance])
 }
 
 model DebtEntry {
-  id            String        @id @default(cuid())
-  tenantId      String
-  branchId      String
-  debtAccountId String
-  kind          DebtEntryKind
-  amount        Decimal       @db.Decimal(18, 4)
-  balanceAfter  Decimal       @db.Decimal(18, 4)
-  saleId        String?
-  repairOrderId String?
-  paymentId     String?       @unique
-  reason        String?
+  id             String        @id @default(cuid())
+  tenantId       String
+  branchId       String
+  debtAccountId  String
+  kind           DebtEntryKind
+  amount         Decimal       @db.Decimal(18, 4)
+  balanceAfter   Decimal       @db.Decimal(18, 4)
+  saleId         String?
+  repairOrderId  String?
+  paymentId      String?       @unique
+  reason         String?
   idempotencyKey String
-  tenant        Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  branch        Branch        @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  debtAccount   DebtAccount   @relation(fields: [debtAccountId], references: [id], onDelete: Restrict)
-  sale          Sale?         @relation(fields: [saleId], references: [id], onDelete: Restrict)
-  repairOrder   RepairOrder?  @relation(fields: [repairOrderId], references: [id], onDelete: Restrict)
-  payment       Payment?      @relation(fields: [paymentId], references: [id], onDelete: Restrict)
-  occurredAt    DateTime      @default(now())
+  tenant         Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch         Branch        @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  debtAccount    DebtAccount   @relation(fields: [debtAccountId], references: [id], onDelete: Restrict)
+  sale           Sale?         @relation(fields: [saleId], references: [id], onDelete: Restrict)
+  repairOrder    RepairOrder?  @relation(fields: [repairOrderId], references: [id], onDelete: Restrict)
+  payment        Payment?      @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+  occurredAt     DateTime      @default(now())
 
   @@unique([tenantId, idempotencyKey])
   @@index([tenantId, debtAccountId, occurredAt])
@@ -1048,33 +1056,33 @@ enum CashMovementType {
 }
 
 model CashSession {
-  id                 String            @id @default(cuid())
-  tenantId           String
-  branchId           String
-  openedById         String
-  closedById         String?
-  varianceApproverId String?
-  status             CashSessionStatus @default(OPEN)
-  openingUsd         Decimal           @default(0) @db.Decimal(18, 4)
-  openingLbp         Decimal           @default(0) @db.Decimal(18, 4)
-  openingExchangeRate Decimal          @db.Decimal(18, 6)
-  expectedBase       Decimal?          @db.Decimal(18, 4)
-  physicalUsd        Decimal?          @db.Decimal(18, 4)
-  physicalLbp        Decimal?          @db.Decimal(18, 4)
-  closingExchangeRate Decimal?         @db.Decimal(18, 6)
-  physicalBase       Decimal?          @db.Decimal(18, 4)
-  varianceBase       Decimal?          @db.Decimal(18, 4)
-  varianceReason     String?
-  tenant             Tenant            @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  branch             Branch            @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  openedBy           User              @relation("CashOpenedBy", fields: [openedById], references: [id], onDelete: Restrict)
-  closedBy           User?             @relation("CashClosedBy", fields: [closedById], references: [id], onDelete: Restrict)
-  varianceApprover   User?             @relation("CashVarianceApprover", fields: [varianceApproverId], references: [id], onDelete: Restrict)
-  movements          CashMovement[]
-  openedAt           DateTime          @default(now())
-  closedAt           DateTime?
-  createdAt          DateTime          @default(now())
-  updatedAt          DateTime          @updatedAt
+  id                  String            @id @default(cuid())
+  tenantId            String
+  branchId            String
+  openedById          String
+  closedById          String?
+  varianceApproverId  String?
+  status              CashSessionStatus @default(OPEN)
+  openingUsd          Decimal           @default(0) @db.Decimal(18, 4)
+  openingLbp          Decimal           @default(0) @db.Decimal(18, 4)
+  openingExchangeRate Decimal           @db.Decimal(18, 6)
+  expectedBase        Decimal?          @db.Decimal(18, 4)
+  physicalUsd         Decimal?          @db.Decimal(18, 4)
+  physicalLbp         Decimal?          @db.Decimal(18, 4)
+  closingExchangeRate Decimal?          @db.Decimal(18, 6)
+  physicalBase        Decimal?          @db.Decimal(18, 4)
+  varianceBase        Decimal?          @db.Decimal(18, 4)
+  varianceReason      String?
+  tenant              Tenant            @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch              Branch            @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  openedBy            User              @relation("CashOpenedBy", fields: [openedById], references: [id], onDelete: Restrict)
+  closedBy            User?             @relation("CashClosedBy", fields: [closedById], references: [id], onDelete: Restrict)
+  varianceApprover    User?             @relation("CashVarianceApprover", fields: [varianceApproverId], references: [id], onDelete: Restrict)
+  movements           CashMovement[]
+  openedAt            DateTime          @default(now())
+  closedAt            DateTime?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
 
   @@index([tenantId, branchId, status])
 }
@@ -1139,68 +1147,68 @@ enum ProviderSettlementStatus {
 }
 
 model TopUpProvider {
-  id             String            @id @default(cuid())
+  id             String               @id @default(cuid())
   tenantId       String
   code           String
   name           String
   mode           TopUpProviderMode
-  payableBalance Decimal           @default(0) @db.Decimal(18, 4)
-  isActive       Boolean           @default(true)
-  tenant         Tenant            @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  payableBalance Decimal              @default(0) @db.Decimal(18, 4)
+  isActive       Boolean              @default(true)
+  tenant         Tenant               @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   services       TopUpService[]
   transactions   TopUpTransaction[]
   settlements    ProviderSettlement[]
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
 
   @@unique([tenantId, code])
 }
 
 model TopUpService {
-  id          String        @id @default(cuid())
-  tenantId    String
-  providerId  String
-  code        String
-  nameAr      String
-  nameEn      String
-  defaultCost Decimal       @db.Decimal(18, 4)
-  defaultSale Decimal       @db.Decimal(18, 4)
-  isActive    Boolean       @default(true)
-  tenant      Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  provider    TopUpProvider @relation(fields: [providerId], references: [id], onDelete: Restrict)
+  id           String             @id @default(cuid())
+  tenantId     String
+  providerId   String
+  code         String
+  nameAr       String
+  nameEn       String
+  defaultCost  Decimal            @db.Decimal(18, 4)
+  defaultSale  Decimal            @db.Decimal(18, 4)
+  isActive     Boolean            @default(true)
+  tenant       Tenant             @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  provider     TopUpProvider      @relation(fields: [providerId], references: [id], onDelete: Restrict)
   transactions TopUpTransaction[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
 
   @@unique([tenantId, code])
   @@index([tenantId, providerId])
 }
 
 model TopUpTransaction {
-  id             String                 @id @default(cuid())
-  tenantId       String
-  branchId       String
-  actorId        String
-  providerId     String
-  serviceId      String
-  settlementId   String?
-  cashSessionId  String
-  customerPhone  String
-  costBase       Decimal                @db.Decimal(18, 4)
-  saleBase       Decimal                @db.Decimal(18, 4)
-  profitBase     Decimal                @db.Decimal(18, 4)
+  id                 String                 @id @default(cuid())
+  tenantId           String
+  branchId           String
+  actorId            String
+  providerId         String
+  serviceId          String
+  settlementId       String?
+  cashSessionId      String
+  customerPhone      String
+  costBase           Decimal                @db.Decimal(18, 4)
+  saleBase           Decimal                @db.Decimal(18, 4)
+  profitBase         Decimal                @db.Decimal(18, 4)
   collectionCurrency String
-  collectionAmount Decimal              @db.Decimal(18, 4)
-  exchangeRate   Decimal                @db.Decimal(18, 6)
-  status         TopUpTransactionStatus @default(POSTED)
-  idempotencyKey String
-  tenant         Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  branch         Branch                 @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  actor          User                   @relation(fields: [actorId], references: [id], onDelete: Restrict)
-  provider       TopUpProvider          @relation(fields: [providerId], references: [id], onDelete: Restrict)
-  service        TopUpService           @relation(fields: [serviceId], references: [id], onDelete: Restrict)
-  settlement     ProviderSettlement?    @relation(fields: [settlementId], references: [id], onDelete: Restrict)
-  occurredAt     DateTime               @default(now())
+  collectionAmount   Decimal                @db.Decimal(18, 4)
+  exchangeRate       Decimal                @db.Decimal(18, 6)
+  status             TopUpTransactionStatus @default(POSTED)
+  idempotencyKey     String
+  tenant             Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch             Branch                 @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  actor              User                   @relation(fields: [actorId], references: [id], onDelete: Restrict)
+  provider           TopUpProvider          @relation(fields: [providerId], references: [id], onDelete: Restrict)
+  service            TopUpService           @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  settlement         ProviderSettlement?    @relation(fields: [settlementId], references: [id], onDelete: Restrict)
+  occurredAt         DateTime               @default(now())
 
   @@unique([tenantId, idempotencyKey])
   @@index([tenantId, branchId, occurredAt])
@@ -1231,4 +1239,94 @@ model ProviderSettlement {
   @@unique([tenantId, number])
   @@unique([tenantId, idempotencyKey])
   @@index([tenantId, providerId, occurredAt])
+}
+
+enum DeviceIncidentStatus {
+  EVIDENCE_PENDING
+  REPORTED_LOST
+  REPORTED_STOLEN
+  VERIFIED_OWNER
+  POLICE_REPORT_VERIFIED
+  DISPUTED
+  FOUND
+  RETURNED
+  CLOSED
+}
+
+enum DeviceIncidentVisibility {
+  STORE_ONLY
+  NETWORK
+}
+
+enum DeviceServiceContext {
+  PURCHASE
+  TRADE_IN
+  STOCK_IN
+  SALE
+  RETURN
+  REPAIR
+  TOPUP_PRESENT
+  DATA_TRANSFER
+  SETUP
+  OTHER
+}
+
+enum DeviceTrustResult {
+  CLEAR
+  REVIEW
+  MATCH
+  NOT_PRESENT
+  NOT_APPLICABLE
+}
+
+model DeviceIncidentReport {
+  id                String                   @id @default(cuid())
+  tenantId          String
+  reporterId        String
+  imeiHash          String
+  imeiLast4         String
+  serialHash        String?
+  status            DeviceIncidentStatus
+  visibility        DeviceIncidentVisibility @default(STORE_ONLY)
+  evidenceReference String?
+  policeReference   String?
+  ownerContactRef   String?
+  notes             String?
+  tenant            Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  reporter          User                     @relation("IncidentReporter", fields: [reporterId], references: [id], onDelete: Restrict)
+  matches           DeviceTrustCheck[]
+  reportedAt        DateTime                 @default(now())
+  verifiedAt        DateTime?
+  closedAt          DateTime?
+  updatedAt         DateTime                 @updatedAt
+
+  @@index([imeiHash, status, visibility])
+  @@index([tenantId, reportedAt])
+}
+
+model DeviceTrustCheck {
+  id              String                @id @default(cuid())
+  tenantId        String
+  branchId        String
+  actorId         String
+  matchedReportId String?
+  overrideActorId String?
+  imeiHash        String?
+  imeiLast4       String?
+  context         DeviceServiceContext
+  devicePresent   Boolean               @default(true)
+  result          DeviceTrustResult
+  blocked         Boolean               @default(false)
+  overrideReason  String?
+  referenceType   String?
+  referenceId     String?
+  tenant          Tenant                @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch          Branch                @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  actor           User                  @relation("TrustCheckActor", fields: [actorId], references: [id], onDelete: Restrict)
+  matchedReport   DeviceIncidentReport? @relation(fields: [matchedReportId], references: [id], onDelete: Restrict)
+  overrideActor   User?                 @relation("TrustCheckOverrideActor", fields: [overrideActorId], references: [id], onDelete: Restrict)
+  checkedAt       DateTime              @default(now())
+
+  @@index([tenantId, branchId, checkedAt])
+  @@index([imeiHash, result])
 }

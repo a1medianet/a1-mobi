@@ -20,10 +20,12 @@ describe("pilot peripherals and gate", () => {
   });
 
   it("blocks pilot until every real-world evidence item passes", () => {
-    const evidence = Object.fromEntries(PILOT_EVIDENCE_KEYS.slice(0, -3).map((key) =>
+    const evidence = Object.fromEntries(PILOT_EVIDENCE_KEYS.slice(0, -4).map((key) =>
       [key, { passed: true, reference: `automated:${key}`, observedAt: new Date().toISOString() }]));
     const gate = evaluatePilotGate(evidence);
     expect(gate.result).toBe("BLOCKED");
-    expect(gate.missing).toEqual(["scanner-physical", "printer-physical", "store-day-uat"]);
+    expect(gate.missing).toEqual([
+      "scanner-physical", "printer-physical", "store-day-uat", "device-trust-legal-privacy",
+    ]);
   });
 });
