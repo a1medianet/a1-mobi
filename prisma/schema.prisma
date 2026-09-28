@@ -41,6 +41,10 @@ model Tenant {
   repairApprovals RepairApproval[]
   warranties   Warranty[]
   attachments  Attachment[]
+  customers    Customer[]
+  customerDevices CustomerDevice[]
+  debtAccounts DebtAccount[]
+  debtEntries  DebtEntry[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 }
@@ -68,6 +72,8 @@ model Branch {
   repairApprovals RepairApproval[]
   warranties Warranty[]
   attachments Attachment[]
+  createdCustomers Customer[]
+  debtEntries DebtEntry[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -348,6 +354,7 @@ model DeviceVariant {
   model          DeviceModel  @relation(fields: [modelId], references: [id], onDelete: Restrict)
   devices        SerializedDevice[]
   compatibleParts ProductCompatibility[]
+  customerDevices CustomerDevice[]
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
 
@@ -457,6 +464,7 @@ model SerializedDevice {
   saleLines       SaleLine[]
   returnLines     SaleReturnLine[]
   repairOrders    RepairOrder[]
+  customerDevices CustomerDevice[]
   createdAt       DateTime               @default(now())
   updatedAt       DateTime               @updatedAt
 
@@ -581,6 +589,8 @@ model Sale {
   tenant         Tenant       @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   branch         Branch       @relation(fields: [branchId], references: [id], onDelete: Restrict)
   actor          User         @relation("SaleActor", fields: [actorId], references: [id], onDelete: Restrict)
+  customer       Customer?    @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  debtEntries     DebtEntry[]
   lines          SaleLine[]
   payments       Payment[]
   invoice        Invoice?
@@ -638,6 +648,7 @@ model Payment {
   tenant       Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   branch       Branch        @relation(fields: [branchId], references: [id], onDelete: Restrict)
   sale         Sale?         @relation(fields: [saleId], references: [id], onDelete: Restrict)
+  debtEntry    DebtEntry?
   repairOrder  RepairOrder?  @relation(fields: [repairOrderId], references: [id], onDelete: Restrict)
   paidAt       DateTime      @default(now())
 
@@ -794,6 +805,8 @@ model RepairOrder {
   createdBy          User         @relation("RepairCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
   technician         User?        @relation("RepairTechnician", fields: [technicianId], references: [id], onDelete: Restrict)
   serializedDevice   SerializedDevice? @relation(fields: [serializedDeviceId], references: [id], onDelete: Restrict)
+  customer           Customer?    @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  debtEntries         DebtEntry[]
   statusEvents       RepairStatusEvent[]
   parts              RepairPart[]
   approvals          RepairApproval[]
@@ -900,4 +913,94 @@ model Attachment {
   createdAt     DateTime       @default(now())
 
   @@index([tenantId, repairOrderId, kind])
+}
+
+enum DebtEntryKind {
+  CHARGE
+  PAYMENT
+  ADJUSTMENT_DEBIT
+  ADJUSTMENT_CREDIT
+}
+
+model Customer {
+  id              String   @id @default(cuid())
+  tenantId        String
+  createdBranchId String
+  name            String
+  phone           String
+  phoneNormalized String
+  email           String?
+  notes           String?
+  tenant          Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  createdBranch   Branch   @relation(fields: [createdBranchId], references: [id], onDelete: Restrict)
+  devices         CustomerDevice[]
+  sales           Sale[]
+  repairs         RepairOrder[]
+  debtAccount     DebtAccount?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([tenantId, phoneNormalized])
+  @@index([tenantId, name])
+}
+
+model CustomerDevice {
+  id                 String            @id @default(cuid())
+  tenantId           String
+  customerId         String
+  serializedDeviceId String?
+  variantId          String?
+  description        String
+  imei               String?
+  serialNumber       String?
+  tenant             Tenant            @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  customer           Customer          @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  serializedDevice   SerializedDevice? @relation(fields: [serializedDeviceId], references: [id], onDelete: Restrict)
+  variant            DeviceVariant?    @relation(fields: [variantId], references: [id], onDelete: Restrict)
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  @@unique([customerId, imei])
+  @@unique([customerId, serialNumber])
+  @@index([tenantId, customerId])
+}
+
+model DebtAccount {
+  id        String      @id @default(cuid())
+  tenantId  String
+  customerId String     @unique
+  balance   Decimal     @default(0) @db.Decimal(18, 4)
+  currency  String      @default("USD")
+  tenant    Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  customer  Customer    @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  entries   DebtEntry[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@index([tenantId, balance])
+}
+
+model DebtEntry {
+  id            String        @id @default(cuid())
+  tenantId      String
+  branchId      String
+  debtAccountId String
+  kind          DebtEntryKind
+  amount        Decimal       @db.Decimal(18, 4)
+  balanceAfter  Decimal       @db.Decimal(18, 4)
+  saleId        String?
+  repairOrderId String?
+  paymentId     String?       @unique
+  reason        String?
+  idempotencyKey String
+  tenant        Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch        Branch        @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  debtAccount   DebtAccount   @relation(fields: [debtAccountId], references: [id], onDelete: Restrict)
+  sale          Sale?         @relation(fields: [saleId], references: [id], onDelete: Restrict)
+  repairOrder   RepairOrder?  @relation(fields: [repairOrderId], references: [id], onDelete: Restrict)
+  payment       Payment?      @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+  occurredAt    DateTime      @default(now())
+
+  @@unique([tenantId, idempotencyKey])
+  @@index([tenantId, debtAccountId, occurredAt])
 }
