@@ -31,6 +31,11 @@ model Tenant {
   stockLocations StockLocation[]
   stockMovements StockMovement[]
   stockCounts  StockCount[]
+  sales        Sale[]
+  payments     Payment[]
+  invoices     Invoice[]
+  returns      SaleReturn[]
+  exchanges    Exchange[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 }
@@ -47,6 +52,11 @@ model Branch {
   stockLocations StockLocation[]
   stockMovements StockMovement[]
   stockCounts StockCount[]
+  sales Sale[]
+  payments Payment[]
+  invoices Invoice[]
+  returns SaleReturn[]
+  exchanges Exchange[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -67,6 +77,9 @@ model User {
   userRoles    UserRole[]
   sessions     Session[]
   auditEvents  AuditEvent[] @relation("AuditActor")
+  sales        Sale[] @relation("SaleActor")
+  approvedSaleLines SaleLine[] @relation("PriceOverrideActor")
+  processedReturns SaleReturn[] @relation("ReturnActor")
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
@@ -243,6 +256,8 @@ model Product {
   stockMovements StockMovement[]
   countLines     StockCountLine[]
   compatibilities ProductCompatibility[]
+  saleLines      SaleLine[]
+  returnLines    SaleReturnLine[]
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 
@@ -398,6 +413,8 @@ model StockLocation {
   outbound    StockMovement[] @relation("StockFrom")
   inbound     StockMovement[] @relation("StockTo")
   counts      StockCount[]
+  saleLines    SaleLine[]
+  returnLines  SaleReturnLine[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -420,6 +437,8 @@ model SerializedDevice {
   variant         DeviceVariant          @relation(fields: [variantId], references: [id], onDelete: Restrict)
   stockLocation   StockLocation?         @relation(fields: [stockLocationId], references: [id], onDelete: SetNull)
   movements       StockMovement[]
+  saleLines       SaleLine[]
+  returnLines     SaleReturnLine[]
   createdAt       DateTime               @default(now())
   updatedAt       DateTime               @updatedAt
 
@@ -486,4 +505,198 @@ model StockCountLine {
   createdAt   DateTime   @default(now())
 
   @@unique([stockCountId, productId])
+}
+
+enum SaleStatus {
+  DRAFT
+  UNPAID
+  PARTIALLY_PAID
+  COMPLETED
+  PARTIALLY_RETURNED
+  RETURNED
+  VOIDED
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  BANK_TRANSFER
+  OTHER
+}
+
+enum PaymentStatus {
+  POSTED
+  REVERSED
+}
+
+enum InvoiceStatus {
+  ISSUED
+  VOIDED
+  CREDITED
+}
+
+enum ReturnStatus {
+  POSTED
+  REVERSED
+}
+
+enum ExchangeStatus {
+  COMPLETED
+  REVERSED
+}
+
+model Sale {
+  id             String       @id @default(cuid())
+  tenantId       String
+  branchId       String
+  actorId        String
+  customerId     String?
+  number         String
+  status         SaleStatus   @default(DRAFT)
+  subtotal       Decimal      @db.Decimal(18, 4)
+  discountTotal  Decimal      @default(0) @db.Decimal(18, 4)
+  total          Decimal      @db.Decimal(18, 4)
+  paidTotal      Decimal      @default(0) @db.Decimal(18, 4)
+  balanceDue     Decimal      @default(0) @db.Decimal(18, 4)
+  baseCurrency   String       @default("USD")
+  idempotencyKey String
+  tenant         Tenant       @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch         Branch       @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  actor          User         @relation("SaleActor", fields: [actorId], references: [id], onDelete: Restrict)
+  lines          SaleLine[]
+  payments       Payment[]
+  invoice        Invoice?
+  returns        SaleReturn[]
+  exchangeSales  Exchange[]   @relation("ExchangeNewSale")
+  occurredAt     DateTime     @default(now())
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([tenantId, number])
+  @@unique([tenantId, idempotencyKey])
+  @@index([tenantId, branchId, occurredAt])
+  @@index([tenantId, customerId])
+}
+
+model SaleLine {
+  id                    String            @id @default(cuid())
+  saleId                String
+  productId             String
+  stockLocationId       String
+  serializedDeviceId    String?
+  quantity              Decimal           @db.Decimal(18, 3)
+  baseUnitPrice         Decimal           @db.Decimal(18, 4)
+  minimumUnitPrice      Decimal           @db.Decimal(18, 4)
+  finalUnitPrice        Decimal           @db.Decimal(18, 4)
+  unitCost              Decimal           @db.Decimal(18, 4)
+  lineTotal             Decimal           @db.Decimal(18, 4)
+  priceOverrideActorId  String?
+  priceOverrideReason   String?
+  sale                  Sale              @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  product               Product           @relation(fields: [productId], references: [id], onDelete: Restrict)
+  stockLocation         StockLocation     @relation(fields: [stockLocationId], references: [id], onDelete: Restrict)
+  serializedDevice      SerializedDevice? @relation(fields: [serializedDeviceId], references: [id], onDelete: Restrict)
+  priceOverrideActor    User?             @relation("PriceOverrideActor", fields: [priceOverrideActorId], references: [id], onDelete: Restrict)
+  returnLines           SaleReturnLine[]
+  createdAt             DateTime          @default(now())
+
+  @@index([saleId, productId])
+  @@index([serializedDeviceId])
+}
+
+model Payment {
+  id           String        @id @default(cuid())
+  tenantId     String
+  branchId     String
+  saleId       String
+  method       PaymentMethod
+  currency     String
+  amount       Decimal       @db.Decimal(18, 4)
+  exchangeRate Decimal       @db.Decimal(18, 6)
+  baseAmount   Decimal       @db.Decimal(18, 4)
+  status       PaymentStatus @default(POSTED)
+  reference    String?
+  tenant       Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch       Branch        @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  sale         Sale          @relation(fields: [saleId], references: [id], onDelete: Restrict)
+  paidAt       DateTime      @default(now())
+
+  @@index([tenantId, branchId, paidAt])
+  @@index([saleId, status])
+}
+
+model Invoice {
+  id         String        @id @default(cuid())
+  tenantId   String
+  branchId   String
+  saleId     String        @unique
+  number     String
+  status     InvoiceStatus @default(ISSUED)
+  snapshot   Json
+  tenant     Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch     Branch        @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  sale       Sale          @relation(fields: [saleId], references: [id], onDelete: Restrict)
+  issuedAt   DateTime      @default(now())
+
+  @@unique([tenantId, number])
+}
+
+model SaleReturn {
+  id             String       @id @default(cuid())
+  tenantId       String
+  branchId       String
+  saleId         String
+  actorId        String
+  number         String
+  status         ReturnStatus @default(POSTED)
+  reason         String
+  refundBase     Decimal      @db.Decimal(18, 4)
+  idempotencyKey String
+  tenant         Tenant       @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch         Branch       @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  sale           Sale         @relation(fields: [saleId], references: [id], onDelete: Restrict)
+  actor          User         @relation("ReturnActor", fields: [actorId], references: [id], onDelete: Restrict)
+  lines          SaleReturnLine[]
+  exchanges      Exchange[]
+  occurredAt     DateTime     @default(now())
+
+  @@unique([tenantId, number])
+  @@unique([tenantId, idempotencyKey])
+  @@index([tenantId, saleId])
+}
+
+model SaleReturnLine {
+  id                 String            @id @default(cuid())
+  returnId           String
+  originalSaleLineId String
+  productId          String
+  stockLocationId    String
+  serializedDeviceId String?
+  quantity           Decimal           @db.Decimal(18, 3)
+  refundUnitPrice    Decimal           @db.Decimal(18, 4)
+  lineTotal          Decimal           @db.Decimal(18, 4)
+  saleReturn         SaleReturn        @relation(fields: [returnId], references: [id], onDelete: Cascade)
+  originalSaleLine   SaleLine          @relation(fields: [originalSaleLineId], references: [id], onDelete: Restrict)
+  product            Product           @relation(fields: [productId], references: [id], onDelete: Restrict)
+  stockLocation      StockLocation     @relation(fields: [stockLocationId], references: [id], onDelete: Restrict)
+  serializedDevice   SerializedDevice? @relation(fields: [serializedDeviceId], references: [id], onDelete: Restrict)
+
+  @@index([returnId, productId])
+}
+
+model Exchange {
+  id         String         @id @default(cuid())
+  tenantId   String
+  branchId   String
+  returnId   String
+  newSaleId  String
+  status     ExchangeStatus @default(COMPLETED)
+  tenant     Tenant         @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch     Branch         @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  saleReturn SaleReturn     @relation(fields: [returnId], references: [id], onDelete: Restrict)
+  newSale    Sale           @relation("ExchangeNewSale", fields: [newSaleId], references: [id], onDelete: Restrict)
+  occurredAt DateTime       @default(now())
+
+  @@unique([returnId, newSaleId])
+  @@index([tenantId, branchId, occurredAt])
 }

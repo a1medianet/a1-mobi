@@ -5,7 +5,7 @@ export function GET() {
   return NextResponse.json({
     status: "ok",
     service: "a1-mobi",
-    stage: "2-inventory",
+    stage: "3-sell",
     domains: DOMAIN_NAMES,
     capabilities: FOUNDATION_CAPABILITIES,
     timestamp: new Date().toISOString(),
