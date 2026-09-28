@@ -48,6 +48,10 @@ model Tenant {
   cashSessions CashSession[]
   cashMovements CashMovement[]
   exchangeRates ExchangeRate[]
+  topUpProviders TopUpProvider[]
+  topUpServices TopUpService[]
+  topUpTransactions TopUpTransaction[]
+  providerSettlements ProviderSettlement[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 }
@@ -80,6 +84,8 @@ model Branch {
   cashSessions CashSession[]
   cashMovements CashMovement[]
   exchangeRates ExchangeRate[]
+  topUpTransactions TopUpTransaction[]
+  providerSettlements ProviderSettlement[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -112,6 +118,8 @@ model User {
   approvedCashSessions CashSession[] @relation("CashVarianceApprover")
   cashMovements CashMovement[]
   setExchangeRates ExchangeRate[]
+  topUpTransactions TopUpTransaction[]
+  providerSettlements ProviderSettlement[]
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
@@ -1113,4 +1121,114 @@ model ExchangeRate {
   createdAt     DateTime @default(now())
 
   @@index([tenantId, branchId, effectiveAt])
+}
+
+enum TopUpProviderMode {
+  IMMEDIATE
+  ON_ACCOUNT
+}
+
+enum TopUpTransactionStatus {
+  POSTED
+  REVERSED
+}
+
+enum ProviderSettlementStatus {
+  POSTED
+  REVERSED
+}
+
+model TopUpProvider {
+  id             String            @id @default(cuid())
+  tenantId       String
+  code           String
+  name           String
+  mode           TopUpProviderMode
+  payableBalance Decimal           @default(0) @db.Decimal(18, 4)
+  isActive       Boolean           @default(true)
+  tenant         Tenant            @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  services       TopUpService[]
+  transactions   TopUpTransaction[]
+  settlements    ProviderSettlement[]
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@unique([tenantId, code])
+}
+
+model TopUpService {
+  id          String        @id @default(cuid())
+  tenantId    String
+  providerId  String
+  code        String
+  nameAr      String
+  nameEn      String
+  defaultCost Decimal       @db.Decimal(18, 4)
+  defaultSale Decimal       @db.Decimal(18, 4)
+  isActive    Boolean       @default(true)
+  tenant      Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  provider    TopUpProvider @relation(fields: [providerId], references: [id], onDelete: Restrict)
+  transactions TopUpTransaction[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@unique([tenantId, code])
+  @@index([tenantId, providerId])
+}
+
+model TopUpTransaction {
+  id             String                 @id @default(cuid())
+  tenantId       String
+  branchId       String
+  actorId        String
+  providerId     String
+  serviceId      String
+  settlementId   String?
+  cashSessionId  String
+  customerPhone  String
+  costBase       Decimal                @db.Decimal(18, 4)
+  saleBase       Decimal                @db.Decimal(18, 4)
+  profitBase     Decimal                @db.Decimal(18, 4)
+  collectionCurrency String
+  collectionAmount Decimal              @db.Decimal(18, 4)
+  exchangeRate   Decimal                @db.Decimal(18, 6)
+  status         TopUpTransactionStatus @default(POSTED)
+  idempotencyKey String
+  tenant         Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch         Branch                 @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  actor          User                   @relation(fields: [actorId], references: [id], onDelete: Restrict)
+  provider       TopUpProvider          @relation(fields: [providerId], references: [id], onDelete: Restrict)
+  service        TopUpService           @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  settlement     ProviderSettlement?    @relation(fields: [settlementId], references: [id], onDelete: Restrict)
+  occurredAt     DateTime               @default(now())
+
+  @@unique([tenantId, idempotencyKey])
+  @@index([tenantId, branchId, occurredAt])
+  @@index([providerId, settlementId])
+}
+
+model ProviderSettlement {
+  id             String                   @id @default(cuid())
+  tenantId       String
+  branchId       String
+  actorId        String
+  providerId     String
+  cashSessionId  String
+  number         String
+  amountBase     Decimal                  @db.Decimal(18, 4)
+  currency       String
+  amount         Decimal                  @db.Decimal(18, 4)
+  exchangeRate   Decimal                  @db.Decimal(18, 6)
+  status         ProviderSettlementStatus @default(POSTED)
+  idempotencyKey String
+  tenant         Tenant                   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch         Branch                   @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  actor          User                     @relation(fields: [actorId], references: [id], onDelete: Restrict)
+  provider       TopUpProvider            @relation(fields: [providerId], references: [id], onDelete: Restrict)
+  transactions   TopUpTransaction[]
+  occurredAt     DateTime                 @default(now())
+
+  @@unique([tenantId, number])
+  @@unique([tenantId, idempotencyKey])
+  @@index([tenantId, providerId, occurredAt])
 }
