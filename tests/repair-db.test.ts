@@ -1,4 +1,5 @@
 import {
+  DeviceServiceContext,
   PaymentMethod,
   ProductType,
   RepairPartSource,
@@ -7,6 +8,7 @@ import {
 } from "@prisma/client";
 import { describe, expect, it } from "vitest";
 import { db } from "@/server/db";
+import { checkDeviceTrust } from "@/modules/device-trust/device-trust-service";
 import { registerProduct } from "@/modules/inventory/inventory-service";
 import {
   addRepairPart,
@@ -65,15 +67,20 @@ runDb("repair database integration", () => {
       },
     });
 
+    const trustCheck = await checkDeviceTrust({
+      tenantId: tenant.id, branchId: branch.id, actorId: user.id,
+      context: DeviceServiceContext.REPAIR, devicePresent: true, imei: "356938035643809",
+    });
     let repair = await createRepairIntake({
       tenantId: tenant.id,
+      trustCheckId: trustCheck.id,
       branchId: branch.id,
       actorId: user.id,
       number: `REP-${suffix}`,
       customerName: "Ali",
       customerPhone: "+961 70 123 456",
       deviceDescription: "Samsung phone",
-      imei: "490154203237518",
+      imei: "356938035643809",
       condition: "Screen cracked",
       accessories: ["Case"],
       reportedIssue: "Broken display",

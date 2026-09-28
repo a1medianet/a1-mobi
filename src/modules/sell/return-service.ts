@@ -1,4 +1,5 @@
 import {
+  DeviceServiceContext,
   ExchangeStatus,
   Prisma,
   SaleStatus,
@@ -6,6 +7,7 @@ import {
   StockMovementType,
 } from "@prisma/client";
 import { db } from "@/server/db";
+import { assertTrustCheckForWorkflow } from "@/modules/device-trust/workflow-guard";
 import { requireReturnReason, validateReturnLine } from "./return-rules";
 
 export type PostReturnInput = {
@@ -18,6 +20,7 @@ export type PostReturnInput = {
   idempotencyKey: string;
   lines: Array<{
     originalSaleLineId: string;
+    trustCheckId?: string;
     quantity: number;
     stockLocationId: string;
   }>;
@@ -66,6 +69,21 @@ export async function postSaleReturn(input: PostReturnInput) {
       });
       if (locations.length !== new Set(input.lines.map((line) => line.stockLocationId)).size) {
         throw new Error("Invalid return stock location");
+      }
+
+      for (const requested of input.lines) {
+        const original = saleLineMap.get(requested.originalSaleLineId);
+        if (original?.serializedDeviceId) {
+          if (!requested.trustCheckId) throw new Error("Device trust check is required for serialized return");
+          const device = await tx.serializedDevice.findUniqueOrThrow({
+            where: { id: original.serializedDeviceId },
+          });
+          if (!device.imei) throw new Error("Serialized return requires IMEI");
+          await assertTrustCheckForWorkflow(tx, {
+            trustCheckId: requested.trustCheckId, tenantId: input.tenantId,
+            branchId: input.branchId, context: DeviceServiceContext.RETURN, imei: device.imei,
+          });
+        }
       }
 
       const prepared = input.lines.map((requested) => {
@@ -136,6 +154,10 @@ export async function postSaleReturn(input: PostReturnInput) {
                 status: SerializedDeviceStatus.RETURNED,
                 stockLocationId: requested.stockLocationId,
               },
+            });
+            await tx.deviceTrustCheck.update({
+              where: { id: requested.trustCheckId! },
+              data: { referenceType: "SaleReturn", referenceId: saleReturn.id },
             });
           }
         }),

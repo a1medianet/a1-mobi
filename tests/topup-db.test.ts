@@ -1,6 +1,7 @@
-import { TopUpProviderMode } from "@prisma/client";
+import { DeviceServiceContext, TopUpProviderMode } from "@prisma/client";
 import { describe, expect, it } from "vitest";
 import { db } from "@/server/db";
+import { checkDeviceTrust } from "@/modules/device-trust/device-trust-service";
 import { openCashSession } from "@/modules/cash/cash-service";
 import { postTopUp, settleTopUpProvider } from "@/modules/topup/topup-service";
 
@@ -33,10 +34,17 @@ runDb("top-up database integration", () => {
       tenantId: tenant.id, branchId: branch.id, actorId: user.id,
       openingUsd: 100, openingLbp: 0, openingExchangeRate: 89_500,
     });
+    const trustCheck = await checkDeviceTrust({
+      tenantId: tenant.id, branchId: branch.id, actorId: user.id,
+      context: DeviceServiceContext.TOPUP_PRESENT, devicePresent: true,
+      imei: "356938035643809",
+    });
     const transaction = await postTopUp({
       tenantId: tenant.id, branchId: branch.id, actorId: user.id,
       cashSessionId: session.id, serviceId: service.id,
-      customerPhone: "03123456", collectionCurrency: "LBP",
+      customerPhone: "03123456", devicePresent: true,
+      deviceImei: "356938035643809", trustCheckId: trustCheck.id,
+      collectionCurrency: "LBP",
       collectionAmount: 895_000, exchangeRate: 89_500,
       idempotencyKey: `topup-${suffix}`,
     });

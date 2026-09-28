@@ -1,6 +1,7 @@
-import { ProductType } from "@prisma/client";
+import { DeviceServiceContext, ProductType } from "@prisma/client";
 import { describe, expect, it } from "vitest";
 import { db } from "@/server/db";
+import { checkDeviceTrust } from "@/modules/device-trust/device-trust-service";
 import {
   receiveSerializedDevice,
   registerProduct,
@@ -61,14 +62,19 @@ runDb("inventory database integration", () => {
         code: "MAIN-STOCK", name: "Main Stock",
       },
     });
+    const stockTrustCheck = await checkDeviceTrust({
+      tenantId: tenant.id, branchId: branch.id, actorId: user.id,
+      context: DeviceServiceContext.STOCK_IN, devicePresent: true, imei: "352099001761481",
+    });
     const device = await receiveSerializedDevice({
       tenantId: tenant.id,
+      trustCheckId: stockTrustCheck.id,
       branchId: branch.id,
       actorId: user.id,
       productId: product.id,
       variantId: variant.id,
       stockLocationId: location.id,
-      imei: "490154203237518",
+      imei: "352099001761481",
       unitCost: 500,
       idempotencyKey: `receive-${suffix}`,
     });

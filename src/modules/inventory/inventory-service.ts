@@ -1,5 +1,6 @@
-import { Prisma, ProductType } from "@prisma/client";
+import { DeviceServiceContext, Prisma, ProductType } from "@prisma/client";
 import { db } from "@/server/db";
+import { assertTrustCheckForWorkflow } from "@/modules/device-trust/workflow-guard";
 import { normalizeBarcode } from "@/modules/catalog/barcode";
 import { requireValidImei } from "@/modules/devices/imei";
 import { assertSameTenant } from "./tenant-scope";
@@ -69,6 +70,7 @@ export type ReceiveSerializedDeviceInput = {
   tenantId: string;
   branchId: string;
   actorId: string;
+  trustCheckId: string;
   productId: string;
   variantId: string;
   stockLocationId: string;
@@ -92,6 +94,10 @@ export async function receiveSerializedDevice(
 
   return db.$transaction(async (tx) => {
     await assertInventoryReferences(tx, input);
+    await assertTrustCheckForWorkflow(tx, {
+      trustCheckId: input.trustCheckId, tenantId: input.tenantId,
+      branchId: input.branchId, context: DeviceServiceContext.STOCK_IN, imei,
+    });
     const device = await tx.serializedDevice.create({
       data: {
         tenantId: input.tenantId,

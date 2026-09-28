@@ -2,10 +2,12 @@ import {
   CashDirection,
   CashMovementType,
   CashSessionStatus,
+  DeviceServiceContext,
   Prisma,
   TopUpProviderMode,
 } from "@prisma/client";
 import { db } from "@/server/db";
+import { assertTrustCheckForWorkflow } from "@/modules/device-trust/workflow-guard";
 import { toBase } from "@/modules/cash/cash-rules";
 import { assertSettlementAmount, priceTopUp } from "./topup-rules";
 
@@ -16,6 +18,9 @@ export async function postTopUp(input: {
   cashSessionId: string;
   serviceId: string;
   customerPhone: string;
+  devicePresent?: boolean;
+  deviceImei?: string;
+  trustCheckId?: string;
   costBase?: number;
   saleBase?: number;
   collectionCurrency: string;
@@ -38,6 +43,16 @@ export async function postTopUp(input: {
     if ([service.tenantId, session.tenantId, actor.tenantId].some((tenantId) => tenantId !== input.tenantId)
       || session.branchId !== input.branchId || session.status !== CashSessionStatus.OPEN) {
       throw new Error("Top-up requires matching tenant, branch, and open cash session");
+    }
+    if (input.devicePresent) {
+      if (!input.trustCheckId || !input.deviceImei) {
+        throw new Error("IMEI trust check is required for present-device top-up");
+      }
+      await assertTrustCheckForWorkflow(tx, {
+        trustCheckId: input.trustCheckId, tenantId: input.tenantId,
+        branchId: input.branchId, context: DeviceServiceContext.TOPUP_PRESENT,
+        imei: input.deviceImei,
+      });
     }
     const costBase = input.costBase ?? Number(service.defaultCost);
     const saleBase = input.saleBase ?? Number(service.defaultSale);

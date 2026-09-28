@@ -1,4 +1,5 @@
 import {
+  DeviceServiceContext,
   PaymentMethod,
   Prisma,
   RepairApprovalDecision,
@@ -7,6 +8,7 @@ import {
   StockMovementType,
 } from "@prisma/client";
 import { db } from "@/server/db";
+import { assertTrustCheckForWorkflow } from "@/modules/device-trust/workflow-guard";
 import { calculateLocationBalance } from "@/modules/inventory/balance";
 import { paymentToBase } from "@/modules/sell/payments";
 import {
@@ -24,6 +26,7 @@ export async function createRepairIntake(input: {
   tenantId: string;
   branchId: string;
   actorId: string;
+  trustCheckId: string;
   number: string;
   customerName: string;
   customerPhone: string;
@@ -45,6 +48,11 @@ export async function createRepairIntake(input: {
         ? tx.serializedDevice.findUniqueOrThrow({ where: { id: input.serializedDeviceId } })
         : Promise.resolve(undefined),
     ]);
+    await assertTrustCheckForWorkflow(tx, {
+      trustCheckId: input.trustCheckId, tenantId: input.tenantId,
+      branchId: input.branchId, context: DeviceServiceContext.REPAIR,
+      imei: input.imei ?? device?.imei ?? "",
+    });
     assertTenant(
       [branch.tenantId, actor.tenantId, ...(device ? [device.tenantId] : [])],
       tenant.id,
@@ -75,6 +83,10 @@ export async function createRepairIntake(input: {
           },
         },
       },
+    });
+    await tx.deviceTrustCheck.update({
+      where: { id: input.trustCheckId },
+      data: { referenceType: "RepairOrder", referenceId: repair.id },
     });
     await tx.auditEvent.create({
       data: {

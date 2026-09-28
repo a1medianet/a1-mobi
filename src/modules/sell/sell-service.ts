@@ -1,4 +1,5 @@
 import {
+  DeviceServiceContext,
   PaymentMethod,
   Prisma,
   SaleStatus,
@@ -6,6 +7,7 @@ import {
   StockMovementType,
 } from "@prisma/client";
 import { db } from "@/server/db";
+import { assertTrustCheckForWorkflow } from "@/modules/device-trust/workflow-guard";
 import { calculateLocationBalance } from "@/modules/inventory/balance";
 import { priceSale, type SaleLineInput } from "./sale-rules";
 import type { PaymentInput } from "./payments";
@@ -14,6 +16,7 @@ export type CheckoutLineInput = {
   productId: string;
   stockLocationId: string;
   serializedDeviceId?: string;
+  trustCheckId?: string;
   quantity: number;
   finalPrice: number;
   overrideReason?: string;
@@ -83,6 +86,18 @@ export async function checkoutSale(input: CheckoutInput) {
 
       const productMap = new Map(products.map((product) => [product.id, product]));
       const deviceMap = new Map(devices.map((device) => [device.id, device]));
+
+      for (const line of input.lines) {
+        if (line.serializedDeviceId) {
+          if (!line.trustCheckId) throw new Error("Device trust check is required for serialized sale");
+          const deviceImei = deviceMap.get(line.serializedDeviceId)?.imei;
+          if (!deviceImei) throw new Error("Serialized sale requires IMEI");
+          await assertTrustCheckForWorkflow(tx, {
+            trustCheckId: line.trustCheckId, tenantId: input.tenantId,
+            branchId: input.branchId, context: DeviceServiceContext.SALE, imei: deviceImei,
+          });
+        }
+      }
 
       const ruleLines: SaleLineInput[] = input.lines.map((line) => {
         const product = productMap.get(line.productId)!;
@@ -227,6 +242,10 @@ export async function checkoutSale(input: CheckoutInput) {
             await tx.serializedDevice.update({
               where: { id: device.id },
               data: { status: SerializedDeviceStatus.SOLD, stockLocationId: null },
+            });
+            await tx.deviceTrustCheck.update({
+              where: { id: line.trustCheckId! },
+              data: { referenceType: "Sale", referenceId: sale.id },
             });
           }
         }),

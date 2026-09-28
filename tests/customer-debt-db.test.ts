@@ -1,6 +1,7 @@
-import { PaymentMethod } from "@prisma/client";
+import { DeviceServiceContext, PaymentMethod } from "@prisma/client";
 import { describe, expect, it } from "vitest";
 import { db } from "@/server/db";
+import { checkDeviceTrust } from "@/modules/device-trust/device-trust-service";
 import { registerCustomer, getCustomerTimeline } from "@/modules/customers/customer-service";
 import { createRepairIntake } from "@/modules/repairs/repair-service";
 import { getCustomerStatement, postDebtCharge, recordDebtRepayment } from "@/modules/debt/debt-service";
@@ -27,11 +28,16 @@ runDb("customer and debt database integration", () => {
       name: "Duplicate", phone: "00961-70-123-456",
     })).rejects.toThrow(/already exists/);
 
+    const trustCheck = await checkDeviceTrust({
+      tenantId: tenant.id, branchId: branch.id, actorId: user.id,
+      context: DeviceServiceContext.REPAIR, devicePresent: true, imei: "356938035643809",
+    });
     const repair = await createRepairIntake({
       tenantId: tenant.id, branchId: branch.id, actorId: user.id,
+      trustCheckId: trustCheck.id,
       customerId: customer.id, number: `REP-DEBT-${suffix}`,
       customerName: customer.name, customerPhone: customer.phone,
-      deviceDescription: "Customer phone", condition: "Used",
+      deviceDescription: "Customer phone", imei: "356938035643809", condition: "Used",
       accessories: [], reportedIssue: "No power",
     });
     await postDebtCharge({

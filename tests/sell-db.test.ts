@@ -1,6 +1,7 @@
-import { PaymentMethod, ProductType } from "@prisma/client";
+import { DeviceServiceContext, PaymentMethod, ProductType } from "@prisma/client";
 import { describe, expect, it } from "vitest";
 import { db } from "@/server/db";
+import { checkDeviceTrust } from "@/modules/device-trust/device-trust-service";
 import { receiveSerializedDevice, registerProduct } from "@/modules/inventory/inventory-service";
 import { checkoutSale } from "@/modules/sell/sell-service";
 import { postSaleReturn } from "@/modules/sell/return-service";
@@ -58,18 +59,27 @@ runDb("sell database integration", () => {
     const location = await db.stockLocation.create({
       data: { tenantId: tenant.id, branchId: branch.id, code: "SHOP", name: "Shop" },
     });
+    const stockTrustCheck = await checkDeviceTrust({
+      tenantId: tenant.id, branchId: branch.id, actorId: user.id,
+      context: DeviceServiceContext.STOCK_IN, devicePresent: true, imei: "352099001761481",
+    });
     const device = await receiveSerializedDevice({
       tenantId: tenant.id,
+      trustCheckId: stockTrustCheck.id,
       branchId: branch.id,
       actorId: user.id,
       productId: product.id,
       variantId: variant.id,
       stockLocationId: location.id,
-      imei: "490154203237518",
+      imei: "352099001761481",
       unitCost: 400,
       idempotencyKey: `receive-sell-${suffix}`,
     });
 
+    const saleTrustCheck = await checkDeviceTrust({
+      tenantId: tenant.id, branchId: branch.id, actorId: user.id,
+      context: DeviceServiceContext.SALE, devicePresent: true, imei: "352099001761481",
+    });
     const input = {
       tenantId: tenant.id,
       branchId: branch.id,
@@ -81,6 +91,7 @@ runDb("sell database integration", () => {
         productId: product.id,
         stockLocationId: location.id,
         serializedDeviceId: device.id,
+        trustCheckId: saleTrustCheck.id,
         quantity: 1,
         finalPrice: 500,
       }],
@@ -112,6 +123,10 @@ runDb("sell database integration", () => {
     expect(movement.type).toBe("SALE");
     expect(audit.after).toMatchObject({ status: "COMPLETED" });
 
+    const returnTrustCheck = await checkDeviceTrust({
+      tenantId: tenant.id, branchId: branch.id, actorId: user.id,
+      context: DeviceServiceContext.RETURN, devicePresent: true, imei: "352099001761481",
+    });
     const saleReturn = await postSaleReturn({
       tenantId: tenant.id,
       branchId: branch.id,
@@ -122,6 +137,7 @@ runDb("sell database integration", () => {
       idempotencyKey: `return-${suffix}`,
       lines: [{
         originalSaleLineId: sale.lines[0].id,
+        trustCheckId: returnTrustCheck.id,
         quantity: 1,
         stockLocationId: location.id,
       }],

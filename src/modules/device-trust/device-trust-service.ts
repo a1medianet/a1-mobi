@@ -12,7 +12,7 @@ const blocking: DeviceIncidentStatus[] = [
   DeviceIncidentStatus.VERIFIED_OWNER, DeviceIncidentStatus.POLICE_REPORT_VERIFIED,
 ];
 
-function imeiIdentity(raw: string) {
+export function imeiIdentity(raw: string) {
   const imei = normalizeImei(raw);
   if (!isValidImei(imei)) throw new Error("Invalid IMEI");
   return {
