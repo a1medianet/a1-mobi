@@ -11,11 +11,11 @@ export default async function FoundationPage({
   const ar = locale === "ar";
   return (
     <main dir={localeDirection[locale]} className="mx-auto max-w-5xl p-8">
-      <p className="text-sm text-slate-500">Stage 3 — Sell / POS</p>
+      <p className="text-sm text-slate-500">Stage 4 — Repair</p>
       <h1 className="mt-2 text-4xl font-bold">A1 Mobi</h1>
       <p className="mt-4 text-lg">
-        {ar ? "اكتملت بنية البيع ونقطة الكاشير وحماية الأسعار والمدفوعات والمرتجعات." :
-          "POS, price guard, payments, invoices, returns, and exchanges are ready."}
+        {ar ? "اكتملت دورة الصيانة من الاستلام حتى التسليم مع القطع والربح والضمان." :
+          "Repair intake-to-delivery, parts, profit truth, payments, and warranty are ready."}
       </p>
       <h2 className="mt-8 text-2xl font-semibold">
         {ar ? "المجالات المعتمدة" : "Locked domains"}

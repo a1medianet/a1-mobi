@@ -36,6 +36,11 @@ model Tenant {
   invoices     Invoice[]
   returns      SaleReturn[]
   exchanges    Exchange[]
+  repairOrders RepairOrder[]
+  repairParts  RepairPart[]
+  repairApprovals RepairApproval[]
+  warranties   Warranty[]
+  attachments  Attachment[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 }
@@ -57,6 +62,12 @@ model Branch {
   invoices Invoice[]
   returns SaleReturn[]
   exchanges Exchange[]
+  repairOrders RepairOrder[]
+  repairParts RepairPart[]
+  repairStatusEvents RepairStatusEvent[]
+  repairApprovals RepairApproval[]
+  warranties Warranty[]
+  attachments Attachment[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -80,6 +91,10 @@ model User {
   sales        Sale[] @relation("SaleActor")
   approvedSaleLines SaleLine[] @relation("PriceOverrideActor")
   processedReturns SaleReturn[] @relation("ReturnActor")
+  assignedRepairs RepairOrder[] @relation("RepairTechnician")
+  repairStatusEvents RepairStatusEvent[] @relation("RepairStatusActor")
+  repairApprovals RepairApproval[] @relation("RepairApprovalActor")
+  createdRepairOrders RepairOrder[] @relation("RepairCreatedBy")
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
@@ -258,6 +273,7 @@ model Product {
   compatibilities ProductCompatibility[]
   saleLines      SaleLine[]
   returnLines    SaleReturnLine[]
+  repairParts     RepairPart[]
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 
@@ -415,6 +431,7 @@ model StockLocation {
   counts      StockCount[]
   saleLines    SaleLine[]
   returnLines  SaleReturnLine[]
+  repairParts  RepairPart[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -439,6 +456,7 @@ model SerializedDevice {
   movements       StockMovement[]
   saleLines       SaleLine[]
   returnLines     SaleReturnLine[]
+  repairOrders    RepairOrder[]
   createdAt       DateTime               @default(now())
   updatedAt       DateTime               @updatedAt
 
@@ -608,7 +626,8 @@ model Payment {
   id           String        @id @default(cuid())
   tenantId     String
   branchId     String
-  saleId       String
+  saleId       String?
+  repairOrderId String?
   method       PaymentMethod
   currency     String
   amount       Decimal       @db.Decimal(18, 4)
@@ -618,7 +637,8 @@ model Payment {
   reference    String?
   tenant       Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict)
   branch       Branch        @relation(fields: [branchId], references: [id], onDelete: Restrict)
-  sale         Sale          @relation(fields: [saleId], references: [id], onDelete: Restrict)
+  sale         Sale?         @relation(fields: [saleId], references: [id], onDelete: Restrict)
+  repairOrder  RepairOrder?  @relation(fields: [repairOrderId], references: [id], onDelete: Restrict)
   paidAt       DateTime      @default(now())
 
   @@index([tenantId, branchId, paidAt])
@@ -699,4 +719,185 @@ model Exchange {
 
   @@unique([returnId, newSaleId])
   @@index([tenantId, branchId, occurredAt])
+}
+
+enum RepairStatus {
+  INTAKE
+  DIAGNOSIS
+  ESTIMATE_PENDING
+  APPROVED
+  IN_PROGRESS
+  READY
+  DELIVERED
+  CANCELLED
+}
+
+enum RepairPartSource {
+  STOCK
+  DEDICATED_PURCHASE
+  EXTERNAL
+}
+
+enum RepairApprovalDecision {
+  APPROVED
+  REJECTED
+}
+
+enum WarrantyStatus {
+  ACTIVE
+  EXPIRED
+  VOIDED
+  CLAIMED
+}
+
+enum AttachmentKind {
+  INTAKE_PHOTO
+  REPAIR_PHOTO
+  DOCUMENT
+  SIGNATURE
+}
+
+model RepairOrder {
+  id                 String       @id @default(cuid())
+  tenantId           String
+  branchId           String
+  createdById        String
+  technicianId       String?
+  serializedDeviceId String?
+  customerId         String?
+  number             String
+  status             RepairStatus @default(INTAKE)
+  customerName       String
+  customerPhone      String
+  deviceDescription  String
+  imei               String?
+  condition          String
+  accessories        Json
+  reportedIssue      String
+  diagnosis          String?
+  estimateAmount     Decimal?     @db.Decimal(18, 4)
+  serviceAmount      Decimal      @default(0) @db.Decimal(18, 4)
+  laborCost          Decimal      @default(0) @db.Decimal(18, 4)
+  directCost         Decimal      @default(0) @db.Decimal(18, 4)
+  partsCost          Decimal      @default(0) @db.Decimal(18, 4)
+  finalPrice         Decimal      @default(0) @db.Decimal(18, 4)
+  paidTotal          Decimal      @default(0) @db.Decimal(18, 4)
+  balanceDue         Decimal      @default(0) @db.Decimal(18, 4)
+  baseCurrency       String       @default("USD")
+  warrantyDays       Int?
+  intakeAt           DateTime     @default(now())
+  approvedAt         DateTime?
+  readyAt            DateTime?
+  deliveredAt        DateTime?
+  tenant             Tenant       @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch             Branch       @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  createdBy          User         @relation("RepairCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  technician         User?        @relation("RepairTechnician", fields: [technicianId], references: [id], onDelete: Restrict)
+  serializedDevice   SerializedDevice? @relation(fields: [serializedDeviceId], references: [id], onDelete: Restrict)
+  statusEvents       RepairStatusEvent[]
+  parts              RepairPart[]
+  approvals          RepairApproval[]
+  payments           Payment[]
+  warranties         Warranty[]
+  attachments        Attachment[]
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  @@unique([tenantId, number])
+  @@index([tenantId, branchId, status])
+  @@index([tenantId, customerPhone])
+  @@index([tenantId, imei])
+}
+
+model RepairStatusEvent {
+  id            String       @id @default(cuid())
+  repairOrderId String
+  branchId      String
+  actorId       String
+  fromStatus    RepairStatus?
+  toStatus      RepairStatus
+  note          String?
+  repairOrder   RepairOrder  @relation(fields: [repairOrderId], references: [id], onDelete: Cascade)
+  branch        Branch       @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  actor         User         @relation("RepairStatusActor", fields: [actorId], references: [id], onDelete: Restrict)
+  occurredAt    DateTime     @default(now())
+
+  @@index([repairOrderId, occurredAt])
+}
+
+model RepairPart {
+  id              String           @id @default(cuid())
+  tenantId        String
+  branchId        String
+  repairOrderId   String
+  productId       String?
+  stockLocationId String?
+  source          RepairPartSource
+  description     String
+  quantity        Decimal          @db.Decimal(18, 3)
+  unitCost        Decimal          @db.Decimal(18, 4)
+  totalCost       Decimal          @db.Decimal(18, 4)
+  repairOrder     RepairOrder      @relation(fields: [repairOrderId], references: [id], onDelete: Cascade)
+  tenant          Tenant           @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch          Branch           @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  product         Product?         @relation(fields: [productId], references: [id], onDelete: Restrict)
+  stockLocation   StockLocation?   @relation(fields: [stockLocationId], references: [id], onDelete: Restrict)
+  createdAt       DateTime         @default(now())
+
+  @@index([tenantId, repairOrderId])
+}
+
+model RepairApproval {
+  id            String                 @id @default(cuid())
+  tenantId      String
+  branchId      String
+  repairOrderId String
+  actorId       String
+  decision      RepairApprovalDecision
+  amount        Decimal                @db.Decimal(18, 4)
+  note          String?
+  repairOrder   RepairOrder            @relation(fields: [repairOrderId], references: [id], onDelete: Cascade)
+  tenant        Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch        Branch                 @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  actor         User                   @relation("RepairApprovalActor", fields: [actorId], references: [id], onDelete: Restrict)
+  occurredAt    DateTime               @default(now())
+
+  @@index([tenantId, repairOrderId, occurredAt])
+}
+
+model Warranty {
+  id            String         @id @default(cuid())
+  tenantId      String
+  branchId      String
+  repairOrderId String
+  number        String
+  status        WarrantyStatus @default(ACTIVE)
+  startsAt      DateTime
+  expiresAt     DateTime
+  terms         String
+  tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch        Branch         @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  repairOrder   RepairOrder    @relation(fields: [repairOrderId], references: [id], onDelete: Restrict)
+  createdAt     DateTime       @default(now())
+
+  @@unique([tenantId, number])
+  @@index([tenantId, expiresAt])
+}
+
+model Attachment {
+  id            String         @id @default(cuid())
+  tenantId      String
+  branchId      String
+  repairOrderId String
+  kind          AttachmentKind
+  fileName      String
+  storageKey    String
+  mimeType      String
+  sizeBytes     Int
+  tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch        Branch         @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  repairOrder   RepairOrder    @relation(fields: [repairOrderId], references: [id], onDelete: Cascade)
+  createdAt     DateTime       @default(now())
+
+  @@index([tenantId, repairOrderId, kind])
 }
