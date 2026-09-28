@@ -11,7 +11,7 @@ export default async function FoundationPage({
   const ar = locale === "ar";
   return (
     <main dir={localeDirection[locale]} className="mx-auto max-w-5xl p-8">
-      <p className="text-sm text-slate-500">Stage 8 — Reports / Imports / Exports / Alerts</p>
+      <p className="text-sm text-slate-500">Stage 9 — Reports / Imports / Exports / Alerts</p>
       <h1 className="mt-2 text-4xl font-bold">A1 Mobi</h1>
       <p className="mt-4 text-lg">
         {ar ? "اكتملت تقارير المالك والتنبيهات واستيراد CSV وتصدير CSV/PDF." :

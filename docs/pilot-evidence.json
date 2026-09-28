@@ -1,0 +1,10 @@
+{
+  "stage": "9-pilot",
+  "result": "BLOCKED",
+  "evidence": {
+    "scanner-physical": null,
+    "printer-physical": null,
+    "store-day-uat": null
+  },
+  "instructions": "Replace null only after observed store evidence; do not self-certify."
+}
