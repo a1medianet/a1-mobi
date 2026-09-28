@@ -21,7 +21,10 @@ const copy = {
     repair: "Repair intake", topup: "Top-up", nav: ["Dashboard","Point of sale","Inventory & devices","Repairs","Customers & debt","Cash","Top-up","IMEI check","Reports"],
     columns: ["Transaction","Customer","Time","Amount","Status"], branch: "Al-Qobbeh branch", online: "System online",
   },
-};const icons = ["⌂","▣","◇","⌁","♙","▤","↗","⌕","▥"];
+};
+
+const icons = ["⌂","▣","◇","⌁","♙","▤","↗","⌕","▥"];
+const navHrefs = ["/ar", "/ar/pos", "/ar/inventory", "/ar/repairs", "/ar/customers", "/ar/cash", "/ar/topup", "/ar/device-trust", "/ar/reports"];
 const metrics = [
   { key: "sales", value: "$1,284.50", delta: "+12.5%", tone: "blue", icon: "↗" },
   { key: "profit", value: "$342.80", delta: "+8.2%", tone: "green", icon: "⌁" },
@@ -46,7 +49,7 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
       <aside className="sidebar">
         <div className="brand"><span className="brand-mark">A1</span><span><b>Mobi</b><small>Store OS</small></span></div>
         <nav className="nav-list">
-          {t.nav.map((item, i) => <a className={i === 0 ? "nav-item active" : "nav-item"} href="#" key={item}><span className="nav-icon">{icons[i]}</span><span>{item}</span>{i === 3 && <em>18</em>}</a>)}
+          {t.nav.map((item, i) => <Link className={i === 0 ? "nav-item active" : "nav-item"} href={navHrefs[i].replace("/ar", `/${locale}`)} key={item}><span className="nav-icon">{icons[i]}</span><span>{item}</span>{i === 3 && <em>18</em>}</Link>)}
         </nav>
         <div className="sidebar-foot">
           <div className="status-dot" /><div><b>{t.online}</b><small>آخر مزامنة الآن</small></div>
