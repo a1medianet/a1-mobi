@@ -45,6 +45,9 @@ model Tenant {
   customerDevices CustomerDevice[]
   debtAccounts DebtAccount[]
   debtEntries  DebtEntry[]
+  cashSessions CashSession[]
+  cashMovements CashMovement[]
+  exchangeRates ExchangeRate[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 }
@@ -74,6 +77,9 @@ model Branch {
   attachments Attachment[]
   createdCustomers Customer[]
   debtEntries DebtEntry[]
+  cashSessions CashSession[]
+  cashMovements CashMovement[]
+  exchangeRates ExchangeRate[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -101,6 +107,11 @@ model User {
   repairStatusEvents RepairStatusEvent[] @relation("RepairStatusActor")
   repairApprovals RepairApproval[] @relation("RepairApprovalActor")
   createdRepairOrders RepairOrder[] @relation("RepairCreatedBy")
+  openedCashSessions CashSession[] @relation("CashOpenedBy")
+  closedCashSessions CashSession[] @relation("CashClosedBy")
+  approvedCashSessions CashSession[] @relation("CashVarianceApprover")
+  cashMovements CashMovement[]
+  setExchangeRates ExchangeRate[]
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
@@ -1003,4 +1014,103 @@ model DebtEntry {
 
   @@unique([tenantId, idempotencyKey])
   @@index([tenantId, debtAccountId, occurredAt])
+}
+
+enum CashSessionStatus {
+  OPEN
+  CLOSED
+}
+
+enum CashDirection {
+  IN
+  OUT
+}
+
+enum CashMovementType {
+  SALE
+  REPAIR
+  DEBT_COLLECTION
+  EXPENSE
+  PURCHASE
+  TOPUP_SETTLEMENT
+  DEPOSIT
+  WITHDRAWAL
+  REFUND
+  ADJUSTMENT
+}
+
+model CashSession {
+  id                 String            @id @default(cuid())
+  tenantId           String
+  branchId           String
+  openedById         String
+  closedById         String?
+  varianceApproverId String?
+  status             CashSessionStatus @default(OPEN)
+  openingUsd         Decimal           @default(0) @db.Decimal(18, 4)
+  openingLbp         Decimal           @default(0) @db.Decimal(18, 4)
+  openingExchangeRate Decimal          @db.Decimal(18, 6)
+  expectedBase       Decimal?          @db.Decimal(18, 4)
+  physicalUsd        Decimal?          @db.Decimal(18, 4)
+  physicalLbp        Decimal?          @db.Decimal(18, 4)
+  closingExchangeRate Decimal?         @db.Decimal(18, 6)
+  physicalBase       Decimal?          @db.Decimal(18, 4)
+  varianceBase       Decimal?          @db.Decimal(18, 4)
+  varianceReason     String?
+  tenant             Tenant            @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch             Branch            @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  openedBy           User              @relation("CashOpenedBy", fields: [openedById], references: [id], onDelete: Restrict)
+  closedBy           User?             @relation("CashClosedBy", fields: [closedById], references: [id], onDelete: Restrict)
+  varianceApprover   User?             @relation("CashVarianceApprover", fields: [varianceApproverId], references: [id], onDelete: Restrict)
+  movements          CashMovement[]
+  openedAt           DateTime          @default(now())
+  closedAt           DateTime?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  @@index([tenantId, branchId, status])
+}
+
+model CashMovement {
+  id             String           @id @default(cuid())
+  tenantId       String
+  branchId       String
+  cashSessionId  String
+  actorId        String
+  direction      CashDirection
+  type           CashMovementType
+  currency       String
+  amount         Decimal          @db.Decimal(18, 4)
+  exchangeRate   Decimal          @db.Decimal(18, 6)
+  baseAmount     Decimal          @db.Decimal(18, 4)
+  sourceType     String?
+  sourceId       String?
+  reason         String?
+  idempotencyKey String
+  tenant         Tenant           @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch         Branch           @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  cashSession    CashSession      @relation(fields: [cashSessionId], references: [id], onDelete: Restrict)
+  actor          User             @relation(fields: [actorId], references: [id], onDelete: Restrict)
+  occurredAt     DateTime         @default(now())
+
+  @@unique([tenantId, idempotencyKey])
+  @@index([tenantId, branchId, occurredAt])
+  @@index([cashSessionId, direction])
+}
+
+model ExchangeRate {
+  id            String   @id @default(cuid())
+  tenantId      String
+  branchId      String
+  setById       String
+  baseCurrency  String   @default("USD")
+  quoteCurrency String   @default("LBP")
+  rate          Decimal  @db.Decimal(18, 6)
+  effectiveAt   DateTime @default(now())
+  tenant        Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch        Branch   @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  setBy         User     @relation(fields: [setById], references: [id], onDelete: Restrict)
+  createdAt     DateTime @default(now())
+
+  @@index([tenantId, branchId, effectiveAt])
 }
