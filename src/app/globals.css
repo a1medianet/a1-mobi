@@ -74,3 +74,18 @@ footer{display:block;text-align:center;line-height:2}.mobile-nav{display:flex;po
 .nav-item.unavailable { opacity:.5; cursor:not-allowed; }
 .preview-notice { display:inline-block; margin-top:14px!important; padding:7px 11px; border:1px solid #f0d39b; border-radius:8px; background:#fff8e9; color:#85590a!important; font-size:12px!important; font-weight:700; }
 @media (prefers-reduced-motion:reduce) { .metric,.quick-card,.activity-card,.product-panel,.cart-panel,.trust-hero,.trust-side,.quick-action,.quick-action::before,.product-card { transition:none!important; transform:none!important; } }
+
+.module-page { max-width:1320px; min-height:100vh; margin:auto; padding:32px; background:var(--paper); }
+.module-banner { border:1px solid #e9ca90; background:#fff8e9; color:#77521c; border-radius:14px; padding:17px 20px; margin:20px 0; }
+.module-banner strong { font-size:15px; }.module-banner p { margin:5px 0 0; font-size:13px; line-height:1.7; }
+.module-step-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+.module-step { background:white; border:1px solid var(--line); border-radius:14px; padding:22px; min-height:175px; transition:border-color .2s ease,box-shadow .2s ease; }
+.module-step:hover { border-color:#b6d3f5; box-shadow:0 12px 30px #1769e016; }
+.module-step span { color:var(--blue); font-size:12px; font-weight:800; }.module-step h2 { margin:12px 0 8px; font-size:18px; }.module-step p { color:#657489; font-size:13px; line-height:1.7; }
+.module-next { display:flex; flex-wrap:wrap; gap:12px; margin-top:20px; }.module-next a { display:inline-block; padding:12px 16px; border:1px solid #cddcee; border-radius:10px; background:white; color:var(--blue); text-decoration:none; font-weight:700; }
+@media(max-width:800px) { .module-page { padding:18px 14px; }.module-step-grid { grid-template-columns:1fr; }.mobile-nav { justify-content:flex-start; overflow-x:auto; gap:8px; }.mobile-nav a { flex:0 0 64px; } }
+@media(prefers-reduced-motion:reduce) { .module-step { transition:none; } }
+
+.sidebar-foot .status-dot { background:#e4a536; box-shadow:0 0 0 5px #e4a53617; }
+.search-placeholder { font-size:13px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; cursor:default; }
+.search-placeholder span:last-child { overflow:hidden; text-overflow:ellipsis; }
