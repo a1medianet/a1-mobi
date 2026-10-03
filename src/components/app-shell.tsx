@@ -58,6 +58,7 @@ export function AppShell({ locale, children }: {
           {labels[locale].map((label, index) => <option key={paths[index]} value={"/" + locale + paths[index]}>{label}</option>)}
         </select>
         <div className="top-actions">
+          <Link className="locale" href={"/" + locale + "/login"}>{ar ? "حساب المتجر" : "Store account"}</Link>
           <span className="environment-label">{ar ? "معاينة" : "Preview"}</span>
           <Link className="locale" href={otherPath} hrefLang={other}
             aria-label={ar ? "Switch to English" : "التبديل إلى العربية"}>{ar ? "EN" : "العربية"}</Link>

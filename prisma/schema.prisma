@@ -1330,3 +1330,11 @@ model DeviceTrustCheck {
   @@index([tenantId, branchId, checkedAt])
   @@index([imeiHash, result])
 }
+
+model AuthAttempt {
+  key         String   @id
+  attempts    Int
+  windowStart DateTime @default(now())
+
+  @@index([windowStart])
+}
