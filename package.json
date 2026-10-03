@@ -9,6 +9,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint src tests vitest.config.ts",
+    "pretest": "prisma generate",
     "test": "vitest run --maxWorkers=1",
     "test:watch": "vitest",
     "gate:pilot": "vitest run tests/pilot.test.ts tests/inventory-db.test.ts tests/sell-db.test.ts tests/repair-db.test.ts tests/customer-debt-db.test.ts tests/cash-db.test.ts tests/topup-db.test.ts tests/reports-db.test.ts",

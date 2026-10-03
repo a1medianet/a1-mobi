@@ -13,7 +13,7 @@ const modules = {
 type ModuleKey = keyof typeof modules;
 export default async function ModulePage({ params }: { params: Promise<{ locale: string; module: string }> }) {
   const { locale, module } = await params;
-  if ((locale !== "ar" && locale !== "en") || !(module in modules)) notFound();
+  if ((locale !== "ar" && locale !== "en") || !Object.hasOwn(modules, module)) notFound();
   const data = modules[module as ModuleKey];
   const ar = locale === "ar";
   const title = ar ? data.ar : data.en;

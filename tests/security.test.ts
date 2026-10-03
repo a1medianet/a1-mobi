@@ -8,7 +8,8 @@ describe("foundation security invariants", () => {
     const hash = await hashPassword("strong-password-2026");
     expect(hash).not.toContain("strong-password-2026");
     expect(await verifyPassword(hash, "strong-password-2026")).toBe(true);
-  });
+    expect(await verifyPassword(hash, "incorrect-password")).toBe(false);
+  }, 20_000);
 
   it("stores only a hash of session tokens", () => {
     const { token, tokenHash } = createSessionToken();
