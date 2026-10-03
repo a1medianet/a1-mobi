@@ -1,10 +1,12 @@
 export function normalizeImei(value: string): string {
-  return value.replace(/[\s-]/g, "");
+  return value.replace(/[٠-٩]/g, digit => String(digit.charCodeAt(0) - 0x660))
+    .replace(/[۰-۹]/g, digit => String(digit.charCodeAt(0) - 0x6f0))
+    .replace(/[\s-]/g, "");
 }
 
 export function isValidImei(value: string): boolean {
   const imei = normalizeImei(value);
-  if (!/^\d{15}$/.test(imei)) return false;
+  if (!/^\d{15}$/.test(imei) || imei === "000000000000000") return false;
   let sum = 0;
   for (let index = 0; index < imei.length; index += 1) {
     let digit = Number(imei[index]);
