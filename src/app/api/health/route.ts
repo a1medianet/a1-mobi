@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { DOMAIN_NAMES, FOUNDATION_CAPABILITIES } from "@/core/config/domains";
 import { db } from "@/server/db";
+import { structuredLog } from "@/server/logger";
 
 export const runtime = "nodejs";
 export async function GET() {
@@ -15,7 +16,10 @@ export async function GET() {
       capabilities: FOUNDATION_CAPABILITIES,
       timestamp: new Date().toISOString(),
     }, { headers: { "Cache-Control": "no-store" } });
-  } catch {
+  } catch (error) {
+    structuredLog("error", "health.database_unavailable", {
+      errorType: error instanceof Error ? error.name : "UnknownError",
+    });
     return NextResponse.json({
       status: "degraded",
       service: "a1-mobi",

@@ -377,3 +377,29 @@ Evidence:
 Cross-project reuse:
 Promote layered durable auth budgets + explicit retention + trusted-edge boundary as an A1 security pattern for products with password authentication.
 
+
+## 13. Restore-Proven Operations Baseline — 2026-10-04
+
+Origin:
+Foundation gap review under A1 First.
+
+Decision:
+A backup is not considered a resilience feature until restoration is exercised and verified. A1 Mobi now has a repeatable local backup/restore smoke that restores into an isolated temporary PostgreSQL database and compares schema-table and completed-migration evidence before cleanup.
+
+Value:
+- Converts “we have a backup” into recoverability evidence.
+- Reduces false confidence.
+- Makes disaster-recovery checks repeatable.
+- Reusable across A1 PostgreSQL products.
+
+Additional hardening:
+- Structured logs redact secret-bearing keys.
+- Baseline browser/security headers are enabled.
+- GitHub CI is defined for migrations + validation + lint + TypeScript + tests + build.
+- Direct package versions are pinned to prevent unnoticed drift.
+
+Known risk:
+Production npm audit still reports 3 HIGH findings in Prisma tooling through deepmerge-ts (GHSA-ggr8-5vv4-36mx). No forced downgrade or blind override was accepted without compatibility evidence.
+
+Classification:
+PARITY for CI/health/logging; SUPERSEDE for restore-as-proof; REJECT_WITH_REASON for unsafe dependency forcing.
