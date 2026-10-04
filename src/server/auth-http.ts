@@ -23,7 +23,11 @@ export function sameOriginMutation(request: Request) {
 export function authJson(body: unknown, status = 200) {
   return NextResponse.json(body, { status, headers: { "Cache-Control": "no-store" } });
 }
-export async function currentStoreContext(permission?: string) {
+type StoreContext = NonNullable<Awaited<ReturnType<typeof resolveSessionContext>>>;
+
+export function currentStoreContext(permission: string): Promise<StoreContext>;
+export function currentStoreContext(): Promise<StoreContext | null>;
+export async function currentStoreContext(permission?: string): Promise<StoreContext | null> {
   const token = (await cookies()).get(sessionCookieName())?.value;
   const context = await resolveSessionContext(token);
   return permission ? requireSessionPermission(context, permission) : context;

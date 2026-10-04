@@ -12,6 +12,7 @@
     "pretest": "prisma generate",
     "test": "vitest run --maxWorkers=1",
     "test:watch": "vitest",
+    "smoke:foundation-control": "node scripts/foundation-control-http-smoke.mjs",
     "gate:pilot": "vitest run tests/pilot.test.ts tests/inventory-db.test.ts tests/sell-db.test.ts tests/repair-db.test.ts tests/customer-debt-db.test.ts tests/cash-db.test.ts tests/topup-db.test.ts tests/reports-db.test.ts",
     "db:validate": "prisma validate",
     "db:generate": "prisma generate"

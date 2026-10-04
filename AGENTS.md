@@ -1,13 +1,15 @@
 # A1 Mobi Engineering Rules
 
 ## Authority
-- A1 Mobi Master Implementation Brief v1.0 is the Source of Truth.
+- A1 Mobi Master Implementation Brief v1.0 is the product Source of Truth.
+- A1 FIRST Sustainability/Superiority/Innovation Charter v1.2 is the mandatory product-evolution standard.
 - Real-store workflows cannot be removed without explicit owner approval.
-- Work follows NAWA Way and One-Click Stage Gate.
+- Work follows A1 First + NAWA Way + One-Click Stage Gate.
 
 ## Workflow
-- Inspect → Plan → Build → Test → PASS → Commit → Next Stage.
+- Discover/Compare → Inspect → Plan → Build → Test → Evidence → PASS → Commit → Evolve.
 - Never begin a later Stage before the current Gate passes.
+- Before a major Gate, update the A1 First intelligence/decision report, source ledger, value rationale, rejected/deferred reasons, and innovation opportunities.
 - Prefer small, reversible, testable changes.
 
 ## Architecture
