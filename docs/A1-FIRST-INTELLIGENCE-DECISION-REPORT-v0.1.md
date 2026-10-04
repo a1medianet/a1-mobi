@@ -339,3 +339,41 @@ Evidence:
 - Claude read-only review blocker and post-fix re-review.
 - tests/foundation-control-db.test.ts targeted regressions.
 - Full Foundation Control gate evidence in docs/gates/FOUNDATION-CONTROL-GATE-20261003.md.
+
+## 12. Layered Authentication Abuse Budget — 2026-10-04
+
+Origin:
+Foundation security review after the persisted login/session gate.
+
+Problem:
+A per-account limiter alone does not bound credential spraying across many accounts or broad abuse against one tenant. Blindly trusting forwarded IP headers would create a spoofable security boundary before deployment topology is fixed.
+
+Decision:
+- Keep account budget: 5 / 15 min.
+- Add tenant-wide budget: 120 / 15 min.
+- Add application-wide budget: 5000 / 15 min.
+- Store only hashed budget keys.
+- Purge counters older than 7 days.
+- Do not trust client IP/forwarded headers until a trusted edge contract exists.
+
+Classification:
+SUPERSEDE for the current Foundation baseline; trusted edge/device reputation remains WATCH.
+
+Value:
+- Better brute-force and credential-spraying containment.
+- Survives process restarts and concurrent requests.
+- Prevents unbounded counter-table growth.
+- Avoids a false security dependency on spoofable network metadata.
+
+Evidence:
+- tests/auth-abuse-db.test.ts
+- tests/auth-lifecycle-db.test.ts
+- Full suite 75/75 PASS, 32/32 files.
+- TypeScript PASS.
+- ESLint changed-files PASS.
+- Production build PASS.
+- docs/gates/FOUNDATION-ABUSE-CONTROLS-GATE-20261004.md
+
+Cross-project reuse:
+Promote layered durable auth budgets + explicit retention + trusted-edge boundary as an A1 security pattern for products with password authentication.
+

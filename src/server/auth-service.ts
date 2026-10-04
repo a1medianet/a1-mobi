@@ -10,9 +10,16 @@ export class AuthFailure extends Error {
 }
 const dummyHash = hashPassword(randomUUID());
 
-// Shared database budget survives worker restarts; no client IP/header is trusted.
-async function consumeAttempt(tenant: string, email: string) {
-  const key = createHash("sha256").update(JSON.stringify([tenant, email])).digest("hex");
+// Shared database budgets survive worker restarts; no client IP/header is trusted.
+const ACCOUNT_ATTEMPT_LIMIT = 5;
+const TENANT_ATTEMPT_LIMIT = 120;
+const GLOBAL_ATTEMPT_LIMIT = 5_000;
+
+function budgetKey(scope: string, parts: readonly string[]) {
+  return createHash("sha256").update(JSON.stringify([scope, ...parts])).digest("hex");
+}
+
+export async function consumeAuthBudget(key: string, limit: number) {
   const rows = await db.$queryRaw<Array<{ attempts: number }>>(Prisma.sql`
     INSERT INTO "AuthAttempt" ("key", "attempts", "windowStart") VALUES (${key}, 1, NOW())
     ON CONFLICT ("key") DO UPDATE SET
@@ -20,12 +27,26 @@ async function consumeAttempt(tenant: string, email: string) {
       THEN 1 ELSE "AuthAttempt"."attempts" + 1 END,
     "windowStart" = CASE WHEN "AuthAttempt"."windowStart" <= NOW() - INTERVAL '15 minutes'
       THEN NOW() ELSE "AuthAttempt"."windowStart" END RETURNING "attempts"`);
-  if (rows[0].attempts > 5) throw new AuthFailure("RATE_LIMITED");
+  if (rows[0].attempts > limit) throw new AuthFailure("RATE_LIMITED");
+  return rows[0].attempts;
+}
+
+export async function purgeExpiredAuthAttempts() {
+  return db.$executeRaw(Prisma.sql`
+    DELETE FROM "AuthAttempt"
+    WHERE "windowStart" <= NOW() - INTERVAL '7 days'`);
+}
+
+async function consumeLoginBudgets(tenant: string, email: string) {
+  await purgeExpiredAuthAttempts();
+  await consumeAuthBudget(budgetKey("global", []), GLOBAL_ATTEMPT_LIMIT);
+  await consumeAuthBudget(budgetKey("tenant", [tenant]), TENANT_ATTEMPT_LIMIT);
+  await consumeAuthBudget(budgetKey("account", [tenant, email]), ACCOUNT_ATTEMPT_LIMIT);
 }
 export async function loginToStore(tenantSlug: string, email: string, password: string) {
   const slug = tenantSlug.trim().toLowerCase();
   const normalizedEmail = email.trim().toLowerCase();
-  await consumeAttempt(slug, normalizedEmail);
+  await consumeLoginBudgets(slug, normalizedEmail);
   const user = await db.user.findFirst({ where: {
     email: normalizedEmail, tenant: { slug },
   }, include: { branch: true } });
