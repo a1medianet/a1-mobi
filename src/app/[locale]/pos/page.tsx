@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { demoProducts, demoStore, type DemoProduct } from "@/demo/data";
 
@@ -29,7 +29,7 @@ const copy = {
     complete:"إكمال البيع التجريبي", completing:"جارٍ الإكمال…",
     serialized:"يتطلب IMEI/Serial في الربط التشغيلي", receipt:"تم إنشاء إيصال تجريبي", receiptNo:"رقم الإيصال",
     paid:"المدفوع", items:"العناصر", another:"عملية جديدة", local:"محفوظ محليًا على هذا المتصفح",
-    stockChanged:"تم تحديث مخزون التجربة محليًا.",
+    stockChanged:"تم تحديث مخزون التجربة لهذه الجلسة.",
   },
   en: {
     back:"Dashboard", title:"Point of sale", subtitle:"Complete a local pilot sale using realistic demo products, stock, and prices",
@@ -42,7 +42,7 @@ const copy = {
     currency:"Payment currency", usd:"USD", lbp:"LBP", rate:"Demo exchange rate",
     complete:"Complete demo sale", completing:"Completing…",
     serialized:"IMEI/Serial required when operational wiring is enabled", receipt:"Demo receipt created", receiptNo:"Receipt",
-    paid:"Paid", items:"Items", another:"New sale", local:"Stored locally in this browser", stockChanged:"Pilot stock updated locally.",
+    paid:"Paid", items:"Items", another:"New sale", local:"Stored locally in this browser", stockChanged:"Pilot stock updated for this session.",
   },
 } as const;
 
@@ -58,28 +58,12 @@ export default function PosPage() {
   const [query,setQuery] = useState("");
   const [cart,setCart] = useState<CartLine[]>([]);
   const [suspended,setSuspended] = useState<CartLine[] | null>(null);
-  const [customer,setCustomer] = useState(customerOptions[locale][0]);
+  const [customerIndex,setCustomerIndex] = useState(0);\n  const customer = customerOptions[locale][customerIndex] ?? customerOptions[locale][0];
   const [currency,setCurrency] = useState<"USD" | "LBP">("USD");
   const [receipt,setReceipt] = useState<DemoReceipt | null>(null);
   const [stock,setStock] = useState<Record<string,number>>(() =>
     Object.fromEntries(demoProducts.map(product => [product.id,product.stock])));
-  const [busy,setBusy] = useState(false);
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem("a1-mobi-pilot-stock");
-      if (stored) {
-        const parsed = JSON.parse(stored) as Record<string,number>;
-        setStock(current => ({...current,...parsed}));
-      }
-    } catch {
-      // Demo storage is optional; the POS still works without it.
-    }
-  },[]);
-
-  useEffect(() => {
-    setCustomer(customerOptions[locale][0]);
-  },[locale]);
+  const [busy,setBusy] = useState(false);\n  const [receiptSequence,setReceiptSequence] = useState(3109);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -126,14 +110,14 @@ export default function PosPage() {
   function resetSale() {
     setCart([]);
     setReceipt(null);
-    setCustomer(customerOptions[locale][0]);
+    setCustomerIndex(0);
     setCurrency("USD");
   }
 
   function completeSale() {
     if (!cart.length || busy) return;
     setBusy(true);
-    const number = "DM-" + Date.now().toString().slice(-8);
+    const number = "DM-" + receiptSequence.toString().padStart(6,"0");
     const nextStock = {...stock};
     for (const line of cart) nextStock[line.product.id] = Math.max(0,available(line.product)-line.quantity);
     const demoReceipt: DemoReceipt = {
@@ -152,7 +136,7 @@ export default function PosPage() {
     } catch {
       // Local persistence is best-effort in demo mode.
     }
-    setStock(nextStock);
+    setStock(nextStock);\n    setReceiptSequence(current=>current+1);
     setReceipt(demoReceipt);
     setCart([]);
     setBusy(false);
