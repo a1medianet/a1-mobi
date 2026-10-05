@@ -213,8 +213,8 @@ export default function PosPage() {
 
         <div className="pilot-checkout-fields">
           <label>{t.customer}
-            <select value={customer} onChange={event=>setCustomer(event.target.value)}>
-              {customerOptions[locale].map(option=><option key={option}>{option}</option>)}
+            <select value={customerIndex} onChange={event=>setCustomerIndex(Number(event.target.value))}>
+              {customerOptions[locale].map((option,index)=><option key={option} value={index}>{option}</option>)}
             </select>
           </label>
           <label>{t.currency}
