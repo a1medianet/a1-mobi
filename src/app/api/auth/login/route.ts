@@ -5,7 +5,9 @@ import { authJson, cookieOptions, sameOriginMutation, sessionCookieName } from "
 export const runtime = "nodejs";
 const schema = z.object({
   tenant: z.string().trim().min(1).max(80).regex(/^[a-zA-Z0-9-]+$/),
-  email: z.string().trim().email().max(254), password: z.string().min(1).max(256),
+  email: z.string().trim().email().max(254),
+  password: z.string().min(1).max(256),
+  secondFactor: z.string().trim().min(6).max(32).optional(),
 }).strict();
 export async function POST(request: Request) {
   if (!sameOriginMutation(request)) return authJson({ error: "FORBIDDEN_ORIGIN" }, 403);
@@ -18,7 +20,12 @@ export async function POST(request: Request) {
   } catch { return authJson({ error: "INVALID_REQUEST" }, 400); }
   if (!input.success) return authJson({ error: "INVALID_REQUEST" }, 400);
   try {
-    const result = await loginToStore(input.data.tenant, input.data.email, input.data.password);
+    const result = await loginToStore(
+      input.data.tenant,
+      input.data.email,
+      input.data.password,
+      input.data.secondFactor,
+    );
     const response = authJson({ ok: true });
     response.cookies.set(sessionCookieName(), result.token, cookieOptions());
     return response;

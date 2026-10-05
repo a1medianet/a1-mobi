@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { db } from "@/server/db";
-import { consumeAuthBudget, purgeExpiredAuthAttempts } from "@/server/auth-service";
+import { consumeAuthBudget, purgeExpiredAuthAttempts } from "@/server/attempt-budget";
 
 const runDb = process.env.DATABASE_URL ? describe : describe.skip;
 

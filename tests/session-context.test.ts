@@ -4,7 +4,7 @@ import { sessionContext, requireSessionPermission, type SessionSnapshot } from "
 const now = new Date("2026-10-03T06:00:00Z");
 function fixture(): SessionSnapshot {
   return {
-    expiresAt: new Date(now.getTime() + 60_000), revokedAt: null,
+    id: "session-a", expiresAt: new Date(now.getTime() + 60_000), revokedAt: null,
     user: {
       id: "user-a", tenantId: "tenant-a", isActive: true,
       branch: { id: "branch-a", tenantId: "tenant-a" },

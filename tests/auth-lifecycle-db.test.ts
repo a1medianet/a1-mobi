@@ -4,6 +4,7 @@ import { db } from "@/server/db";
 import { hashPassword } from "@/core/auth/password";
 import { hashSessionToken } from "@/core/auth/session";
 import { loginToStore, logoutSession } from "@/server/auth-service";
+import { authBudgetKey } from "@/server/attempt-budget";
 import { resolveSessionContext } from "@/server/session-context";
 const runDb = process.env.DATABASE_URL ? describe : describe.skip;
 runDb("persisted authentication lifecycle", () => {
@@ -32,11 +33,17 @@ runDb("persisted authentication lifecycle", () => {
       await db.user.update({ where: { id: user.id }, data: { isActive: true, branchId: null } });
       await expect(loginToStore(slug, user.email, password)).rejects.toThrow("INVALID_CREDENTIALS");
       await db.user.update({ where: { id: user.id }, data: { branchId: branch.id } });
-      const concurrent = await Promise.allSettled(Array.from({ length: 3 },
-        () => loginToStore(slug, user.email, password)));
-      expect(concurrent.filter(x => x.status === "fulfilled")).toHaveLength(1);
+
+      // Successful authentication now resets the per-account failure budget.
+      // Exercise the limiter with concurrent invalid credentials instead of valid logins.
+      const accountKey = authBudgetKey("account", [slug, user.email]);
+      await db.authAttempt.deleteMany({ where: { key: accountKey } });
+      const concurrent = await Promise.allSettled(Array.from({ length: 8 },
+        (_, index) => loginToStore(slug, user.email, "wrong-password-" + index)));
       expect(concurrent.filter(x => x.status === "rejected" &&
-        x.reason.message === "RATE_LIMITED")).toHaveLength(2);
+        x.reason.message === "INVALID_CREDENTIALS")).toHaveLength(5);
+      expect(concurrent.filter(x => x.status === "rejected" &&
+        x.reason.message === "RATE_LIMITED")).toHaveLength(3);
     } finally {
       await db.auditEvent.deleteMany({ where: { tenantId: tenant.id } });
       await db.user.delete({ where: { id: user.id } });

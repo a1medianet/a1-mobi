@@ -170,10 +170,22 @@ export async function updateStoreUser(ctx: ControlContext, userId: string, input
           skipDuplicates: true,
         });
       }
+      const identityChanged =
+        Boolean(passwordHash) ||
+        input.email !== undefined ||
+        (input.isActive !== undefined && input.isActive !== before.isActive);
+
       if (passwordHash || (before.isActive && input.isActive === false)) {
         await tx.session.updateMany({
           where: { userId: before.id, revokedAt: null },
           data: { revokedAt: new Date() },
+        });
+      }
+
+      if (identityChanged) {
+        await tx.passwordResetToken.updateMany({
+          where: { userId: before.id, usedAt: null },
+          data: { usedAt: new Date() },
         });
       }
       const after = await tx.user.findUniqueOrThrow({

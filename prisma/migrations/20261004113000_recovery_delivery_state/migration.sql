@@ -1,0 +1,2 @@
+ALTER TABLE "PasswordResetToken" ADD COLUMN "deliveredAt" TIMESTAMP(3);
+ALTER TABLE "MfaCredential" ADD COLUMN "version" INTEGER NOT NULL DEFAULT 0;
