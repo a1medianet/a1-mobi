@@ -15,7 +15,7 @@
     "smoke:foundation-control": "node scripts/foundation-control-http-smoke.mjs",
     "smoke:backup-restore": "node scripts/backup-restore-smoke.mjs",
     "check:sql-bom": "node scripts/check-sql-bom.mjs",
-    "gate:foundation": "npm run check:sql-bom && npm run db:validate && npm run lint && tsc --noEmit && npm test && npm run build",
+    "gate:foundation": "npm run check:sql-bom && npm run db:validate && npm run db:generate && npm run lint && tsc --noEmit && npm test && npm run build",
     "gate:pilot": "vitest run tests/pilot.test.ts tests/inventory-db.test.ts tests/sell-db.test.ts tests/repair-db.test.ts tests/customer-debt-db.test.ts tests/cash-db.test.ts tests/topup-db.test.ts tests/reports-db.test.ts",
     "db:validate": "prisma validate",
     "db:generate": "prisma generate"
