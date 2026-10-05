@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - feat/pilot-demo-experience-20261005
+  pull_request:
+    branches:
+      - feat/foundation-ops-20261004
   workflow_dispatch:
 
 jobs:
