@@ -1,0 +1,16 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { demoCatalogCounts, demoLowStock, demoProducts } from "@/demo/data";
+import { demoInventoryMovements } from "@/demo/operations";
+
+const copy={ar:{back:"لوحة التحكم",title:"المخزون والأجهزة",sub:"قراءة تجريبية للمخزون، الأجهزة التسلسلية وحركة القطع",notice:"Pilot Demo — الأرقام أدناه للتجربة ولا تمثل جردًا إنتاجيًا.",products:"المنتجات",serialized:"وحدات IMEI/Serial",alerts:"تنبيهات",value:"قيمة بيع تقديرية",low:"منخفض",healthy:"جيد",recent:"آخر حركة مخزون",ref:"المرجع",type:"الحركة",product:"المنتج",qty:"الكمية",time:"الوقت",catalog:"فتح الكتالوج"},en:{back:"Dashboard",title:"Inventory & devices",sub:"Pilot view of stock, serialized devices, and parts movement",notice:"Pilot Demo — values below are for testing and are not production inventory.",products:"Products",serialized:"IMEI/Serial units",alerts:"Alerts",value:"Estimated retail value",low:"Low",healthy:"Healthy",recent:"Recent inventory movement",ref:"Reference",type:"Movement",product:"Product",qty:"Qty",time:"Time",catalog:"Open catalog"}} as const;
+
+export default async function InventoryPage({params}:{params:Promise<{locale:string}>}) {
+ const {locale}=await params; if(locale!=="ar"&&locale!=="en") notFound(); const t=copy[locale]; const ar=locale==="ar"; const counts=demoCatalogCounts(); const low=demoLowStock();
+ const retail=demoProducts.reduce((sum,p)=>sum+p.price*p.stock,0);
+ return <main className="module-page"><header className="module-header"><div><Link href={"/"+locale} className="back-link">{t.back}</Link><p className="module-kicker">A1 MOBI · INVENTORY</p><h1>{t.title}</h1><p className="module-sub">{t.sub}</p></div><Link className="soft-btn" href={"/"+locale+"/products"}>{t.catalog}</Link></header>
+ <p className="preview-notice">{t.notice}</p>
+ <section className="metrics ops-metrics">{[[t.products,String(counts.total),"blue","▦"],[t.serialized,String(counts.serializedUnits),"green","#"],[t.alerts,String(counts.lowStock),"rose","!"],[t.value,"$"+retail.toLocaleString(),"amber","$"]].map(([label,value,tone,icon])=><article className="metric" key={label}><div className={"metric-icon "+tone}>{icon}</div><div className="metric-body"><p>{label}</p><strong><bdi dir="ltr">{value}</bdi></strong></div></article>)}</section>
+ <section className="activity-card"><div className="section-head"><h2>{t.alerts}</h2></div><div className="table-wrap"><table><thead><tr><th>{t.product}</th><th>SKU</th><th>{t.qty}</th><th>{t.alerts}</th></tr></thead><tbody>{low.map(p=><tr key={p.id}><td>{ar?p.nameAr:p.nameEn}</td><td><bdi dir="ltr">{p.sku}</bdi></td><td>{p.stock}</td><td><span className={"pill "+(p.stock<=p.reorderAt?"pending":"done")}>{p.stock<=p.reorderAt?t.low:t.healthy}</span></td></tr>)}</tbody></table></div></section>
+ <section className="activity-card"><div className="section-head"><h2>{t.recent}</h2></div><div className="table-wrap"><table><thead><tr><th>{t.ref}</th><th>{t.type}</th><th>{t.product}</th><th>{t.qty}</th><th>{t.time}</th></tr></thead><tbody>{demoInventoryMovements.map(m=><tr key={m.ref}><td><bdi dir="ltr">{m.ref}</bdi></td><td>{ar?m.typeAr:m.typeEn}</td><td>{m.product}</td><td>{m.qty>0?"+"+m.qty:m.qty}</td><td><bdi dir="ltr">{m.time}</bdi></td></tr>)}</tbody></table></div></section></main>
+}
