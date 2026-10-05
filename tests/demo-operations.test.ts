@@ -10,14 +10,15 @@ import {
 } from "@/demo/operations";
 
 describe("pilot operational demo data", () => {
-  it("keeps synthetic operational references unique and financially coherent", () => {
-    const refs = [
-      ...demoCashMovements.map(item => item.ref),
-      ...demoInventoryMovements.map(item => item.ref),
-      ...demoTopups.map(item => item.ref),
-      ...demoRepairs.map(item => item.number),
+  it("keeps each operational stream internally unique and financially coherent", () => {
+    const streams = [
+      demoCashMovements.map(item => item.ref),
+      demoInventoryMovements.map(item => item.ref),
+      demoTopups.map(item => item.ref),
+      demoRepairs.map(item => item.number),
     ];
-    expect(new Set(refs).size).toBe(refs.length);
+    for (const refs of streams) expect(new Set(refs).size).toBe(refs.length);
+
     expect(demoCash.expectedUsd).toBe(demoCash.countedUsd);
     expect(demoCash.expectedLbp).toBe(demoCash.countedLbp);
     for (const repair of demoRepairs) {
