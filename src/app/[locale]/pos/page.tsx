@@ -12,7 +12,6 @@ type DemoReceipt = {
   totalUsd: number;
   currency: "USD" | "LBP";
   paidAmount: number;
-  createdAt: string;
   items: number;
 };
 
@@ -58,12 +57,14 @@ export default function PosPage() {
   const [query,setQuery] = useState("");
   const [cart,setCart] = useState<CartLine[]>([]);
   const [suspended,setSuspended] = useState<CartLine[] | null>(null);
-  const [customerIndex,setCustomerIndex] = useState(0);\n  const customer = customerOptions[locale][customerIndex] ?? customerOptions[locale][0];
+  const [customerIndex,setCustomerIndex] = useState(0);
+  const customer = customerOptions[locale][customerIndex] ?? customerOptions[locale][0];
   const [currency,setCurrency] = useState<"USD" | "LBP">("USD");
   const [receipt,setReceipt] = useState<DemoReceipt | null>(null);
   const [stock,setStock] = useState<Record<string,number>>(() =>
     Object.fromEntries(demoProducts.map(product => [product.id,product.stock])));
-  const [busy,setBusy] = useState(false);\n  const [receiptSequence,setReceiptSequence] = useState(3109);
+  const [busy,setBusy] = useState(false);
+  const [receiptSequence,setReceiptSequence] = useState(3109);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -126,17 +127,16 @@ export default function PosPage() {
       totalUsd:total,
       currency,
       paidAmount,
-      createdAt:new Date().toISOString(),
       items:itemCount,
     };
     try {
       const prior = JSON.parse(localStorage.getItem("a1-mobi-pilot-sales") || "[]") as DemoReceipt[];
       localStorage.setItem("a1-mobi-pilot-sales",JSON.stringify([demoReceipt,...prior].slice(0,20)));
-      localStorage.setItem("a1-mobi-pilot-stock",JSON.stringify(nextStock));
     } catch {
       // Local persistence is best-effort in demo mode.
     }
-    setStock(nextStock);\n    setReceiptSequence(current=>current+1);
+    setStock(nextStock);
+    setReceiptSequence(current=>current+1);
     setReceipt(demoReceipt);
     setCart([]);
     setBusy(false);
