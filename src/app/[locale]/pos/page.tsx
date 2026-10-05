@@ -1,112 +1,257 @@
 "use client";
-import { useState } from "react";
-import { useParams } from "next/navigation";
-import Link from "next/link";
 
-const products = [
-  { en:"Samsung Galaxy A56", ar:"Samsung Galaxy A56", sku:"SM-A566/256", price:349, stock:4, serial:true },
-  { en:"iPhone 15 Pro", ar:"iPhone 15 Pro", sku:"APL-IP15P", price:799, stock:2, serial:true },
-  { en:"USB-C Fast Charger", ar:"شاحن USB-C سريع", sku:"ACC-USBC-25", price:18, stock:12, serial:false },
-  { en:"Screen Protector", ar:"واقي شاشة", sku:"ACC-SP-01", price:6, stock:24, serial:false },
-];
-type Product = typeof products[number];
-type CartLine = { product: Product; quantity: number };
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import { useParams } from "next/navigation";
+import { demoProducts, demoStore, type DemoProduct } from "@/demo/data";
+
+type CartLine = { product: DemoProduct; quantity: number };
+type DemoReceipt = {
+  number: string;
+  customer: string;
+  totalUsd: number;
+  currency: "USD" | "LBP";
+  paidAmount: number;
+  createdAt: string;
+  items: number;
+};
+
 const copy = {
   ar: {
-    back:"لوحة التحكم", title:"نقطة البيع", subtitle:"جرّب رحلة السلة قبل ربطها بعمليات المتجر",
-    preview:"سلة توضيحية فقط. التغييرات والتعليق مؤقتة وتزول عند مغادرة الصفحة؛ لا تُحفظ مبيعات أو مخزون.",
-    suspend:"تعليق السلة التجريبية", resume:"استعادة السلة التجريبية", fresh:"سلة جديدة",
-    search:"ابحث بالاسم أو SKU", products:"منتجات", available:"متوفر", add:"أضف",
-    cart:"السلة الحالية", sample:"سلة توضيحية · الدفع غير متصل", empty:"السلة فارغة",
-    choose:"اختر منتجًا لإضافته إلى السلة", noResults:"لا توجد منتجات مطابقة",
-    subtotal:"المجموع الفرعي", discount:"الخصم", total:"الإجمالي", remove:"احذف", quantity:"الكمية",
-    more:"زيادة الكمية", less:"تقليل الكمية", blocked:"الدفع غير متاح في المعاينة",
-    note:"البيع الفعلي يتطلب هوية وصلاحيات وفحص IMEI شبكيًا للأجهزة التسلسلية قبل الإكمال.",
-    oneSuspend:"استعد السلة المعلقة أولًا؛ المعاينة تدعم سلة معلقة واحدة.",
+    back:"لوحة التحكم", title:"نقطة البيع", subtitle:"تجربة بيع كاملة محليًا بمنتجات ومخزون وأسعار تجريبية واقعية",
+    preview:"Pilot Demo — الإكمال هنا يحفظ إيصالًا تجريبيًا في هذا المتصفح فقط ولا ينشئ قيدًا محاسبيًا أو حركة مخزون إنتاجية.",
+    suspend:"تعليق السلة", resume:"استعادة السلة", fresh:"سلة جديدة",
+    search:"ابحث بالمنتج أو SKU أو الباركود", products:"منتجات", available:"متوفر", add:"أضف",
+    cart:"السلة الحالية", pilot:"Pilot Demo", empty:"السلة فارغة", choose:"اختر منتجًا للبدء", noResults:"لا توجد منتجات مطابقة",
+    subtotal:"المجموع", total:"الإجمالي", remove:"احذف", quantity:"الكمية", more:"زيادة", less:"تقليل",
+    customer:"العميل", walkin:"عميل نقدي", rami:"رامي درويش", lina:"لينا مصطفى",
+    currency:"عملة الدفع", usd:"USD", lbp:"LBP", rate:"سعر صرف تجريبي",
+    complete:"إكمال البيع التجريبي", completing:"جارٍ الإكمال…",
+    serialized:"يتطلب IMEI/Serial في الربط التشغيلي", receipt:"تم إنشاء إيصال تجريبي", receiptNo:"رقم الإيصال",
+    paid:"المدفوع", items:"العناصر", another:"عملية جديدة", local:"محفوظ محليًا على هذا المتصفح",
+    stockChanged:"تم تحديث مخزون التجربة محليًا.",
   },
   en: {
-    back:"Dashboard", title:"Point of sale", subtitle:"Try the cart journey before connecting store operations",
-    preview:"Sample cart only. Changes and suspension are temporary and disappear when leaving this page; no sales or stock are saved.",
-    suspend:"Suspend sample cart", resume:"Resume sample cart", fresh:"New cart",
-    search:"Search by name or SKU", products:"products", available:"available", add:"Add",
-    cart:"Current cart", sample:"Sample cart · payments disconnected", empty:"The cart is empty",
-    choose:"Choose a product to add to the cart", noResults:"No matching products",
-    subtotal:"Subtotal", discount:"Discount", total:"Total", remove:"Remove", quantity:"Quantity",
-    more:"Increase quantity", less:"Decrease quantity", blocked:"Payments unavailable in preview",
-    note:"Real sales require identity, permissions, and a network IMEI check for serialized devices before completion.",
-    oneSuspend:"Resume the suspended cart first; preview supports one suspended cart.",
+    back:"Dashboard", title:"Point of sale", subtitle:"Complete a local pilot sale using realistic demo products, stock, and prices",
+    preview:"Pilot Demo — completion stores a demo receipt in this browser only; it does not create production accounting or inventory movements.",
+    suspend:"Suspend cart", resume:"Resume cart", fresh:"New cart",
+    search:"Search product, SKU, or barcode", products:"products", available:"available", add:"Add",
+    cart:"Current cart", pilot:"Pilot Demo", empty:"Cart is empty", choose:"Choose a product to begin", noResults:"No matching products",
+    subtotal:"Subtotal", total:"Total", remove:"Remove", quantity:"Quantity", more:"Increase", less:"Decrease",
+    customer:"Customer", walkin:"Walk-in customer", rami:"Rami Darwish", lina:"Lina Mustafa",
+    currency:"Payment currency", usd:"USD", lbp:"LBP", rate:"Demo exchange rate",
+    complete:"Complete demo sale", completing:"Completing…",
+    serialized:"IMEI/Serial required when operational wiring is enabled", receipt:"Demo receipt created", receiptNo:"Receipt",
+    paid:"Paid", items:"Items", another:"New sale", local:"Stored locally in this browser", stockChanged:"Pilot stock updated locally.",
   },
+} as const;
+
+const customerOptions = {
+  ar:["عميل نقدي","رامي درويش","لينا مصطفى"],
+  en:["Walk-in customer","Rami Darwish","Lina Mustafa"],
 };
+
 export default function PosPage() {
   const { locale: raw } = useParams<{ locale: string }>();
-  const locale = raw === "en" ? "en" : "ar", t = copy[locale];
+  const locale = raw === "en" ? "en" : "ar";
+  const t = copy[locale];
   const [query,setQuery] = useState("");
   const [cart,setCart] = useState<CartLine[]>([]);
   const [suspended,setSuspended] = useState<CartLine[] | null>(null);
-  const filtered = products.filter(p => [p.ar,p.en,p.sku].some(value =>
-    value.toLowerCase().includes(query.trim().toLowerCase())));
+  const [customer,setCustomer] = useState(customerOptions[locale][0]);
+  const [currency,setCurrency] = useState<"USD" | "LBP">("USD");
+  const [receipt,setReceipt] = useState<DemoReceipt | null>(null);
+  const [stock,setStock] = useState<Record<string,number>>(() =>
+    Object.fromEntries(demoProducts.map(product => [product.id,product.stock])));
+  const [busy,setBusy] = useState(false);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("a1-mobi-pilot-stock");
+      if (stored) {
+        const parsed = JSON.parse(stored) as Record<string,number>;
+        setStock(current => ({...current,...parsed}));
+      }
+    } catch {
+      // Demo storage is optional; the POS still works without it.
+    }
+  },[]);
+
+  useEffect(() => {
+    setCustomer(customerOptions[locale][0]);
+  },[locale]);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return demoProducts.filter(product => !q || [
+      product.nameAr,product.nameEn,product.sku,product.barcode,product.brand,
+    ].some(value => value.toLowerCase().includes(q)));
+  },[query]);
+
   const total = cart.reduce((sum,line) => sum + line.product.price * line.quantity,0);
   const itemCount = cart.reduce((sum,line) => sum + line.quantity,0);
-  const limit = (p: Product) => p.serial ? 1 : p.stock;
-  const changeQuantity = (sku: string,delta: number) => setCart(current => current
-    .map(line => line.product.sku === sku ? {
-      ...line, quantity: Math.min(limit(line.product),line.quantity + delta),
-    } : line).filter(line => line.quantity > 0));
-  function addProduct(product: Product) {
-    setCart(current => current.some(line => line.product.sku === product.sku)
-      ? current.map(line => line.product.sku === product.sku
-        ? { ...line, quantity: Math.min(limit(product),line.quantity + 1) } : line)
-      : [...current,{ product, quantity:1 }]);
+  const paidAmount = currency === "USD" ? total : Math.round(total * demoStore.lbpRate / 1000) * 1000;
+
+  const available = (product: DemoProduct) => stock[product.id] ?? product.stock;
+  const limit = (product: DemoProduct) => product.serialized ? Math.min(1,available(product)) : available(product);
+
+  function changeQuantity(id: string,delta: number) {
+    setCart(current => current
+      .map(line => line.product.id === id
+        ? {...line,quantity:Math.min(limit(line.product),line.quantity+delta)}
+        : line)
+      .filter(line => line.quantity > 0));
   }
+
+  function addProduct(product: DemoProduct) {
+    if (available(product) <= 0) return;
+    setReceipt(null);
+    setCart(current => current.some(line => line.product.id === product.id)
+      ? current.map(line => line.product.id === product.id
+        ? {...line,quantity:Math.min(limit(product),line.quantity+1)}
+        : line)
+      : [...current,{product,quantity:1}]);
+  }
+
   function toggleSuspend() {
-    if (suspended && cart.length === 0) { setCart(suspended); setSuspended(null); }
-    else if (!suspended && cart.length > 0) { setSuspended(cart); setCart([]); }
+    if (suspended && cart.length === 0) {
+      setCart(suspended);
+      setSuspended(null);
+    } else if (!suspended && cart.length > 0) {
+      setSuspended(cart);
+      setCart([]);
+    }
   }
+
+  function resetSale() {
+    setCart([]);
+    setReceipt(null);
+    setCustomer(customerOptions[locale][0]);
+    setCurrency("USD");
+  }
+
+  function completeSale() {
+    if (!cart.length || busy) return;
+    setBusy(true);
+    const number = "DM-" + Date.now().toString().slice(-8);
+    const nextStock = {...stock};
+    for (const line of cart) nextStock[line.product.id] = Math.max(0,available(line.product)-line.quantity);
+    const demoReceipt: DemoReceipt = {
+      number,
+      customer,
+      totalUsd:total,
+      currency,
+      paidAmount,
+      createdAt:new Date().toISOString(),
+      items:itemCount,
+    };
+    try {
+      const prior = JSON.parse(localStorage.getItem("a1-mobi-pilot-sales") || "[]") as DemoReceipt[];
+      localStorage.setItem("a1-mobi-pilot-sales",JSON.stringify([demoReceipt,...prior].slice(0,20)));
+      localStorage.setItem("a1-mobi-pilot-stock",JSON.stringify(nextStock));
+    } catch {
+      // Local persistence is best-effort in demo mode.
+    }
+    setStock(nextStock);
+    setReceipt(demoReceipt);
+    setCart([]);
+    setBusy(false);
+  }
+
   const canSuspend = (cart.length > 0 && !suspended) || (cart.length === 0 && !!suspended);
-  return <main lang={locale} dir={locale === "ar" ? "rtl" : "ltr"} className="pos-page">
-    <header className="module-header"><div>
-      <Link href={`/${locale}`} className="back-link">{t.back}</Link>
-      <p className="module-kicker">A1 MOBI · SELL</p><h1>{t.title}</h1><p className="module-sub">{t.subtitle}</p>
-    </div><div className="module-actions">
-      <button className="soft-btn" onClick={toggleSuspend} disabled={!canSuspend}
-        title={suspended && cart.length > 0 ? t.oneSuspend : undefined}>{suspended ? t.resume : t.suspend}</button>
-      <button className="primary" onClick={() => setCart([])} disabled={cart.length === 0}>{t.fresh}</button>
-    </div></header>
-    <p className="preview-notice" role="status">{t.preview}</p>
-    <div className="pos-grid"><section className="product-panel" aria-label={t.products}>
-      <div className="module-toolbar"><label className="module-search"><span aria-hidden="true">⌕</span>
-        <input value={query} onChange={e => setQuery(e.target.value)} aria-label={t.search} placeholder={t.search} />
-      </label><span className="result-count" aria-live="polite">{filtered.length} {t.products}</span></div>
-      <div className="product-grid">{filtered.map(product =>
-        <button className="product-card" key={product.sku} onClick={() => addProduct(product)}>
-          <span className="sr-only">{t.add} </span><span className="product-symbol" aria-hidden="true">{product.serial ? "◈" : "□"}</span>
-          <b>{product[locale]}</b><small><bdi dir="ltr">{product.sku}</bdi></small>
-          <strong><bdi dir="ltr">${product.price.toFixed(2)}</bdi></strong><em>{product.stock} {t.available}</em>
-        </button>)}</div>{filtered.length === 0 && <p className="empty-search">{t.noResults}</p>}
-    </section><aside className="cart-panel" aria-label={t.cart}>
-      <div className="cart-head"><div><h2>{t.cart}</h2><small>{t.sample}</small></div>
-        <span className="cart-badge" aria-live="polite" aria-label={t.quantity}>{itemCount}</span></div>
-      <div className="cart-lines">{cart.length === 0
-        ? <div className="empty-cart"><span aria-hidden="true">▣</span><b>{t.empty}</b><small>{t.choose}</small></div>
-        : cart.map(({product,quantity}) => <div className="cart-line" key={product.sku}>
-          <span className="line-icon" aria-hidden="true">{product.serial ? "◈" : "□"}</span>
-          <div><b>{product[locale]}</b><small><bdi dir="ltr">{product.sku}</bdi></small></div>
-          <strong><bdi dir="ltr">${(product.price * quantity).toFixed(2)}</bdi></strong>
-          <div className="quantity-controls">
-            <button onClick={() => changeQuantity(product.sku,-1)} aria-label={t.less+" "+product[locale]}>−</button>
-            <output aria-label={t.quantity+" "+product[locale]}>{quantity}</output>
-            <button onClick={() => changeQuantity(product.sku,1)} disabled={quantity >= limit(product)}
-              aria-label={t.more+" "+product[locale]}>＋</button>
-            <button onClick={() => setCart(current => current.filter(line => line.product.sku !== product.sku))}
-              aria-label={t.remove+" "+product[locale]}>×</button>
-          </div>
-        </div>)}</div>
-      <div className="cart-summary"><div><span>{t.subtotal}</span><b><bdi dir="ltr">${total.toFixed(2)}</bdi></b></div>
-        <div><span>{t.discount}</span><b><bdi dir="ltr">$0.00</bdi></b></div>
-        <div className="cart-total"><span>{t.total}</span><strong><bdi dir="ltr">${total.toFixed(2)}</bdi></strong></div>
-        <button className="checkout-btn" disabled aria-describedby="checkout-note">{t.blocked}</button>
-        <small className="trust-note" id="checkout-note">{t.note}</small>
+
+  return <main lang={locale} dir={locale === "ar" ? "rtl" : "ltr"} className="pos-page pilot-pos">
+    <header className="module-header">
+      <div>
+        <Link href={"/"+locale} className="back-link">{t.back}</Link>
+        <p className="module-kicker">A1 MOBI · SELL · {t.pilot}</p>
+        <h1>{t.title}</h1><p className="module-sub">{t.subtitle}</p>
       </div>
-    </aside></div>
+      <div className="module-actions">
+        <button className="soft-btn" onClick={toggleSuspend} disabled={!canSuspend}>{suspended?t.resume:t.suspend}</button>
+        <button className="primary" onClick={resetSale} disabled={!cart.length && !receipt}>{t.fresh}</button>
+      </div>
+    </header>
+
+    <p className="preview-notice" role="status">{t.preview}</p>
+
+    {receipt && <section className="demo-receipt" role="status">
+      <div className="receipt-check">✓</div>
+      <div><small>{t.receipt}</small><h2><bdi dir="ltr">{receipt.number}</bdi></h2>
+        <p>{receipt.customer} · {receipt.items} {t.items}</p></div>
+      <div className="receipt-total"><small>{t.paid}</small>
+        <strong><bdi dir="ltr">{receipt.currency==="USD"?"$"+receipt.paidAmount.toFixed(2):receipt.paidAmount.toLocaleString()+" LBP"}</bdi></strong>
+        <span>{t.local}</span></div>
+      <button className="soft-btn" onClick={resetSale}>{t.another}</button>
+    </section>}
+
+    <div className="pos-grid">
+      <section className="product-panel" aria-label={t.products}>
+        <div className="module-toolbar">
+          <label className="module-search"><span aria-hidden="true">⌕</span>
+            <input value={query} onChange={event=>setQuery(event.target.value)} aria-label={t.search} placeholder={t.search}/>
+          </label>
+          <Link className="text-link" href={"/"+locale+"/products"}>{t.products} →</Link>
+        </div>
+        <div className="product-grid">{filtered.map(product => {
+          const remaining = available(product);
+          return <button className="product-card" key={product.id} onClick={()=>addProduct(product)} disabled={remaining<=0}>
+            <span className="product-symbol" aria-hidden="true">{product.type==="DEVICE"?"◈":product.type==="PART"?"⌁":"□"}</span>
+            <small>{product.brand}</small>
+            <b>{locale==="ar"?product.nameAr:product.nameEn}</b>
+            <small><bdi dir="ltr">{product.sku}</bdi></small>
+            <strong><bdi dir="ltr">{"$"+product.price.toFixed(2)}</bdi></strong>
+            <em>{remaining} {t.available}</em>
+          </button>;
+        })}</div>
+        {filtered.length===0 && <p className="empty-search">{t.noResults}</p>}
+      </section>
+
+      <aside className="cart-panel" aria-label={t.cart}>
+        <div className="cart-head"><div><h2>{t.cart}</h2><small>{t.pilot}</small></div>
+          <span className="cart-badge" aria-live="polite">{itemCount}</span></div>
+
+        <div className="cart-lines">{cart.length===0
+          ? <div className="empty-cart"><span aria-hidden="true">▣</span><b>{t.empty}</b><small>{t.choose}</small></div>
+          : cart.map(({product,quantity}) => <div className="cart-line" key={product.id}>
+            <span className="line-icon" aria-hidden="true">{product.serialized?"◈":"□"}</span>
+            <div><b>{locale==="ar"?product.nameAr:product.nameEn}</b><small><bdi dir="ltr">{product.sku}</bdi></small>
+              {product.serialized && <small className="serialized-hint">{t.serialized}</small>}</div>
+            <strong><bdi dir="ltr">{"$"+(product.price*quantity).toFixed(2)}</bdi></strong>
+            <div className="quantity-controls">
+              <button onClick={()=>changeQuantity(product.id,-1)} aria-label={t.less}>−</button>
+              <output aria-label={t.quantity}>{quantity}</output>
+              <button onClick={()=>changeQuantity(product.id,1)} disabled={quantity>=limit(product)} aria-label={t.more}>＋</button>
+              <button onClick={()=>setCart(current=>current.filter(line=>line.product.id!==product.id))} aria-label={t.remove}>×</button>
+            </div>
+          </div>)}
+        </div>
+
+        <div className="pilot-checkout-fields">
+          <label>{t.customer}
+            <select value={customer} onChange={event=>setCustomer(event.target.value)}>
+              {customerOptions[locale].map(option=><option key={option}>{option}</option>)}
+            </select>
+          </label>
+          <label>{t.currency}
+            <select value={currency} onChange={event=>setCurrency(event.target.value as "USD"|"LBP")}>
+              <option value="USD">{t.usd}</option><option value="LBP">{t.lbp}</option>
+            </select>
+          </label>
+        </div>
+
+        <div className="cart-summary">
+          <div><span>{t.subtotal}</span><b><bdi dir="ltr">{"$"+total.toFixed(2)}</bdi></b></div>
+          {currency==="LBP" && <div><span>{t.rate}</span><b><bdi dir="ltr">{demoStore.lbpRate.toLocaleString()} LBP/USD</bdi></b></div>}
+          <div className="cart-total"><span>{t.total}</span><strong><bdi dir="ltr">
+            {currency==="USD"?"$"+total.toFixed(2):paidAmount.toLocaleString()+" LBP"}
+          </bdi></strong></div>
+          <button className="checkout-btn" onClick={completeSale} disabled={!cart.length||busy}>
+            {busy?t.completing:t.complete}
+          </button>
+          <small className="trust-note">{t.stockChanged}</small>
+        </div>
+      </aside>
+    </div>
   </main>;
 }
