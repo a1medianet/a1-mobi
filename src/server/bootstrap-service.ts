@@ -23,22 +23,38 @@ export async function bootstrapStore(input: {
   ownerDisplayName: string;
   ownerPassword: string;
   locale: "ar" | "en";
+  a1AccountId?: string | null;
+  a1OrganizationId?: string | null;
 }) {
+  const tenantSlug = input.tenantSlug.trim().toLowerCase();
+  const billingTenantKey = "mobi:" + tenantSlug;
   const passwordHash = await hashPassword(input.ownerPassword);
+
   try {
     return await db.$transaction(async tx => {
-      if (await tx.tenant.count() !== 0) throw new ControlFailure("ALREADY_PROVISIONED");
+      const existing = await tx.tenant.findFirst({
+        where: { OR: [{ slug: tenantSlug }, { billingTenantKey }] },
+        select: { id: true },
+      });
+      if (existing) throw new ControlFailure("CONFLICT");
+
       await tx.permission.createMany({ data: PERMISSION_SEEDS, skipDuplicates: true });
+
       const tenant = await tx.tenant.create({ data: {
-        slug: input.tenantSlug.trim().toLowerCase(),
+        slug: tenantSlug,
         name: input.tenantName.trim(),
         defaultLocale: input.locale,
+        a1AccountId: input.a1AccountId?.trim() || null,
+        a1OrganizationId: input.a1OrganizationId?.trim() || null,
+        billingTenantKey,
       } });
+
       const branch = await tx.branch.create({ data: {
         tenantId: tenant.id,
         code: input.branchCode.trim().toUpperCase(),
         name: input.branchName.trim(),
       } });
+
       const owner = await tx.user.create({ data: {
         tenantId: tenant.id,
         branchId: branch.id,
@@ -47,17 +63,20 @@ export async function bootstrapStore(input: {
         passwordHash,
         locale: input.locale,
       } });
+
       const role = await tx.role.create({ data: {
         tenantId: tenant.id,
         code: "owner",
         name: "Owner",
         isSystem: true,
       } });
+
       const permissions = await tx.permission.findMany({ select: { id: true } });
       await tx.rolePermission.createMany({
         data: permissions.map(permission => ({ roleId: role.id, permissionId: permission.id })),
         skipDuplicates: true,
       });
+
       await tx.userRole.create({ data: { userId: owner.id, roleId: role.id } });
       await tx.auditEvent.create({ data: {
         tenantId: tenant.id,
@@ -68,14 +87,19 @@ export async function bootstrapStore(input: {
         entityId: tenant.id,
         after: {
           tenantSlug: tenant.slug,
+          billingTenantKey,
           branchCode: branch.code,
           ownerId: owner.id,
           ownerEmail: owner.email,
+          a1AccountId: tenant.a1AccountId,
+          a1OrganizationId: tenant.a1OrganizationId,
         },
       } });
+
       return {
         tenantId: tenant.id,
         tenantSlug: tenant.slug,
+        billingTenantKey,
         branchId: branch.id,
         ownerId: owner.id,
       };
@@ -84,7 +108,7 @@ export async function bootstrapStore(input: {
     if (error instanceof ControlFailure) throw error;
     if (error instanceof Prisma.PrismaClientKnownRequestError &&
       (error.code === "P2002" || error.code === "P2034")) {
-      throw new ControlFailure("ALREADY_PROVISIONED");
+      throw new ControlFailure("CONFLICT");
     }
     throw error;
   }
