@@ -1,0 +1,111 @@
+gate_id: A1-GATE-APPLICATION-FOUNDATION
+gate_version: 1.0.0
+project: A1 Mobi
+repository: github://chadiatwi/a1-mobi
+assessed_at: "2026-10-04"
+standard_id: A1-STD-APPLICATION-FOUNDATION
+standard_version: 1.0.0
+decision: FAIL
+release_blocked: true
+release_scope:
+  - PRODUCTION
+  - PUBLIC_RELEASE
+rule: No Production/Public Release while any applicable check is FAIL, MISSING or NOT_ASSESSED.
+
+checks:
+  - id: pulse
+    label: A1 Pulse
+    status: FAIL
+    compliance_status: PARTIAL
+    evidence_refs:
+      - src/app/api/health/route.ts
+      - src/core/config/domains.ts
+      - docs/compliance/evidence/A1-APPLICATION-FOUNDATION-ASSESSMENT-20261004.md
+    remediation: Implement the missing Pulse installation/runtime/version/update/analytics/remote-config/entitlement contract through the shared foundation.
+
+  - id: assist
+    label: A1 Assist
+    status: MISSING
+    compliance_status: MISSING
+    evidence_refs:
+      - docs/compliance/evidence/A1-APPLICATION-FOUNDATION-ASSESSMENT-20261004.md
+    remediation: Implement A1 Assist Integration Contract with version-aware and permission-aware product context.
+
+  - id: guide
+    label: Guide / Help Center
+    status: FAIL
+    compliance_status: PARTIAL
+    evidence_refs:
+      - README.md
+      - AGENTS.md
+      - docs/gates/
+      - docs/compliance/evidence/A1-APPLICATION-FOUNDATION-ASSESSMENT-20261004.md
+    remediation: Build a standalone user-facing AR/EN Help Center that remains usable without AI.
+
+  - id: app_protection
+    label: App Protection
+    status: FAIL
+    compliance_status: PARTIAL
+    evidence_refs:
+      - src/server/auth-http.ts
+      - src/server/session-context.ts
+      - src/server/foundation-control.ts
+      - src/server/attempt-budget.ts
+      - next.config.ts
+      - .github/workflows/ci.yml
+      - docs/gates/FOUNDATION-OPS-GATE-20261004.md
+    remediation: Close dependency and release-protection gaps and attach release evidence.
+
+  - id: privacy
+    label: Privacy
+    status: FAIL
+    evidence_refs:
+      - src/server/logger.ts
+      - docs/compliance/evidence/A1-APPLICATION-FOUNDATION-ASSESSMENT-20261004.md
+    remediation: Publish and verify a release-level privacy/data collection policy before Pulse telemetry is enabled.
+
+  - id: telemetry_policy
+    label: Telemetry Policy
+    status: NOT_ASSESSED
+    evidence_refs:
+      - docs/compliance/evidence/A1-APPLICATION-FOUNDATION-ASSESSMENT-20261004.md
+    remediation: Define privacy-first telemetry events, retention, consent/applicability and prohibited data before enabling Pulse.
+
+  - id: update_mechanism
+    label: Update Mechanism
+    status: NOT_ASSESSED
+    evidence_refs:
+      - docs/compliance/evidence/A1-APPLICATION-FOUNDATION-ASSESSMENT-20261004.md
+    remediation: Define web/PWA/Desktop update, staged rollout, rollback and security-update behavior before the corresponding release surface.
+
+  - id: health_crash_reporting
+    label: Health / Crash Reporting
+    status: FAIL
+    evidence_refs:
+      - src/app/api/health/route.ts
+      - docs/gates/FOUNDATION-OPS-GATE-20261004.md
+    remediation: Keep health/readiness evidence and add runtime crash/error reporting.
+
+  - id: version_reporting
+    label: Version Reporting
+    status: MISSING
+    evidence_refs:
+      - docs/compliance/evidence/A1-APPLICATION-FOUNDATION-ASSESSMENT-20261004.md
+    remediation: Report current version, build, channel and minimum supported version.
+
+  - id: entitlement_reporting
+    label: Entitlement Reporting
+    status: MISSING
+    evidence_refs:
+      - docs/compliance/evidence/A1-APPLICATION-FOUNDATION-ASSESSMENT-20261004.md
+    remediation: Integrate server-side entitlement truth with A1 Billing before paid/public commercial activation.
+
+  - id: release_evidence
+    label: Release Evidence
+    status: FAIL
+    evidence_refs:
+      - docs/STAGE-1-FOUNDATION.md
+      - docs/gates/FOUNDATION-OPS-GATE-20261004.md
+    remediation: Complete Foundation consolidation and attach a final green gate/test/build/security evidence pack.
+
+next_action: Remediate applicable FAIL/MISSING/NOT_ASSESSED checks, then re-run this gate before Production/Public Release.

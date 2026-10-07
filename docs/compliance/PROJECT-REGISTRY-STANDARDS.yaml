@@ -1,0 +1,61 @@
+project: A1 Mobi
+repository: github://chadiatwi/a1-mobi
+assessment_date: "2026-10-04"
+
+standards_applied:
+  - standard_id: A1-STD-APPLICATION-FOUNDATION
+    standard_version: 1.0.0
+    compliance_status: PARTIAL
+    last_compliance_check: "2026-10-04"
+    upgrade_status: CURRENT
+    component_versions:
+      - standard_id: A1-STD-PULSE-CORE
+        standard_version: 1.0.0
+        compliance_status: PARTIAL
+        evidence_refs:
+          - src/app/api/health/route.ts
+          - src/core/config/domains.ts
+          - docs/gates/FOUNDATION-OPS-GATE-20261004.md
+          - docs/compliance/evidence/A1-APPLICATION-FOUNDATION-ASSESSMENT-20261004.md
+      - standard_id: A1-STD-ASSIST-CONTRACT
+        standard_version: 1.0.0
+        compliance_status: MISSING
+        evidence_refs:
+          - docs/compliance/evidence/A1-APPLICATION-FOUNDATION-ASSESSMENT-20261004.md
+      - standard_id: A1-STD-GUIDE-HELP-CENTER
+        standard_version: 1.0.0
+        compliance_status: PARTIAL
+        evidence_refs:
+          - README.md
+          - AGENTS.md
+          - docs/gates/
+          - docs/compliance/evidence/A1-APPLICATION-FOUNDATION-ASSESSMENT-20261004.md
+      - standard_id: A1-STD-APP-PROTECTION
+        standard_version: 1.0.0
+        compliance_status: PARTIAL
+        evidence_refs:
+          - src/server/auth-http.ts
+          - src/server/session-context.ts
+          - src/server/foundation-control.ts
+          - src/server/attempt-budget.ts
+          - next.config.ts
+          - .github/workflows/ci.yml
+          - docs/gates/FOUNDATION-OPS-GATE-20261004.md
+          - docs/compliance/evidence/A1-APPLICATION-FOUNDATION-ASSESSMENT-20261004.md
+    evidence_refs:
+      - docs/compliance/evidence/A1-APPLICATION-FOUNDATION-ASSESSMENT-20261004.md
+      - docs/gates/A1-APPLICATION-FOUNDATION-PRELAUNCH-20261004.yaml
+      - docs/gates/FOUNDATION-AUTH-GATE-20261003.md
+      - docs/gates/FOUNDATION-CONTROL-GATE-20261003.md
+      - docs/gates/FOUNDATION-ABUSE-CONTROLS-GATE-20261004.md
+      - docs/gates/FOUNDATION-OPS-GATE-20261004.md
+    exceptions: []
+    required_remediation:
+      - Integrate shared A1 Pulse Core contract and adapter with privacy-first telemetry.
+      - Add version/build/release-channel/minimum-supported-version reporting.
+      - Add A1 Billing-backed entitlement reporting before commercial release.
+      - Implement permission-aware, version-aware A1 Assist.
+      - Build standalone AR/EN Guide / Help Center.
+      - Complete App Protection release controls including dependency remediation, source-map policy, SBOM, secret rotation and platform update controls.
+      - Add crash/error reporting appropriate to the final runtime.
+      - Re-run the Application Foundation Pre-Launch Gate and attach release evidence.

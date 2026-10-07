@@ -1,4 +1,5 @@
 export type SessionSnapshot = {
+  id: string;
   expiresAt: Date;
   revokedAt: Date | null;
   user: {
@@ -19,7 +20,7 @@ export function sessionContext(session: SessionSnapshot | null, now = new Date()
   const permissions = new Set(user.userRoles
     .filter(({ role }) => role.tenantId === user.tenantId)
     .flatMap(({ role }) => role.permissions.map(({ permission }) => permission.code)));
-  return { actorId: user.id, tenantId: user.tenantId, branchId: user.branch.id, permissions };
+  return { sessionId: session.id, actorId: user.id, tenantId: user.tenantId, branchId: user.branch.id, permissions };
 }
 
 export function requireSessionPermission(

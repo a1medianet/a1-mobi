@@ -12,6 +12,10 @@
     "pretest": "prisma generate",
     "test": "vitest run --maxWorkers=1",
     "test:watch": "vitest",
+    "smoke:foundation-control": "node scripts/foundation-control-http-smoke.mjs",
+    "smoke:backup-restore": "node scripts/backup-restore-smoke.mjs",
+    "check:sql-bom": "node scripts/check-sql-bom.mjs",
+    "gate:foundation": "npm run check:sql-bom && npm run db:validate && npm run db:generate && npm run lint && tsc --noEmit && npm test && npm run build",
     "gate:pilot": "vitest run tests/pilot.test.ts tests/inventory-db.test.ts tests/sell-db.test.ts tests/repair-db.test.ts tests/customer-debt-db.test.ts tests/cash-db.test.ts tests/topup-db.test.ts tests/reports-db.test.ts",
     "db:validate": "prisma validate",
     "db:generate": "prisma generate"
@@ -19,23 +23,27 @@
   "dependencies": {
     "@fontsource-variable/inter": "5.3.0",
     "@fontsource-variable/noto-sans-arabic": "5.3.0",
-    "@prisma/client": "^6.16.2",
-    "argon2": "latest",
+    "@prisma/client": "6.19.3",
+    "argon2": "0.45.1",
     "next": "16.3.6",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "zod": "latest"
+    "zod": "4.6.5"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^24",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/node": "24.19.0",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "eslint": "9.39.5",
     "eslint-config-next": "16.3.6",
-    "prisma": "^6.16.2",
-    "tailwindcss": "^4",
-    "typescript": "^5",
-    "vitest": "latest"
+    "prisma": "6.19.3",
+    "tailwindcss": "4.3.3",
+    "typescript": "5.9.3",
+    "vitest": "5.0.2"
+  },
+  "overrides": {
+    "deepmerge-ts": "8.0.2",
+    "source-map-js": "1.2.2"
   }
 }

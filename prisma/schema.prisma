@@ -13,6 +13,9 @@ model Tenant {
   name                  String
   defaultLocale         String                 @default("ar")
   baseCurrency          String                 @default("USD")
+  a1AccountId           String?
+  a1OrganizationId      String?
+  billingTenantKey      String?                @unique
   branches              Branch[]
   users                 User[]
   roles                 Role[]
@@ -109,6 +112,8 @@ model User {
   branch                      Branch?                @relation(fields: [branchId], references: [id], onDelete: SetNull)
   userRoles                   UserRole[]
   sessions                    Session[]
+  mfaCredential               MfaCredential?
+  passwordResetTokens         PasswordResetToken[]
   auditEvents                 AuditEvent[]           @relation("AuditActor")
   sales                       Sale[]                 @relation("SaleActor")
   approvedSaleLines           SaleLine[]             @relation("PriceOverrideActor")
@@ -141,6 +146,44 @@ model Session {
   expiresAt DateTime
   revokedAt DateTime?
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+
+  @@index([userId, expiresAt])
+}
+
+model MfaCredential {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  secretCipher       String
+  enabledAt           DateTime?
+  lastUsedTotpCounter Int?
+  version             Int      @default(0)
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recoveryCodes       MfaRecoveryCode[]
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model MfaRecoveryCode {
+  id           String        @id @default(cuid())
+  credentialId String
+  codeHash     String
+  usedAt       DateTime?
+  credential   MfaCredential @relation(fields: [credentialId], references: [id], onDelete: Cascade)
+  createdAt    DateTime      @default(now())
+
+  @@unique([credentialId, codeHash])
+  @@index([credentialId, usedAt])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt   DateTime
+  deliveredAt DateTime?
+  usedAt      DateTime?
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime  @default(now())
 
   @@index([userId, expiresAt])
@@ -1329,4 +1372,12 @@ model DeviceTrustCheck {
 
   @@index([tenantId, branchId, checkedAt])
   @@index([imeiHash, result])
+}
+
+model AuthAttempt {
+  key         String   @id
+  attempts    Int
+  windowStart DateTime @default(now())
+
+  @@index([windowStart])
 }
