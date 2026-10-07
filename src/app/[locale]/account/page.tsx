@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { currentStoreContext } from "@/server/auth-http";
 import { db } from "@/server/db";
 import { getMobiEntitlements } from "@/server/billing-client";
+import { BranchManager } from "@/components/branch-manager";
 
 export const dynamic="force-dynamic";
 
@@ -44,5 +45,7 @@ export default async function AccountPage({params}:{params:Promise<{locale:strin
 
       <article className="account-card"><span className="module-kicker">SUBSCRIPTION</span><h2>{ar?"الخطة والصلاحيات":"Plan & entitlements"}</h2>{billing?<><div className="subscription-status"><span className={"pill "+(billing.status==="active"||billing.status==="trialing"?"done":"pending")}>{billing.status.toUpperCase()}</span><strong>{billing.planCode||"—"}</strong></div>{billing.expiresAt?<p>{ar?"الاستحقاق الحالي حتى":"Current access through"} <bdi dir="ltr">{new Date(billing.expiresAt).toLocaleString()}</bdi></p>:null}<div className="entitlement-list">{enabled.map(([feature])=><span key={feature}>✓ {feature.replace(".enabled","")}</span>)}{limits.map(([feature,value])=><span key={feature}>{feature}: {value}</span>)}</div></>:<div className="module-banner"><strong>{ar?"تعذر قراءة Billing Core":"Billing Core unavailable"}</strong><p>{billingError|| (ar?"لم يتم ربط Billing Tenant بعد.":"Billing tenant is not bound yet.")}</p></div>}</article>
     </section>
+
+    <BranchManager locale={locale}/>
   </main>;
 }
