@@ -3,16 +3,13 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
-import { VersionGuard } from "@/components/version-guard";
-import { PulseHeartbeat } from "@/components/pulse-heartbeat";
-import { AssistDock } from "@/components/assist-dock";
 
 const labels = {
-  ar: ["الرئيسية","نقطة البيع","المنتجات","المخزون والأجهزة","الصيانة","العملاء والديون","الصندوق","التعبئة","فحص IMEI","التقارير","الإدارة","الفريق والصلاحيات","أمان الحساب"],
-  en: ["Dashboard","Point of sale","Products","Inventory & devices","Repairs","Customers & debt","Cash","Top-up","IMEI check","Reports","Admin","Team & access","Account security"],
+  ar: ["الرئيسية","نقطة البيع","المنتجات","المخزون والأجهزة","الصيانة","العملاء والديون","الصندوق","التعبئة","فحص IMEI","التقارير","الإدارة","الفريق والصلاحيات","الحساب والاشتراك"],
+  en: ["Dashboard","Point of sale","Products","Inventory & devices","Repairs","Customers & debt","Cash","Top-up","IMEI check","Reports","Admin","Team & access","Account & subscription"],
 };
-const paths = ["","/pos","/products","/inventory","/repairs","/customers","/cash","/topup","/device-trust","/reports","/admin","/settings/team","/settings/security"];
-const icons = ["⌂","▣","▦","◇","⌁","♙","▤","↗","⌕","▥","⚙","♜","⌾"];
+const paths = ["","/pos","/products","/inventory","/repairs","/customers","/cash","/topup","/device-trust","/reports","/admin","/settings/team","/account"];
+const icons = ["⌂","▣","▦","◇","⌁","♙","▤","↗","⌕","▥","⚙","♜","◎"];
 
 export function AppShell({ locale, children }: {
   locale: "ar" | "en";
@@ -23,9 +20,7 @@ export function AppShell({ locale, children }: {
   const mobileNav = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    mobileNav.current?.querySelector<HTMLElement>('[aria-current="page"]')?.scrollIntoView({
-      block:"nearest",inline:"center",
-    });
+    mobileNav.current?.querySelector<HTMLElement>('[aria-current="page"]')?.scrollIntoView({ block:"nearest", inline:"center" });
   },[pathname]);
 
   const ar = locale === "ar";
@@ -34,7 +29,7 @@ export function AppShell({ locale, children }: {
   const activeIndex = paths.findIndex(path => pathname === "/"+locale+path);
 
   const navigation = (mobile: boolean) => {
-    const indexes = mobile ? [0,1,2,4,10] : labels[locale].map((_,index)=>index);
+    const indexes = mobile ? [0,1,2,4,12] : labels[locale].map((_,index)=>index);
     return indexes.map(index => {
       const label = labels[locale][index];
       const active = index === activeIndex;
@@ -53,13 +48,13 @@ export function AppShell({ locale, children }: {
     <aside className="sidebar">
       <Link href={"/"+locale} className="brand" aria-label="A1 Mobi">
         <span className="brand-mark" aria-hidden="true">A1</span>
-        <span><b>Mobi</b><small>{ar ? "نظام المتجر والصيانة" : "Retail & repair OS"}</small></span>
+        <span><b>Mobi</b><small>{ar ? "منصة المتجر" : "Store platform"}</small></span>
       </Link>
       <nav className="nav-list" aria-label={ar ? "أقسام المتجر" : "Store workspaces"}>{navigation(false)}</nav>
       <div className="sidebar-foot">
         <div className="status-dot pilot" aria-hidden="true" />
-        <div><b>{ar ? "مساحة تجريبية جاهزة" : "Pilot workspace"}</b>
-          <small>{ar ? "بيانات واقعية للتجربة · معزولة عن الإنتاج" : "Realistic trial data · isolated from production"}</small></div>
+        <div><b>{ar ? "بيئة التجربة" : "Pilot workspace"}</b>
+          <small>{ar ? "منتجات وعمليات واقعية للتجربة · ليست بيانات إنتاجية" : "Realistic catalog and operations · not production data"}</small></div>
       </div>
     </aside>
 
@@ -76,21 +71,16 @@ export function AppShell({ locale, children }: {
           {labels[locale].map((label,index)=><option key={paths[index]} value={"/"+locale+paths[index]}>{label}</option>)}
         </select>
         <div className="top-actions">
-          <Link className="locale account-link" href={"/"+locale+"/account"}>{ar ? "حساب المتجر" : "Store account"}</Link>
-          <Link className="locale" href={"/product/"+locale}>{ar ? "عن المنتج" : "Product"}</Link>
-          <span className="environment-label pilot-label">{ar ? "تجربة" : "PILOT"}</span>
+          <Link className="locale account-link" href={"/"+locale+"/account"}>{ar ? "الحساب" : "Account"}</Link>
+          <Link className="locale" href={"/product/"+locale} title={ar?"صفحة المنتج":"Product site"}>{ar?"الموقع":"Site"}</Link>
+          <span className="environment-label pilot-label">PILOT</span>
           <Link className="locale" href={otherPath} hrefLang={other}
             aria-label={ar ? "Switch to English" : "التبديل إلى العربية"}>{ar ? "EN" : "العربية"}</Link>
         </div>
       </header>
 
-      <PulseHeartbeat/>
-      <VersionGuard locale={locale}/>
       <div id="main-content" tabIndex={-1}>{children}</div>
-      <nav ref={mobileNav} className="mobile-nav" aria-label={ar ? "أقسام المتجر" : "Store workspaces"}>
-        {navigation(true)}
-      </nav>
+      <nav ref={mobileNav} className="mobile-nav" aria-label={ar ? "أقسام المتجر" : "Store workspaces"}>{navigation(true)}</nav>
     </div>
-        <AssistDock locale={locale}/>
-    </div>;
+  </div>;
 }
