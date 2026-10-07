@@ -14,6 +14,8 @@ const schema = z.object({
   ownerDisplayName: z.string().trim().min(1).max(120),
   ownerPassword: z.string().min(12).max(256),
   locale: z.enum(["ar","en"]).default("ar"),
+  a1AccountId: z.string().trim().min(1).max(160).optional(),
+  a1OrganizationId: z.string().trim().min(1).max(160).optional(),
 }).strict();
 
 export async function POST(request: Request) {
