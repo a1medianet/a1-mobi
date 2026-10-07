@@ -2,16 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
-
-const KEY="a1.mobi.installation.v1";
-
-function installationId(){
-  const current=window.localStorage.getItem(KEY);
-  if(current)return current;
-  const created=crypto.randomUUID();
-  window.localStorage.setItem(KEY,created);
-  return created;
-}
+import { getInstallationId } from "@/core/client-installation";
 
 export function PulseHeartbeat(){
   const pathname=usePathname();
@@ -24,7 +15,7 @@ export function PulseHeartbeat(){
         await fetch("/api/pulse/heartbeat",{
           method:"POST",
           headers:{"content-type":"application/json"},
-          body:JSON.stringify({installationId:installationId(),route:pathname}),
+          body:JSON.stringify({installationId:getInstallationId(),route:pathname}),
           signal:controller.signal,
         });
       }catch{/* Telemetry must never break product use. */}
