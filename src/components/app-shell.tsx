@@ -73,7 +73,7 @@ export function AppShell({ locale, children }: {
           {labels[locale].map((label,index)=><option key={paths[index]} value={"/"+locale+paths[index]}>{label}</option>)}
         </select>
         <div className="top-actions">
-          <Link className="locale account-link" href={"/"+locale+"/login"}>{ar ? "حساب المتجر" : "Store account"}</Link>
+          <Link className="locale account-link" href={"/"+locale+"/account"}>{ar ? "حساب المتجر" : "Store account"}</Link>
           <Link className="locale" href={"/product/"+locale}>{ar ? "عن المنتج" : "Product"}</Link>
           <span className="environment-label pilot-label">{ar ? "تجربة" : "PILOT"}</span>
           <Link className="locale" href={otherPath} hrefLang={other}
