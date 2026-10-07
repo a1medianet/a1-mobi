@@ -19,4 +19,6 @@ RBAC, Audit, AR/EN direction, feature flags, health, and domain boundaries.
 ## Quality gate
 Run `npm run db:validate`, `npm run lint`, `npm test`, and `npm run build`.
 
+A1 Mobi adopts `A1-STD-APPLICATION-FOUNDATION@1.0.0`. Before any Production/Public Release, the evidence-backed A1 Application Foundation Pre-Launch Gate must PASS; adoption alone does not count as implementation.
+
 No later Stage begins without a documented PASS.

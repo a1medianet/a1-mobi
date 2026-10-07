@@ -1,6 +1,6 @@
-# Stage 1 Foundation
+﻿# Stage 1 Foundation
 
-Status: Implementation in progress
+Status: Implementation in progress — Auth, Control, Abuse, and Operations hardening checkpoints PASS; MFA, self-service recovery, dependency remediation, and final consolidation remain
 Authority: A1 Mobi Master Implementation Brief v1.0
 
 ## Scope
@@ -21,3 +21,5 @@ No Catalog, Sell, Repair, Debt, Cash, Top-up, or Reports workflow is deleted.
 
 ## Gate
 PASS requires lint, tests, Prisma validation, production build, and a commit SHA.
+
+Stage 1 PASS does not by itself authorize Production/Public Release. A1 Mobi also adopts `A1-STD-APPLICATION-FOUNDATION@1.0.0`; the separate A1 Application Foundation Pre-Launch Gate must PASS with evidence before any Production/Public Release. Current pre-launch decision: FAIL / release blocked until recorded remediation is complete.

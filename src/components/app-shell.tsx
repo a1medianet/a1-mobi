@@ -4,11 +4,11 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 const labels = {
-  ar: ["الرئيسية","نقطة البيع","المخزون والأجهزة","الصيانة","العملاء والديون","الصندوق","التعبئة","فحص IMEI","التقارير"],
-  en: ["Dashboard","Point of sale","Inventory & devices","Repairs","Customers & debt","Cash","Top-up","IMEI check","Reports"],
+  ar: ["الرئيسية","نقطة البيع","المخزون والأجهزة","الصيانة","العملاء والديون","الصندوق","التعبئة","فحص IMEI","التقارير","الفريق والصلاحيات"],
+  en: ["Dashboard","Point of sale","Inventory & devices","Repairs","Customers & debt","Cash","Top-up","IMEI check","Reports","Team & access"],
 };
-const paths = ["","/pos","/inventory","/repairs","/customers","/cash","/topup","/device-trust","/reports"];
-const icons = ["⌂","▣","◇","⌁","♙","▤","↗","⌕","▥"];
+const paths = ["","/pos","/inventory","/repairs","/customers","/cash","/topup","/device-trust","/reports","/settings/team"];
+const icons = ["⌂","▣","◇","⌁","♙","▤","↗","⌕","▥","⚙"];
 
 export function AppShell({ locale, children }: {
   locale: "ar" | "en"; children: React.ReactNode;
@@ -23,15 +23,19 @@ export function AppShell({ locale, children }: {
   const other = ar ? "en" : "ar";
   const otherPath = pathname.replace(/^\/(ar|en)(?=\/|$)/, "/" + other);
   const activeIndex = paths.findIndex(path => pathname === "/" + locale + path);
-  const navigation = (mobile: boolean) => labels[locale].map((label, index) => {
-    const active = index === activeIndex;
-    return <Link key={paths[index]} href={"/" + locale + paths[index]}
-      className={mobile ? (active ? "active" : "") : "nav-item" + (active ? " active" : "")}
-      aria-current={active ? "page" : undefined} aria-label={label} title={label}>
-      <span className={mobile ? undefined : "nav-icon"} aria-hidden="true">{icons[index]}</span>
-      {mobile ? <small>{label}</small> : <span>{label}</span>}
-    </Link>;
-  });
+  const navigation = (mobile: boolean) => {
+    const indexes = mobile ? [0, 1, 2, 3, 9] : labels[locale].map((_, index) => index);
+    return indexes.map(index => {
+      const label = labels[locale][index];
+      const active = index === activeIndex;
+      return <Link key={paths[index]} href={"/" + locale + paths[index]}
+        className={mobile ? (active ? "active" : "") : "nav-item" + (active ? " active" : "")}
+        aria-current={active ? "page" : undefined} aria-label={label} title={label}>
+        <span className={mobile ? undefined : "nav-icon"} aria-hidden="true">{icons[index]}</span>
+        {mobile ? <small>{label}</small> : <span>{label}</span>}
+      </Link>;
+    });
+  };
   return <div lang={locale} dir={ar ? "rtl" : "ltr"} className="app-shell">
     <a className="skip-link" href="#main-content">{ar ? "انتقل إلى المحتوى" : "Skip to content"}</a>
     <aside className="sidebar">
@@ -42,7 +46,7 @@ export function AppShell({ locale, children }: {
       <nav className="nav-list" aria-label={ar ? "أقسام المتجر" : "Store workspaces"}>{navigation(false)}</nav>
       <div className="sidebar-foot"><div className="status-dot" aria-hidden="true" />
         <div><b>{ar ? "بيئة المعاينة" : "Preview environment"}</b>
-          <small>{ar ? "بيانات توضيحية · لا تحفظ عمليات" : "Sample data · no transactions saved"}</small></div>
+          <small>{ar ? "شاشات التشغيل تجريبية · إعدادات الحساب تُحفظ" : "Operational screens are sample · account settings save"}</small></div>
       </div>
     </aside>
     <div className="workspace">
@@ -58,6 +62,7 @@ export function AppShell({ locale, children }: {
           {labels[locale].map((label, index) => <option key={paths[index]} value={"/" + locale + paths[index]}>{label}</option>)}
         </select>
         <div className="top-actions">
+          <Link className="locale" href={"/" + locale + "/login"}>{ar ? "حساب المتجر" : "Store account"}</Link>
           <span className="environment-label">{ar ? "معاينة" : "Preview"}</span>
           <Link className="locale" href={otherPath} hrefLang={other}
             aria-label={ar ? "Switch to English" : "التبديل إلى العربية"}>{ar ? "EN" : "العربية"}</Link>

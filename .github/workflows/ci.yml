@@ -1,0 +1,42 @@
+﻿name: A1 Mobi CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  foundation:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: a1mobi
+          POSTGRES_USER: a1mobi
+          POSTGRES_PASSWORD: a1mobi_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U a1mobi -d a1mobi"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      DATABASE_URL: postgresql://a1mobi:a1mobi_ci@127.0.0.1:5432/a1mobi?schema=public
+      APP_ORIGIN: http://127.0.0.1:3000
+      NODE_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run check:sql-bom
+      - run: npx prisma migrate deploy
+      - run: npm run db:validate
+      - run: npm run lint
+      - run: npx tsc --noEmit
+      - run: npm test
+      - run: npm run build
