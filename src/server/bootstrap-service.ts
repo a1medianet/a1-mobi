@@ -113,3 +113,22 @@ export async function bootstrapStore(input: {
     throw error;
   }
 }
+
+
+export async function rollbackProvisionedStore(tenantId:string){
+  await db.$transaction(async tx=>{
+    const tenant=await tx.tenant.findUnique({where:{id:tenantId},select:{id:true}});
+    if(!tenant)return;
+    await tx.auditEvent.deleteMany({where:{tenantId}});
+    await tx.userRole.deleteMany({where:{user:{tenantId}}});
+    await tx.rolePermission.deleteMany({where:{role:{tenantId}}});
+    await tx.session.deleteMany({where:{user:{tenantId}}});
+    await tx.mfaRecoveryCode.deleteMany({where:{credential:{user:{tenantId}}}});
+    await tx.mfaCredential.deleteMany({where:{user:{tenantId}}});
+    await tx.passwordResetToken.deleteMany({where:{user:{tenantId}}});
+    await tx.user.deleteMany({where:{tenantId}});
+    await tx.role.deleteMany({where:{tenantId}});
+    await tx.branch.deleteMany({where:{tenantId}});
+    await tx.tenant.delete({where:{id:tenantId}});
+  });
+}
