@@ -13,6 +13,9 @@ model Tenant {
   name                  String
   defaultLocale         String                 @default("ar")
   baseCurrency          String                 @default("USD")
+  a1AccountId           String?
+  a1OrganizationId      String?
+  billingTenantKey      String?                @unique
   branches              Branch[]
   users                 User[]
   roles                 Role[]
