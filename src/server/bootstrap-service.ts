@@ -119,13 +119,31 @@ export async function rollbackProvisionedStore(tenantId:string){
   await db.$transaction(async tx=>{
     const tenant=await tx.tenant.findUnique({where:{id:tenantId},select:{id:true}});
     if(!tenant)return;
+
+    const users=await tx.user.findMany({where:{tenantId},select:{id:true}});
+    const userIds=users.map(user=>user.id);
+    const roles=await tx.role.findMany({where:{tenantId},select:{id:true}});
+    const roleIds=roles.map(role=>role.id);
+    const credentials=userIds.length
+      ? await tx.mfaCredential.findMany({where:{userId:{in:userIds}},select:{id:true}})
+      : [];
+    const credentialIds=credentials.map(credential=>credential.id);
+
     await tx.auditEvent.deleteMany({where:{tenantId}});
-    await tx.userRole.deleteMany({where:{user:{tenantId}}});
-    await tx.rolePermission.deleteMany({where:{role:{tenantId}}});
-    await tx.session.deleteMany({where:{user:{tenantId}}});
-    await tx.mfaRecoveryCode.deleteMany({where:{credential:{user:{tenantId}}}});
-    await tx.mfaCredential.deleteMany({where:{user:{tenantId}}});
-    await tx.passwordResetToken.deleteMany({where:{user:{tenantId}}});
+    if(userIds.length){
+      await tx.session.deleteMany({where:{userId:{in:userIds}}});
+      await tx.passwordResetToken.deleteMany({where:{userId:{in:userIds}}});
+      await tx.userRole.deleteMany({where:{userId:{in:userIds}}});
+    }
+    if(credentialIds.length){
+      await tx.mfaRecoveryCode.deleteMany({where:{credentialId:{in:credentialIds}}});
+    }
+    if(userIds.length){
+      await tx.mfaCredential.deleteMany({where:{userId:{in:userIds}}});
+    }
+    if(roleIds.length){
+      await tx.rolePermission.deleteMany({where:{roleId:{in:roleIds}}});
+    }
     await tx.user.deleteMany({where:{tenantId}});
     await tx.role.deleteMany({where:{tenantId}});
     await tx.branch.deleteMany({where:{tenantId}});
