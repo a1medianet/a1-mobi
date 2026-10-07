@@ -1,0 +1,31 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+
+export default async function HelpPage({params}:{params:Promise<{locale:string}>}){
+  const {locale}=await params;if(locale!=="ar"&&locale!=="en")notFound();const ar=locale==="ar";
+  return <main className="product-shell product-page">
+    <section className="page-intro compact"><span className="product-eyebrow">A1 MOBI GUIDE</span><h1>{ar?"دليل الاستخدام والمساعدة":"Guide & Help Center"}</h1><p>{ar?"ابدأ بسرعة، افهم الصلاحيات، ونفّذ أهم الرحلات التشغيلية دون الحاجة إلى دعم مباشر.":"Get started quickly, understand permissions, and complete core operating workflows without waiting for support."}</p></section>
+    <div className="help-grid">
+      <nav className="help-nav">
+        <a href="#start">{ar?"البدء":"Getting started"}</a>
+        <a href="#sell">{ar?"البيع":"Selling"}</a>
+        <a href="#repair">{ar?"الصيانة":"Repairs"}</a>
+        <a href="#inventory">{ar?"المخزون":"Inventory"}</a>
+        <a href="#roles">{ar?"الصلاحيات":"Roles"}</a>
+        <a href="#billing">{ar?"الاشتراك":"Billing"}</a>
+        <a href="#security">{ar?"الأمان":"Security"}</a>
+        <a href="#troubleshooting">{ar?"حل المشاكل":"Troubleshooting"}</a>
+      </nav>
+      <div className="help-content">
+        <section id="start" className="help-section"><span className="product-eyebrow">GETTING STARTED</span><h2>{ar?"من التسجيل إلى أول عملية":"From signup to first operation"}</h2><ol><li>{ar?"أنشئ الجهة وأول فرع من صفحة Trial.":"Create the organization and first branch from Trial signup."}</li><li>{ar?"ادخل بحساب المالك ثم فعّل MFA من أمان الحساب.":"Sign in as owner, then enable MFA from Account Security."}</li><li>{ar?"راجع المنتجات والمخزون والتنبيهات.":"Review products, inventory and alerts."}</li><li>{ar?"جرّب POS ثم الصيانة والعملاء والصندوق.":"Try POS, then repairs, customers and cash."}</li><li>{ar?"أضف أعضاء الفريق بصلاحيات مناسبة.":"Add team members with appropriate roles."}</li></ol></section>
+        <section id="sell" className="help-section"><span className="product-eyebrow">POINT OF SALE</span><h2>{ar?"البيع بأمان":"Safe selling"}</h2><p>{ar?"ابحث بالاسم أو SKU أو الباركود. الأجهزة التسلسلية تُعامل كوحدة منفردة وتدخل ضمن قواعد IMEI/Serial. حدود السعر والتكلفة تبقى خلف صلاحيات الإدارة.":"Search by name, SKU or barcode. Serialized devices are handled as individual units and participate in IMEI/Serial rules. Cost and price-floor data remain behind administrative permissions."}</p></section>
+        <section id="repair" className="help-section"><span className="product-eyebrow">REPAIR</span><h2>{ar?"رحلة الصيانة":"Repair journey"}</h2><p>{ar?"استلام الجهاز → التشخيص → التقدير → موافقة العميل → استخدام القطع → دفعات → جاهز → تسليم. كل انتقال يجب أن يحافظ على المخزون والرصيد والتدقيق.":"Device intake → diagnosis → estimate → customer approval → parts use → payments → ready → delivery. Each transition must preserve stock, balance and audit evidence."}</p></section>
+        <section id="inventory" className="help-section"><span className="product-eyebrow">INVENTORY</span><h2>{ar?"المخزون والأجهزة":"Inventory & devices"}</h2><p>{ar?"الشراء والاستلام والحركة والجرد والإرجاع والصيانة كلها مصادر لحركة المخزون. لا تعدّل الرصيد يدويًا خارج الحركة الموثقة.":"Purchases, receipts, movements, counts, returns and repairs are stock movement sources. Do not alter stock outside an auditable movement."}</p></section>
+        <section id="roles" className="help-section"><span className="product-eyebrow">RBAC</span><h2>{ar?"الأدوار والصلاحيات":"Roles & permissions"}</h2><p>{ar?"Owner يدير الجهة. Manager يدير التشغيل. Seller يبيع دون رؤية معلومات التكلفة الحساسة. Technician يتابع الصيانة. Accounting يدير الصندوق والتقارير المالية بحسب السياسة.":"Owner manages the organization. Manager runs operations. Seller can sell without seeing sensitive cost data. Technician handles repairs. Accounting manages cash and financial reporting according to policy."}</p><Link href={"/"+locale+"/settings/team"}>{ar?"فتح إدارة الفريق":"Open team management"} →</Link></section>
+        <section id="billing" className="help-section"><span className="product-eyebrow">SUBSCRIPTION</span><h2>{ar?"الخطط والاستحقاقات":"Plans & entitlements"}</h2><p>{ar?"A1 Billing Core هو مصدر الحقيقة للخطة ومدة Trial والاستحقاقات. Mobi يستهلك الحالة ولا يخزن منطق الدفع الخاص بالاشتراك. حد الفروع والمزايا يُطبّق من الـEntitlements.":"A1 Billing Core is the source of truth for plan, trial lifetime and entitlements. Mobi consumes subscription state instead of owning SaaS payment logic. Branch limits and features are applied from entitlements."}</p><Link href={"/"+locale+"/account"}>{ar?"فتح مركز الحساب":"Open Account Center"} →</Link></section>
+        <section id="security" className="help-section"><span className="product-eyebrow">SECURITY</span><h2>{ar?"أمان الحساب والبيانات":"Account & data security"}</h2><p>{ar?"استخدم MFA للمالكين والإدارة، لا تشارك الحسابات، راجع أعضاء الفريق، ولا تحفظ أسرار النظام في المتصفح. الاستعادة وعمليات الإدارة الحساسة محكومة بحدود محاولات وتدقيق.":"Use MFA for owners and admins, do not share accounts, review team membership, and never store system secrets in the browser. Recovery and sensitive administration are rate-limited and audited."}</p><Link href={"/product/"+locale+"/security"}>{ar?"مركز الثقة والأمان":"Trust & Security"} →</Link></section>
+        <section id="troubleshooting" className="help-section"><span className="product-eyebrow">TROUBLESHOOTING</span><h2>{ar?"أكثر المشاكل شيوعًا":"Common issues"}</h2><h3>{ar?"لا أستطيع الدخول":"Cannot sign in"}</h3><p>{ar?"تحقق من Store code والبريد وكلمة المرور. إن كان MFA مفعّلًا أدخل رمز المصادقة أو Recovery Code. بعد محاولات كثيرة انتظر مدة الحماية.":"Check store code, email and password. If MFA is enabled, provide an authenticator or recovery code. After too many attempts, wait for the protection window."}</p><h3>{ar?"لا أستطيع إضافة فرع":"Cannot add a branch"}</h3><p>{ar?"Account Center يطبق حد branches.max من الخطة. إذا وصلت للحد يلزم تغيير الخطة وليس تجاوز الحماية.":"Account Center enforces branches.max from the plan. If the limit is reached, change the plan rather than bypassing the guard."}</p><h3>{ar?"الدعم":"Support"}</h3><p>hi@a1medianet.com</p></section>
+      </div>
+    </div>
+  </main>;
+}
