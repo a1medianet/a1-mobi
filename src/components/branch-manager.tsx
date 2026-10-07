@@ -22,7 +22,18 @@ export function BranchManager({locale}:{locale:"ar"|"en"}){
     finally{setLoading(false)}
   }
 
-  useEffect(()=>{void load()},[]);
+  useEffect(()=>{
+    const controller=new AbortController();
+    fetch("/api/account/branches",{cache:"no-store",signal:controller.signal})
+      .then(async response=>{
+        const body=await response.json();
+        if(!response.ok)throw new Error(body.error||"Unable to load branches");
+        setBranches(body.branches||[]);
+      })
+      .catch(error=>{if(!controller.signal.aborted)setMessage(error instanceof Error?error.message:"Unable to load branches")})
+      .finally(()=>{if(!controller.signal.aborted)setLoading(false)});
+    return()=>controller.abort();
+  },[]);
 
   async function submit(event:FormEvent<HTMLFormElement>){
     event.preventDefault();
