@@ -4,6 +4,7 @@ import { mfaConfigurationStatus } from "@/core/auth/totp";
 import { db } from "@/server/db";
 import { recoveryConfigurationStatus } from "@/server/recovery-service";
 import { structuredLog } from "@/server/logger";
+import { appVersionInfo } from "@/core/version";
 
 export const runtime = "nodejs";
 
@@ -19,10 +20,14 @@ export async function GET() {
       status: productionReady ? "ok" : "degraded",
       service: "a1-mobi",
       stage: "foundation",
+      version: appVersionInfo(),
       readiness: {
         database: "ready",
         mfaEncryption: mfa.encryptionKey,
         recoveryDelivery: recovery.delivery,
+        billingCore: process.env.A1_BILLING_CORE_URL && process.env.A1_BILLING_SERVICE_TOKEN ? "configured" : "not_configured",
+        pulseCore: process.env.A1_PULSE_CORE_URL && process.env.A1_PULSE_SERVICE_TOKEN ? "configured" : "not_configured",
+        assist: process.env.A1_ASSIST_URL && process.env.A1_ASSIST_SERVICE_TOKEN ? "configured" : "not_configured",
       },
       domains: DOMAIN_NAMES,
       capabilities: FOUNDATION_CAPABILITIES,
