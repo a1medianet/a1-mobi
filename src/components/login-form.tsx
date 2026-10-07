@@ -24,7 +24,7 @@ const copy = {
     preview: "فتح معاينة التطبيق",
     security: "أمان الحساب",
     recover: "نسيت كلمة المرور؟",
-    note: "الصفحات التشغيلية ما زالت معاينة؛ الدخول لا يجعل بياناتها التجريبية معاملات حقيقية.",
+    note: "مساحة الـPilot تعرض بيانات تجريبية جاهزة، بينما الحسابات المنشأة حديثًا تبقى معزولة ببياناتها وصلاحياتها.",
   },
   en: {
     title: "Sign in to your store",
@@ -46,11 +46,11 @@ const copy = {
     preview: "Open app preview",
     security: "Account security",
     recover: "Forgot password?",
-    note: "Operational pages remain previews; signing in does not turn sample data into real transactions.",
+    note: "The Pilot workspace includes ready sample data, while newly provisioned accounts remain isolated by tenant and permissions.",
   },
 } as const;
 
-export function LoginForm({ locale }: { locale: "ar" | "en" }) {
+export function LoginForm({ locale, initialTenant = "", initialEmail = "" }: { locale: "ar" | "en"; initialTenant?: string; initialEmail?: string }) {
   const t = copy[locale];
   const [active, setActive] = useState(false);
   const [checking, setChecking] = useState(true);
@@ -168,11 +168,11 @@ export function LoginForm({ locale }: { locale: "ar" | "en" }) {
       </p>
     </div> : <form onSubmit={submit} style={{ display: "grid", gap: 20 }}>
       <label>{t.tenant}
-        <input name="tenant" autoComplete="organization" required maxLength={80}
+        <input name="tenant" defaultValue={initialTenant} autoComplete="organization" required maxLength={80}
           pattern="[a-zA-Z0-9-]+" dir="ltr" style={inputStyle} />
       </label>
       <label>{t.email}
-        <input name="email" type="email" autoComplete="username" required
+        <input name="email" defaultValue={initialEmail} type="email" autoComplete="username" required
           maxLength={254} dir="ltr" style={inputStyle} />
       </label>
       <label>{t.password}
