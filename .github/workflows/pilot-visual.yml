@@ -76,6 +76,9 @@ jobs:
           capture pricing-ar-desktop 1440,1000 http://127.0.0.1:3185/product/ar/pricing
           capture signup-ar-desktop 1440,1100 http://127.0.0.1:3185/product/ar/signup
           capture signup-ar-mobile 390,844 http://127.0.0.1:3185/product/ar/signup
+          capture help-ar-desktop 1440,1200 http://127.0.0.1:3185/product/ar/help
+          capture security-en-desktop 1440,1000 http://127.0.0.1:3185/product/en/security
+          capture status-ar-desktop 1440,900 http://127.0.0.1:3185/product/ar/status
 
           capture ar-dashboard-desktop 1440,1000 http://127.0.0.1:3185/ar
           capture ar-admin-desktop 1440,1100 http://127.0.0.1:3185/ar/admin
