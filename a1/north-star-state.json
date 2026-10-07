@@ -1,0 +1,40 @@
+{
+  "schema_version": "0.1.0",
+  "era_id": "NORTH-STAR-20261007",
+  "structural_root": "A1 North Star",
+  "project_id": "A1-MOBI",
+  "project_name": "A1 Mobi",
+  "canonical_source": {
+    "repository": "chadiatwi/a1-mobi",
+    "default_branch": "feat/operational-ui-shell"
+  },
+  "stable": {
+    "branch": "feat/operational-ui-shell",
+    "sha": "2b68776ba960dcfdccdba877d52429a1192fccc2",
+    "release": null
+  },
+  "candidate": {
+    "branch": "chore/north-star-onboarding-20261007",
+    "sha": null
+  },
+  "lifecycle": "PRODUCT",
+  "stage": "RECOVERY_READY",
+  "last_pass": "2b68776ba960dcfdccdba877d52429a1192fccc2",
+  "blocker": null,
+  "next_action": "Validate current operational UI and bind North Star continuity state.",
+  "execution": {
+    "policy": "CLOUD_DEFAULT",
+    "runner": "GITHUB_OR_AVAILABLE_RUNNER",
+    "allowed_nodes": []
+  },
+  "refs": {
+    "dna": [],
+    "journey": [],
+    "decisions": [],
+    "intelligence": [],
+    "evidence": []
+  },
+  "commercial_readiness": "UNKNOWN",
+  "legacy_policy": "PRE_NORTH_STAR_REFERENCE_ONLY",
+  "updated_at": "2026-10-07T04:20:00+03:00"
+}
