@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
+import { VersionGuard } from "@/components/version-guard";
 
 const labels = {
   ar: ["الرئيسية","نقطة البيع","المنتجات","المخزون والأجهزة","الصيانة","العملاء والديون","الصندوق","التعبئة","فحص IMEI","التقارير","الإدارة","الفريق والصلاحيات","أمان الحساب"],
@@ -81,6 +82,7 @@ export function AppShell({ locale, children }: {
         </div>
       </header>
 
+      <VersionGuard locale={locale}/>
       <div id="main-content" tabIndex={-1}>{children}</div>
       <nav ref={mobileNav} className="mobile-nav" aria-label={ar ? "أقسام المتجر" : "Store workspaces"}>
         {navigation(true)}
