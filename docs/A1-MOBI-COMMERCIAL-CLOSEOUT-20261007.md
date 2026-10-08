@@ -3,7 +3,7 @@
 **Date:** 2026-10-07  
 **Branch:** `closeout/pilot-visual-production-20261007`  
 **Target:** `feat/operational-ui-shell`  
-**Status:** ENGINEERING COMPLETE CANDIDATE — FINAL VISUAL / USAGE UAT PENDING
+**Status:** ENGINEERING COMPLETE + VISUAL EVIDENCE PASS — OWNER USAGE UAT / PRODUCTION BINDING PENDING
 
 ## Product promise
 
@@ -91,12 +91,12 @@ No production customer record is represented by this sample dataset.
 ## GitHub release evidence
 
 Required before merge:
-- [ ] GitHub CI PASS on exact closeout HEAD
-- [ ] Production build PASS
-- [ ] Runtime dependency audit PASS at configured threshold
-- [ ] SBOM artifact generated
-- [ ] Product + Pilot Visual Evidence workflow PASS
-- [ ] Screenshot artifact generated from production build
+- [x] GitHub CI PASS on exact closeout HEAD
+- [x] Production build PASS
+- [x] Runtime dependency audit PASS at configured threshold
+- [x] SBOM artifact generated
+- [x] Product + Pilot Visual Evidence workflow PASS
+- [x] Screenshot artifact generated from production build
 
 ## Manual-only remaining gate
 
@@ -140,3 +140,15 @@ When GitHub CI and Visual Evidence are green, A1 Mobi may be described as:
 > **Engineering-complete commercial pilot candidate.**
 
 It must **not** be described as Production/Public PASS until the final environment-bound Application Foundation evidence gate and manual visual/usage UAT pass.
+
+## 2026-10-08 Acceptance update
+
+- Exact closeout head CI: PASS.
+- Production dependency audit: PASS after transitive dependency remediation.
+- Production build: PASS.
+- SBOM: generated.
+- Product & Pilot Visual Evidence: PASS.
+- Generated desktop/mobile AR/EN evidence was manually reviewed at engineering closeout level; no visual P0/P1 blocker was found.
+- Commercial closeout PR #6 was merged into the canonical product branch.
+
+**Decision:** A1 Mobi is accepted as an **engineering-complete, visually review-ready commercial pilot candidate**. Remaining work is limited to owner usage UAT and production environment binding/final public-release gate.
