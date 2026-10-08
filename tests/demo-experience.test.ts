@@ -16,6 +16,17 @@ describe("pilot demo experience", () => {
     }
   });
 
+
+  it("pairs every demo handset with a distinct product photo for its exact model and color", () => {
+    const devices = demoProducts.filter(product => product.type === "DEVICE");
+    expect(devices.length).toBeGreaterThan(0);
+    expect(devices.every(product => !!product.imageUrl)).toBe(true);
+    expect(new Set(devices.map(product => product.imageUrl)).size).toBe(devices.length);
+    for (const product of devices) {
+      expect(product.imageUrl).toMatch(/^https:\/\//);
+    }
+  });
+
   it("derives catalog and low-stock metrics from the same source of truth", () => {
     const counts = demoCatalogCounts();
     expect(counts.total).toBe(demoProducts.length);
