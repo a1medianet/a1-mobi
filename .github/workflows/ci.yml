@@ -1,4 +1,4 @@
-﻿name: A1 Mobi CI
+name: A1 Mobi CI
 
 on:
   push:
@@ -36,6 +36,7 @@ jobs:
       - run: npm run check:sql-bom
       - run: npx prisma migrate deploy
       - run: npm run db:validate
+      - run: npm run db:generate
       - run: npm run lint
       - run: npx tsc --noEmit
       - run: npm test
