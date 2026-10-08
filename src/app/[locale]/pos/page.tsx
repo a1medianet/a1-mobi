@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useParams } from "next/navigation";
+import { DemoProductPhoto } from "@/components/demo-product-photo";
 import { demoProducts, demoStore, type DemoProduct } from "@/demo/data";
 
 type CartLine = { product: DemoProduct; quantity: number };
@@ -180,7 +181,7 @@ export default function PosPage() {
         <div className="product-grid">{filtered.map(product => {
           const remaining = available(product);
           return <button className="product-card" key={product.id} onClick={()=>addProduct(product)} disabled={remaining<=0}>
-            <span className="product-symbol" aria-hidden="true">{product.type==="DEVICE"?"◈":product.type==="PART"?"⌁":"□"}</span>
+            <DemoProductPhoto product={product} locale={locale} compact />
             <small>{product.brand}</small>
             <b>{locale==="ar"?product.nameAr:product.nameEn}</b>
             <small><bdi dir="ltr">{product.sku}</bdi></small>
@@ -198,7 +199,7 @@ export default function PosPage() {
         <div className="cart-lines">{cart.length===0
           ? <div className="empty-cart"><span aria-hidden="true">▣</span><b>{t.empty}</b><small>{t.choose}</small></div>
           : cart.map(({product,quantity}) => <div className="cart-line" key={product.id}>
-            <span className="line-icon" aria-hidden="true">{product.serialized?"◈":"□"}</span>
+            <DemoProductPhoto product={product} locale={locale} compact />
             <div><b>{locale==="ar"?product.nameAr:product.nameEn}</b><small><bdi dir="ltr">{product.sku}</bdi></small>
               {product.serialized && <small className="serialized-hint">{t.serialized}</small>}</div>
             <strong><bdi dir="ltr">{"$"+(product.price*quantity).toFixed(2)}</bdi></strong>
