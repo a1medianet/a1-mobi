@@ -14,6 +14,7 @@ export type DemoProduct = {
   serialized: boolean;
   storage?: string;
   color?: string;
+  imageUrl?: string;
 };
 
 export const demoStore = {
@@ -27,10 +28,10 @@ export const demoStore = {
 } as const;
 
 export const demoProducts: DemoProduct[] = [
-  { id:"p-iphone16pro", sku:"APL-IP16P-256-BLK", barcode:"0195949774001", brand:"Apple", nameAr:"iPhone 16 Pro 256GB — Black Titanium", nameEn:"iPhone 16 Pro 256GB — Black Titanium", type:"DEVICE", price:1199, stock:3, reorderAt:2, serialized:true, storage:"256GB", color:"Black Titanium" },
-  { id:"p-s25u", sku:"SAM-S25U-256-BLK", barcode:"8806095857701", brand:"Samsung", nameAr:"Samsung Galaxy S25 Ultra 256GB — Titanium Black", nameEn:"Samsung Galaxy S25 Ultra 256GB — Titanium Black", type:"DEVICE", price:1099, stock:2, reorderAt:2, serialized:true, storage:"256GB", color:"Titanium Black" },
-  { id:"p-a56", sku:"SAM-A56-256-GRY", barcode:"8806095981123", brand:"Samsung", nameAr:"Samsung Galaxy A56 5G 256GB — Graphite", nameEn:"Samsung Galaxy A56 5G 256GB — Graphite", type:"DEVICE", price:389, stock:6, reorderAt:3, serialized:true, storage:"256GB", color:"Graphite" },
-  { id:"p-rn14p", sku:"XIA-RN14P5G-256-BLK", barcode:"6941812791106", brand:"Xiaomi", nameAr:"Redmi Note 14 Pro 5G 256GB — Midnight Black", nameEn:"Redmi Note 14 Pro 5G 256GB — Midnight Black", type:"DEVICE", price:349, stock:5, reorderAt:3, serialized:true, storage:"256GB", color:"Midnight Black" },
+  { id:"p-iphone16pro", sku:"APL-IP16P-256-BLK", barcode:"0195949774001", brand:"Apple", nameAr:"iPhone 16 Pro 256GB — Black Titanium", nameEn:"iPhone 16 Pro 256GB — Black Titanium", type:"DEVICE", price:1199, stock:3, reorderAt:2, serialized:true, storage:"256GB", color:"Black Titanium", imageUrl:"https://media.studio7thailand.com/154745/iPhone_16_Pro_Black_Titanium_PDP_Image_Position_1a_Black_Titanium_Color__TH-TH_.png" },
+  { id:"p-s25u", sku:"SAM-S25U-256-BLK", barcode:"8806095857701", brand:"Samsung", nameAr:"Samsung Galaxy S25 Ultra 256GB — Titanium Black", nameEn:"Samsung Galaxy S25 Ultra 256GB — Titanium Black", type:"DEVICE", price:1099, stock:2, reorderAt:2, serialized:true, storage:"256GB", color:"Titanium Black", imageUrl:"https://gomagcdn.ro/domains2/mobishop.md/files/product/large/samsung-galaxy-s25-ultra-s938-5g-dual-sim-12gb-ram-512gb-titanium-black-515509.jpg" },
+  { id:"p-a56", sku:"SAM-A56-256-GRY", barcode:"8806095981123", brand:"Samsung", nameAr:"Samsung Galaxy A56 5G 256GB — Graphite", nameEn:"Samsung Galaxy A56 5G 256GB — Graphite", type:"DEVICE", price:389, stock:6, reorderAt:3, serialized:true, storage:"256GB", color:"Graphite", imageUrl:"https://static01.galaxus.com/productimages/3/5/3/9/6/0/1/5/0/7/9/9/2/8/4/7/4/3/ced3903e-b3b5-4903-88b1-f3f49e89f851.jpg_sea.jpeg" },
+  { id:"p-rn14p", sku:"XIA-RN14P5G-256-BLK", barcode:"6941812791106", brand:"Xiaomi", nameAr:"Redmi Note 14 Pro 5G 256GB — Midnight Black", nameEn:"Redmi Note 14 Pro 5G 256GB — Midnight Black", type:"DEVICE", price:349, stock:5, reorderAt:3, serialized:true, storage:"256GB", color:"Midnight Black", imageUrl:"https://mistore.fi/cdn/shop/files/4_e0ea3906-890c-4abe-9b8d-0786adf3bf7e.png?v=1742567289" },
   { id:"p-airpods4", sku:"APL-AIRPODS4-ANC", barcode:"0195949689305", brand:"Apple", nameAr:"AirPods 4 مع عزل ضوضاء نشط", nameEn:"AirPods 4 with Active Noise Cancellation", type:"ACCESSORY", price:179, stock:7, reorderAt:3, serialized:false },
   { id:"p-sam25w", sku:"SAM-CHG-25W-USBC", barcode:"8806094912067", brand:"Samsung", nameAr:"شاحن Samsung USB-C بقدرة 25W", nameEn:"Samsung 25W USB-C Power Adapter", type:"ACCESSORY", price:24, stock:12, reorderAt:5, serialized:false },
   { id:"p-anker30w", sku:"ANK-NANO-30W", barcode:"194644126421", brand:"Anker", nameAr:"شاحن Anker Nano USB-C بقدرة 30W", nameEn:"Anker Nano 30W USB-C Charger", type:"ACCESSORY", price:29, stock:8, reorderAt:4, serialized:false },
