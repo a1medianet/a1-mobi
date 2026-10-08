@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useParams } from "next/navigation";
+import { DemoProductPhoto } from "@/components/demo-product-photo";
 import { demoCatalogCounts, demoProducts, type DemoProductType } from "@/demo/data";
 
 const copy = {
@@ -87,7 +88,7 @@ export default function ProductsPage() {
           const low = product.stock <= product.reorderAt;
           return <article className="catalog-card" key={product.id}>
             <div className={"catalog-product-visual "+product.type.toLowerCase()}>
-              <span>{product.type==="DEVICE"?"▯":product.type==="PART"?"⌁":"□"}</span>
+              <DemoProductPhoto product={product} locale={locale} />
               <small>{product.brand}</small>
             </div>
             <div className="catalog-card-body">
