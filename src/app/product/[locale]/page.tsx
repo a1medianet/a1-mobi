@@ -8,23 +8,23 @@ const content={
     eyebrow:"A1 MOBI · RETAIL & REPAIR OS",
     title:"أدر متجر الموبايل والصيانة من مكان واحد.",
     sub:"نقطة بيع، أجهزة وIMEI، مخزون، صيانة، عملاء وديون، صندوق، تعبئة، تقارير، فريق وصلاحيات — ضمن نظام واحد متعدد الفروع.",
-    primary:"ابدأ تجربة 7 أيام",secondary:"شاهد المتجر التجريبي",
-    proof:"تجربة جاهزة وليست شاشة فارغة",proofText:"ادخل إلى مساحة تجريبية تحتوي منتجات ومخزون وصيانة وعملاء وحركات فعلية للاختبار.",
+    primary:"أنشئ حسابًا للتجربة",secondary:"شاهد جولة تعريفية",
+    proof:"نظرة عملية قبل التسجيل",proofText:"اطّلع على أمثلة للمنتجات والمخزون والصيانة والعملاء لتتعرف على طريقة عمل النظام.",
     section:"ما الذي يديره A1 Mobi؟",sectionSub:"من لحظة دخول الجهاز إلى المتجر حتى البيع أو الصيانة والتسليم والمحاسبة.",
     how:"كيف تبدأ؟",howSub:"رحلة قصيرة من إنشاء الجهة إلى أول عملية تشغيل.",
-    plans:"مبني للمتجر اليوم، وللفروع غدًا",plansSub:"الحساب التجاري يفصل الجهة عن الفروع والمستخدمين، والاشتراك يأتي من A1 Billing Core.",
-    cta:"جرّب النظام ببيانات واقعية",ctaSub:"لا تحتاج لإدخال منتجات أو عملاء من الصفر حتى تفهم التجربة.",
+    plans:"مبني للمتجر اليوم، وللفروع غدًا",plansSub:"ابدأ بمتجر واحد، وأضف فروعك وموظفيك حسب احتياج العمل، مع صلاحيات واضحة لكل مستخدم.",
+    cta:"تعرّف على النظام ثم ابدأ متجرك",ctaSub:"استعرض الجولة التعريفية، ثم أنشئ حسابك لتبدأ إدارة أعمالك.",
   },
   en:{
     eyebrow:"A1 MOBI · RETAIL & REPAIR OS",
     title:"Run mobile retail and repair from one operating system.",
     sub:"POS, devices and IMEI, inventory, repairs, customers and debt, cash, top-up, reports, team and permissions — in one multi-branch platform.",
-    primary:"Start 7-day trial",secondary:"Open live demo",
-    proof:"A ready experience, not an empty dashboard",proofText:"Enter a populated workspace with products, stock, repairs, customers and operational activity.",
+    primary:"Create a trial account",secondary:"Explore the guided tour",
+    proof:"See the workflow before signing up",proofText:"Explore sample products, stock, repairs and customers to understand how the system works.",
     section:"What does A1 Mobi run?",sectionSub:"From device intake through sale or repair, delivery and accounting.",
     how:"How do you start?",howSub:"A short path from organization setup to the first operation.",
-    plans:"Built for one store today and multiple branches tomorrow",plansSub:"Commercial accounts separate organization, branches and members; subscription state comes from A1 Billing Core.",
-    cta:"Try the system with realistic data",ctaSub:"You do not need to enter products or customers from scratch to understand the workflow.",
+    plans:"Built for one store today and multiple branches tomorrow",plansSub:"Start with one store and add branches and staff as your business grows, with clear permissions for every role.",
+    cta:"Get to know the system, then open your store",ctaSub:"Explore the guided tour before creating your store account.",
   }
 } as const;
 
@@ -73,11 +73,11 @@ export default async function ProductLanding({params}:{params:Promise<{locale:st
           <div className="hero-trust">
             <span>✓ {ar?"عربي / English":"Arabic / English"}</span>
             <span>✓ {ar?"متعدد الجهات والفروع":"Multi-tenant & branch-ready"}</span>
-            <span>✓ {ar?"تجربة 7 أيام":"7-day trial"}</span>
+            <span>✓ {ar?"حساب خاص بمتجرك":"Your own store account"}</span>
           </div>
         </div>
         <aside className="product-preview-card">
-          <div className="preview-top"><span>A1 Mobi</span><b>{ar?"فرع طرابلس التجريبي":"Tripoli Pilot Store"}</b></div>
+          <div className="preview-top"><span>A1 Mobi</span><b>{ar?"مثال توضيحي لمتجر":"Sample store preview"}</b></div>
           <div className="preview-metrics">
             <div><small>{ar?"المنتجات":"Products"}</small><strong>{counts.total}</strong></div>
             <div><small>{ar?"الصيانة المفتوحة":"Open repairs"}</small><strong>{demoRepairs.length}</strong></div>
@@ -92,7 +92,7 @@ export default async function ProductLanding({params}:{params:Promise<{locale:st
     <section className="product-shell product-proof">
       <div><span className="product-eyebrow">{t.proof}</span><h2>{t.proofText}</h2></div>
       <div className="proof-stats">
-        <article><strong>{counts.total}</strong><span>{ar?"منتجًا حقيقي الاسم":"real-world products"}</span></article>
+        <article><strong>{counts.total}</strong><span>{ar?"منتجًا نموذجيًا":"sample products"}</span></article>
         <article><strong>{demoRepairs.length}</strong><span>{ar?"أوامر صيانة":"repair orders"}</span></article>
         <article><strong>{demoCustomers.length}</strong><span>{ar?"عملاء تجريبيون":"sample customers"}</span></article>
         <article><strong>13</strong><span>{ar?"مساحة تشغيل":"operational workspaces"}</span></article>
@@ -111,7 +111,7 @@ export default async function ProductLanding({params}:{params:Promise<{locale:st
           {[
             ar?["1","أنشئ الجهة","اسم المتجر، المالك، اللغة."]:["1","Create organization","Store name, owner and language."],
             ar?["2","أضف الفرع","اسم الفرع وكود التشغيل."]:["2","Add first branch","Branch name and operating code."],
-            ar?["3","ابدأ Trial","A1 Billing Core يمنح الصلاحيات لمدة 7 أيام."]:["3","Start trial","A1 Billing Core grants seven-day entitlements."],
+            ar?["3","ابدأ التجربة","اختر خطة مناسبة وفعّل تجربة حسابك."]:["3","Start your trial","Choose a suitable plan and activate your trial account."],
             ar?["4","ادخل النظام","POS، مخزون، صيانة، فريق وتقارير."]:["4","Enter workspace","POS, inventory, repairs, team and reports."],
           ].map(([n,title,copy])=><article key={n}><span>{n}</span><h3>{title}</h3><p>{copy}</p></article>)}
         </div>
@@ -119,12 +119,12 @@ export default async function ProductLanding({params}:{params:Promise<{locale:st
     </section>
 
     <section className="product-shell commercial-band">
-      <div><span className="product-eyebrow">ACCOUNT → ORGANIZATION → TENANT → BRANCH</span><h2>{t.plans}</h2><p>{t.plansSub}</p></div>
+      <div><span className="product-eyebrow">{ar?"لمتجر واحد أو عدة فروع":"ONE STORE · MULTIPLE BRANCHES"}</span><h2>{t.plans}</h2><p>{t.plansSub}</p></div>
       <Link className="product-secondary" href={"/product/"+locale+"/pricing"}>{ar?"عرض الخطط":"View plans"}</Link>
     </section>
 
     <section className="product-shell final-cta">
-      <span className="product-eyebrow">A1 MOBI PILOT</span><h2>{t.cta}</h2><p>{t.ctaSub}</p>
+      <span className="product-eyebrow">{ar?"ابدأ بثقة":"GET STARTED"}</span><h2>{t.cta}</h2><p>{t.ctaSub}</p>
       <div className="product-actions"><Link className="product-cta" href={"/product/"+locale+"/signup"}>{t.primary}</Link><Link className="product-secondary" href={"/product/"+locale+"/demo"}>{t.secondary}</Link></div>
     </section>
   </main>;
