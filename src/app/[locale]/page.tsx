@@ -6,7 +6,7 @@ const copy = {
   ar: {
     title: "صباح العمل من مكان واحد",
     subtitle: "بيع، مخزون، صيانة، عملاء وصندوق — ضمن تجربة متجر موحدة.",
-    demo: "PILOT DEMO",
+    demo: "وضع التدريب",
     demoNote: "بيانات واقعية للتجربة وليست سجلات مالية أو مخزون إنتاجي.",
     newSale: "عملية بيع جديدة",
     admin: "الإدارة",
@@ -25,17 +25,17 @@ const copy = {
     inventory: "المخزون والأجهزة",
     topup: "التعبئة",
     open: "فتح",
-    activity: "آخر حركة تجريبية",
+    activity: "أمثلة على حركة المتجر",
     columns: ["المرجع","العميل","الوقت","المبلغ","الحالة"],
     completed: "مكتملة",
     inRepair: "قيد الصيانة",
     ready: "جاهزة",
-    store: "المتجر التجريبي",
+    store: "متجر نموذجي",
   },
   en: {
     title: "Run the day from one place",
     subtitle: "Sales, inventory, repair, customers and cash in one store experience.",
-    demo: "PILOT DEMO",
+    demo: "Practice mode",
     demoNote: "Realistic demo data only — not production stock or accounting records.",
     newSale: "New sale",
     admin: "Admin",
@@ -54,12 +54,12 @@ const copy = {
     inventory: "Inventory & devices",
     topup: "Top-up",
     open: "Open",
-    activity: "Recent pilot activity",
+    activity: "Sample store activity",
     columns: ["Reference","Customer","Time","Amount","Status"],
     completed: "Completed",
     inRepair: "In repair",
     ready: "Ready",
-    store: "Pilot store",
+    store: "Sample store",
   },
 } as const;
 
@@ -133,6 +133,6 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
         </tr>)}</tbody>
       </table></div>
     </section>
-    <footer><span>A1 Mobi · Pilot Store Experience</span><span>{t.demoNote}</span></footer>
+    <footer><span>A1 Mobi · {t.demo}</span><span>{t.demoNote}</span></footer>
   </main>;
 }

@@ -9,7 +9,7 @@ import { demoCatalogCounts, demoProducts, type DemoProductType } from "@/demo/da
 const copy = {
   ar: {
     back:"لوحة التحكم", title:"المنتجات", subtitle:"كتالوج تجريبي بمنتجات حقيقية وأرقام وأسعار اختبارية قابلة للتعديل",
-    notice:"Pilot Demo — أسماء المنتجات واقعية، لكن الأسعار والمخزون قيم تجريبية وليست تسعير سوق ملزم.",
+    notice:"كتالوج تدريبي: الأسعار والكميات المعروضة أمثلة للتوضيح فقط.",
     search:"ابحث بالاسم أو SKU أو الباركود", all:"الكل", device:"أجهزة", accessory:"إكسسوارات", part:"قطع صيانة",
     stock:"المخزون", serialized:"IMEI / Serial", normal:"غير تسلسلي", price:"سعر البيع", low:"منخفض", healthy:"جيد",
     products:"منتجات", devices:"أجهزة", accessories:"إكسسوارات", parts:"قطع", serialUnits:"أجهزة تسلسلية", lowStock:"تنبيهات",
@@ -17,7 +17,7 @@ const copy = {
   },
   en: {
     back:"Dashboard", title:"Products", subtitle:"Pilot catalog with real-world product names and configurable demo values",
-    notice:"Pilot Demo — product names are real-world items; prices and stock are demo values, not live market quotes.",
+    notice:"Sample catalog: prices and quantities are examples, not live store offers.",
     search:"Search name, SKU, or barcode", all:"All", device:"Devices", accessory:"Accessories", part:"Repair parts",
     stock:"Stock", serialized:"IMEI / Serial", normal:"Non-serialized", price:"Retail price", low:"Low", healthy:"Healthy",
     products:"Products", devices:"Devices", accessories:"Accessories", parts:"Parts", serialUnits:"Serialized units", lowStock:"Alerts",

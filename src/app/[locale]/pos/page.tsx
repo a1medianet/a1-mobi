@@ -18,11 +18,11 @@ type DemoReceipt = {
 
 const copy = {
   ar: {
-    back:"لوحة التحكم", title:"نقطة البيع", subtitle:"تجربة بيع كاملة محليًا بمنتجات ومخزون وأسعار تجريبية واقعية",
-    preview:"Pilot Demo — الإكمال هنا يحفظ إيصالًا تجريبيًا في هذا المتصفح فقط ولا ينشئ قيدًا محاسبيًا أو حركة مخزون إنتاجية.",
+    back:"لوحة التحكم", title:"نقطة البيع", subtitle:"جرّب اختيار المنتجات وإتمام العملية في وضع التدريب.",
+    preview:"وضع تدريب فقط: يمكنك تجربة السلة والإيصال دون تسجيل بيع حقيقي أو تغيير مخزون متجرك.",
     suspend:"تعليق السلة", resume:"استعادة السلة", fresh:"سلة جديدة",
     search:"ابحث بالمنتج أو SKU أو الباركود", products:"منتجات", available:"متوفر", add:"أضف",
-    cart:"السلة الحالية", pilot:"Pilot Demo", empty:"السلة فارغة", choose:"اختر منتجًا للبدء", noResults:"لا توجد منتجات مطابقة",
+    cart:"سلة التدريب", pilot:"وضع التدريب", empty:"السلة فارغة", choose:"اختر منتجًا للبدء", noResults:"لا توجد منتجات مطابقة",
     subtotal:"المجموع", total:"الإجمالي", remove:"احذف", quantity:"الكمية", more:"زيادة", less:"تقليل",
     customer:"العميل", walkin:"عميل نقدي", rami:"رامي درويش", lina:"لينا مصطفى",
     currency:"عملة الدفع", usd:"USD", lbp:"LBP", rate:"سعر صرف تجريبي",
@@ -32,11 +32,11 @@ const copy = {
     stockChanged:"تم تحديث مخزون التجربة لهذه الجلسة.",
   },
   en: {
-    back:"Dashboard", title:"Point of sale", subtitle:"Complete a local pilot sale using realistic demo products, stock, and prices",
-    preview:"Pilot Demo — completion stores a demo receipt in this browser only; it does not create production accounting or inventory movements.",
+    back:"Dashboard", title:"Point of sale", subtitle:"Practice selecting products and completing a sample checkout.",
+    preview:"Practice mode: explore the cart and receipt without recording a real sale or changing your store inventory.",
     suspend:"Suspend cart", resume:"Resume cart", fresh:"New cart",
     search:"Search product, SKU, or barcode", products:"products", available:"available", add:"Add",
-    cart:"Current cart", pilot:"Pilot Demo", empty:"Cart is empty", choose:"Choose a product to begin", noResults:"No matching products",
+    cart:"Practice cart", pilot:"Practice mode", empty:"Cart is empty", choose:"Choose a product to begin", noResults:"No matching products",
     subtotal:"Subtotal", total:"Total", remove:"Remove", quantity:"Quantity", more:"Increase", less:"Decrease",
     customer:"Customer", walkin:"Walk-in customer", rami:"Rami Darwish", lina:"Lina Mustafa",
     currency:"Payment currency", usd:"USD", lbp:"LBP", rate:"Demo exchange rate",
