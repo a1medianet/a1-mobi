@@ -42,6 +42,31 @@ jobs:
       - run: npm test
       - run: npm audit --omit=dev --audit-level=high
       - run: npm run build
+      - name: Build immutable Node 24 Linux release candidate bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s .next/BUILD_ID
+          test -f package-lock.json
+          mkdir -p artifacts/deploy artifacts/release
+          cp -a .next artifacts/deploy/.next
+          if test -d public; then cp -a public artifacts/deploy/public; fi
+          if test -d prisma; then cp -a prisma artifacts/deploy/prisma; fi
+          cp package.json package-lock.json next.config.ts artifacts/deploy/
+          sha=$(printf '%s' "$GITHUB_SHA" | cut -c1-12)
+          bundle="artifacts/release/a1-mobi-linux-node24-rc-${sha}.tar.gz"
+          tar -czf "$bundle" -C artifacts/deploy .
+          test -s "$bundle"
+          tar -tzf "$bundle" | grep -q './.next/BUILD_ID'
+          sha256sum "$bundle" > artifacts/release/SHA256SUMS.txt
+          {
+            echo "a1-mobi — release candidate bundle (NOT production approved)"
+            echo "Canonical commit: $GITHUB_SHA"
+            echo "Build node: $(node --version)"
+            echo 'Target: Linux + Node.js 24, package-lock exact npm ci, and configured external PostgreSQL.'
+            echo 'Environment secrets and .env files deliberately excluded.'
+            echo 'Deploy requires separate authorization, tenant-safe DB migration, and real E2E operational signoff.'
+          } > artifacts/release/DEPLOYMENT-GATE.txt
       - name: Generate release SBOM
         shell: bash
         run: |
