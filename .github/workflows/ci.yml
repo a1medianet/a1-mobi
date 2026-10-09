@@ -57,7 +57,7 @@ jobs:
           bundle="artifacts/release/a1-mobi-linux-node24-rc-${sha}.tar.gz"
           tar -czf "$bundle" -C artifacts/deploy .
           test -s "$bundle"
-          tar -tzf "$bundle" | grep -q './.next/BUILD_ID'
+          tar -tzf "$bundle" | grep -F './.next/BUILD_ID' > /dev/null
           sha256sum "$bundle" > artifacts/release/SHA256SUMS.txt
           {
             echo "a1-mobi — release candidate bundle (NOT production approved)"
