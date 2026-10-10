@@ -82,7 +82,7 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
   const statusLabel = (status: string) => status === "IN_REPAIR" ? t.inRepair : status === "READY" ? t.ready : t.completed;
 
   const spotlightActions = [
-    {href:"pos",title:ar?"عملية بيع جديدة":"New sale",sub:"Sales POS",icon:"🛒",tone:"blue",image:"https://images.unsplash.com/photo-1512941937669-90a1b58e7e9?auto=format&fit=crop&w=600&q=75"},
+    {href:"pos",title:ar?"عملية بيع جديدة":"New sale",sub:"Sales POS",icon:"🛒",tone:"blue",image:"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=600&q=75"},
     {href:"repairs",title:ar?"تذكرة صيانة جديدة":"New repair ticket",sub:"Repair intake",icon:"🔧",tone:"orange",image:"https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=75"},
     {href:"inventory",title:ar?"إضافة منتج جديد":"New inventory item",sub:"Inventory",icon:"▣",tone:"blue",image:"https://images.unsplash.com/photo-1603891128711-11b4b03bb138?auto=format&fit=crop&w=600&q=75"},
     {href:"customers",title:ar?"إضافة عميل جديد":"New customer",sub:"Customers",icon:"♙",tone:"orange",image:"https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=600&q=75"},
