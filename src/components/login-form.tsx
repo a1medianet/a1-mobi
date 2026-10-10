@@ -5,9 +5,10 @@ import { useEffect, useState, type FormEvent } from "react";
 
 const copy = {
   ar: {
-    title: "الدخول إلى المتجر",
-    intro: "استخدم رمز متجرك والبريد المسجل للوصول إلى جلسة العمل.",
-    tenant: "رمز المتجر",
+    title: "تسجيل الدخول إلى إدارة المتجر",
+    intro: "أدخل معرّف متجرك والبريد الإلكتروني وكلمة المرور للمتابعة إلى لوحة الإدارة.",
+    tenant: "معرّف المتجر",
+    tenantHint: "تجده عند إنشاء الحساب، أو تحصل عليه من مسؤول المتجر.",
     email: "البريد الإلكتروني",
     password: "كلمة المرور",
     factor: "رمز التحقق أو رمز الاستعادة",
@@ -24,12 +25,13 @@ const copy = {
     preview: "فتح معاينة التطبيق",
     security: "أمان الحساب",
     recover: "نسيت كلمة المرور؟",
-    note: "مساحة الـPilot تعرض بيانات تجريبية جاهزة، بينما الحسابات المنشأة حديثًا تبقى معزولة ببياناتها وصلاحياتها.",
+    note: "ليس لديك حساب بعد؟ أنشئ حسابًا لتبدأ إدارة متجرك.",
   },
   en: {
-    title: "Sign in to your store",
+    title: "Sign in to store management",
     intro: "Use your store code and registered email to open a work session.",
-    tenant: "Store code",
+    tenant: "Store ID",
+    tenantHint: "Your Store ID is provided during signup or by your store administrator.",
     email: "Email",
     password: "Password",
     factor: "Authenticator or recovery code",
@@ -46,7 +48,7 @@ const copy = {
     preview: "Open app preview",
     security: "Account security",
     recover: "Forgot password?",
-    note: "The Pilot workspace includes ready sample data, while newly provisioned accounts remain isolated by tenant and permissions.",
+    note: "New here? Create an account to get started with your store.",
   },
 } as const;
 
@@ -170,6 +172,7 @@ export function LoginForm({ locale, initialTenant = "", initialEmail = "" }: { l
       <label>{t.tenant}
         <input name="tenant" defaultValue={initialTenant} autoComplete="organization" required maxLength={80}
           pattern="[a-zA-Z0-9-]+" dir="ltr" style={inputStyle} />
+        <small className="mobi-field-hint">{t.tenantHint}</small>
       </label>
       <label>{t.email}
         <input name="email" defaultValue={initialEmail} type="email" autoComplete="username" required

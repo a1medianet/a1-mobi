@@ -4,9 +4,9 @@
 :root { --ink:#182231; --muted:#718096; --line:#e8edf3; --paper:#f6f8fb; --navy:#14233a; --blue:#1769e0; }
 * { box-sizing:border-box; }
 html,body { margin:0; min-height:100%; background:var(--paper); color:var(--ink); }
-body { font-family:"Segoe UI",Arial,sans-serif; font-size:15px; line-height:1.5; text-rendering:optimizeLegibility; }
-[lang="ar"] { font-family:"Noto Sans Arabic Variable",Tahoma,Arial,sans-serif; }
-[lang="en"] { font-family:"Inter Variable","Segoe UI",Arial,sans-serif; }
+body { font-family:var(--a1-active-font-family,"Inter Variable","Segoe UI",Arial,sans-serif); font-size:calc(16px * var(--a1-ui-font-scale,1)); line-height:1.6; text-rendering:optimizeLegibility; }
+[lang="ar"] { --a1-ui-font-scale:var(--a1-font-scale-ar,1); --a1-active-font-family:var(--a1-font-family-ar,"Noto Sans Arabic Variable",Tahoma,Arial,sans-serif); font-family:var(--a1-active-font-family); line-height:1.75; }
+[lang="en"] { --a1-ui-font-scale:var(--a1-font-scale-en,1); --a1-active-font-family:var(--a1-font-family-en,"Inter Variable","Segoe UI",Arial,sans-serif); font-family:var(--a1-active-font-family); line-height:1.6; }
 button,input { font:inherit; }
 .app-shell { min-height:100vh; display:flex; }
 .sidebar { width:244px; position:fixed; inset-block:0; inset-inline-start:0; background:linear-gradient(180deg,#14243b,#101c30); color:#fff; display:flex; flex-direction:column; z-index:30; }
@@ -239,4 +239,42 @@ footer { color:#526174; font-size:13px; gap:16px; }.back-link,.module-banner p,.
   .catalog-product-visual { height:160px; }
   .product-card > .demo-product-photo { height:82px; }
   .product-card .demo-product-photo img { max-height:78px; }
+}
+
+
+/* A1 Mobi visual QA: calmer Arabic/English typographic rhythm and separate customer login. */
+body { font-family:"Inter Variable","Segoe UI",Arial,sans-serif; font-weight:400; }
+[lang="ar"],html[lang="ar"] body { font-family:"Noto Sans Arabic Variable",Tahoma,Arial,sans-serif; font-weight:400; }
+.product-hero h1,.page-intro h1 {
+  font-size:clamp(33px,3.8vw,50px);
+  line-height:1.24;
+  font-weight:650;
+  letter-spacing:-.65px;
+  max-width:790px;
+}
+[dir="rtl"] .product-hero h1,[dir="rtl"] .page-intro h1 {letter-spacing:0;line-height:1.35;}
+.product-section-head h2 {font-size:clamp(24px,2.2vw,30px);letter-spacing:0;font-weight:650;}
+.product-hero {padding:62px 0 50px;}
+.product-eyebrow {font-weight:700;letter-spacing:.5px;}
+.product-hero>div p,.page-intro>p {font-size:16px;line-height:1.85;}
+.product-preview-card {border-radius:18px;box-shadow:0 12px 32px #20395712;}
+.product-card > .demo-product-photo {height:116px;}
+.product-card .demo-product-photo img {max-height:110px;}
+.demo-photo-fallback {color:#60758b;font-size:14px;gap:7px;}
+.demo-photo-fallback small {font-size:10px;font-weight:500;}
+.mobi-auth-shell {min-height:100vh;background:#f6f8fb;}
+.mobi-auth-header {display:flex;align-items:center;justify-content:space-between;gap:18px;padding:18px max(24px,calc((100% - 1080px)/2));background:#fff;border-bottom:1px solid #e8edf3;}
+.mobi-auth-brand {font-size:18px;text-decoration:none;color:#14233a;font-weight:650;}
+.mobi-auth-header nav {display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+.mobi-auth-header nav a {color:#536880;text-decoration:none;font-size:13px;}
+.mobi-auth-header nav a:hover {color:#1769e0;}
+.mobi-auth-content {padding:22px 18px 70px;}
+.mobi-field-hint {display:block;margin-top:7px;color:#718096;font-size:12px;line-height:1.65;}
+.auth-card h1 {font-size:clamp(23px,2.5vw,27px)!important;font-weight:650;}
+.module-header h1 {font-size:clamp(24px,2.3vw,29px);font-weight:650;}
+@media(max-width:760px) {
+ .product-hero h1,.page-intro h1 {font-size:clamp(29px,7.2vw,38px);line-height:1.3;}
+ .mobi-auth-header {flex-direction:column;align-items:flex-start;padding:16px 18px;}
+ .mobi-auth-header nav {gap:10px 16px;}
+ .product-hero {padding-top:40px;}
 }

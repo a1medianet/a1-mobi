@@ -53,8 +53,8 @@ export function AppShell({ locale, children }: {
       <nav className="nav-list" aria-label={ar ? "أقسام المتجر" : "Store workspaces"}>{navigation(false)}</nav>
       <div className="sidebar-foot">
         <div className="status-dot pilot" aria-hidden="true" />
-        <div><b>{ar ? "بيئة التجربة" : "Pilot workspace"}</b>
-          <small>{ar ? "منتجات وعمليات واقعية للتجربة · ليست بيانات إنتاجية" : "Realistic catalog and operations · not production data"}</small></div>
+        <div><b>{ar ? "بيئة تدريب" : "Practice workspace"}</b>
+          <small>{ar ? "أمثلة للتدريب فقط · ليست مبيعات حقيقية" : "Samples only · not real sales"}</small></div>
       </div>
     </aside>
 
@@ -73,7 +73,7 @@ export function AppShell({ locale, children }: {
         <div className="top-actions">
           <Link className="locale account-link" href={"/"+locale+"/account"}>{ar ? "الحساب" : "Account"}</Link>
           <Link className="locale" href={"/product/"+locale} title={ar?"صفحة المنتج":"Product site"}>{ar?"الموقع":"Site"}</Link>
-          <span className="environment-label pilot-label">PILOT</span>
+          <span className="environment-label pilot-label">{ar?"بيئة تجربة":"Demo mode"}</span>
           <Link className="locale" href={otherPath} hrefLang={other}
             aria-label={ar ? "Switch to English" : "التبديل إلى العربية"}>{ar ? "EN" : "العربية"}</Link>
         </div>
