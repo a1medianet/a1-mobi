@@ -19,7 +19,7 @@ export default async function RootLayout({
   const locale = (await headers()).get("x-a1-mobi-locale") === "en" ? "en" : "ar";
   return (
     <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
-      <body>{children}</body>
+      <head><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous"/><link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet"/></head><body>{children}</body>
     </html>
   );
 }
