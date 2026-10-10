@@ -295,3 +295,53 @@ body { font-family:"Inter Variable","Segoe UI",Arial,sans-serif; font-weight:400
 @media (min-width:1000px) and (min-height:740px){.mobi-store{height:100dvh;overflow:hidden}}
 @media(max-width:999px){.mobi-store-hero{max-height:none;min-height:440px}.mobi-store-products{grid-template-columns:repeat(2,minmax(0,1fr))}.mobi-store-info{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:640px){.mobi-store{gap:10px}.mobi-store-header{flex-wrap:wrap;padding:12px}.mobi-store-header nav{order:3;width:100%;justify-content:space-between;gap:5px}.mobi-store-header-actions{gap:8px}.mobi-store-demo-tag{display:none}.mobi-store-hero{display:flex;flex-direction:column;min-height:0}.mobi-store-photo{height:220px;order:1}.mobi-store-hero-copy{padding:22px;order:2}.mobi-store-info{grid-template-columns:1fr 1fr}.mobi-store-info>div{padding:12px}.mobi-store-info span{white-space:normal}.mobi-store-products{grid-template-columns:1fr 1fr}.mobi-store-product{grid-template-columns:1fr}.mobi-store-product-photo{height:120px}.mobi-store-bottom{flex-wrap:wrap}}
+
+
+/* A1 Mobi visual finalization: approved A/B/C, photos are illustrative, demo data labeled */
+:root{--mobi-primary:#1265e8;--mobi-accent:#ff7a1a;--mobi-ink:#14233d}
+body{font-family:"IBM Plex Sans Arabic","Noto Sans Arabic",Tahoma,sans-serif}
+h1,h2,h3,.brand b,.mobi-store-hero h1{font-family:"Alexandria","IBM Plex Sans Arabic",sans-serif}
+.mobi-marketing-a{background:#f9fbff;padding:42px 0 55px;overflow:hidden}
+.mobi-marketing-a .hero-layout{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:28px}
+.mobi-marketing-a h1{font-family:"Alexandria",sans-serif;font-weight:760;font-size:clamp(2rem,3.5vw,3.85rem);line-height:1.42;letter-spacing:normal}
+.mobi-marketing-a .hero-trust{gap:8px 14px}
+.mobi-a-visual{position:relative;min-height:410px;display:flex;align-items:center;justify-content:flex-end}
+.mobi-a-photo{position:absolute;inset:0 0 9% 0;border-radius:24px;overflow:hidden;background:#e2eaf5}
+.mobi-a-photo:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#0a225269,transparent 72%)}
+.mobi-a-photo img{height:100%;width:100%;object-fit:cover}
+.mobi-a-photo>span{position:absolute;bottom:20px;left:20px;z-index:1;color:#fff;font-weight:700;font-size:.9rem}
+.mobi-a-floating-preview{position:relative;z-index:1;width:67%;max-width:400px;max-height:310px;overflow:hidden;margin:26% 0 0 10px;transform:rotate(-1deg);box-shadow:0 22px 65px #10274f55;border:5px solid #fff}
+.mobi-a-floating-preview .preview-top{padding:10px 12px}.mobi-a-floating-preview .preview-metrics>div{padding:9px 12px}.mobi-a-floating-preview .preview-metrics strong{font-size:18px}.mobi-a-floating-preview .preview-products{padding:5px 10px}
+.mobi-a-preview-product{width:33px;height:35px;display:grid;place-items:center}.mobi-a-preview-product img{max-width:100%;max-height:100%;object-fit:contain}
+.mobi-a-repair-story{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:clamp(18px,4vw,60px);margin-block:70px}
+.mobi-a-repair-image{height:270px;overflow:hidden;border-radius:24px}.mobi-a-repair-image img{width:100%;height:100%;object-fit:cover}
+.mobi-a-repair-story h2{font-size:clamp(1.4rem,2.5vw,2.25rem);line-height:1.55}.mobi-a-repair-story p{color:#53647e;line-height:1.9;max-width:520px;margin:12px 0 22px}
+.mobi-store-header{direction:ltr}.mobi-store-header nav,.mobi-store-header-actions{direction:rtl}
+.mobi-store-hero{direction:rtl;grid-template-columns:1.05fr 1fr;background:linear-gradient(110deg,#fff 0%,#e7f0ff 100%)}
+.mobi-store-photo{grid-column:1;grid-row:1}.mobi-store-photo:after{background:linear-gradient(270deg,transparent 55%,#f2f7ff 100%)}
+.mobi-store-hero-copy{grid-column:2;grid-row:1}
+.mobi-store-header nav a:hover,.mobi-store-featured a:hover{color:#ff7a1a}
+.mobi-store-product-photo{padding:5px}
+.mobi-store-product-photo img{max-height:175px}
+.mobi-store-product-body h3{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.mobi-store .mobi-shop-logo{font-size:30px}
+.mobi-c-polish{--mobi-c-blue:#1265e8;--mobi-c-orange:#ff7a1a}
+.mobi-c-spotlight{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0}
+.mobi-c-action{min-height:112px;position:relative;isolation:isolate;background:linear-gradient(110deg,#1265e8,#3593ff);color:#fff;border-radius:16px;overflow:hidden;display:flex;align-items:end;padding:16px}
+.mobi-c-action.orange{background:linear-gradient(110deg,#ff7a1a,#ff982f)}
+.mobi-c-action>img{position:absolute;z-index:-2;inset:0 0 0 auto;width:58%;height:100%;object-fit:cover;opacity:.48}
+.mobi-c-action:after{content:"";position:absolute;z-index:-1;inset:0;background:linear-gradient(90deg,transparent,#1265e8a3 85%)}
+.mobi-c-action.orange:after{background:linear-gradient(90deg,transparent,#db6412b5 85%)}
+.mobi-c-action-copy{display:flex;flex-direction:column;gap:2px;min-width:0}.mobi-c-action-copy b{font-size:24px}.mobi-c-action-copy strong{font-size:.9rem}.mobi-c-action-copy small{font-size:.72rem;opacity:.88}
+.mobi-c-action-arrow{margin-inline-start:auto;background:#fff;color:#1265e8;border-radius:50%;display:grid;place-items:center;font-weight:bold;width:26px;height:26px;flex:none}
+.mobi-c-action.orange .mobi-c-action-arrow{color:#ea6516}
+.mobi-c-insight{background:#fff;border:1px solid #e6ebf3;border-radius:16px;padding:16px 20px;margin-top:16px}
+.mobi-c-insight .section-head{margin:0 0 10px}.mobi-c-bars{display:flex;align-items:flex-end;justify-content:space-around;gap:12px;height:140px;border-bottom:1px solid #dbe4f3;background:repeating-linear-gradient(to top,transparent,transparent 33px,#eef3fa 34px)}
+.mobi-c-bars>div{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px;min-width:0}
+.mobi-c-bar{width:min(45%,75px);min-height:8px;border-radius:7px 7px 0 0;background:linear-gradient(#479cf8,#1265e8)}
+.mobi-c-bars>div:nth-child(2n) .mobi-c-bar{background:linear-gradient(#ffae67,#ff7a1a)}
+.mobi-c-bars small{color:#72849b;font-size:.67rem}
+@media(min-width:1100px){.mobi-store-hero{max-height:41dvh}.mobi-store .mobi-store-featured{min-height:190px}}
+@media(max-width:1100px){.mobi-c-spotlight{grid-template-columns:repeat(2,minmax(0,1fr))}.mobi-marketing-a .hero-layout{grid-template-columns:1fr}.mobi-a-visual{height:390px}}
+@media(max-width:640px){.mobi-c-spotlight{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.mobi-c-action{padding:10px;min-height:100px}.mobi-c-action-copy strong{font-size:.73rem}.mobi-a-repair-story{grid-template-columns:1fr;margin-block:45px}.mobi-a-visual{min-height:350px;height:350px}.mobi-a-floating-preview{width:78%;margin-top:55px}.mobi-store-hero{display:flex}.mobi-store-photo{order:0}.mobi-store-hero-copy{order:1}}
+@media(prefers-reduced-motion:reduce){.mobi-c-action,.mobi-a-floating-preview{transition:none;transform:none}}
