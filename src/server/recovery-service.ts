@@ -9,6 +9,7 @@ import {
   purgeExpiredAuthAttempts,
 } from "./attempt-budget";
 import { structuredLog } from "./logger";
+import { recoverySmtpConfig } from "./recovery-mail";
 
 const RESET_TTL_MS = 30 * 60 * 1000;
 const RESET_RETENTION_MS = 7 * 24 * 60 * 60 * 1000;
@@ -59,6 +60,17 @@ function productionRecoveryConfig() {
     if (parsed.protocol !== "https:") throw new Error("RECOVERY_DELIVERY_UNCONFIGURED");
   }
 
+  if (url) {
+    const parsed = new URL(url);
+    const appOrigin = process.env.APP_ORIGIN?.trim();
+    if (parsed.pathname === "/api/internal/recovery-delivery" &&
+      appOrigin && parsed.origin === new URL(appOrigin).origin) {
+      if (parsed.protocol !== "https:" || !secret || parsed.username || parsed.password || parsed.search || parsed.hash) {
+        throw new Error("RECOVERY_DELIVERY_UNCONFIGURED");
+      }
+      recoverySmtpConfig();
+    }
+  }
   return { url, secret };
 }
 
