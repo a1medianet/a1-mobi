@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { DemoProductPhoto, DemoScenePhoto } from "@/components/demo-product-photo";
 import { notFound } from "next/navigation";
 import { demoCatalogCounts, demoProducts } from "@/demo/data";
 import { demoRepairs, demoCustomers, demoReports } from "@/demo/operations";
@@ -77,7 +78,7 @@ export default async function ProductLanding({params}:{params:Promise<{locale:st
           </div>
         </div>
         <div className="mobi-a-visual">
-          <div className="mobi-a-photo"><img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1400&q=85" alt={ar?"صورة توضيحية لمتجر وخدمة العملاء":"Illustrative retail and customer service photo"} fetchPriority="high"/><span>{ar?"تجارة وصيانة بإدارة أذكى":"Smarter retail & repairs"}</span></div>
+          <div className="mobi-a-photo"><DemoScenePhoto src="https://images.unsplash.com/photo-1571854000455-d8b5b5b489fc?auto=format&fit=crop&w=1400&q=85" alt={ar?"هواتف معروضة في متجر — صورة توضيحية":"Illustrative smartphone display in a phone shop"} eager /><span>{ar?"تجارة وصيانة بإدارة أذكى":"Smarter retail & repairs"}</span></div>
         <aside className="product-preview-card mobi-a-floating-preview">
           <div className="preview-top"><span>A1 Mobi</span><b>{ar?"مثال توضيحي لمتجر":"Sample store preview"}</b></div>
           <div className="preview-metrics">
@@ -86,7 +87,7 @@ export default async function ProductLanding({params}:{params:Promise<{locale:st
             <div><small>{ar?"العملاء":"Customers"}</small><strong>{demoCustomers.length}</strong></div>
             <div><small>{ar?"مبيعات اليوم":"Today's sales"}</small><strong>{"$"+demoReports.salesUsd.toLocaleString()}</strong></div>
           </div>
-          <div className="preview-products">{demoProducts.slice(0,4).map(product=><article key={product.id}><span className="mobi-a-preview-product">{product.imageUrl?<img src={product.imageUrl} alt="" loading="lazy"/>:product.type==="DEVICE"?"▯":"□"}</span><div><b>{ar?product.nameAr:product.nameEn}</b><small>{product.stock} {ar?"في المخزون":"in stock"} · {"$"+product.price}</small></div></article>)}</div>
+          <div className="preview-products">{demoProducts.slice(0,4).map(product=><article key={product.id}><span className="mobi-a-preview-product"><DemoProductPhoto product={product} locale={locale} compact /></span><div><b>{ar?product.nameAr:product.nameEn}</b><small>{product.stock} {ar?"في المخزون":"in stock"} · {"$"+product.price}</small></div></article>)}</div>
         </aside>
         </div>
       </div>
@@ -107,7 +108,7 @@ export default async function ProductLanding({params}:{params:Promise<{locale:st
       <div className="feature-grid">{features[locale].map(([title,copy],index)=><article className="feature-card" key={title}><span>{String(index+1).padStart(2,"0")}</span><h3>{title}</h3><p>{copy}</p></article>)}</div>
     </section>
 
-    <section className="mobi-a-repair-story product-shell"><div className="mobi-a-repair-image"><img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1100&q=80" alt={ar?"صورة توضيحية لمساحة عمل فنية":"Illustrative technical workspace"}/></div><div><span className="product-eyebrow">{ar?"صيانة وتنظيم ومتابعة":"REPAIR WORKFLOW"}</span><h2>{ar?"من استلام الجهاز إلى التسليم بثقة":"From intake to delivery with confidence"}</h2><p>{ar?"وثّق العطل، تابع الحالة وقطع الغيار، واحتفظ بسجل واضح لكل عملية صيانة داخل المتجر.":"Track diagnosis, parts, progress and delivery with a complete repair record."}</p><Link className="product-cta" href={"/product/"+locale+"/demo"}>{ar?"شاهد رحلة الصيانة":"Explore the repair journey"} →</Link></div></section>
+    <section className="mobi-a-repair-story product-shell"><div className="mobi-a-repair-image"><DemoScenePhoto src="https://images.unsplash.com/photo-1699550403361-27dee0f2a415?auto=format&fit=crop&w=1100&q=80" alt={ar?"فني يصلح هاتفًا مفتوحًا باستخدام مفك — صورة توضيحية":"Illustrative technician repairing an open smartphone with a screwdriver"}/></div><div><span className="product-eyebrow">{ar?"صيانة وتنظيم ومتابعة":"REPAIR WORKFLOW"}</span><h2>{ar?"من استلام الجهاز إلى التسليم بثقة":"From intake to delivery with confidence"}</h2><p>{ar?"وثّق العطل، تابع الحالة وقطع الغيار، واحتفظ بسجل واضح لكل عملية صيانة داخل المتجر.":"Track diagnosis, parts, progress and delivery with a complete repair record."}</p><Link className="product-cta" href={"/product/"+locale+"/demo#repairs"}>{ar?"شاهد رحلة الصيانة":"Explore the repair journey"} →</Link></div></section>
 
     <section className="product-flow">
       <div className="product-shell">

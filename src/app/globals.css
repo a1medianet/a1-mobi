@@ -227,6 +227,12 @@ footer { color:#526174; font-size:13px; gap:16px; }.back-link,.module-banner p,.
 .demo-product-photo img { display:block; width:100%; height:100%; max-width:100%; object-fit:contain; object-position:center; mix-blend-mode:multiply; }
 .demo-photo-fallback { display:flex; align-items:center; justify-content:center; flex-direction:column; gap:3px; color:#62758d; font-size:24px; }
 .demo-photo-fallback small { font-size:10px; font-weight:650; }
+.demo-scene-fallback{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;height:100%;padding:24px;background:#eaf2ff;color:#14233d;text-align:center;font-size:14px}
+.product-site,.mobi-store{font-family:"IBM Plex Sans Arabic","Noto Sans Arabic Variable","Inter Variable",Arial,sans-serif}
+.product-site :is(h1,h2,h3),.mobi-store :is(h1,h2,h3){font-family:"Alexandria","Noto Sans Arabic Variable","Inter Variable",Arial,sans-serif}
+.product-site a:focus-visible,.mobi-store a:focus-visible{outline:3px solid #1265e8;outline-offset:4px}
+.mobi-store :is(#products,#services,#visit):is(:focus,:target){outline:3px solid #1265e8;outline-offset:-3px;border-radius:14px}
+.product-site .product-nav nav{flex-wrap:wrap}
 .catalog-product-visual { height:205px; padding:20px 16px; background:#f9fbfe; }
 .catalog-product-visual .demo-product-photo { max-width:100%; }
 .catalog-product-visual > small { z-index:1; }

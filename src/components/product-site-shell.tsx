@@ -7,7 +7,7 @@ export function ProductSiteShell({locale,children}:{locale:"ar"|"en";children:Re
     <header className="product-nav">
       <div className="product-shell nav-inner">
         <Link href={"/product/"+locale} className="product-brand"><span>A1</span><b>Mobi</b></Link>
-        <nav>
+        <nav aria-label={ar?"التنقل الرئيسي للمنتج":"Product navigation"}>
           <Link href={"/product/"+locale+"#features"}>{ar?"المزايا":"Features"}</Link>
           <Link href={"/product/"+locale+"/demo"}>{ar?"التجربة":"Demo"}</Link>
           <Link href={"/product/"+locale+"/pricing"}>{ar?"الخطط":"Plans"}</Link>

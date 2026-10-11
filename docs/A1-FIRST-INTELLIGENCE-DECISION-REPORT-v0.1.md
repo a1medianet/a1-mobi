@@ -403,3 +403,15 @@ Production npm audit still reports 3 HIGH findings in Prisma tooling through dee
 
 Classification:
 PARITY for CI/health/logging; SUPERSEDE for restore-as-proof; REJECT_WITH_REASON for unsafe dependency forcing.
+
+## 14. Focused A/B/C preview implementation — 2026-10-11
+
+Decision and value: preserve SaaS marketing A, the approved single-screen TechZone demonstration B, and authenticated operations C. Replace unrelated checkout/office photos with smartphone display and actual phone-repair photographs; reuse the existing catalog images and accessible fallback. Load hero and visible catalog imagery eagerly. B anchors now focus and highlight the selected section, and A's repair CTA leads to labeled sample repair records. Existing fonts are retained and explicitly scoped to the public surfaces.
+
+Source ledger: current tracked A/B/C code; `src/demo/data.ts`; `docs/PILOT-PRODUCT-MEDIA-20261008.md`; phone display by Jason Leung, https://unsplash.com/photos/all-colors-iphone-11-on-stand-G-vV9ORK_9U (image photo-1571854000455-d8b5b5b489fc); phone repair by Revendo, https://unsplash.com/photos/a-person-using-a-screwdriver-to-fix-a-cell-phone-Q_I49DIzHu8 (image photo-1699550403361-27dee0f2a415). Scene photos illustrate workflows, not TechZone premises or catalog SKU identity. Existing catalog CDN provenance and release media requirements remain applicable.
+
+Rejected/deferred: redesigning B, dependency/font upgrades, fabricated reviews/hours, and public operational access. Deferred locally owned approved media because this task permits tracked-source edits only. Opportunity: move reviewed media into owned storage with rights metadata before public release.
+
+Evidence: port 3104 returned HTTP 200 for B, A AR/EN, signup, and demo; product AR RTL and EN LTR markup verified. Unauthenticated `/ar` and `/en/pos` returned 307 to their locale login. Browser approval review rejected localhost access because permission was declined, so first-viewport image rendering, anchor focus, mobile layout, and the 1440x900 no-scroll assertion are not visually certified. No public/pre-launch PASS is claimed. Production build deferred to avoid sharing `.next` output with the running preview. No deployment, commit, staging, push, secrets or auth changes.
+
+Validation: `npx tsc --noEmit` PASS; `npx vitest run tests/product-experience.test.ts --maxWorkers=1` PASS (3 tests); `git diff --check` PASS. `npm run lint` completed with 0 errors and 2 existing warnings (C dashboard raw image and root-layout Google Fonts link).

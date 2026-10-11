@@ -1,9 +1,34 @@
 "use client";
 
 import { useState } from "react";
+import type { MouseEvent } from "react";
 import type { DemoProduct } from "@/demo/data";
 
 type Props = { product: DemoProduct; locale: "ar" | "en"; compact?: boolean };
+
+// Preserve real anchors while moving keyboard focus within the single-screen preview.
+export function StoreSectionLink({ target, children, className }: {
+  target: string; children: React.ReactNode; className?: string;
+}) {
+  function focusSection(event: MouseEvent<HTMLAnchorElement>) {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    document.getElementById(target)?.focus({ preventScroll: true });
+  }
+  return <a href={`#${target}`} className={className} onClick={focusSection}>{children}</a>;
+}
+
+export function DemoScenePhoto({ src, alt, eager = false }: {
+  src: string; alt: string; eager?: boolean;
+}) {
+  const [failed, setFailed] = useState(false);
+  return failed ? <span className="demo-scene-fallback" role="img" aria-label={alt}>
+    <svg viewBox="0 0 48 48" width="80" height="80" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><rect x="13" y="4" width="22" height="40" rx="5"/><path d="M21 9h6M22 39h4"/></svg>
+    <span>{alt}</span>
+  </span> : (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt={alt} loading={eager ? "eager" : "lazy"} fetchPriority={eager ? "high" : "auto"} decoding="async" onError={() => setFailed(true)} />
+  );
+}
 
 export function DemoProductPhoto({ product, locale, compact = false }: Props) {
   const [failedUrl, setFailedUrl] = useState<string | null>(null);
