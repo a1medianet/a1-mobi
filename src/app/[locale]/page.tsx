@@ -81,7 +81,13 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
   ] as const;
   const statusLabel = (status: string) => status === "IN_REPAIR" ? t.inRepair : status === "READY" ? t.ready : t.completed;
 
-  return <main className="content pilot-dashboard">
+  const spotlightActions = [
+    {href:"pos",title:ar?"عملية بيع جديدة":"New sale",sub:"Sales POS",icon:"🛒",tone:"blue",image:"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=600&q=75"},
+    {href:"repairs",title:ar?"تذكرة صيانة جديدة":"New repair ticket",sub:"Repair intake",icon:"🔧",tone:"orange",image:"https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=75"},
+    {href:"inventory",title:ar?"إضافة منتج جديد":"New inventory item",sub:"Inventory",icon:"▣",tone:"blue",image:"https://images.unsplash.com/photo-1603891128711-11b4b03bb138?auto=format&fit=crop&w=600&q=75"},
+    {href:"customers",title:ar?"إضافة عميل جديد":"New customer",sub:"Customers",icon:"♙",tone:"orange",image:"https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=600&q=75"},
+  ];
+  return <main className="content pilot-dashboard mobi-c-polish">
     <section className="welcome pilot-welcome">
       <div>
         <div className="eyebrow-row"><p className="eyebrow">A1 MOBI</p><span className="demo-chip">{t.demo}</span></div>
@@ -96,6 +102,7 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
       </div>
     </section>
 
+    <section className="mobi-c-spotlight" aria-label={ar?"إجراءات سريعة":"Quick actions"}>{spotlightActions.map(a=><Link key={a.href} href={"/"+locale+"/"+a.href} className={"mobi-c-action "+a.tone}><img src={a.image} alt="" loading="lazy"/><span className="mobi-c-action-copy"><b>{a.icon}</b><strong>{a.title}</strong><small>{a.sub}</small></span><span className="mobi-c-action-arrow" aria-hidden="true">↗</span></Link>)}</section>
     <section className="section-head"><h2>{t.overview}</h2><span className="period">{t.demo}</span></section>
     <section className="metrics" aria-label={t.overview}>{metrics.map(metric =>
       <article className="metric" key={metric.label}>
@@ -118,6 +125,7 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
         </Link>)}</div>
     </section>
 
+    <section className="mobi-c-insight"><div className="section-head"><div><h2>{ar?"حركة السجلات التجريبية":"Demo transaction activity"}</h2><p>{ar?"قيم عمليات البيع والصيانة في بيانات التجربة":"Sample sales and repairs by transaction"}</p></div></div><div className="mobi-c-bars">{demoTransactions.map(row=><div key={row.id}><span className="mobi-c-bar" style={{height:(18+Math.round(82*row.amount/1199))+"%"}} title={row.id+": $"+row.amount}/><small>{row.id.replace(/^[^-]+-/,"")}</small></div>)}</div></section>
     <section className="activity-card">
       <div className="section-head"><div><h2>{t.activity}</h2><p>{t.demoNote}</p></div>
         <Link className="text-link" href={"/"+locale+"/products"}>{t.products} →</Link>
