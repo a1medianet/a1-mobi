@@ -11,6 +11,8 @@ const copy = {
     tenantHint: "تجده عند إنشاء الحساب، أو تحصل عليه من مسؤول المتجر.",
     email: "البريد الإلكتروني",
     password: "كلمة المرور",
+    showPassword: "إظهار كلمة المرور",
+    hidePassword: "إخفاء كلمة المرور",
     factor: "رمز التحقق أو رمز الاستعادة",
     factorHint: "أدخل الرمز فقط إذا كانت المصادقة الثنائية مفعّلة.",
     factorRequired: "الحساب محمي بالمصادقة الثنائية. أدخل رمز تطبيق المصادقة أو رمز استعادة.",
@@ -34,6 +36,8 @@ const copy = {
     tenantHint: "Your Store ID is provided during signup or by your store administrator.",
     email: "Email",
     password: "Password",
+    showPassword: "Show password",
+    hidePassword: "Hide password",
     factor: "Authenticator or recovery code",
     factorHint: "Only enter this when multi-factor authentication is enabled.",
     factorRequired: "This account uses multi-factor authentication. Enter an authenticator or recovery code.",
@@ -59,6 +63,7 @@ export function LoginForm({ locale, initialTenant = "", initialEmail = "" }: { l
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [needsFactor, setNeedsFactor] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -113,6 +118,7 @@ export function LoginForm({ locale, initialTenant = "", initialEmail = "" }: { l
         }
       } else {
         form.reset();
+        setShowPassword(false);
         setNeedsFactor(false);
         setActive(true);
       }
@@ -171,21 +177,28 @@ export function LoginForm({ locale, initialTenant = "", initialEmail = "" }: { l
     </div> : <form onSubmit={submit} style={{ display: "grid", gap: 20 }}>
       <label>{t.tenant}
         <input name="tenant" defaultValue={initialTenant} autoComplete="organization" required maxLength={80}
-          pattern="[a-zA-Z0-9-]+" dir="ltr" style={inputStyle} />
-        <small className="mobi-field-hint">{t.tenantHint}</small>
+          pattern="[a-zA-Z0-9-]+" aria-describedby="tenant-hint" dir="ltr" style={inputStyle} />
+        <small id="tenant-hint" className="mobi-field-hint">{t.tenantHint}</small>
       </label>
       <label>{t.email}
         <input name="email" defaultValue={initialEmail} type="email" autoComplete="username" required
           maxLength={254} dir="ltr" style={inputStyle} />
       </label>
-      <label>{t.password}
-        <input name="password" type="password" autoComplete="current-password"
+      <div>
+        <label htmlFor="login-password">{t.password}</label>
+        <div className="mobi-password-field">
+        <input id="login-password" name="password" type={showPassword ? "text" : "password"} autoComplete="current-password"
           required maxLength={256} dir="ltr" style={inputStyle} />
-      </label>
+        <button type="button" aria-controls="login-password" aria-pressed={showPassword}
+          onClick={() => setShowPassword(value => !value)}>
+          {showPassword ? t.hidePassword : t.showPassword}
+        </button>
+        </div>
+      </div>
       {needsFactor && <label>{t.factor}
         <input name="secondFactor" autoComplete="one-time-code" required
           minLength={6} maxLength={32} dir="ltr" style={inputStyle} />
-        <small style={{ display: "block", marginTop: 5, color: "#64748b" }}>
+        <small className="mobi-field-hint">
           {t.factorHint}
         </small>
       </label>}

@@ -29,29 +29,23 @@ const content={
   }
 } as const;
 
-const features={
-  ar:[
-    ["نقطة بيع","بيع الأجهزة والإكسسوارات مع حماية السعر والمخزون."],
-    ["IMEI وثقة الجهاز","أجهزة تسلسلية، فحص IMEI وسجل حوادث قابل للتوسع."],
-    ["المخزون","مشتريات، استلام، حركات، جرد وتنبيهات نقص."],
-    ["الصيانة","استلام، تشخيص، موافقة، قطع، دفعات، حالة وتسليم."],
-    ["العملاء والديون","ملف العميل، أجهزته، الرصيد والحركات."],
-    ["الصندوق والعملات","جلسات صندوق، USD/LBP، مصاريف وفروقات."],
-    ["التعبئة","مزودون وخدمات وتكلفة وهامش وتسوية."],
-    ["التقارير","مبيعات، ربح، صيانة، مخزون، ديون وتنبيهات."],
-    ["الفريق والصلاحيات","Owner / Manager / Sales / Technician / Accounting بصلاحيات محددة."],
+const features = {
+  ar: [
+    ["نقطة البيع", "بيع الأجهزة والإكسسوارات مع حماية السعر والمخزون.", "demo"],
+    ["الصيانة", "استلام وتشخيص ومتابعة القطع والدفعات والتسليم.", "demo#repairs"],
+    ["المخزون", "أجهزة وIMEI، حركات وجرد وتنبيهات نقص المخزون.", "help#inventory"],
+    ["العملاء", "ملف العميل وأجهزته والديون وسجل الحركات.", "demo"],
+    ["المشتريات", "شراء واستلام الأجهزة والقطع مع حركة مخزون موثقة.", "help#inventory"],
+    ["التقارير", "ملخصات المبيعات والصيانة والمخزون والديون.", "demo"],
   ],
-  en:[
-    ["Point of sale","Sell devices and accessories with price and stock protection."],
-    ["IMEI & device trust","Serialized devices, IMEI checks and an extensible incident network."],
-    ["Inventory","Purchases, receipts, movement, counts and low-stock alerts."],
-    ["Repairs","Intake, diagnosis, approval, parts, payments, status and delivery."],
-    ["Customers & debt","Customer record, devices, balance and ledger activity."],
-    ["Cash & currency","Cash sessions, USD/LBP, expenses and variance control."],
-    ["Top-up","Providers, services, cost, margin and settlement."],
-    ["Reports","Sales, profit, repairs, stock, debt and operational alerts."],
-    ["Team & permissions","Owner / Manager / Sales / Technician / Accounting with explicit permissions."],
-  ]
+  en: [
+    ["Point of sale", "Sell devices and accessories with price and stock protection.", "demo"],
+    ["Repairs", "Track intake, diagnosis, parts, payments and delivery.", "demo#repairs"],
+    ["Inventory", "Devices and IMEI, movements, counts and low-stock alerts.", "help#inventory"],
+    ["Customers", "Customer records, devices, debt and ledger activity.", "demo"],
+    ["Purchases", "Purchase and receive devices and parts with auditable stock movements.", "help#inventory"],
+    ["Reports", "Summaries of sales, repairs, stock and customer debt.", "demo"],
+  ],
 } as const;
 
 export default async function ProductLanding({params}:{params:Promise<{locale:string}>}){
@@ -65,7 +59,7 @@ export default async function ProductLanding({params}:{params:Promise<{locale:st
       <div className="product-shell hero-layout">
         <div>
           <span className="product-eyebrow">{t.eyebrow}</span>
-          <h1>{t.title}</h1>
+          <h1>{ar ? <>أدر <span className="mobi-headline-blue">متجر الموبايل</span><br/><span className="mobi-headline-orange">والصيانة</span> من مكان واحد.</> : <>Run <span className="mobi-headline-blue">mobile retail</span> and <span className="mobi-headline-orange">repair</span> from one place.</>}</h1>
           <p>{t.sub}</p>
           <div className="product-actions">
             <Link className="product-cta" href={"/product/"+locale+"/signup"}>{t.primary}</Link>
@@ -105,7 +99,7 @@ export default async function ProductLanding({params}:{params:Promise<{locale:st
 
     <section id="features" className="product-shell product-section">
       <div className="product-section-head"><div><span className="product-eyebrow">OPERATIONS</span><h2>{t.section}</h2></div><p>{t.sectionSub}</p></div>
-      <div className="feature-grid">{features[locale].map(([title,copy],index)=><article className="feature-card" key={title}><span>{String(index+1).padStart(2,"0")}</span><h3>{title}</h3><p>{copy}</p></article>)}</div>
+      <div className="feature-grid">{features[locale].map(([title,copy,target],index)=><article className="feature-card" key={title}><span>{String(index+1).padStart(2,"0")}</span><h3>{title}</h3><p>{copy}</p><Link href={"/product/"+locale+"/"+target} aria-label={(ar?"استكشف ":"Explore ")+title}>{ar?"استكشف":"Explore"} →</Link></article>)}</div>
     </section>
 
     <section className="mobi-a-repair-story product-shell"><div className="mobi-a-repair-image"><DemoScenePhoto src="https://images.unsplash.com/photo-1699550403361-27dee0f2a415?auto=format&fit=crop&w=1100&q=80" alt={ar?"فني يصلح هاتفًا مفتوحًا باستخدام مفك — صورة توضيحية":"Illustrative technician repairing an open smartphone with a screwdriver"}/></div><div><span className="product-eyebrow">{ar?"صيانة وتنظيم ومتابعة":"REPAIR WORKFLOW"}</span><h2>{ar?"من استلام الجهاز إلى التسليم بثقة":"From intake to delivery with confidence"}</h2><p>{ar?"وثّق العطل، تابع الحالة وقطع الغيار، واحتفظ بسجل واضح لكل عملية صيانة داخل المتجر.":"Track diagnosis, parts, progress and delivery with a complete repair record."}</p><Link className="product-cta" href={"/product/"+locale+"/demo#repairs"}>{ar?"شاهد رحلة الصيانة":"Explore the repair journey"} →</Link></div></section>
