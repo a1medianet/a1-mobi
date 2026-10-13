@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "@fontsource-variable/inter";
 @import "@fontsource-variable/noto-sans-arabic";
+@import "@fontsource/alexandria";
+@import "@fontsource/ibm-plex-sans-arabic";
 :root { --ink:#182231; --muted:#718096; --line:#e8edf3; --paper:#f6f8fb; --navy:#14233a; --blue:#1769e0; }
 * { box-sizing:border-box; }
 html,body { margin:0; min-height:100%; background:var(--paper); color:var(--ink); }
@@ -515,3 +517,7 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 /* C reference: dense owner overview with quick actions, chart, tickets, stock and sales. */
 .mobi-c-ops-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.mobi-c-ops-grid .activity-card{margin-top:16px}.mobi-c-compact-list>div{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid #edf1f5}.mobi-c-compact-list>div:last-child{border-bottom:0}.mobi-c-list-icon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:900}.mobi-c-list-icon.blue{background:#eaf2ff;color:#1265e8}.mobi-c-list-icon.orange{background:#fff0e5;color:#ff7a1a}.mobi-c-compact-list b,.mobi-c-compact-list small{display:block}.mobi-c-compact-list b{font-size:12px}.mobi-c-compact-list small{font-size:10px;color:#8794a5;margin-top:2px}.mobi-c-stock-count{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#fff0e5;color:#b84f08;font-size:12px;font-weight:850}
 @media(max-width:850px){.mobi-c-ops-grid{grid-template-columns:1fr}}
+
+/* Approved Mobi typography: Alexandria headings + IBM Plex Sans Arabic UI/body. */
+[lang="ar"],html[lang="ar"] body,.product-site[lang="ar"],.mobi-store[lang="ar"]{font-family:"IBM Plex Sans Arabic","Noto Sans Arabic Variable",Tahoma,sans-serif}
+.product-site[lang="ar"] :is(h1,h2,h3),.mobi-store[lang="ar"] :is(h1,h2,h3),[lang="ar"] .module-header h1,[lang="ar"] .welcome h1{font-family:"Alexandria","IBM Plex Sans Arabic",sans-serif}
