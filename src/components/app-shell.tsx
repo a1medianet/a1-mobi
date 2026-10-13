@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const labels = {
   ar: ["الرئيسية","نقطة البيع","المنتجات","المخزون والأجهزة","الصيانة","العملاء والديون","الصندوق","التعبئة","فحص IMEI","التقارير","الإدارة","الفريق والصلاحيات","الحساب والاشتراك"],
@@ -17,7 +17,7 @@ export function AppShell({ locale, children }: {
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const mobileNav = useRef<HTMLElement>(null);
+  const mobileNav = useRef<HTMLElement>(null);\n  const [sidebarCollapsed,setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     mobileNav.current?.querySelector<HTMLElement>('[aria-current="page"]')?.scrollIntoView({ block:"nearest", inline:"center" });
@@ -42,14 +42,22 @@ export function AppShell({ locale, children }: {
     });
   };
 
-  return <div lang={locale} dir={ar ? "rtl" : "ltr"} className="app-shell">
+  return <div lang={locale} dir={ar ? "rtl" : "ltr"} className={"app-shell"+(sidebarCollapsed?" sidebar-collapsed":"")}>
     <a className="skip-link" href="#main-content">{ar ? "انتقل إلى المحتوى" : "Skip to content"}</a>
 
     <aside className="sidebar">
-      <Link href={"/"+locale} className="brand" aria-label="A1 Mobi">
-        <span className="brand-mark" aria-hidden="true">A1</span>
-        <span><b>Mobi</b><small>{ar ? "منصة المتجر" : "Store platform"}</small></span>
-      </Link>
+      <div className="brand-row">
+        <Link href={"/"+locale} className="brand" aria-label="A1 Mobi">
+          <span className="brand-mark" aria-hidden="true">A1</span>
+          <span><b>Mobi</b><small>{ar ? "منصة المتجر" : "Store platform"}</small></span>
+        </Link>
+        <button className="sidebar-toggle" type="button"
+          aria-label={sidebarCollapsed ? (ar?"توسيع القائمة":"Expand sidebar") : (ar?"طي القائمة":"Collapse sidebar")}
+          aria-pressed={sidebarCollapsed}
+          onClick={()=>setSidebarCollapsed(value=>!value)}>
+          <span aria-hidden="true">{sidebarCollapsed ? "»" : "«"}</span>
+        </button>
+      </div>
       <nav className="nav-list" aria-label={ar ? "أقسام المتجر" : "Store workspaces"}>{navigation(false)}</nav>
       <div className="sidebar-foot">
         <div className="status-dot pilot" aria-hidden="true" />
