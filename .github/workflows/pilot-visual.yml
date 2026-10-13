@@ -17,6 +17,7 @@ jobs:
     env:
       DATABASE_URL: postgresql://a1mobi:a1mobi_ci@127.0.0.1:5432/a1mobi?schema=public
       APP_ORIGIN: http://127.0.0.1:3185
+      A1_MOBI_BOOTSTRAP_SECRET: ci-bootstrap-secret-0123456789abcdef0123456789abcdef
     services:
       postgres:
         image: postgres:17-alpine
@@ -92,6 +93,8 @@ jobs:
           capture en-dashboard-desktop 1440,1000 http://127.0.0.1:3185/en
           capture ar-dashboard-mobile 390,844 http://127.0.0.1:3185/ar
           capture ar-products-mobile 390,844 http://127.0.0.1:3185/ar/products
+
+          CHROME_BIN="$browser" ABC_VISUAL_DIR=artifacts/pilot node scripts/abc-browser-qa.mjs
 
           {
             echo "A1 Mobi Product + Pilot Visual Evidence"
