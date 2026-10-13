@@ -17,7 +17,8 @@ export function AppShell({ locale, children }: {
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const mobileNav = useRef<HTMLElement>(null);\n  const [sidebarCollapsed,setSidebarCollapsed] = useState(false);
+  const mobileNav = useRef<HTMLElement>(null);
+  const [sidebarCollapsed,setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     mobileNav.current?.querySelector<HTMLElement>('[aria-current="page"]')?.scrollIntoView({ block:"nearest", inline:"center" });
