@@ -385,3 +385,59 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
  .mobi-store-search{flex-direction:column;align-items:stretch;gap:4px}.mobi-store-search input{width:100%}
  .mobi-store-product-body h3{font-size:14px;overflow-wrap:anywhere}.mobi-store-product-body{padding:10px}
 }
+
+
+/* A1 Mobi A/B/C continuation — 2026-10-13
+   B stays one-screen on desktop; C gets an explicit collapsible sidebar. */
+.sidebar,.workspace{transition:width .2s ease,margin .2s ease}
+.brand-row{position:relative;display:flex;align-items:center;min-height:82px;border-bottom:1px solid #ffffff12}
+.brand-row .brand{height:82px;flex:1;border-bottom:0;min-width:0}
+.sidebar-toggle{position:absolute;inset-inline-end:-14px;top:27px;width:28px;height:28px;border-radius:9px;border:1px solid #dbe6f3;background:#fff;color:#1769e0;display:grid;place-items:center;cursor:pointer;box-shadow:0 6px 18px #10233d21;z-index:2;font-weight:900}
+.sidebar-toggle:focus-visible{outline:3px solid #7fb6fb;outline-offset:2px}
+.app-shell.sidebar-collapsed .sidebar{width:76px}
+.app-shell.sidebar-collapsed .workspace{width:calc(100% - 76px);margin-inline-start:76px}
+.app-shell.sidebar-collapsed .brand-row .brand{padding-inline:18px}
+.app-shell.sidebar-collapsed .brand-row .brand>span:last-child,
+.app-shell.sidebar-collapsed .nav-item>span:nth-child(2),
+.app-shell.sidebar-collapsed .nav-item em,
+.app-shell.sidebar-collapsed .sidebar-foot>div:last-child{display:none}
+.app-shell.sidebar-collapsed .nav-item{justify-content:center;padding-inline:0}
+.app-shell.sidebar-collapsed .nav-icon{width:auto}
+.app-shell.sidebar-collapsed .sidebar-foot{justify-content:center}
+.app-shell.sidebar-collapsed .sidebar-toggle{inset-inline-end:-12px}
+@media(max-width:1100px){
+ .sidebar-toggle{display:none}
+ .brand-row .brand{padding-inline:18px}
+ .brand-row .brand>span:last-child{display:none}
+}
+@media(max-width:720px){.brand-row{display:none}}
+
+/* B / TechZone: preserve the approved one-page desktop composition without vertical scrolling. */
+@media (min-width:1000px) and (min-height:740px){
+ .mobi-store{
+   height:100dvh;
+   min-height:100dvh;
+   overflow:hidden;
+   display:grid;
+   grid-template-rows:74px minmax(230px,36dvh) auto minmax(185px,1fr) auto;
+   align-content:stretch;
+   gap:clamp(8px,1.15vh,12px);
+ }
+ .mobi-store-header{height:74px;min-height:0}
+ .mobi-store-hero{height:auto;min-height:0;max-height:none;overflow:hidden}
+ .mobi-store-photo{min-height:0}
+ .mobi-store-hero-copy{padding:clamp(18px,2.2vw,28px);gap:7px}
+ .mobi-store-hero h1{font-size:clamp(31px,2.7vw,42px);line-height:1.32}
+ .mobi-store-hero p{line-height:1.62}
+ .mobi-store-info>div{padding:9px 14px}
+ .mobi-store-featured{min-height:0;overflow:hidden;gap:6px}
+ .mobi-store-section-head{min-height:44px}
+ .mobi-store-products{min-height:0;overflow:hidden}
+ .mobi-store-product{min-height:0}
+ .mobi-store-product-photo{min-height:0;padding:4px}
+ .mobi-store-product-photo img{max-height:clamp(82px,12vh,125px)}
+ .mobi-store-product-body{padding:9px}
+ .mobi-store-product-body h3{margin:2px 0 7px}
+ .mobi-store-result-note{font-size:12px;line-height:1.35}
+ .mobi-store-bottom{padding-block:8px}
+}
