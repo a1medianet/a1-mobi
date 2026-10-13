@@ -44,8 +44,8 @@ runDb("owner operational journey", () => {
     });
     const permissions = new Set(ownerRoles.flatMap(item => item.role.permissions.map(grant => grant.permission.code)));
     expect(permissions.has("sell.create")).toBe(true);
-    expect(permissions.has("inventory.receive")).toBe(true);
-    expect(permissions.has("repairs.manage")).toBe(true);
+    expect(permissions.has("inventory.read")).toBe(true);
+    expect(permissions.has("repair.manage")).toBe(true);
 
     const category = await db.category.create({
       data: { tenantId: provisioned.tenantId, code: "PHONES", nameAr: "هواتف", nameEn: "Phones" },
