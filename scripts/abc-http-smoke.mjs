@@ -63,7 +63,7 @@ assert(cookie.includes("="), "Login did not set a session cookie");
 const session = await expectStatus("/api/auth/session",[200],{headers:{cookie}});
 const sessionBody = await session.json();
 assert(Array.isArray(sessionBody.permissions), "Session permissions missing");
-for (const permission of ["sell.create","inventory.receive","repairs.manage"]) {
+for (const permission of ["sell.create","inventory.read","repair.manage"]) {
   assert(sessionBody.permissions.includes(permission), "Owner session missing permission " + permission);
 }
 
