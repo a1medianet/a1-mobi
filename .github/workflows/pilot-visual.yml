@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - closeout/pilot-visual-production-20261007
+      - feat/mobi-abc-continue-20261013
   pull_request:
     branches:
       - feat/operational-ui-shell
@@ -72,6 +73,7 @@ jobs:
           capture product-ar-desktop 1440,1100 http://127.0.0.1:3185/product/ar
           capture product-en-desktop 1440,1100 http://127.0.0.1:3185/product/en
           capture product-ar-mobile 390,844 http://127.0.0.1:3185/product/ar
+          capture store-preview-b-desktop 1440,900 http://127.0.0.1:3185/store-preview
           capture demo-ar-desktop 1440,1200 http://127.0.0.1:3185/product/ar/demo
           capture pricing-ar-desktop 1440,1000 http://127.0.0.1:3185/product/ar/pricing
           capture signup-ar-desktop 1440,1100 http://127.0.0.1:3185/product/ar/signup
