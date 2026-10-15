@@ -521,3 +521,27 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 /* Approved Mobi typography: Alexandria headings + IBM Plex Sans Arabic UI/body. */
 [lang="ar"],html[lang="ar"] body,.product-site[lang="ar"],.mobi-store[lang="ar"]{font-family:"IBM Plex Sans Arabic","Noto Sans Arabic Variable",Tahoma,sans-serif}
 .product-site[lang="ar"] :is(h1,h2,h3),.mobi-store[lang="ar"] :is(h1,h2,h3),[lang="ar"] .module-header h1,[lang="ar"] .welcome h1{font-family:"Alexandria","IBM Plex Sans Arabic",sans-serif}
+
+/* A1 Mobi P0 B mobile: bounded responsive content, accessible mobile search. */
+@media(max-width:640px){
+ .mobi-store{width:100%;max-width:100%;min-width:0;overflow-x:clip}
+ .mobi-store-header{display:grid;grid-template-columns:minmax(0,1fr) auto auto;grid-template-rows:auto auto;gap:8px;align-items:center;min-width:0;height:auto}
+ .mobi-store-header .mobi-shop-brand{grid-column:1;grid-row:1;min-width:0;overflow:hidden}
+ .mobi-shop-brand>div{min-width:0}.mobi-shop-brand small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .mobi-store-header .mobi-store-menu-button{grid-column:2;grid-row:1;min-width:44px}
+ .mobi-store-header .mobi-store-header-actions{grid-column:3;grid-row:1;min-width:0}
+ .mobi-store-header .mobi-store-header-search{grid-column:1/-1;grid-row:2;width:100%;height:44px;min-width:0;padding:0 12px;border:1px solid #dbe4ef;background:#f8fbff}
+ .mobi-store-header-search input{position:static;width:100%;height:auto;opacity:1;pointer-events:auto}
+ .mobi-store-header nav{top:100%;inset-inline:0;max-width:100%;z-index:20}
+ .mobi-store-hero,.mobi-store-hero-copy,.mobi-store-featured,.mobi-store-product{min-width:0;max-width:100%}
+ .mobi-store-hero{overflow:hidden}.mobi-store-photo{width:100%;min-width:0;min-height:0}
+ .mobi-store-hero-copy{width:100%;padding:20px}
+ .mobi-store-hero h1{font-size:clamp(23px,6.7vw,32px);overflow-wrap:anywhere}
+ .mobi-store-hero p,.mobi-store-caption{overflow-wrap:anywhere}
+ .mobi-store-info,.mobi-store-products{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .mobi-store-product-body>div{flex-wrap:wrap}
+ .mobi-marketing-a .hero-layout{grid-template-columns:minmax(0,1fr)}
+ .mobi-marketing-a .mobi-a-copy,.mobi-marketing-a .mobi-a-visual{min-width:0;max-width:100%}
+ .mobi-marketing-a h1{font-size:clamp(31px,8.2vw,42px);overflow-wrap:anywhere}
+ .mobi-a-cta-row{flex-wrap:wrap}
+}

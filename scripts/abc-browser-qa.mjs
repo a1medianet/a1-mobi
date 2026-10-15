@@ -148,6 +148,17 @@ try {
   await sleep(200);
   assert(await evaluate(cdp, 'document.querySelector(".mobi-store")?.getAttribute("lang") === "en"'), "B language toggle failed");
 
+
+  await navigate(cdp, base + "/product/ar", 390, 844);
+  const aMobile = await evaluate(cdp, '({scrollWidth:document.documentElement.scrollWidth,innerWidth:window.innerWidth})');
+  assert(aMobile.scrollWidth <= aMobile.innerWidth, "A mobile horizontal overflow: " + JSON.stringify(aMobile));
+  assert(await evaluate(cdp, '!/[\u00d8\u00d9]/u.test(document.body.innerText)'), "A mobile Arabic encoding corrupted");
+  await navigate(cdp, base + "/store-preview", 390, 844);
+  const bMobile = await evaluate(cdp, '({scrollWidth:document.documentElement.scrollWidth,innerWidth:window.innerWidth})');
+  assert(bMobile.scrollWidth <= bMobile.innerWidth, "B mobile horizontal overflow: " + JSON.stringify(bMobile));
+  assert(await evaluate(cdp, '!/[\u00d8\u00d9]/u.test(document.body.innerText)'), "B mobile Arabic encoding corrupted");
+  assert(await evaluate(cdp, 'getComputedStyle(document.querySelector(".mobi-store-header-search input")).opacity === "1"'), "B mobile search must be visible");
+
   const suffix = Date.now().toString();
   const tenant = "visual-" + suffix;
   const email = "owner-" + suffix + "@example.test";
