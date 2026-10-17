@@ -56,7 +56,9 @@ const copy = {
   },
 } as const;
 
-export function LoginForm({ locale, initialTenant = "", initialEmail = "" }: { locale: "ar" | "en"; initialTenant?: string; initialEmail?: string }) {
+export function LoginForm({ locale, initialTenant = "", initialEmail = "", returnTo }: {
+  locale: "ar" | "en"; initialTenant?: string; initialEmail?: string; returnTo: string;
+}) {
   const t = copy[locale];
   const [active, setActive] = useState(false);
   const [checking, setChecking] = useState(true);
@@ -121,6 +123,8 @@ export function LoginForm({ locale, initialTenant = "", initialEmail = "" }: { l
         setShowPassword(false);
         setNeedsFactor(false);
         setActive(true);
+        // Session cookie is set by the API; the protected page is rechecked by proxy.
+        window.location.assign(returnTo);
       }
     } catch {
       setError(t.unavailable);
@@ -170,7 +174,7 @@ export function LoginForm({ locale, initialTenant = "", initialEmail = "" }: { l
         {busy ? t.busy : t.logout}
       </button>
       <p style={{ marginTop: 20 }}>
-        <Link href={"/" + locale}>{t.preview}</Link>
+        <Link href={returnTo}>{t.preview}</Link>
         {" · "}
         <Link href={"/" + locale + "/settings/security"}>{t.security}</Link>
       </p>
