@@ -717,3 +717,20 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 .mobi-live02-ready form{min-width:190px;display:grid;gap:10px;padding-top:10px}
 .mobi-live02-ready button{border:0;border-radius:8px;background:#1265e8;color:#fff;padding:10px}
 @media(max-width:850px){.mobi-live02-forms{grid-template-columns:1fr}}
+
+/* Scoped repair cash collection and pickup forms */
+.mobi-live02-cash{background:#fff;border:1px solid #dbe8fa;border-radius:16px;padding:18px;margin:16px 0 22px}
+.mobi-live02-cash h2{margin:0 0 12px;font-size:17px}
+.mobi-live02-cash form{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px}
+.mobi-live02-cash label{font-size:12px;display:flex;flex-direction:column;gap:5px;min-width:150px;flex:1}
+.mobi-live02-cash input,.mobi-live02-settlement input:not([type=checkbox]){min-height:40px;padding:8px;border:1px solid #cad7e8;border-radius:8px;width:100%}
+.mobi-live02-cash button{padding:12px;border-radius:9px}
+.mobi-live02-settlement{min-width:230px;font-size:12px;white-space:normal}
+.mobi-live02-settlement p{margin:3px 0 9px}
+.mobi-live02-settlement form{display:flex;flex-direction:column;gap:8px;border-top:1px solid #e1ebf8;padding-top:9px}
+.mobi-live02-settlement label{display:flex;flex-direction:column;gap:4px}
+.mobi-live02-settlement label.mobi-live02-pickup{flex-direction:row;align-items:flex-start;gap:7px}
+.mobi-live02-pickup input{margin:3px 0 0;flex:none}
+.mobi-live02-settlement button{border:0;background:#1265e8;color:#fff;padding:10px;border-radius:8px;cursor:pointer}
+.mobi-live02-settlement button:disabled{opacity:.55;cursor:not-allowed}
+@media(max-width:780px){.mobi-live02-cash form{display:grid;grid-template-columns:1fr}.mobi-live02-settlement{min-width:185px}}

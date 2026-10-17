@@ -1,12 +1,13 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 
 type Order={
  id:string;number:string;customerName:string;device:string;issue:string;imeiLast4:string|null;
  status:string;estimate:number|null;finalPrice:number;paidTotal:number;balanceDue:number;
  timeline:{status:string;at:string}[];
+ warranty:{number:string;expiresAt:string;status:string}|null;
 };
 const stage:Record<string,{ar:string;en:string}>={
  INTAKE:{ar:"مستلم",en:"Received"},DIAGNOSIS:{ar:"قيد الفحص",en:"Diagnosing"},
@@ -29,6 +30,14 @@ const dict={
  action:"الخطوة التالية",history:"مراحل الطلب",empty:"لا توجد طلبات صيانة بعد.",
  selectPlaceholder:"اختر الطلب المراد تشخيصه",save:"حُفظ التحديث بنجاح",
  error:"تعذّر تنفيذ العملية",balance:"الرصيد المستحق",
+ cashOpen:"الصندوق مفتوح",cashClosed:"يجب فتح الصندوق قبل تحصيل الدفعات",
+ openingUsd:"الرصيد الافتتاحي (USD)",openingLbp:"الرصيد الافتتاحي (LBP)",
+ exchangeRate:"سعر صرف الليرة للدولار",openTill:"فتح الصندوق",
+ payment:"تحصيل نقدي",amount:"المبلغ المستلم بالدولار",takePayment:"تسجيل الدفعة",
+ settled:"تم تسديد القيمة",deliver:"تسليم الجهاز للعميل",
+ pickup:"أؤكد أن العميل استلم الجهاز بالفعل",warrantyDays:"مدة الضمان بالأيام",
+ warrantyTerms:"شروط الضمان",confirmDelivery:"تأكيد التسليم وإصدار الضمان",
+ warranty:"الضمان",until:"ساري حتى",paid:"المدفوع",
  },
  en:{back:"Repairs",title:"Repair orders",intro:"Receive devices, diagnose faults, approve estimates and manage repairs in one place.",
  warning:"Test environment — do not enter real customer details.",
@@ -42,6 +51,14 @@ const dict={
  action:"Next action",history:"Ticket progress",empty:"No repairs yet.",
  selectPlaceholder:"Select a ticket to diagnose",save:"Changes saved",
  error:"Unable to complete request",balance:"Balance due",
+ cashOpen:"Cash drawer open",cashClosed:"Open the cash drawer before recording cash payments",
+ openingUsd:"Opening cash (USD)",openingLbp:"Opening cash (LBP)",
+ exchangeRate:"LBP per USD exchange rate",openTill:"Open cash drawer",
+ payment:"Cash collection",amount:"Cash received (USD)",takePayment:"Record payment",
+ settled:"Fully paid",deliver:"Hand device to customer",
+ pickup:"I confirm the customer received the device",warrantyDays:"Warranty duration (days)",
+ warrantyTerms:"Warranty terms",confirmDelivery:"Confirm pickup and issue warranty",
+ warranty:"Warranty",until:"Valid until",paid:"Paid",
  },
 } as const;
 
@@ -49,6 +66,9 @@ export default function RepairLivePage(){
  const {locale:raw}=useParams<{locale:string}>();const locale=raw==="en"?"en":"ar";const t=dict[locale];
  const [orders,setOrders]=useState<Order[]>([]),[busy,setBusy]=useState(false);
  const [message,setMessage]=useState(""),[loading,setLoading]=useState(true);
+ const [cashOpen,setCashOpen]=useState(false);
+ const [openingUsd,setOpeningUsd]=useState("0"),[openingLbp,setOpeningLbp]=useState("0");
+ const [exchangeRate,setExchangeRate]=useState("");
  const [customerName,setCustomerName]=useState(""),[customerPhone,setCustomerPhone]=useState("");
  const [deviceDescription,setDeviceDescription]=useState(""),[imei,setImei]=useState("");
  const [condition,setCondition]=useState(""),[reportedIssue,setReportedIssue]=useState("");
@@ -62,20 +82,20 @@ export default function RepairLivePage(){
   const res=await fetch("/api/ops/live-02",{cache:"no-store"});
   const data=await res.json();
   if(!res.ok)throw new Error(data.error||"READ_FAILED");
-  setOrders(data.orders as Order[]);
+  setOrders(data.orders as Order[]);setCashOpen(Boolean(data.cashOpen));
  }
  useEffect(()=>{
   let active=true;
   fetch("/api/ops/live-02",{cache:"no-store"}).then(async response=>{
    const data=await response.json();
    if(!response.ok)throw new Error(data.error||"READ_FAILED");
-   if(active)setOrders(data.orders as Order[]);
+   if(active){setOrders(data.orders as Order[]);setCashOpen(Boolean(data.cashOpen));}
   }).catch(e=>{if(active)setMessage(String(e.message));})
   .finally(()=>{if(active)setLoading(false);});
   return()=>{active=false;};
  },[]);
  async function send(payload:Record<string,unknown>){
-  if(busy)return;
+  if(busy)return false;
   setBusy(true);setMessage("");
   try{
    const res=await fetch("/api/ops/live-02",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
@@ -87,7 +107,8 @@ export default function RepairLivePage(){
     setCustomerName("");setCustomerPhone("");setDeviceDescription("");setImei("");setCondition("");setReportedIssue("");
    }
    if(payload.action==="estimate")setSelectedId("");
-  }catch(e){setMessage(t.error+": "+(e instanceof Error?e.message:"UNKNOWN"));}
+   return true;
+  }catch(e){setMessage(t.error+": "+(e instanceof Error?e.message:"UNKNOWN"));return false;}
   finally{setBusy(false);}
  }
  const statusLabel=(status:string)=>stage[status]?.[locale]??status;
@@ -99,6 +120,22 @@ export default function RepairLivePage(){
    onClick={()=>void reload().catch(e=>setMessage(String(e.message)))}>{t.refresh}</button></header>
   <p role="note" className="preview-notice">{t.warning}</p>
   {message&&<p role="status" className="mobi-live-message">{message}</p>}
+  {!loading&&<section className="mobi-live02-cash">
+   <h2>{cashOpen?t.cashOpen:t.cashClosed}</h2>
+   {!cashOpen&&<form onSubmit={event=>{event.preventDefault();
+    if(!window.confirm(locale==="ar"?"هل تريد فتح صندوق الفرع بالقيم المدخلة؟":"Open this branch's cash drawer with these balances?"))return;
+    void send({action:"openCash",openingUsd:Number(openingUsd),openingLbp:Number(openingLbp),
+      openingExchangeRate:Number(exchangeRate)});
+   }}>
+    <label>{t.openingUsd}<input required type="number" min="0" step="0.01" value={openingUsd}
+      onChange={e=>setOpeningUsd(e.target.value)}/></label>
+    <label>{t.openingLbp}<input required type="number" min="0" step="1" value={openingLbp}
+      onChange={e=>setOpeningLbp(e.target.value)}/></label>
+    <label>{t.exchangeRate}<input required type="number" min="1" step="0.01" value={exchangeRate}
+      onChange={e=>setExchangeRate(e.target.value)}/></label>
+    <button className="primary" type="submit" disabled={busy||!exchangeRate}>{t.openTill}</button>
+   </form>}
+  </section>}
   <section className="mobi-live02-forms">
    <form onSubmit={event=>{
     event.preventDefault();
@@ -167,10 +204,65 @@ export default function RepairLivePage(){
          <button type="submit" disabled={busy||readyId!==o.id||!finalPrice.trim()}>{t.submitReady}</button>
         </form>
        </details>:null}
-       {o.status==="READY"?<span>{t.balance}: {o.balanceDue.toFixed(2)} USD</span>:null}
+       {(o.status==="READY"||o.status==="DELIVERED")&&<RepairSettlementControls
+        order={o} locale={locale} t={t} cashOpen={cashOpen} busy={busy} send={send}/>}
       </td></tr>)}
      {!loading&&orders.length===0?<tr><td colSpan={6}>{t.empty}</td></tr>:null}
     </tbody></table></div>
   </section>
  </main>;
+}
+
+
+function RepairSettlementControls({order,locale,t,cashOpen,busy,send}:{
+ order:Order;locale:"ar"|"en";t:typeof dict["ar"]|typeof dict["en"];cashOpen:boolean;busy:boolean;
+ send:(payload:Record<string,unknown>)=>Promise<boolean>;
+}){
+ const [amount,setAmount]=useState("");
+ const retry=useRef<{amount:string;key:string}|null>(null);
+ const [warrantyDays,setWarrantyDays]=useState("30");
+ const [warrantyTerms,setWarrantyTerms]=useState("");
+ const [pickedUp,setPickedUp]=useState(false);
+ if(order.status==="DELIVERED")return <div className="mobi-live02-settlement">
+   <strong>{t.paid}: {order.paidTotal.toFixed(2)} USD</strong>
+   {order.warranty&&<p>{t.warranty}: <bdi dir="ltr">{order.warranty.number}</bdi>
+    {" · "}{t.until} {new Date(order.warranty.expiresAt).toLocaleDateString(locale==="ar"?"ar-LB":"en-US")}</p>}
+  </div>;
+ if(order.status!=="READY")return null;
+ async function pay(){
+  const value=Number(amount);
+  if(!cashOpen||!Number.isFinite(value)||value<=0||value>order.balanceDue)return;
+  if(!window.confirm(locale==="ar"?"هل استلمت هذا المبلغ نقدًا فعلًا؟":"Have you physically received this cash amount?"))return;
+  if(!retry.current||retry.current.amount!==amount){
+    retry.current={amount,key:crypto.randomUUID()};
+  }
+  const done=await send({action:"pay",repairId:order.id,amount:value,
+    idempotencyKey:retry.current.key});
+  if(done){retry.current=null;setAmount("");}
+ }
+ async function deliver(){
+  if(!pickedUp||order.balanceDue>0||!warrantyTerms.trim())return;
+  if(!window.confirm(locale==="ar"?"تأكيد تسليم الجهاز وإصدار الضمان؟":"Confirm device pickup and issue warranty?"))return;
+  await send({action:"deliver",repairId:order.id,confirmedPickup:true,
+    warrantyDays:Number(warrantyDays),warrantyTerms});
+ }
+ return <div className="mobi-live02-settlement">
+  <p><strong>{t.paid}: {order.paidTotal.toFixed(2)} USD</strong>
+   {" · "}{t.balance}: {order.balanceDue.toFixed(2)} USD</p>
+  {order.balanceDue>0?<form onSubmit={event=>{event.preventDefault();void pay();}}>
+    <label>{t.amount}<input required type="number" min="0.01"
+      max={order.balanceDue} step="0.01" value={amount} onChange={event=>setAmount(event.target.value)}/></label>
+    <button type="submit" disabled={busy||!cashOpen||!amount}>{t.takePayment}</button>
+    {!cashOpen&&<small>{t.cashClosed}</small>}
+   </form>:<form onSubmit={event=>{event.preventDefault();void deliver();}}>
+    <strong>{t.settled}</strong>
+    <label>{t.warrantyDays}<input type="number" min="1" max="365" step="1" required
+      value={warrantyDays} onChange={event=>setWarrantyDays(event.target.value)}/></label>
+    <label>{t.warrantyTerms}<input required minLength={5} maxLength={1000}
+      value={warrantyTerms} onChange={event=>setWarrantyTerms(event.target.value)}/></label>
+    <label className="mobi-live02-pickup"><input type="checkbox" required
+      checked={pickedUp} onChange={event=>setPickedUp(event.target.checked)}/>{t.pickup}</label>
+    <button type="submit" disabled={busy||!pickedUp||!warrantyTerms.trim()}>{t.confirmDelivery}</button>
+   </form>}
+ </div>;
 }

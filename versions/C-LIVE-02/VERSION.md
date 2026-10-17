@@ -43,3 +43,22 @@
 3. Run owner-browser UAT including partial payment and duplicate/retry/restricted cases.
 4. Reconcile dashboard, customers and reports with source data; keep fake/demo separated.
 5. Final visual comparison & A1-STD-APPLICATION-FOUNDATION@1.0.0, Pre-Launch.
+## C-LIVE-02 — Cash, settlement, delivery and warranty extension (2026-10-17)
+Local node: Thaghr only. Canonical project root C:\A1Hub\a1-mobi; GitHub PR #12 remains Draft.
+
+Implemented and verified:
+- Transactional cash payment: branch open cash session required, permission cash.manage, exact-amount idempotency, cross-tenant/branch scoping and row-locked repair; prevents overpayment and duplicate ledger entries.
+- Atomic Payment + CashMovement(REPAIR) + repair paidTotal/balanceDue + AuditEvent.
+- Delivery requires READY, zero outstanding balance and explicit confirmation; delivery/status event/audit/warranty are committed together. Retry returns same warranty without duplicate.
+- Pilot UI exposes explicit opening balances and manual exchange rate, explicit cash receipt confirmation, partial-payment balance, confirmed customer pickup, warranty duration and terms, Arabic/English labels.
+- Feature flag A1_MOBI_C_LIVE_02_ENABLED stays OFF except explicitly authorized isolated UAT.
+- Route-level PostgreSQL tests 4/4 PASS (including 50 USD partial + 70 USD final, overpayment rejection, duplicate payment replay, cash ledger matching, tenant isolation, authorization, delivered warranty replay).
+- TypeScript and focused ESLint PASS after one correction.
+- Isolated production build (.next-c-live02-final): PASS, Next.js 16.4, exit code 0, no existing server changed; localhost 3197 ready.
+
+Remaining gates:
+- Financial form click-through Chrome browser E2E was blocked by host security controls. Do not mark it PASS or treat as production-ready.
+- Full local database and unit suite on Thaghr: 48/48 files and 123/123 tests PASS, 0 skipped, exit 0 (isolated PostgreSQL). GitHub Actions results to be checked after push.
+- Review cash close under concurrent payments; support validated cross-currency and debt paths before any commercial release.
+- A/B/C final visual reference signoff, Foundation v1.0, Pre-Launch, backups & recovery, tenancy and security external review are OPEN.
+- No public deployment or PR merge. Preserve all proof and versions in this repository.

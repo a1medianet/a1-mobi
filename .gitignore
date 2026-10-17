@@ -48,3 +48,6 @@ next-env.d.ts
 
 # Isolated local C-LIVE-02 preview build
 /.next-c-live02/
+
+# Local C-LIVE-02 settlement verification only
+/.next-c-live02-final/
