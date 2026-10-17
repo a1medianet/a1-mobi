@@ -51,3 +51,6 @@ next-env.d.ts
 
 # Local C-LIVE-02 settlement verification only
 /.next-c-live02-final/
+
+# C-LIVE-02 visual UAT preview isolated on Thaghr
+/.next-c-live02-ui/

@@ -120,24 +120,14 @@ export default function RepairLivePage(){
    onClick={()=>void reload().catch(e=>setMessage(String(e.message)))}>{t.refresh}</button></header>
   <p role="note" className="preview-notice">{t.warning}</p>
   {message&&<p role="status" className="mobi-live-message">{message}</p>}
-  {!loading&&<section className="mobi-live02-cash">
-   <h2>{cashOpen?t.cashOpen:t.cashClosed}</h2>
-   {!cashOpen&&<form onSubmit={event=>{event.preventDefault();
-    if(!window.confirm(locale==="ar"?"هل تريد فتح صندوق الفرع بالقيم المدخلة؟":"Open this branch's cash drawer with these balances?"))return;
-    void send({action:"openCash",openingUsd:Number(openingUsd),openingLbp:Number(openingLbp),
-      openingExchangeRate:Number(exchangeRate)});
-   }}>
-    <label>{t.openingUsd}<input required type="number" min="0" step="0.01" value={openingUsd}
-      onChange={e=>setOpeningUsd(e.target.value)}/></label>
-    <label>{t.openingLbp}<input required type="number" min="0" step="1" value={openingLbp}
-      onChange={e=>setOpeningLbp(e.target.value)}/></label>
-    <label>{t.exchangeRate}<input required type="number" min="1" step="0.01" value={exchangeRate}
-      onChange={e=>setExchangeRate(e.target.value)}/></label>
-    <button className="primary" type="submit" disabled={busy||!exchangeRate}>{t.openTill}</button>
-   </form>}
-  </section>}
+  <nav className="mobi-live02-flow" aria-label={locale==="ar"?"خطوات العمل":"Repair process"}>
+   <a href="#mobi-repair-intake"><b>01</b>{locale==="ar"?"الاستلام":"Receive"}</a>
+   <a href="#mobi-repair-diagnosis"><b>02</b>{locale==="ar"?"التشخيص":"Diagnose"}</a>
+   <a href="#mobi-repair-orders"><b>03</b>{locale==="ar"?"الإصلاح":"Repair"}</a>
+   <a href="#mobi-repair-cash"><b>04</b>{locale==="ar"?"التحصيل والتسليم":"Collect & deliver"}</a>
+  </nav>
   <section className="mobi-live02-forms">
-   <form onSubmit={event=>{
+   <form id="mobi-repair-intake" onSubmit={event=>{
     event.preventDefault();
     void send({action:"intake",customerName,customerPhone,deviceDescription,imei,condition,reportedIssue,accessories:[]});
    }}>
@@ -153,7 +143,7 @@ export default function RepairLivePage(){
      value={value} onChange={e=>update(e.target.value)}/></label>)}
     <button className="primary" type="submit" disabled={busy}>{t.receive}</button>
    </form>
-   <form onSubmit={event=>{
+   <form id="mobi-repair-diagnosis" onSubmit={event=>{
     event.preventDefault();
     if(!selected)return;
     void send({action:"estimate",repairId:selected.id,diagnosis,estimateAmount:Number(estimate)});
@@ -170,7 +160,23 @@ export default function RepairLivePage(){
     <button className="primary" type="submit" disabled={busy||!selected}>{t.saveEstimate}</button>
    </form>
   </section>
-  <section className="activity-card"><div className="section-head"><h2>{t.orders}</h2></div>
+  {!loading&&<details id="mobi-repair-cash" className="mobi-live02-cash">
+   <summary><span className="mobi-live02-cash-marker">●</span>{cashOpen?t.cashOpen:t.cashClosed}</summary>
+   {!cashOpen&&<form onSubmit={event=>{event.preventDefault();
+    if(!window.confirm(locale==="ar"?"هل تريد فتح صندوق الفرع بالقيم المدخلة؟":"Open this branch's cash drawer with these balances?"))return;
+    void send({action:"openCash",openingUsd:Number(openingUsd),openingLbp:Number(openingLbp),
+      openingExchangeRate:Number(exchangeRate)});
+   }}>
+    <label>{t.openingUsd}<input required type="number" min="0" step="0.01" value={openingUsd}
+      onChange={e=>setOpeningUsd(e.target.value)}/></label>
+    <label>{t.openingLbp}<input required type="number" min="0" step="1" value={openingLbp}
+      onChange={e=>setOpeningLbp(e.target.value)}/></label>
+    <label>{t.exchangeRate}<input required type="number" min="1" step="0.01" value={exchangeRate}
+      onChange={e=>setExchangeRate(e.target.value)}/></label>
+    <button className="primary" type="submit" disabled={busy||!exchangeRate}>{t.openTill}</button>
+   </form>}
+  </details>}
+  <section id="mobi-repair-orders" className="activity-card"><div className="section-head"><h2>{t.orders}</h2></div>
    {loading?<p className="module-sub">{locale==="ar"?"جارٍ تحميل الطلبات...":"Loading orders..."}</p>:null}
    <div className="table-wrap"><table><thead><tr><th>{t.select}</th><th>{t.customer}</th><th>{t.device}</th><th>{t.status}</th><th>{t.estimate}</th><th>{t.action}</th></tr></thead>
     <tbody>

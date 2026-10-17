@@ -734,3 +734,34 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 .mobi-live02-settlement button{border:0;background:#1265e8;color:#fff;padding:10px;border-radius:8px;cursor:pointer}
 .mobi-live02-settlement button:disabled{opacity:.55;cursor:not-allowed}
 @media(max-width:780px){.mobi-live02-cash form{display:grid;grid-template-columns:1fr}.mobi-live02-settlement{min-width:185px}}
+/* C-LIVE-02 owner workflow visual pass 01 */
+.mobi-live02{padding-top:24px}
+.mobi-live02 .module-header{margin-bottom:6px;align-items:center}
+.mobi-live02 .module-header h1{font-size:clamp(23px,2.5vw,29px);letter-spacing:-.4px}
+.mobi-live02>.preview-notice{margin-top:5px!important;margin-bottom:8px!important}
+.mobi-live02-flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:13px 0 4px;}
+.mobi-live02-flow a{min-width:0;display:flex;align-items:center;gap:10px;padding:12px 13px;background:#fff;border:1px solid #dce7f6;border-radius:12px;color:#273d5f;font-size:12px;font-weight:750;}
+.mobi-live02-flow b{display:grid;place-items:center;flex:0 0 30px;height:30px;border-radius:9px;background:#eaf2ff;color:#1265e8;font-size:12px;font-weight:900;direction:ltr;}
+.mobi-live02-flow a:nth-child(even) b{background:#fff0e5;color:#f16a0b}
+.mobi-live02-forms{gap:14px;margin:12px 0 16px}
+.mobi-live02-forms form{padding:20px;gap:11px;align-content:start;min-width:0}
+.mobi-live02-forms form:first-child{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.mobi-live02-forms form:first-child>h2,.mobi-live02-forms form:first-child>button{grid-column:1/-1}
+.mobi-live02-forms h2{margin:0 0 4px;font-size:18px;font-weight:800}
+.mobi-live02-forms label{min-width:0;line-height:1.7}
+.mobi-live02-forms input,.mobi-live02-forms select{background:#fff;transition:border-color .2s,box-shadow .2s}
+.mobi-live02-forms input:focus,.mobi-live02-forms select:focus,.mobi-live02-cash input:focus{border-color:#1265e8;outline:2px solid #1265e82a;outline-offset:1px}
+.mobi-live02-cash{margin:0 0 14px;padding:0;overflow:hidden}
+.mobi-live02-cash summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:11px;font-size:13px;font-weight:750;padding:15px 18px;color:#233d61}
+.mobi-live02-cash summary::-webkit-details-marker{display:none}
+.mobi-live02-cash summary:after{content:'+';margin-inline-start:auto;background:#eaf2ff;color:#1265e8;border-radius:7px;display:grid;place-items:center;width:25px;height:25px;font-size:17px}
+.mobi-live02-cash[open] summary:after{content:'−'}
+.mobi-live02-cash-marker{color:#ff7a1a;font-size:11px}
+.mobi-live02-cash form{border-top:1px solid #e8eff9;padding:16px 18px}
+@media(max-width:850px){.mobi-live02-flow{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:540px){.mobi-live02{padding:14px 12px}.mobi-live02-flow{gap:6px}.mobi-live02-flow a{font-size:11px;padding:8px;gap:5px}.mobi-live02-flow b{flex-basis:25px;height:25px}.mobi-live02-forms form:first-child{grid-template-columns:1fr}.mobi-live02-forms form{padding:15px}.mobi-live02-flow a{min-height:43px}}
+
+/* C-LIVE-02 step navigation accessibility */
+.mobi-live02-flow a{text-decoration:none;color:#273d5f;cursor:pointer}
+.mobi-live02-flow a:hover,.mobi-live02-flow a:focus-visible{background:#eaf2ff;border-color:#1265e8;outline-offset:2px}
+.mobi-live02 #mobi-repair-intake,.mobi-live02 #mobi-repair-diagnosis,.mobi-live02 #mobi-repair-orders,.mobi-live02 #mobi-repair-cash{scroll-margin-top:90px}
