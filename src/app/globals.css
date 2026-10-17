@@ -765,3 +765,63 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 .mobi-live02-flow a{text-decoration:none;color:#273d5f;cursor:pointer}
 .mobi-live02-flow a:hover,.mobi-live02-flow a:focus-visible{background:#eaf2ff;border-color:#1265e8;outline-offset:2px}
 .mobi-live02 #mobi-repair-intake,.mobi-live02 #mobi-repair-diagnosis,.mobi-live02 #mobi-repair-orders,.mobi-live02 #mobi-repair-cash{scroll-margin-top:90px}
+/* Owner repairs data table, scoped to C-LIVE-02 / visual pass 02 */
+.mobi-live02-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:14px 0}
+.mobi-live02-stats article{min-width:0;background:#fff;border:1px solid #dce7f6;border-radius:13px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.mobi-live02-stats article:nth-child(2){border-top:3px solid #ff7a1a}
+.mobi-live02-stats article:nth-child(3){border-top:3px solid #1265e8}
+.mobi-live02-stats span{font-size:12px;color:#63738d}
+.mobi-live02-stats strong{font-size:22px;color:#14233d;font-variant-numeric:tabular-nums}
+.mobi-live02-stats small{font-size:11px;font-weight:650}
+.mobi-live02-orders{padding:0;overflow:hidden}
+.mobi-live02-orders-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:19px 20px;border-bottom:1px solid #e7edf7}
+.mobi-live02-orders-head h2{font-size:19px;font-weight:800;margin:0}
+.mobi-live02-orders-head p{font-size:12px;color:#697d96;margin:3px 0 0}
+.mobi-live02-filters{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
+.mobi-live02-filters input,.mobi-live02-filters select{min-height:40px;padding:8px 11px;background:#fff;border:1px solid #ccd9ec;border-radius:9px;color:#14233d;font-size:12px;max-width:100%}
+.mobi-live02-filters input{width:300px}
+.mobi-live02-orders .table-wrap{overflow-x:auto}
+.mobi-live02-orders table{width:100%;min-width:790px;border-collapse:collapse}
+.mobi-live02-orders th{padding:12px 14px;text-align:start;color:#697d96;background:#f6f9fe;font-size:11px;white-space:nowrap;font-weight:700}
+.mobi-live02-orders td{padding:14px;vertical-align:top;text-align:start;font-size:12px;border-bottom:1px solid #e8eef6}
+.mobi-live02-orders tbody tr:hover{background:#f8fbff}
+.mobi-live02-ticket strong{display:block;font-size:12px;color:#1265e8;direction:ltr;text-align:start}
+.mobi-live02-ticket small,.mobi-live02-customer small,.mobi-live02-customer span,.mobi-live02-price small{display:block;margin-top:5px;color:#63738d;font-size:11px}
+.mobi-live02-customer strong{font-size:13px}
+.mobi-live02-price strong{font-size:12px;white-space:nowrap}
+.mobi-live02-status{display:inline-flex;align-items:center;gap:6px;border-radius:99px;padding:7px 11px;background:#eaf2ff;color:#1553a0;font-weight:750;white-space:nowrap;font-size:11px}
+.mobi-live02-status-ready,.mobi-live02-status-delivered{background:#e7f7ef;color:#087744}
+.mobi-live02-status-estimate_pending{background:#fff0dc;color:#ad5a00}
+.mobi-live02-status-cancelled{background:#f2f4f7;color:#626e7c}
+.mobi-live02-actions{min-width:190px}
+.mobi-live02-actions>button{border:0;border-radius:9px;padding:10px 12px;background:#1265e8;color:#fff;font-size:12px;font-weight:700;cursor:pointer}
+.mobi-live02-actions>button:disabled{opacity:.55;cursor:not-allowed}
+.mobi-live02-noorders{text-align:center!important;color:#6c7d95!important;padding:34px!important}
+.mobi-live02-orders .mobi-live02-settlement{min-width:185px}
+.mobi-live02-filters :is(input,select):focus-visible{outline:2px solid #1265e8;outline-offset:2px}
+@media(max-width:950px){.mobi-live02-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:580px){.mobi-live02-orders-head{padding:14px}.mobi-live02-filters{width:100%}.mobi-live02-filters label:first-child{flex:1 1 180px}.mobi-live02-filters input{width:100%}.mobi-live02-stats{gap:8px}.mobi-live02-stats article{padding:12px}.mobi-live02-stats strong{font-size:19px}}
+
+/* Owner Repairs — final adaptive table/cards proof */
+.mobi-live02-filters label{position:relative;min-width:0}
+.mobi-live02-filters label>span.visually-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+@media(max-width:700px){
+ .mobi-live02-orders .table-wrap{overflow:visible}
+ .mobi-live02-orders table{display:block;width:100%;min-width:0}
+ .mobi-live02-orders thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+ .mobi-live02-orders tbody{display:grid;grid-template-columns:minmax(0,1fr);gap:11px;background:#f6f9fe;padding:10px}
+ .mobi-live02-orders tbody tr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 8px;min-width:0;border-radius:13px;border:1px solid #dce7f6;overflow:hidden;background:#fff;padding:9px 10px}
+ .mobi-live02-orders tbody td{display:block;min-width:0;padding:9px 5px;border:0}
+ .mobi-live02-orders .mobi-live02-ticket{grid-column:1;grid-row:1}
+ .mobi-live02-orders tbody td:nth-child(3){grid-column:2;grid-row:1;align-self:center}
+ .mobi-live02-orders .mobi-live02-customer{grid-column:1/-1;grid-row:2;border-top:1px solid #eaf0f6}
+ .mobi-live02-orders .mobi-live02-price{grid-column:1/-1;grid-row:3;border-top:1px solid #eaf0f6}
+ .mobi-live02-orders .mobi-live02-actions{grid-column:1/-1;grid-row:4;min-width:0;border-top:1px solid #eaf0f6}
+ .mobi-live02-ticket strong{font-size:12px;overflow-wrap:anywhere}
+ .mobi-live02-customer strong{overflow-wrap:anywhere}
+ .mobi-live02-status{white-space:normal;text-align:center;max-width:135px;font-size:10px;padding:6px 8px}
+ .mobi-live02-orders .mobi-live02-settlement{width:100%;min-width:0}
+ .mobi-live02-orders .mobi-live02-noorders{grid-column:1/-1!important;grid-row:auto!important;padding:24px!important}
+ .mobi-live02-orders-head{align-items:stretch}
+ .mobi-live02-filters select{max-width:100%}
+}

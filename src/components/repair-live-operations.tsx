@@ -2,9 +2,11 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
+import { filterRepairs, summarizeRepairs, type RepairListFilter } from "@/modules/repairs/repair-owner-view";
 
 type Order={
  id:string;number:string;customerName:string;device:string;issue:string;imeiLast4:string|null;
+ intakeAt:string;
  status:string;estimate:number|null;finalPrice:number;paidTotal:number;balanceDue:number;
  timeline:{status:string;at:string}[];
  warranty:{number:string;expiresAt:string;status:string}|null;
@@ -37,7 +39,13 @@ const dict={
  settled:"تم تسديد القيمة",deliver:"تسليم الجهاز للعميل",
  pickup:"أؤكد أن العميل استلم الجهاز بالفعل",warrantyDays:"مدة الضمان بالأيام",
  warrantyTerms:"شروط الضمان",confirmDelivery:"تأكيد التسليم وإصدار الضمان",
- warranty:"الضمان",until:"ساري حتى",paid:"المدفوع",
+   warranty:"الضمان",until:"ساري حتى",paid:"المدفوع",
+   search:"بحث برقم الطلب أو العميل أو الجهاز أو آخر 4 أرقام IMEI",
+   all:"جميع الطلبات",active:"قيد المعالجة",awaiting:"بانتظار الموافقة",readyFilter:"جاهزة",
+   deliveredFilter:"تم تسليمها",noMatch:"لا توجد طلبات تطابق البحث أو التصفية.",
+   total:"الطلبات المعروضة",activeTotal:"قيد المعالجة",readyTotal:"جاهزة للتسليم",
+   dueTotal:"مستحقات الصيانة الجاهزة",intakeDate:"تاريخ الاستلام",ticket:"رقم الطلب",
+   issueLabel:"العطل",deviceLabel:"الجهاز",ticketState:"حالة الطلب",notPriced:"لم تُحدد بعد",
  },
  en:{back:"Repairs",title:"Repair orders",intro:"Receive devices, diagnose faults, approve estimates and manage repairs in one place.",
  warning:"Test environment — do not enter real customer details.",
@@ -58,7 +66,13 @@ const dict={
  settled:"Fully paid",deliver:"Hand device to customer",
  pickup:"I confirm the customer received the device",warrantyDays:"Warranty duration (days)",
  warrantyTerms:"Warranty terms",confirmDelivery:"Confirm pickup and issue warranty",
- warranty:"Warranty",until:"Valid until",paid:"Paid",
+   warranty:"Warranty",until:"Valid until",paid:"Paid",
+   search:"Search ticket, customer, device or last 4 IMEI digits",
+   all:"All repairs",active:"In progress",awaiting:"Awaiting approval",readyFilter:"Ready",
+   deliveredFilter:"Delivered",noMatch:"No repairs match the search or filter.",
+   total:"Listed tickets",activeTotal:"In progress",readyTotal:"Ready for pickup",
+   dueTotal:"Ready repairs due",intakeDate:"Received",ticket:"Ticket",
+   issueLabel:"Issue",deviceLabel:"Device",ticketState:"Status",notPriced:"Not yet priced",
  },
 } as const;
 
@@ -76,6 +90,10 @@ export default function RepairLivePage(){
  const [estimate,setEstimate]=useState(""),[labor,setLabor]=useState("0"),[direct,setDirect]=useState("0");
  const [finalPrice,setFinalPrice]=useState("");
  const [readyId,setReadyId]=useState<string|null>(null);
+ const [search,setSearch]=useState("");
+ const [statusFilter,setStatusFilter]=useState<RepairListFilter>("ALL");
+ const overview=summarizeRepairs(orders);
+ const visibleOrders=filterRepairs(orders,search,statusFilter);
  const pending=orders.filter(o=>o.status==="INTAKE"||o.status==="DIAGNOSIS");
  const selected=pending.find(o=>o.id===selectedId);
  async function reload(){
@@ -176,15 +194,49 @@ export default function RepairLivePage(){
     <button className="primary" type="submit" disabled={busy||!exchangeRate}>{t.openTill}</button>
    </form>}
   </details>}
-  <section id="mobi-repair-orders" className="activity-card"><div className="section-head"><h2>{t.orders}</h2></div>
+  <section className="mobi-live02-stats" aria-label={t.orders}>
+   <article><span>{t.total}</span><strong>{overview.total}</strong></article>
+   <article><span>{t.activeTotal}</span><strong>{overview.active}</strong></article>
+   <article><span>{t.readyTotal}</span><strong>{overview.ready}</strong></article>
+   <article><span>{t.dueTotal}</span><strong dir="ltr">{overview.balanceDue.toFixed(2)} <small>USD</small></strong></article>
+  </section>
+  <section id="mobi-repair-orders" className="activity-card mobi-live02-orders">
+   <div className="mobi-live02-orders-head">
+    <div><h2>{t.orders}</h2><p>{visibleOrders.length} / {orders.length}</p></div>
+    <div className="mobi-live02-filters">
+     <label><span className="visually-hidden">{t.search}</span><input
+       type="search" aria-label={t.search} value={search} placeholder={t.search}
+       onChange={e=>setSearch(e.target.value)}/></label>
+     <label><span className="visually-hidden">{t.ticketState}</span>
+      <select aria-label={t.ticketState} value={statusFilter}
+        onChange={e=>setStatusFilter(e.target.value as RepairListFilter)}>
+       <option value="ALL">{t.all}</option><option value="ACTIVE">{t.active}</option>
+       <option value="AWAITING">{t.awaiting}</option><option value="READY">{t.readyFilter}</option>
+       <option value="DELIVERED">{t.deliveredFilter}</option>
+      </select>
+     </label>
+    </div>
+   </div>
    {loading?<p className="module-sub">{locale==="ar"?"جارٍ تحميل الطلبات...":"Loading orders..."}</p>:null}
-   <div className="table-wrap"><table><thead><tr><th>{t.select}</th><th>{t.customer}</th><th>{t.device}</th><th>{t.status}</th><th>{t.estimate}</th><th>{t.action}</th></tr></thead>
+   <div className="table-wrap"><table><thead><tr>
+    <th>{t.ticket}</th><th>{t.customer} / {t.deviceLabel}</th><th>{t.ticketState}</th>
+    <th>{t.estimate} / {t.balance}</th><th>{t.action}</th></tr></thead>
     <tbody>
-     {orders.map(o=><tr key={o.id}>
-      <td><bdi dir="ltr">{o.number}</bdi></td><td>{o.customerName}</td><td>{o.device}</td>
-      <td><span className={"pill "+(o.status==="READY"?"done":"pending")}>{statusLabel(o.status)}</span></td>
-      <td>{o.estimate===null?"—":o.estimate.toFixed(2)+" USD"}</td>
-      <td>
+     {visibleOrders.map(o=><tr key={o.id}>
+      <td className="mobi-live02-ticket">
+       <strong><bdi dir="ltr">{o.number}</bdi></strong>
+       <small>{new Date(o.intakeAt).toLocaleDateString(locale==="ar"?"ar-LB":"en-GB")}</small>
+      </td>
+      <td className="mobi-live02-customer">
+       <strong>{o.customerName}</strong><span>{o.device}</span><small>{t.issueLabel}: {o.issue}</small>
+       {o.imeiLast4&&<small dir="ltr">IMEI ••••{o.imeiLast4}</small>}
+      </td>
+      <td><span className={"mobi-live02-status mobi-live02-status-"+o.status.toLowerCase()}>{statusLabel(o.status)}</span></td>
+      <td className="mobi-live02-price">
+       <strong>{o.estimate===null?t.notPriced:o.estimate.toFixed(2)+" USD"}</strong>
+       {(o.status==="READY"||o.status==="DELIVERED")&&<small>{t.balance}: {o.balanceDue.toFixed(2)} USD</small>}
+      </td>
+      <td className="mobi-live02-actions">
        {o.status==="ESTIMATE_PENDING"?<button type="button" disabled={busy}
         onClick={()=>void send({action:"approve",repairId:o.id})}>{t.approve}</button>:null}
        {o.status==="APPROVED"?<button type="button" disabled={busy}
@@ -213,7 +265,9 @@ export default function RepairLivePage(){
        {(o.status==="READY"||o.status==="DELIVERED")&&<RepairSettlementControls
         order={o} locale={locale} t={t} cashOpen={cashOpen} busy={busy} send={send}/>}
       </td></tr>)}
-     {!loading&&orders.length===0?<tr><td colSpan={6}>{t.empty}</td></tr>:null}
+     {!loading&&visibleOrders.length===0?<tr><td colSpan={5} className="mobi-live02-noorders">
+      {orders.length===0?t.empty:t.noMatch}
+     </td></tr>:null}
     </tbody></table></div>
   </section>
  </main>;
