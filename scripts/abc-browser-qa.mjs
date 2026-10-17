@@ -135,8 +135,11 @@ try {
 
   await navigate(cdp, base + "/store-preview", 1440, 900);
   const bViewport = await evaluate(cdp, '({scrollHeight:document.documentElement.scrollHeight,innerHeight:window.innerHeight})');
-  assert(bViewport.scrollHeight <= bViewport.innerHeight, "B exceeds 1440x900 viewport: " + JSON.stringify(bViewport));
-  assert(await evaluate(cdp, 'document.querySelectorAll(".mobi-store-product").length === 4'), "B must render four featured products");
+  assert(bViewport.scrollHeight > bViewport.innerHeight * 1.5, "B must be a fully scrollable merchant site: " + JSON.stringify(bViewport));
+  assert(await evaluate(cdp, 'document.querySelectorAll(".mobi-store-product").length >= 8'), "B should show a real storefront catalog");
+  assert(await evaluate(cdp, '["services","about-store","store-contact"].every(id=>Boolean(document.getElementById(id)))'), "B merchant services/about/contact sections missing");
+  assert(await evaluate(cdp, 'document.querySelectorAll(".mobi-store-faq-list details").length === 3'), "B customer FAQ missing");
+  assert(await evaluate(cdp, 'document.querySelectorAll(".mobi-store-product").length >= 8'), "B must render expanded merchant catalog");
   assert(await evaluate(cdp, 'document.querySelector(".mobi-store-whatsapp")?.disabled === true'), "B WhatsApp must be disabled until configured");
   assert(await evaluate(cdp, 'document.querySelector(".mobi-store-btn-secondary")?.disabled === false'), "B repair information must remain accessible");
   assert(await evaluate(cdp, '[...document.querySelectorAll(".mobi-store-add")].every(button=>!button.disabled)'), "B preview basket needs functional add buttons");

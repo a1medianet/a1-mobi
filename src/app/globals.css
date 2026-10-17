@@ -571,3 +571,112 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
  .mobi-store-header nav:not(.is-open){display:none}
  .mobi-store-header nav.is-open{display:flex;flex-wrap:wrap;justify-content:flex-start;z-index:65;box-shadow:0 13px 30px #14233d20}
 }
+
+
+/* A1 MOBI B MERCHANT SCROLLABLE SITE 20261017 — replaces superseded one-screen pilot gate. */
+.mobi-store-website{display:block;min-height:100dvh;height:auto;overflow-x:clip;overflow-y:visible;padding:0 clamp(15px,3vw,56px);background:#f7faff}
+.mobi-store-website > section{margin-top:clamp(14px,2.3vw,30px);scroll-margin-top:110px}
+.mobi-store-website .mobi-store-header{position:sticky;top:0;z-index:55;border-radius:0 0 18px 18px}
+.mobi-store-website .mobi-store-hero{min-height:475px;max-height:none;height:auto;flex:none}
+.mobi-store-website .mobi-store-hero-copy{padding:clamp(32px,4vw,70px)}
+.mobi-store-website .mobi-store-hero h1{font-size:clamp(35px,3.7vw,66px);line-height:1.25}
+.mobi-store-website .mobi-store-info{margin-top:16px}
+.mobi-store-website .mobi-store-info>div{padding:19px 22px}
+.mobi-store-website .mobi-store-featured{height:auto;min-height:0;overflow:visible;display:block;margin-top:68px}
+.mobi-store-website .mobi-store-section-head{margin-bottom:24px;align-items:center}
+.mobi-store-website .mobi-store-section-head h2,.mobi-store-website .mobi-store-section-title h2{font-size:clamp(25px,2.65vw,39px);font-family:"Alexandria","IBM Plex Sans Arabic",sans-serif;font-weight:790;color:#14233d;line-height:1.48;margin:7px 0}
+.mobi-store-section-description,.mobi-store-section-title>p{font-size:14px;line-height:1.9;color:#64758d;margin:8px 0}
+.mobi-store-website .mobi-store-products{height:auto;overflow:visible;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+.mobi-store-website .mobi-store-product{display:flex;flex-direction:column;height:auto;overflow:hidden;min-height:370px;box-shadow:0 12px 30px #1d345008;border-radius:18px}
+.mobi-store-website .mobi-store-product-photo{min-height:220px;height:220px;background:linear-gradient(145deg,#f3f7fc,#eaf0f9)}
+.mobi-store-website .mobi-store-product-photo img{max-height:180px}
+.mobi-store-website .mobi-store-product-body{flex:1;padding:20px;gap:6px}
+.mobi-store-website .mobi-store-product-body h3{font-size:14px;min-height:43px;line-height:1.6;margin:3px 0 11px}
+.mobi-store-website .mobi-store-product-body strong{font-size:18px}
+.mobi-store-website .mobi-store-add{min-height:40px;cursor:pointer}
+.mobi-store-website .mobi-store-section{padding-block:72px}
+.mobi-store-website .mobi-store-section-title{max-width:780px;margin-bottom:28px}
+.mobi-store-service-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.mobi-store-service-steps article{position:relative;border:1px solid #e3eaf5;border-radius:20px;padding:24px;background:#fff;min-height:214px}
+.mobi-store-step-number{font-size:32px;display:block;font-weight:850;color:#ff7a1a;letter-spacing:-1px}
+.mobi-store-service-steps h3{font-size:17px;color:#14233d;margin:13px 0 8px}
+.mobi-store-service-steps p,.mobi-store-story-copy p{font-size:14px;line-height:1.95;color:#64758d;margin:0}
+.mobi-store-service-banner{margin-top:24px;padding:25px 32px;background:#142b4d;color:#fff;border-radius:20px;display:flex;gap:22px;align-items:center}
+.mobi-store-service-banner>span{font-size:30px;color:#ff9d53}
+.mobi-store-service-banner strong{font-size:18px}.mobi-store-service-banner p{margin:5px 0 0;color:#d8e2f2;font-size:13px}
+.mobi-store-service-banner button{margin-inline-start:auto;border:1px solid #f4a975;border-radius:10px;padding:12px 18px;color:#fff;background:#ff7a1a}
+.mobi-store-service-banner button:disabled{opacity:.65;cursor:not-allowed}
+.mobi-store-story{display:grid;grid-template-columns:1fr 1fr;gap:clamp(25px,5vw,85px);align-items:center}
+.mobi-store-story-art{position:relative;min-height:375px;background:linear-gradient(130deg,#13345c,#1265e8 80%);border-radius:28px;color:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.mobi-store-story-art:before{content:"";position:absolute;width:350px;height:350px;inset-inline-start:-110px;top:-100px;border:1px solid #ffffff30;border-radius:50%;box-shadow:0 0 0 35px #ffffff08,0 0 0 70px #ffffff06}
+.mobi-store-story-art>span{position:absolute;top:40px;inset-inline-start:42px;font-size:29px;font-weight:900}
+.mobi-store-story-art>span span{color:#ffa25f}
+.mobi-store-story-art>small{position:absolute;bottom:28px;inset-inline-start:40px;color:#dcecff}
+.mobi-store-story-device{position:relative;width:185px;height:270px;border:9px solid #162943;border-radius:25px;background:#fff;transform:rotate(-11deg);box-shadow:0 22px 45px #08162950;display:flex;align-items:center;flex-direction:column;color:#1265e8;gap:12px;padding:25px 15px}
+.mobi-store-story-device>span{font-size:60px}.mobi-store-story-device>strong{font-size:13px}.mobi-store-story-device i{display:block;width:100%;height:19px;background:#dbeaff;border-radius:7px}.mobi-store-story-device i:nth-last-child(2){width:75%;background:#ffe1c8}
+.mobi-store-story-copy h2,.mobi-store-contact-section h2{font-size:clamp(26px,3vw,40px);line-height:1.5;margin:12px 0;color:#14233d}
+.mobi-store-story-facts{display:grid;gap:14px;margin-top:24px;font-weight:700;color:#1265e8}
+.mobi-store-values{background:#fff;border-radius:28px;padding-inline:clamp(24px,4vw,65px)}
+.mobi-store-value-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.mobi-store-value-grid article{min-height:160px;border-radius:17px;background:#f4f8ff;padding:26px;display:flex;flex-direction:column;gap:20px}
+.mobi-store-value-grid article span{color:#ff7a1a;font-size:14px;font-weight:900}.mobi-store-value-grid article b{font-size:17px}.mobi-store-value-grid article i{font-size:35px;color:#1265e8;font-style:normal;align-self:flex-end}
+.mobi-store-faq-list{display:grid;gap:10px;max-width:920px}
+.mobi-store-faq-list details{background:#fff;border:1px solid #e1e9f5;border-radius:14px;padding:19px 24px}
+.mobi-store-faq-list summary{cursor:pointer;font-size:16px;font-weight:750;color:#14233d}
+.mobi-store-faq-list details p{line-height:1.9;color:#64758d;font-size:14px;margin:14px 0 0}
+.mobi-store-contact-section{border-radius:25px;padding-inline:clamp(22px,4vw,60px);background:linear-gradient(115deg,#eaf4ff,#fff7f0);display:grid;grid-template-columns:1.2fr .8fr;gap:25px;align-items:center}
+.mobi-store-contact-section p{color:#536783;line-height:1.9;font-size:15px}.mobi-store-contact-section small{color:#9b502a}
+.mobi-store-contact-card{border:1px solid #deebff;background:#fff;border-radius:20px;padding:28px;box-shadow:0 12px 30px #243c5c09}
+.mobi-store-contact-card strong{font-size:25px;color:#1265e8}.mobi-store-contact-card p{font-size:14px;color:#536783}
+.mobi-store-contact-card a{display:inline-flex;align-items:center;justify-content:center;margin-top:16px;padding:12px 20px;border-radius:10px;text-decoration:none;color:#fff;background:#1265e8;font-weight:750}
+.mobi-store-footer{margin-top:28px;display:grid;grid-template-columns:2fr 1fr 1fr 1.5fr;gap:32px;padding:50px clamp(25px,4vw,65px);color:#dce8f8;background:#14233d;border-radius:25px 25px 0 0}
+.mobi-store-footer div{display:flex;flex-direction:column;gap:12px}.mobi-store-footer p,.mobi-store-footer small{color:#aebed5;line-height:1.7;margin:0}
+.mobi-store-footer strong{font-size:15px;color:#fff}.mobi-store-footer-logo{font-size:29px!important;color:#ff7a1a!important}.mobi-store-footer-logo span{color:#6eabff}
+.mobi-store-footer button{background:none;border:0;text-align:start;padding:0;color:#c8d7ed;font-size:14px;cursor:pointer}
+.mobi-store-footer-powered{font-size:13px;color:#c8d7ed}.mobi-store-website :is(.mobi-store-faq-list details,.mobi-store-value-grid article,.mobi-store-product):focus-within{outline:2px solid #ff7a1a;outline-offset:2px}
+@media(min-width:1200px) and (min-height:740px){
+ .mobi-store-website{height:auto;min-height:100dvh;display:block;overflow-y:visible}
+ .mobi-store-website .mobi-store-hero{min-height:475px;max-height:none;height:auto}
+ .mobi-store-website .mobi-store-featured{height:auto;min-height:0;overflow:visible}
+ .mobi-store-website .mobi-store-products{height:auto;overflow:visible}
+ .mobi-store-website .mobi-store-product{height:auto}
+ .mobi-store-website .mobi-store-bottom{min-height:0}
+}
+@media(max-width:1050px){
+ .mobi-store-website .mobi-store-products{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .mobi-store-service-steps{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .mobi-store-story{grid-template-columns:1fr}
+ .mobi-store-website .mobi-store-hero{min-height:400px;max-height:none}
+}
+@media(max-width:640px){
+ .mobi-store-website{padding-inline:10px}
+ .mobi-store-website .mobi-store-header{top:0}
+ .mobi-store-website .mobi-store-hero{display:flex;flex-direction:column;min-height:0;height:auto}
+ .mobi-store-website .mobi-store-photo{height:250px}
+ .mobi-store-website .mobi-store-hero-copy{padding:24px}
+ .mobi-store-website .mobi-store-hero h1{font-size:clamp(27px,7vw,36px)}
+ .mobi-store-website .mobi-store-featured{margin-top:42px}
+ .mobi-store-website .mobi-store-products{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .mobi-store-website .mobi-store-product{min-height:270px}
+ .mobi-store-website .mobi-store-product-photo{height:130px;min-height:130px}
+ .mobi-store-website .mobi-store-product-photo img{max-height:112px}
+ .mobi-store-website .mobi-store-product-body{padding:12px;gap:3px}
+ .mobi-store-website .mobi-store-product-body h3{font-size:11px;line-height:1.5;margin:3px 0}
+ .mobi-store-website .mobi-store-product-body strong{font-size:14px}
+ .mobi-store-website .mobi-store-product-body>div{align-items:flex-start}
+ .mobi-store-website .mobi-store-add{font-size:11px;padding-inline:7px}
+ .mobi-store-website .mobi-store-section{padding-block:38px}
+ .mobi-store-service-steps{grid-template-columns:1fr 1fr;gap:9px}
+ .mobi-store-service-steps article{padding:16px;min-height:215px}
+ .mobi-store-service-steps h3{font-size:14px}
+ .mobi-store-service-steps p{font-size:12px}
+ .mobi-store-service-banner{padding:20px;gap:12px;flex-wrap:wrap}
+ .mobi-store-service-banner button{margin-inline-start:0}
+ .mobi-store-story-art{min-height:280px}
+ .mobi-store-story-device{transform:rotate(-8deg) scale(.77)}
+ .mobi-store-values{padding-inline:20px}
+ .mobi-store-value-grid{grid-template-columns:1fr}
+ .mobi-store-contact-section{grid-template-columns:1fr;padding-inline:20px}
+ .mobi-store-footer{grid-template-columns:1fr 1fr;padding:35px 22px;gap:24px}
+ .mobi-store-footer>div:first-child,.mobi-store-footer-powered{grid-column:1/-1}
+}
