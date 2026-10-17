@@ -26,11 +26,15 @@ Release status: UAT ONLY — Production HOLD.
 - Cross-tenant catalog/sale isolation; prevents double sale; unauthenticated 401; missing permission 403; disabled feature 404.
 - Focused ESLint and TypeScript PASS after correcting React async effect.
 - Prior full DB suite: 19/19 PASS (before this code change). Re-check via GitHub CI.
-- Next.js build and browser visual acceptance to be marked after actual proof; no PASS without evidence.
+- Isolated Next.js 16.4 production builds: PASS with exit code 0 (first C-LIVE build and second SOLD-history fix); 25/25 static pages.
+- Authenticated Chrome CDP visual gate: PASS at 1440x1000 and 390x844, without horizontal overflow.
+- Full real browser action E2E: PASS (exit 0); UI created product, received IMEI, sold device, showed SOLD and persisted invoice after reload; existing A/B/C visual gate PASS.
+- Screenshot proof: c-live-01-desktop.png, c-live-01-received-imei.png, c-live-01-sold-and-invoiced.png, c-live-01-mobile.png (only synthetic tenant/device data).
+- GitHub CI and Visual Evidence for implementation and SOLD-history fixes: both SUCCESS on a4f3fb7.
 
 ## Pending
-- Real browser UI end-to-end and screenshot evidence, desktop 1440x900/mobile 390x844.
-- GitHub CI and PR #12 branch verification.
+- Continued visual refinement of integrated native POS and customer/branch operations.
+- CI verification of this final evidence-only commit remains pending until GitHub Actions finish.
 - Wider native POS integration, variant relationships, other payment methods, customer/debt/cash reports.
 - A1-STD-APPLICATION-FOUNDATION@1.0.0, Pre-Launch, backups, rollback, hosting: HOLD.
 
@@ -41,4 +45,4 @@ No external project files or production deployment. Preserve prior versions unde
 - Browser creation, IMEI receipt, and persisted invoice passed. Initial browser gate showed SOLD device missing from historical inventory display because query selected only current stock-location items.
 - Route GET now also includes branch saleLine history; retains SOLD devices in the operator ledger without treating them as available inventory.
 - Strengthened PostgreSQL test asserts device status exactly SOLD, instead of only not IN_STOCK.
-- Revised DB gate: 2/2 PASS (0 skipped), TypeScript PASS. Full browser re-check still pending new build.
+- Revised DB gate: 2/2 PASS (0 skipped), TypeScript PASS. Final production rebuild and real browser E2E both PASS (exit 0): reload retains SOLD and invoice; CDP desktop/mobile PASS.
