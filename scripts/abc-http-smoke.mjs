@@ -20,8 +20,14 @@ for (const path of ["/product/ar","/product/en","/store-preview","/product/ar/de
   await expectStatus(path,[200]);
 }
 
-const unauth = await expectStatus("/ar",[307,308]);
-assert((unauth.headers.get("location") || "").endsWith("/ar/login"), "Back office must redirect unauthenticated users to /ar/login");
+for (const target of ["/ar", "/ar/live-02"]) {
+  const unauth = await expectStatus(target,[307,308]);
+  const location = unauth.headers.get("location") || "";
+  const redirected = new URL(location,base);
+  assert(redirected.origin === new URL(base).origin, "Auth redirect must stay on the same origin");
+  assert(redirected.pathname === "/ar/login", "Back office must redirect to Arabic login");
+  assert(redirected.searchParams.get("next") === target, "Auth redirect must preserve intended protected page");
+}
 
 const suffix = Date.now().toString();
 const tenant = "journey-" + suffix;

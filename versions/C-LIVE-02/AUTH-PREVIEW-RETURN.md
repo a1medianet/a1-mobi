@@ -24,3 +24,7 @@ User screenshot at 127.0.0.1:3198/ar/login was a real 307 redirect from /ar/live
 
 ## How to inspect
 Open http://127.0.0.1:3198/ar/live-02 ; sign in with the legitimate isolated UAT Store ID, email, password (and MFA if required). After sign-in, return to /ar/live-02. Do not send passwords in ChatGPT or GitHub.
+## Local UAT verification
+- Protected /ar/live-02 redirects to /ar/login?next=%2Far%2Flive-02 with HTTP 307 without session.
+- Verified legitimate local TechZone UAT owner credentials from gitignored .local/techzone-owner-login.txt returned login HTTP 200 and authenticated repair page HTTP 200. No secret values printed or committed.
+- The first CI run on 31df7b1 failed because bc-http-smoke.mjs had an old exact login-location check. Updated that smoke to require the login pathname AND the safe requested return path; rerun in CI required.
