@@ -69,7 +69,7 @@ export async function GET() {
       db.stockLocation.findMany({ where: { tenantId: ctx.tenantId, branchId: ctx.branchId },
         orderBy: { name: "asc" }, take: 100 }),
       db.serializedDevice.findMany({ where: {
-        tenantId: ctx.tenantId, stockLocation: { branchId: ctx.branchId },
+        tenantId: ctx.tenantId, OR: [{ stockLocation: { branchId: ctx.branchId } }, { saleLines: { some: { sale: { branchId: ctx.branchId } } } }],
       }, include: { product: true }, orderBy: { createdAt: "desc" }, take: 100 }),
       ctx.permissions.has("reports.read") ? db.sale.findMany({ where: { tenantId: ctx.tenantId, branchId: ctx.branchId },
         include: { invoice: true }, orderBy: { occurredAt: "desc" }, take: 30 }) : Promise.resolve([]),

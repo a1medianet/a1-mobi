@@ -36,3 +36,9 @@ Release status: UAT ONLY — Production HOLD.
 
 ## Safety
 No external project files or production deployment. Preserve prior versions under versions/ and GitHub.
+
+## Sold-device history fix
+- Browser creation, IMEI receipt, and persisted invoice passed. Initial browser gate showed SOLD device missing from historical inventory display because query selected only current stock-location items.
+- Route GET now also includes branch saleLine history; retains SOLD devices in the operator ledger without treating them as available inventory.
+- Strengthened PostgreSQL test asserts device status exactly SOLD, instead of only not IN_STOCK.
+- Revised DB gate: 2/2 PASS (0 skipped), TypeScript PASS. Full browser re-check still pending new build.

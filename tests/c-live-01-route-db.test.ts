@@ -77,7 +77,7 @@ runDb("C-LIVE-01 HTTP route DB integration", () => {
     const sale=await sold.json();
     expect(sale.invoiceNumber).toMatch(/^INV-/);
     const afterSale=await (await route.GET()).json();
-    expect(afterSale.devices.find((d:{id:string})=>d.id===device.id)?.status).not.toBe("IN_STOCK");
+    expect(afterSale.devices.find((d:{id:string})=>d.id===device.id)?.status).toBe("SOLD");
     expect(afterSale.sales.find((s:{id:string})=>s.id===sale.id)?.total).toBe(500);
     const persisted=await db.invoice.findFirst({where:{tenantId:ctx1.tenantId,number:sale.invoiceNumber}});
     expect(persisted).not.toBeNull();
