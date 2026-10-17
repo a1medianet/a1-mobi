@@ -53,8 +53,9 @@ export default function RepairLivePage(){
  const [deviceDescription,setDeviceDescription]=useState(""),[imei,setImei]=useState("");
  const [condition,setCondition]=useState(""),[reportedIssue,setReportedIssue]=useState("");
  const [selectedId,setSelectedId]=useState(""),[diagnosis,setDiagnosis]=useState("");
- const [estimate,setEstimate]=useState("120"),[labor,setLabor]=useState("0"),[direct,setDirect]=useState("0");
- const [finalPrice,setFinalPrice]=useState("120");
+ const [estimate,setEstimate]=useState(""),[labor,setLabor]=useState("0"),[direct,setDirect]=useState("0");
+ const [finalPrice,setFinalPrice]=useState("");
+ const [readyId,setReadyId]=useState<string|null>(null);
  const pending=orders.filter(o=>o.status==="INTAKE"||o.status==="DIAGNOSIS");
  const selected=pending.find(o=>o.id===selectedId);
  async function reload(){
@@ -145,17 +146,25 @@ export default function RepairLivePage(){
         onClick={()=>void send({action:"approve",repairId:o.id})}>{t.approve}</button>:null}
        {o.status==="APPROVED"?<button type="button" disabled={busy}
         onClick={()=>void send({action:"start",repairId:o.id})}>{t.start}</button>:null}
-       {o.status==="IN_PROGRESS"?<details className="mobi-live02-ready">
+       {o.status==="IN_PROGRESS"?<details className="mobi-live02-ready" open={readyId===o.id} onToggle={e=>{
+         if(e.currentTarget.open){
+          setReadyId(o.id);setFinalPrice("");setLabor("0");setDirect("0");
+         }else if(readyId===o.id){setReadyId(null);}
+        }}>
         <summary>{t.ready}</summary>
-        <form onSubmit={event=>{event.preventDefault();void send({action:"ready",repairId:o.id,
-         finalPrice:Number(finalPrice),laborCost:Number(labor),directCost:Number(direct)});}}>
+        <form onSubmit={event=>{event.preventDefault();
+         if(readyId!==o.id || !finalPrice.trim())return;
+         if(!window.confirm(locale==="ar"?"تأكيد السعر النهائي وحالة الجهاز جاهز للاستلام؟":"Confirm the final amount and mark this repair ready?"))return;
+         void send({action:"ready",repairId:o.id,
+         finalPrice:Number(finalPrice),laborCost:Number(labor),directCost:Number(direct)});
+        }}>
          <label>{t.finalPrice}<input type="number" min="1" step="0.01" required
-          value={finalPrice} onChange={e=>setFinalPrice(e.target.value)}/></label>
+          placeholder={o.estimate?.toFixed(2)??""} value={finalPrice} onChange={e=>setFinalPrice(e.target.value)}/></label>
          <label>{t.labor}<input type="number" min="0" step="0.01" required
           value={labor} onChange={e=>setLabor(e.target.value)}/></label>
          <label>{t.direct}<input type="number" min="0" step="0.01" required
           value={direct} onChange={e=>setDirect(e.target.value)}/></label>
-         <button type="submit" disabled={busy}>{t.submitReady}</button>
+         <button type="submit" disabled={busy||readyId!==o.id||!finalPrice.trim()}>{t.submitReady}</button>
         </form>
        </details>:null}
        {o.status==="READY"?<span>{t.balance}: {o.balanceDue.toFixed(2)} USD</span>:null}

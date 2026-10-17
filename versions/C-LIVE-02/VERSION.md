@@ -1,38 +1,45 @@
-# C-LIVE-02 — Repair operations | Verification checkpoint
+# A1 Mobi C-LIVE-02 — Repair Operational Validation
 
-Date: 2026-10-17
-Machine: Thaghr
-Path: C:\A1Hub\a1-mobi
-Source: a1medianet/a1-mobi / Draft PR #12
-Status: WIP — Not UAT closed, not production-ready.
+**Project:** a1medianet/a1-mobi
+**Computer:** Thaghr
+**Canonical local root:** C:\A1Hub\a1-mobi
+**Stage:** C-LIVE-02
+**PR:** #12 Draft
+**Status:** REPAIR CORE + OWNER INTAKE→READY BROWSER E2E PASS; **PRODUCTION / FULL FINISH HOLD**
 
-## Implemented
-- Protected repair route with feature flag OFF unless explicitly enabled in an authorized environment.
-- Reuse of canonical repair services for intake, diagnosis, estimate, approval, start work and ready status.
-- GET returns only logged-in tenant + branch's repairs with timeline and owed amounts.
-- POST requires same-origin, JSON validation and repair.manage session permission.
-- Intake requires IMEI trust check; future status actions require owning branch and valid transition.
-- Owner UI revised: select a SPECIFIC repair to diagnose (not the first matching customer);
-  contextual buttons for approval/start/ready, bilingual status labels, reload, empty states,
-  and customer-readable copy without exposed internal engineering labels.
-- Existing demo Repairs UI preserved; new pilot entry link appears only with test feature flag.
-- Responsive CSS limited to the new repair UAT page.
+## Implemented & reviewed
+- Repair UI linked only behind A1_MOBI_C_LIVE_02_ENABLED=1 feature flag.
+- Own repair intake, select a specific repair, diagnosis, estimate, approval, start, final financial confirmation, READY.
+- API scoped to tenant/branch and repair.manage; same-origin mutations and strict validated input; device trust for intake.
+- No automated selection of an arbitrary first repair. No default final price; explicit amount and confirmation required.
+- REST status transitions via existing canonical service with audit trail and server-side PostgreSQL.
+- Arabic/English user-centric wording. Pilot warnings remain for local UAT only.
+- No interference with C-LIVE-01, A/B, other projects or their databases.
 
-## Evidence
-- PostgreSQL route test tests/c-live-02-route-db.test.ts: 3/3 PASS, exit code 0.
-- Covered: persisted intake→estimate→approval→start→ready, timeline and audit,
-  cross-tenant read/write rejection, invalid/repeated transitions,
-  unauthenticated 401, insufficient permission 403,
-  cross-site mutation 403, malformed input 400 and disabled feature 404.
-- Initial TypeScript (before UI refinements) PASS.
-- Final ESLint, TypeScript after UI refinement, CI and browser screenshot gates: PENDING.
+## Evidence verified on Thaghr (2026-10-17)
+- TypeScript and focused ESLint: PASS, exit code 0.
+- C-LIVE-02 DB API: **3/3 PASS**, no skipped tests.
+- Full isolated PostgreSQL + unit suite: **122/122 PASS**, **48/48 files PASS**, 0 failed, 0 skipped; exit code 0.
+- CI + existing Visual Evidence for cf05533: SUCCESS (GitHub Actions 39056845432 / 39056845442).
+- Isolated Next.js 16.4.0 Webpack production build: PASS, 25/25 static pages, exit code 0; output only in ignored .next-c-live02 under the repo.
+- Authenticated desktop visual: **1440px viewport / scrollWidth 1425px**, PASS.
+- Authenticated mobile visual: **390px viewport / scrollWidth 375px**, PASS.
+- English interface: PASS.
+- Real Chrome CDP form journey: **Intake → Estimate → Approval → In Progress → Ready → Reload**, PASS, exit code 0 on 127.0.0.1:3196 with synthetic test owner and repair.
+- Synthetic screenshots: c-live-02-desktop.png, c-live-02-mobile.png, c-live-02-english.png, c-live-02-browser-intake.png, c-live-02-browser-active-repair.png, c-live-02-browser-ready-reloaded.png
+- Scripts: c-live-02-browser-gate.mjs and c-live-02-browser-journey.mjs, reproducible on authorized local UAT only.
+- During test development one combined script failed after closing its Chrome connection early; connection was fixed and independently re-run. FINAL tests above exited 0.
 
-## Explicitly pending
-- Payment method/currency and idempotency, cash reconciliation, delivery, warranty and customer tracking.
-- Browser walkthrough and mobile/desktop screenshot proof.
-- Full test suite, owner UX approval and final security acceptance.
-- Do not enable C-LIVE-02 in production or merge PR #12.
+## IMPORTANT: not completed
+- C-LIVE-02 browser payments, receipt, final customer pickup/delivery and warranty; full repair lifecycle from browser NOT YET COMPLETE.
+- Native POS, customer/cash/report UIs still require convergence with operational services.
+- A/B/C reference visual signoff, prelaunch review, multi-tenant negative browser tests and production backup/restore gates remain open.
+- No real customer phone numbers or transaction data used. Do not public-deploy or merge this Draft PR.
+- No promise of zero remaining bugs: only named, proven checks are PASS.
 
-## Safe next action
-Lint / TypeScript / isolated Next build → authenticated visual browser test →
-DB workflow negative tests → payment/delivery correctness → evidence → stage approval.
+## Next One-Click Stage Gate
+1. Implement guarded, idempotent repair payment and branch cash reconciliation.
+2. Add delivered status and warranty only with financial/approval constraints and full tests.
+3. Run owner-browser UAT including partial payment and duplicate/retry/restricted cases.
+4. Reconcile dashboard, customers and reports with source data; keep fake/demo separated.
+5. Final visual comparison & A1-STD-APPLICATION-FOUNDATION@1.0.0, Pre-Launch.

@@ -45,3 +45,6 @@ next-env.d.ts
 
 # Dedicated C-LIVE-01 local build output
 /.next-c-live/
+
+# Isolated local C-LIVE-02 preview build
+/.next-c-live02/
