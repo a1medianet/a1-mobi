@@ -21,7 +21,7 @@ const copy={
     demo:"TechZone علامة تجريبية توضيحية · الصور والأسعار لا تمثّل عروض متجر حقيقي",
     location:"الموقع",hours:"ساعات العمل",hoursValue:"تُحدّد من إعدادات المتجر",service:"صيانة الأجهزة",serviceValue:"استلام · تشخيص · متابعة · تسليم",
     contactLabel:"التواصل",contactValue:"رقم المتجر غير مهيّأ في المعاينة",
-    section:"أبرز منتجاتنا",sample:"اختيارات تجريبية · USD",add:"أضف إلى السلة",cartUnavailable:"السلة غير مفعّلة في المعاينة",
+    section:"أبرز منتجاتنا",sample:"اختيارات تجريبية · USD",add:"أضف إلى السلة",cartUnavailable:"لا يمكن إرسال طلب أو دفع في المعاينة",basket:"سلة المعاينة",basketNote:"سلة تفاعلية للتوضيح فقط؛ لا تُنشئ طلبًا ولا تخصم دفعة.",basketEmpty:"السلة فارغة",basketTotal:"المجموع التوضيحي",basketClear:"إفراغ السلة",basketClose:"إغلاق السلة",basketOpen:"فتح السلة",repairExplore:"استكشف الصيانة",
     noResults:"لا توجد منتجات مطابقة. جرّب اسمًا آخر.",result:"منتجات توضيحية",trust1:"أجهزة مختارة",trust2:"صيانة منظمة",trust3:"متابعة واضحة",powered:"Powered by A1 Mobi",
     menu:"القائمة",close:"إغلاق",
   },
@@ -34,7 +34,7 @@ const copy={
     demo:"TechZone is an illustrative demo brand · images and prices are not real-store offers",
     location:"Location",hours:"Working hours",hoursValue:"Configured by each store",service:"Device repair",serviceValue:"Intake · diagnosis · tracking · delivery",
     contactLabel:"Contact",contactValue:"Store phone is not configured in preview",
-    section:"Featured products",sample:"Demo selection · USD",add:"Add to cart",cartUnavailable:"Cart is not enabled in preview",
+    section:"Featured products",sample:"Demo selection · USD",add:"Add to cart",cartUnavailable:"No checkout or payment is available in this demo",basket:"Preview basket",basketNote:"Interactive demo only. No real order or payment is created.",basketEmpty:"Basket is empty",basketTotal:"Illustrative total",basketClear:"Clear basket",basketClose:"Close basket",basketOpen:"Open basket",repairExplore:"Explore repairs",
     noResults:"No matching products. Try another search.",result:"demo products",trust1:"Selected devices",trust2:"Organized repair",trust3:"Clear tracking",powered:"Powered by A1 Mobi",
     menu:"Menu",close:"Close",
   },
@@ -44,12 +44,19 @@ export function StorePreviewExperience({products,branchAr,branchEn}:StorePreview
   const [locale,setLocale]=useState<"ar"|"en">("ar");
   const [open,setOpen]=useState(false);
   const [query,setQuery]=useState("");
+  const [basket,setBasket]=useState<Record<string,number>>({});
+  const [basketOpen,setBasketOpen]=useState(false);
   const t=copy[locale];
   const ar=locale==="ar";
   const term=query.trim().toLocaleLowerCase();
   const filtered=useMemo(()=>products.filter(product=>
     [product.nameAr,product.nameEn,product.brand,product.sku].some(value=>value.toLocaleLowerCase().includes(term))
   ),[products,term]);
+  const basketItems=useMemo(()=>products.filter(item=>(basket[item.id]??0)>0),[basket,products]);
+  const basketCount=basketItems.reduce((sum,item)=>sum+(basket[item.id]??0),0);
+  const basketTotal=basketItems.reduce((sum,item)=>sum+item.price*(basket[item.id]??0),0);
+  function addDemo(id:string){setBasket(old=>({...old,[id]:Math.min(9,(old[id]??0)+1)}));setBasketOpen(true);}
+  function reduceDemo(id:string){setBasket(old=>({...old,[id]:Math.max(0,(old[id]??0)-1)}));}
 
   function scrollTo(id:string){
     document.getElementById(id)?.scrollIntoView({behavior:"smooth",block:"start"});
@@ -82,6 +89,7 @@ export function StorePreviewExperience({products,branchAr,branchEn}:StorePreview
       </nav>
 
       <div className="mobi-store-header-actions">
+        <button className="mobi-store-basket-trigger" type="button" aria-label={t.basketOpen} aria-expanded={basketOpen} aria-controls="mobi-store-basket" onClick={()=>setBasketOpen(old=>!old)}>▤ <strong>{basketCount}</strong></button>
         <button className="mobi-store-whatsapp" type="button" disabled title={t.whatsappUnavailable}>● {t.whatsapp}</button>
         <button className="mobi-store-lang" type="button" onClick={()=>setLocale(ar?"en":"ar")}>{ar?"EN":"العربية"}</button>
         <Link href={"/product/"+locale} dir="ltr">A1 Mobi ↗</Link>
@@ -102,7 +110,7 @@ export function StorePreviewExperience({products,branchAr,branchEn}:StorePreview
         <p>{t.sub}</p>
         <div className="mobi-store-buttons">
           <button type="button" className="mobi-store-btn mobi-store-btn-primary" onClick={()=>scrollTo("products")}>{t.discover} ←</button>
-          <button type="button" className="mobi-store-btn mobi-store-btn-secondary" disabled title={t.repairUnavailable}>{t.repair}</button>
+          <button type="button" className="mobi-store-btn mobi-store-btn-secondary" onClick={()=>scrollTo("services")}>{t.repairExplore}</button>
         </div>
         <span className="mobi-store-caption" id="about-store" tabIndex={-1}>{t.demo}</span>
       </div>
@@ -127,7 +135,7 @@ export function StorePreviewExperience({products,branchAr,branchEn}:StorePreview
             <small>{product.brand}</small>
             <h3>{ar?product.nameAr:product.nameEn}</h3>
             <div><strong dir="ltr">{"$"+product.price.toLocaleString("en-US")}</strong>
-              <button type="button" disabled title={t.cartUnavailable}>{t.add}</button>
+              <button className="mobi-store-add" type="button" onClick={()=>addDemo(product.id)}>{t.add}</button>
             </div>
           </div>
         </article>)}
@@ -138,6 +146,19 @@ export function StorePreviewExperience({products,branchAr,branchEn}:StorePreview
     <footer className="mobi-store-bottom">
       <span>✓ {t.trust1}</span><span>✓ {t.trust2}</span><span>✓ {t.trust3}</span><span className="mobi-store-powered">{t.powered}</span>
     </footer>
+    {basketOpen&&<aside id="mobi-store-basket" className="mobi-store-basket-panel" role="dialog" aria-modal="false" aria-label={t.basket}>
+      <div className="mobi-store-basket-title"><h2>{t.basket} ({basketCount})</h2><button type="button" aria-label={t.basketClose} onClick={()=>setBasketOpen(false)}>×</button></div>
+      <p className="mobi-store-basket-notice">{t.basketNote}</p>
+      {basketItems.length===0?<p role="status">{t.basketEmpty}</p>:<>
+        <ul className="mobi-store-basket-list">{basketItems.map(item=><li key={item.id}>
+          <span>{ar?item.nameAr:item.nameEn}</span>
+          <div><button type="button" aria-label={"− "+(ar?item.nameAr:item.nameEn)} onClick={()=>reduceDemo(item.id)}>−</button><b>{basket[item.id]}</b><button type="button" aria-label={"+ "+(ar?item.nameAr:item.nameEn)} onClick={()=>addDemo(item.id)}>+</button></div>
+        </li>)}</ul>
+        <div className="mobi-store-basket-total"><span>{t.basketTotal}</span><strong dir="ltr">{"$"+basketTotal.toLocaleString("en-US")}</strong></div>
+        <button className="mobi-store-basket-clear" type="button" onClick={()=>setBasket({})}>{t.basketClear}</button>
+        <p className="mobi-store-basket-notice">{t.cartUnavailable}</p>
+      </>}
+    </aside>}
   </main>;
 }
 

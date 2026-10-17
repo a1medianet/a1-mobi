@@ -138,12 +138,18 @@ try {
   assert(bViewport.scrollHeight <= bViewport.innerHeight, "B exceeds 1440x900 viewport: " + JSON.stringify(bViewport));
   assert(await evaluate(cdp, 'document.querySelectorAll(".mobi-store-product").length === 4'), "B must render four featured products");
   assert(await evaluate(cdp, 'document.querySelector(".mobi-store-whatsapp")?.disabled === true'), "B WhatsApp must be disabled until configured");
-  assert(await evaluate(cdp, 'document.querySelector(".mobi-store-btn-secondary")?.disabled === true'), "B repair booking must not fake success");
-  assert(await evaluate(cdp, '[...document.querySelectorAll(".mobi-store-product-body button")].every(button=>button.disabled)'), "B cart must not fake success before a real cart API exists");
+  assert(await evaluate(cdp, 'document.querySelector(".mobi-store-btn-secondary")?.disabled === false'), "B repair information must remain accessible");
+  assert(await evaluate(cdp, '[...document.querySelectorAll(".mobi-store-add")].every(button=>!button.disabled)'), "B preview basket needs functional add buttons");
 
   await evaluate(cdp, '(() => { const input=document.querySelector(".mobi-store-header-search input"); const setter=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,"value").set; setter.call(input,"AirPods"); input.dispatchEvent(new Event("input",{bubbles:true})); return true; })()');
   await sleep(250);
   assert(await evaluate(cdp, 'document.querySelectorAll(".mobi-store-product").length === 1'), "B search did not filter products");
+  await evaluate(cdp, 'document.querySelector(".mobi-store-add").click(); true');
+  await sleep(200);
+  assert(await evaluate(cdp, 'document.querySelector(".mobi-store-basket-panel")?.getAttribute("role") === "dialog"'), "B preview basket must open");
+  assert(await evaluate(cdp, 'document.querySelector(".mobi-store-basket-trigger strong")?.textContent === "1"'), "B preview basket count incorrect");
+  assert(await evaluate(cdp, 'document.querySelector(".mobi-store-basket-notice")?.textContent.length > 20'), "B preview basket requires an explicit illustrative notice");
+  await evaluate(cdp, 'document.querySelector(".mobi-store-basket-title button").click(); true');
   await evaluate(cdp, 'document.querySelector(".mobi-store-lang").click(); true');
   await sleep(200);
   assert(await evaluate(cdp, 'document.querySelector(".mobi-store")?.getAttribute("lang") === "en"'), "B language toggle failed");
@@ -158,6 +164,13 @@ try {
   assert(bMobile.scrollWidth <= bMobile.innerWidth, "B mobile horizontal overflow: " + JSON.stringify(bMobile));
   assert(await evaluate(cdp, '!/[\u00d8\u00d9]/u.test(document.body.innerText)'), "B mobile Arabic encoding corrupted");
   assert(await evaluate(cdp, 'getComputedStyle(document.querySelector(".mobi-store-header-search input")).opacity === "1"'), "B mobile search must be visible");
+  assert(await evaluate(cdp, 'getComputedStyle(document.querySelector(".mobi-store-header nav")).display === "none"'), "B mobile nav must be collapsed initially");
+  await evaluate(cdp, 'document.querySelector(".mobi-store-menu-button").click(); true');
+  await sleep(100);
+  assert(await evaluate(cdp, 'getComputedStyle(document.querySelector(".mobi-store-header nav")).display !== "none"'), "B mobile menu must open");
+  await evaluate(cdp, 'document.querySelector(".mobi-store-menu-button").click(); true');
+  await sleep(100);
+  assert(await evaluate(cdp, 'getComputedStyle(document.querySelector(".mobi-store-header nav")).display === "none"'), "B mobile menu must close");
 
   const suffix = Date.now().toString();
   const tenant = "visual-" + suffix;

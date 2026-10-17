@@ -545,3 +545,29 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
  .mobi-marketing-a h1{font-size:clamp(31px,8.2vw,42px);overflow-wrap:anywhere}
  .mobi-a-cta-row{flex-wrap:wrap}
 }
+
+/* A1 MOBI CLAUDE B PREVIEW CART 20261017 — sample interactions, never checkout. */
+.mobi-store-basket-trigger{border:1px solid #dce7f8;background:#eef5ff;color:#1265e8;cursor:pointer;display:inline-flex;gap:5px;align-items:center}
+.mobi-store-basket-trigger strong{display:inline-grid;place-items:center;border-radius:30px;background:#1265e8;color:white;font-size:11px;min-width:21px;height:21px}
+.mobi-store-basket-panel{position:fixed;z-index:80;inset-inline-end:18px;top:82px;width:min(380px,calc(100vw - 28px));max-height:calc(100dvh - 94px);overflow:auto;box-shadow:0 20px 55px #14233d30;border:1px solid #dce7f8;background:#fff;border-radius:18px;padding:18px;color:#14233d}
+.mobi-store-basket-title{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.mobi-store-basket-title h2{margin:0;font-size:17px;font-family:"Alexandria","IBM Plex Sans Arabic",sans-serif}
+.mobi-store-basket-title button{border:0;background:#f1f5fb;border-radius:9px;width:38px;height:38px;font-size:25px;cursor:pointer}
+.mobi-store-basket-notice{font-size:12px;line-height:1.7;color:#66748d;background:#f5f9ff;padding:10px;border-radius:9px;margin:12px 0}
+.mobi-store-basket-list{margin:8px 0;padding:0;list-style:none}.mobi-store-basket-list li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #eef1f6;font-size:12px}
+.mobi-store-basket-list li>span{min-width:0;overflow-wrap:anywhere}.mobi-store-basket-list li>div{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.mobi-store-basket-list li button{width:31px;height:31px;border-radius:8px;border:1px solid #dce7f8;background:#eef5ff;color:#1265e8;cursor:pointer}
+.mobi-store-basket-total{display:flex;justify-content:space-between;align-items:center;margin:10px 0;color:#1265e8;font-weight:750}
+.mobi-store-basket-clear{cursor:pointer;border:1px solid #dce7f8;border-radius:9px;padding:9px 12px;background:#fff}
+.mobi-store-basket-trigger:focus-visible,.mobi-store-basket-panel button:focus-visible,.mobi-store-add:focus-visible{outline:3px solid #ff7a1a;outline-offset:2px}
+@media(max-width:640px){.mobi-store-basket-panel{inset-inline:14px;top:114px;width:auto}.mobi-store-header-actions .mobi-store-basket-trigger{padding-inline:7px}}
+
+/* A1 MOBI 20261017 WORDMARK AND MOBILE NAV — checked against true 390px CDP viewport. */
+.product-brand>.mobi-wordmark{display:inline-flex;align-items:center;width:auto;height:auto;border-radius:0;background:transparent;box-shadow:none;color:#14233d;white-space:nowrap;font-size:23px;gap:7px}
+.product-brand>.mobi-wordmark.footer-wordmark{font-size:23px}
+.mobi-marketing-a .mobi-headline-orange{display:inline-block}
+@media(max-width:640px){
+ .product-brand>.mobi-wordmark{font-size:20px;gap:5px}
+ .mobi-store-header nav:not(.is-open){display:none}
+ .mobi-store-header nav.is-open{display:flex;flex-wrap:wrap;justify-content:flex-start;z-index:65;box-shadow:0 13px 30px #14233d20}
+}
