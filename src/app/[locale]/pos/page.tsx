@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { DemoProductPhoto } from "@/components/demo-product-photo";
 import { demoProducts, demoStore, type DemoProduct } from "@/demo/data";
@@ -55,6 +55,14 @@ export default function PosPage() {
   const { locale: raw } = useParams<{ locale: string }>();
   const locale = raw === "en" ? "en" : "ar";
   const t = copy[locale];
+  const [liveEnabled,setLiveEnabled] = useState(false);
+  useEffect(() => {
+    let active = true;
+    fetch("/api/ops/live-01", {cache:"no-store"}).then(response => {
+      if(active) setLiveEnabled(response.ok);
+    }).catch(() => {});
+    return () => { active = false; };
+  }, []);
   const [query,setQuery] = useState("");
   const [cart,setCart] = useState<CartLine[]>([]);
   const [suspended,setSuspended] = useState<CartLine[] | null>(null);
@@ -159,6 +167,7 @@ export default function PosPage() {
     </header>
 
     <p className="preview-notice" role="status">{t.preview}</p>
+    {liveEnabled && <p><Link className="primary mobi-live-entry" href={"/"+locale+"/live-01"}>{locale==="ar"?"فتح تشغيل المخزون والبيع الحقيقي (C-LIVE-01)":"Open real inventory and sales (C-LIVE-01)"}</Link></p>}
 
     {receipt && <section className="demo-receipt" role="status">
       <div className="receipt-check">✓</div>

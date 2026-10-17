@@ -42,3 +42,6 @@ next-env.d.ts
 
 # Thaghr private runtime, never version control
 /.local/
+
+# Dedicated C-LIVE-01 local build output
+/.next-c-live/
