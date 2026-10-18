@@ -131,7 +131,8 @@ try {
   assert(await evaluate(cdp, 'document.querySelectorAll(".mobi-a-feature-card").length === 6'), "A must show six feature cards");
   assert(await evaluate(cdp, 'Boolean(document.querySelector(".mobi-a-device-mockup"))'), "A dashboard device mockup missing");
   assert(await evaluate(cdp, 'Boolean(document.querySelector(".mobi-headline-blue") && document.querySelector(".mobi-headline-orange"))'), "A colored headline missing");
-  assert(await evaluate(cdp, 'document.querySelector(".mobi-wordmark")?.textContent.replace(/\\s+/g,"").includes("A1Mobi")'), "A1 Mobi wordmark order is wrong");
+  assert(await evaluate(cdp, '(() => { const i=document.querySelector(".product-nav .product-brand img"); return i?.getAttribute("src")==="/brand/a1-mobi-logo.svg" && i.alt==="A1 Mobi" && i.complete && i.naturalWidth>0; })()'), "Official A1 Mobi wordmark is missing or failed to load");
+  assert(await evaluate(cdp, '(() => { const footer=document.querySelector(".product-footer"); const i=footer?.querySelector("img"); const wrapper=footer?.querySelector(".footer-brand-asset"); return i?.getAttribute("src")==="/brand/a1-mobi-logo-on-dark.svg" && getComputedStyle(wrapper).backgroundColor==="rgba(0, 0, 0, 0)"; })()'), "White-on-dark footer logo is missing or has an opaque background");
 
   await navigate(cdp, base + "/store-preview", 1440, 900);
   const bViewport = await evaluate(cdp, '({scrollHeight:document.documentElement.scrollHeight,innerHeight:window.innerHeight})');

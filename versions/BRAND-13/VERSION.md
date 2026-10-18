@@ -41,6 +41,13 @@ User-supplied official A1 Mobi horizontal logo: geometric interlocking blue/oran
 - A historical 38px span rule initially narrowed the public logo. Fixed with a specific selector; the rerun then passed. Unloaded offscreen lazy footer imagery is not misreported as missing brand assets.
 - The first full PostgreSQL regression attempt was **NOT PASS**: local `127.0.0.1:5438` became unreachable during execution, causing database initialization errors and timeout failures in DB-backed security/sales tests. This is recorded as an environmental blocker, not silently treated as a success. Focused brand tests, TypeScript, ESLint, and browser visual tests were PASS. Recheck database stability and CI independently before final production acceptance; no earlier green results are inherited.
 
+## GitHub visual workflow follow-up
+
+- GitHub CI for `b69ce00`: **SUCCESS**.
+- GitHub Product & Pilot Visual Evidence initially **FAILED** at an outdated QA assertion that searched for the retired textual `.mobi-wordmark`. The underlying build succeeded. This is an automated test selector mismatch after replacing the text with the official image logo.
+- Updated `scripts/abc-browser-qa.mjs` to assert the official header SVG is loaded and labelled, and the footer uses the transparent white-on-dark SVG, rather than weakening or deleting visual assertions. `node --check`: PASS.
+- The corrected GitHub workflow needs its own successful run before brand visual CI is considered closed.
+
 ## Remaining and release policy
 
 The new brand gate does **not** certify C financial refunds/warranty claims, B order/storefront operations, A subscription/recovery email, new independent Claude review, A1 Application Foundation v1.0.0 or overall Pre-Launch.
