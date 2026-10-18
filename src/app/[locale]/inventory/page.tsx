@@ -2,11 +2,19 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { demoCatalogCounts, demoLowStock, demoProducts } from "@/demo/data";
 import { demoInventoryMovements } from "@/demo/operations";
+import LiveOperationsPage from "@/components/live-operations";
+
+export const dynamic = "force-dynamic";
 
 const copy={ar:{back:"لوحة التحكم",title:"المخزون والأجهزة",sub:"قراءة تجريبية للمخزون، الأجهزة التسلسلية وحركة القطع",notice:"Pilot Demo — الأرقام أدناه للتجربة ولا تمثل جردًا إنتاجيًا.",products:"المنتجات",serialized:"وحدات IMEI/Serial",alerts:"تنبيهات",value:"قيمة بيع تقديرية",low:"منخفض",healthy:"جيد",recent:"آخر حركة مخزون",ref:"المرجع",type:"الحركة",product:"المنتج",qty:"الكمية",time:"الوقت",catalog:"فتح الكتالوج"},en:{back:"Dashboard",title:"Inventory & devices",sub:"Pilot view of stock, serialized devices, and parts movement",notice:"Pilot Demo — values below are for testing and are not production inventory.",products:"Products",serialized:"IMEI/Serial units",alerts:"Alerts",value:"Estimated retail value",low:"Low",healthy:"Healthy",recent:"Recent inventory movement",ref:"Reference",type:"Movement",product:"Product",qty:"Qty",time:"Time",catalog:"Open catalog"}} as const;
 
 export default async function InventoryPage({params}:{params:Promise<{locale:string}>}) {
- const {locale}=await params; if(locale!=="ar"&&locale!=="en") notFound(); const t=copy[locale]; const ar=locale==="ar"; const counts=demoCatalogCounts(); const low=demoLowStock();
+ const {locale}=await params;
+ if(locale!=="ar"&&locale!=="en") notFound();
+ // Canonical inventory uses existing persisted device intake when the UAT gate is ON.
+ // With the flag OFF, it preserves the explicitly labelled demo inventory.
+ if(process.env.A1_MOBI_C_LIVE_01_ENABLED==="1") return <LiveOperationsPage mode="inventory" />;
+ const t=copy[locale]; const ar=locale==="ar"; const counts=demoCatalogCounts(); const low=demoLowStock();
  const retail=demoProducts.reduce((sum,p)=>sum+p.price*p.stock,0);
  return <main className="module-page"><header className="module-header"><div><Link href={"/"+locale} className="back-link">{t.back}</Link><p className="module-kicker">A1 MOBI · INVENTORY</p><h1>{t.title}</h1><p className="module-sub">{t.sub}</p></div><Link className="soft-btn" href={"/"+locale+"/products"}>{t.catalog}</Link></header>
  <p className="preview-notice">{t.notice}</p>

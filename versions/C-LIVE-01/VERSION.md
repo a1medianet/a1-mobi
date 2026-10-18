@@ -46,3 +46,10 @@ No external project files or production deployment. Preserve prior versions unde
 - Route GET now also includes branch saleLine history; retains SOLD devices in the operator ledger without treating them as available inventory.
 - Strengthened PostgreSQL test asserts device status exactly SOLD, instead of only not IN_STOCK.
 - Revised DB gate: 2/2 PASS (0 skipped), TypeScript PASS. Final production rebuild and real browser E2E both PASS (exit 0): reload retains SOLD and invoice; CDP desktop/mobile PASS.
+
+## CANONICAL-POS-INVENTORY-GATE-11 — 2026-10-18
+- Canonical authenticated owner POS and Inventory now reuse the existing persisted Live-01 operational component when the test feature flag is ON, rather than routing users to a separate live page.
+- Inventory provides product registration and IMEI intake; POS provides verified-device USD cash checkout and saved invoice list. The legacy Live-01 URL remains a combined QA workflow.
+- Default-off preserves the previous explicitly labelled training POS/inventory views; no schema or payment service changes, no production or Hostinger deployment.
+- Four read-only authenticated Chrome gate checks on AR/EN desktop/mobile passed: canonical route, correct form count, two source-backed metric cards, UAT API 200, no horizontal overflow.
+- See `CANONICAL-POS-INVENTORY-GATE-11.md` and `c-canonical-11-*.png` for evidence. Full regression / CI status must be verified separately.
