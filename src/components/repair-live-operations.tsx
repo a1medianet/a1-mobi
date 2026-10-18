@@ -82,7 +82,7 @@ const dict={
  },
 } as const;
 
-export default function RepairLivePage(){
+export default function RepairLivePage({backToDashboard=false}:{backToDashboard?:boolean}={}){
  const {locale:raw}=useParams<{locale:string}>();const locale=raw==="en"?"en":"ar";const t=dict[locale];
  const [orders,setOrders]=useState<Order[]>([]),[busy,setBusy]=useState(false);
  const [message,setMessage]=useState(""),[loading,setLoading]=useState(true);
@@ -164,7 +164,7 @@ export default function RepairLivePage(){
  const statusLabel=(status:string)=>stage[status]?.[locale]??status;
  return <main className="module-page mobi-live02" lang={locale} dir={locale==="ar"?"rtl":"ltr"}>
   <header className="module-header"><div>
-   <Link href={"/"+locale+"/repairs"} className="back-link">{t.back}</Link>
+   <Link href={"/"+locale+(backToDashboard?"":"/repairs")} className="back-link">{backToDashboard?(locale==="ar"?"لوحة التحكم":"Dashboard"):t.back}</Link>
    <h1>{t.title}</h1><p className="module-sub">{t.intro}</p>
   </div><button className="soft-btn" type="button" disabled={busy}
    onClick={()=>void reload().catch(e=>setMessage(String(e.message)))}>{t.refresh}</button></header>

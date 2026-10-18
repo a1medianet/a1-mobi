@@ -76,3 +76,11 @@ Remaining gates:
 - Non-secret Hostinger defaults documented in `.env.example`; password and webhook secret remain absent and are never stored in GitHub.
 - See `SMTP-HOSTINGER-GATE-08.md` for evidence and remaining HTTPS, test-delivery and production-health requirements.
 - PR #12 remains Draft; Foundation and production release remain HOLD.
+
+## CANONICAL-REPAIRS-GATE-09 — 2026-10-18
+- The normal authenticated owner /ar|en/repairs menu now uses the already-implemented PostgreSQL Live-02 repair component when its isolated UAT feature flag is enabled. Legacy /live-02 remains available, and the default-off demo behavior is preserved.
+- Removed the intermediate demo-to-live entry. Back navigation returns to the dashboard on the canonical route.
+- New 5-case canonical navigation regression suite plus Chrome owner UAT in Arabic desktop/mobile and English mobile PASS, with branch-wide metrics, filters and selected-case panel.
+- Full local synthetic PostgreSQL UAT: **138/138 tests, 51/51 files PASS**. TypeScript and focused ESLint PASS.
+- See `CANONICAL-REPAIRS-GATE-09.md` and evidence images. No customer data used.
+- Final A/B/C signoff, remaining owner modules, Application Foundation, refund/warranty claim and pre-launch remain HOLD. PR #12 stays Draft.
