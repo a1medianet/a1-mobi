@@ -78,7 +78,7 @@ export async function GET(request:Request) {
       {reportedIssue:{contains:q,mode:"insensitive"}},
       {imei:{contains:q}},
     ];
-    const [rows,matchedCount,totalOrders,cashOpen]=await Promise.all([
+    const [rows,matchedCount,statusTotals,cashOpen]=await Promise.all([
       db.repairOrder.findMany({
       where,
       orderBy:[{intakeAt:"desc"},{id:"desc"}],skip:page*pageSize,take:pageSize,
@@ -86,11 +86,27 @@ export async function GET(request:Request) {
         warranties:{select:{number:true,expiresAt:true,status:true},take:1}},
       }),
       db.repairOrder.count({where}),
-      db.repairOrder.count({where:{tenantId:ctx.tenantId,branchId:ctx.branchId}}),
+      db.repairOrder.groupBy({
+        by:["status"],where:{tenantId:ctx.tenantId,branchId:ctx.branchId},
+        _count:{_all:true},_sum:{balanceDue:true},
+      }),
       db.cashSession.findFirst({where:{tenantId:ctx.tenantId,branchId:ctx.branchId,
         status:"OPEN"},select:{id:true}}),
     ]);
-    return authJson({cashOpen:Boolean(cashOpen),totalOrders,matchedCount,
+    const activeStates=new Set<RepairStatus>([
+      RepairStatus.INTAKE,RepairStatus.DIAGNOSIS,RepairStatus.ESTIMATE_PENDING,
+      RepairStatus.APPROVED,RepairStatus.IN_PROGRESS,
+    ]);
+    const totalOrders=statusTotals.reduce((sum,row)=>sum+row._count._all,0);
+    const overview={
+      total:totalOrders,
+      active:statusTotals.filter(row=>activeStates.has(row.status))
+        .reduce((sum,row)=>sum+row._count._all,0),
+      ready:statusTotals.find(row=>row.status===RepairStatus.READY)?._count._all??0,
+      balanceDue:Math.round(Number(statusTotals.find(row=>row.status===RepairStatus.READY)
+        ?._sum.balanceDue??0)*100)/100,
+    };
+    return authJson({cashOpen:Boolean(cashOpen),totalOrders,matchedCount,overview,
       page,pageSize,hasMore:(page+1)*pageSize<matchedCount,
       orders:rows.map(row=>({
       id:row.id,number:row.number,customerName:row.customerName,device:row.deviceDescription,

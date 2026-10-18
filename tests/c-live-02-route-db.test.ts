@@ -87,6 +87,8 @@ runDb("C-LIVE-02 repair HTTP route / PostgreSQL",()=>{
    const first=await (await route.GET(new Request(url+"?page=0"))).json();
    const second=await (await route.GET(new Request(url+"?page=1"))).json();
    expect(first.orders).toHaveLength(75);
+   expect(first.overview.total).toBe(first.totalOrders);
+   expect(first.overview.active).toBeGreaterThanOrEqual(77);
    expect(first.pageSize).toBe(75);
    expect(first.hasMore).toBe(true);
    expect(second.orders.length).toBeGreaterThan(0);
@@ -95,6 +97,8 @@ runDb("C-LIVE-02 repair HTTP route / PostgreSQL",()=>{
    const search=await (await route.GET(new Request(url+"?q="+encodeURIComponent(prefix+"76")))).json();
    expect(search.matchedCount).toBe(1);
    expect(search.orders[0].number).toBe(prefix+"76");
+   expect(search.overview.total).toBe(first.overview.total);
+   expect(search.overview.active).toBe(first.overview.active);
    const ready=await (await route.GET(new Request(url+"?status=READY"))).json();
    expect(ready.orders.some((row:{id:string})=>row.id===repairId)).toBe(true);
    expect((await route.GET(new Request(url+"?page=-1"))).status).toBe(400);
@@ -104,6 +108,8 @@ runDb("C-LIVE-02 repair HTTP route / PostgreSQL",()=>{
    const other=await (await route.GET(new Request(url+"?q="+encodeURIComponent(prefix)))).json();
    expect(other.matchedCount).toBe(0);
    expect(other.orders).toHaveLength(0);
+   expect(other.overview.total).toBe(other.totalOrders);
+   expect(other.overview.total).toBe(0);
   } finally {
    active=a;
    await db.repairOrder.deleteMany({where:{tenantId:a.tenantId,number:{startsWith:prefix}}});

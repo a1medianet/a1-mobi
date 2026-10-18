@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
-import { summarizeRepairs, type RepairListFilter } from "@/modules/repairs/repair-owner-view";
+import type { RepairListFilter } from "@/modules/repairs/repair-owner-view";
 
 type Order={
  id:string;number:string;customerName:string;device:string;issue:string;imeiLast4:string|null;
@@ -43,7 +43,7 @@ const dict={
    search:"بحث برقم الطلب أو العميل أو الجهاز أو آخر 4 أرقام IMEI",
    all:"جميع الطلبات",active:"قيد المعالجة",awaiting:"بانتظار الموافقة",readyFilter:"جاهزة",
    deliveredFilter:"تم تسليمها",noMatch:"لا توجد طلبات تطابق البحث أو التصفية.",
-   total:"الطلبات المعروضة",moreRows:"نعرض أحدث 75 طلبًا فقط. للبحث في الطلبات الأقدم نحتاج إلى تصفح جميع السجلات.",activeTotal:"قيد المعالجة",readyTotal:"جاهزة للتسليم",
+   total:"إجمالي طلبات الفرع",moreRows:"نعرض أحدث 75 طلبًا فقط. للبحث في الطلبات الأقدم نحتاج إلى تصفح جميع السجلات.",activeTotal:"قيد المعالجة",readyTotal:"جاهزة للتسليم",
    dueTotal:"مستحقات الصيانة الجاهزة",intakeDate:"تاريخ الاستلام",ticket:"رقم الطلب",
    issueLabel:"العطل",deviceLabel:"الجهاز",ticketState:"حالة الطلب",notPriced:"لم تُحدد بعد",
    openTicket:"فتح الطلب",caseDetails:"تفاصيل طلب الصيانة",closeTicket:"إغلاق التفاصيل",
@@ -73,7 +73,7 @@ const dict={
    search:"Search ticket, customer, device or last 4 IMEI digits",
    all:"All repairs",active:"In progress",awaiting:"Awaiting approval",readyFilter:"Ready",
    deliveredFilter:"Delivered",noMatch:"No repairs match the search or filter.",
-   total:"Listed tickets",moreRows:"Showing the latest 75 repairs only. Older records require full-history search.",activeTotal:"In progress",readyTotal:"Ready for pickup",
+   total:"Branch repair orders",moreRows:"Showing the latest 75 repairs only. Older records require full-history search.",activeTotal:"In progress",readyTotal:"Ready for pickup",
    dueTotal:"Ready repairs due",intakeDate:"Received",ticket:"Ticket",
    issueLabel:"Issue",deviceLabel:"Device",ticketState:"Status",notPriced:"Not yet priced",
    openTicket:"Open ticket",caseDetails:"Repair ticket details",closeTicket:"Close details",
@@ -88,6 +88,7 @@ export default function RepairLivePage(){
  const [message,setMessage]=useState(""),[loading,setLoading]=useState(true);
  const [cashOpen,setCashOpen]=useState(false);
  const [totalOrders,setTotalOrders]=useState(0);
+ const [overview,setOverview]=useState({total:0,active:0,ready:0,balanceDue:0});
  const [matchedCount,setMatchedCount]=useState(0);
  const [page,setPage]=useState(0);
  const [hasMore,setHasMore]=useState(false);
@@ -103,7 +104,6 @@ export default function RepairLivePage(){
  const [search,setSearch]=useState("");
  const [statusFilter,setStatusFilter]=useState<RepairListFilter>("ALL");
  const [selectedOrderId,setSelectedOrderId]=useState<string|null>(null);
- const overview=summarizeRepairs(orders);
  const visibleOrders=orders;
  const pending=orders.filter(o=>o.status==="INTAKE"||o.status==="DIAGNOSIS");
  const selected=pending.find(o=>o.id===selectedId);
@@ -117,8 +117,10 @@ export default function RepairLivePage(){
  const queryUrl="/api/ops/live-02?"+listParams.toString();
  function acceptPage(data:{
    orders:Order[];cashOpen:boolean;totalOrders:number;matchedCount:number;hasMore:boolean;
+   overview:{total:number;active:number;ready:number;balanceDue:number};
  }){
   setOrders(data.orders);setCashOpen(Boolean(data.cashOpen));
+  setOverview(data.overview);
   setTotalOrders(Number(data.totalOrders));setMatchedCount(Number(data.matchedCount));
   setHasMore(Boolean(data.hasMore));
  }
