@@ -62,3 +62,10 @@ Remaining gates:
 - Review cash close under concurrent payments; support validated cross-currency and debt paths before any commercial release.
 - A/B/C final visual reference signoff, Foundation v1.0, Pre-Launch, backups & recovery, tenancy and security external review are OPEN.
 - No public deployment or PR merge. Preserve all proof and versions in this repository.
+
+## CASH-CONCURRENCY-GATE-07 — 2026-10-18
+- Fixed the confirmed close-vs-movement stale-snapshot defect with a shared cash-session row lock and READ COMMITTED closing transaction.
+- Hardened cash movement idempotency conflicts and added PostgreSQL concurrency/closed-drawer regression tests.
+- Thaghr isolated UAT: **133/133 tests and 50/50 files PASS**, TypeScript and focused ESLint PASS.
+- Evidence and unresolved refund / warranty-claim / recovery-mail gates: `CASH-CONCURRENCY-GATE-07.md`.
+- Production, merge and release remain **HOLD**; PR #12 is Draft.

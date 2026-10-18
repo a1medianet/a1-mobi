@@ -102,15 +102,29 @@ export async function recordCashMovement(input: {
     throw new Error("Manual cash-out or adjustment requires a reason");
   }
   return db.$transaction(async (tx) => {
-    const existing = await tx.cashMovement.findUnique({
-      where: { tenantId_idempotencyKey: { tenantId: input.tenantId, idempotencyKey: input.idempotencyKey } },
-    });
-    if (existing) return existing;
+    // Serialize all drawer writes with closeCashSession, so a movement cannot post
+    // after the closing count has been calculated.
+    await tx.$queryRaw`SELECT "id" FROM "CashSession" WHERE "id" = ${input.cashSessionId} FOR UPDATE`;
     const session = await tx.cashSession.findUniqueOrThrow({ where: { id: input.cashSessionId } });
     const actor = await tx.user.findUniqueOrThrow({ where: { id: input.actorId } });
     if (session.tenantId !== input.tenantId || actor.tenantId !== input.tenantId
       || session.branchId !== input.branchId || session.status !== CashSessionStatus.OPEN) {
       throw new Error("Cash movement requires the matching open session");
+    }
+    const existing = await tx.cashMovement.findUnique({
+      where: { tenantId_idempotencyKey: { tenantId: input.tenantId, idempotencyKey: input.idempotencyKey } },
+    });
+    if (existing) {
+      if (existing.branchId !== input.branchId || existing.cashSessionId !== input.cashSessionId
+        || existing.actorId !== input.actorId || existing.direction !== input.direction
+        || existing.type !== input.type || existing.currency !== input.currency.toUpperCase()
+        || Number(existing.amount) !== input.amount || Number(existing.exchangeRate) !== input.exchangeRate
+        || (existing.sourceType ?? undefined) !== input.sourceType
+        || (existing.sourceId ?? undefined) !== input.sourceId
+        || (existing.reason ?? undefined) !== input.reason?.trim()) {
+        throw new Error("Cash idempotency key conflict");
+      }
+      return existing;
     }
     return tx.cashMovement.create({
       data: {
@@ -145,6 +159,9 @@ export async function closeCashSession(input: {
   varianceReason?: string;
 }) {
   return db.$transaction(async (tx) => {
+    // Take the same row lock as all session movements before reading the ledger.
+    // Closing count, CLOSED status and audit must share one serializable snapshot.
+    await tx.$queryRaw`SELECT "id" FROM "CashSession" WHERE "id" = ${input.cashSessionId} FOR UPDATE`;
     const session = await tx.cashSession.findUniqueOrThrow({
       where: { id: input.cashSessionId },
       include: { movements: true },
@@ -201,5 +218,8 @@ export async function closeCashSession(input: {
       },
     });
     return updated;
-  }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
+  // Under PostgreSQL READ COMMITTED, the ledger query after the session row
+  // lock receives a fresh snapshot. SERIALIZABLE could retain a pre-lock
+  // snapshot and omit a concurrently committed cash movement.
+  }, { isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted });
 }
