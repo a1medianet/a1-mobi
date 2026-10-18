@@ -3,7 +3,7 @@ import Image from "next/image";
 
 function MobiWordmark({footer=false}:{footer?:boolean}) {
   return <span className={"mobi-brand-asset"+(footer?" footer-brand-asset":"")} dir="ltr">
-    <Image src={footer?"/brand/a1-mobi-logo-on-dark.svg":"/brand/a1-mobi-logo.svg"} alt="A1 Mobi" width={190} height={62} priority={!footer} unoptimized />
+    <Image src={footer?"/brand/a1-mobi-logo-white.svg":"/brand/a1-mobi-logo.svg"} alt="A1 Mobi" width={190} height={62} priority={!footer} unoptimized />
   </span>;
 }
 

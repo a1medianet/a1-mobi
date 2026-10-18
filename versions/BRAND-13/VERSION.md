@@ -53,3 +53,10 @@ User-supplied official A1 Mobi horizontal logo: geometric interlocking blue/oran
 The new brand gate does **not** certify C financial refunds/warranty claims, B order/storefront operations, A subscription/recovery email, new independent Claude review, A1 Application Foundation v1.0.0 or overall Pre-Launch.
 
 **PR #12 remains Draft; no merge, no public Hostinger redeploy, no changes outside canonical local project.**
+
+## BRAND-14 — pure-white logo on dark surfaces (supersedes BRAND-13 footer accent)
+- Approved rule: full original colored logo on light; full **monochrome white** logo on dark; emblem only when width truly limits use. No separately typed Mobi word after an emblem.
+- Live implementation: product header original full colored SVG, product footer full pure-white SVG, C dark normal sidebar full pure-white SVG, collapsed C sidebar pure-white emblem, mobile light C header color emblem alone.
+- Verified Thaghr: 10/10 focused tests, TypeScript, ESLint and 4-route authenticated Chrome visual gate PASS. HTTP manifest/icons PASS; six new `brand-14-*.png` captures under this version.
+- `BRAND-WHITE-GATE-14.md` records acceptance details. Older white+orange negative asset is superseded and unused by the current UI.
+- Any prior full PostgreSQL regression failure caused by unreachable loopback DB remains unresolved; this identity gate is not a production/pre-launch release.

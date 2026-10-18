@@ -926,3 +926,14 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 
 /* Override the retired 38px span badge in the public product header. */
 .product-brand>span.mobi-brand-asset{width:auto;height:auto;min-width:0;display:inline-flex;padding:0;box-shadow:none;border-radius:0;background:transparent}
+
+/* BRAND-14: The full official logo is mandatory wherever it fits.
+   Use a pure white logo on dark panels, colored logo on light, icon alone when narrow. */
+.brand-row .brand .a1-mobi-sidebar-logo{display:block;width:170px;height:auto;max-width:100%;object-fit:contain}
+.brand-row .brand .a1-mobi-sidebar-icon{display:none;width:42px;height:42px;object-fit:contain}
+.app-shell.sidebar-collapsed .brand-row .brand .a1-mobi-sidebar-logo{display:none}
+.app-shell.sidebar-collapsed .brand-row .brand .a1-mobi-sidebar-icon{display:block}
+@media (max-width:1100px){
+ .brand-row .brand .a1-mobi-sidebar-logo{display:none}
+ .brand-row .brand .a1-mobi-sidebar-icon{display:block}
+}

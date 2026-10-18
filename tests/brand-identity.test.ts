@@ -29,15 +29,22 @@ describe("A1 Mobi approved brand identity",()=>{
   expect(data.height).toBe(height);
   expect(data.format).toBe("png");
  });
- it("keeps exact geometry in high-contrast negative and monochrome variants",()=>{
+ it("uses a pure-white full logo and a pure-white compact icon on dark surfaces",()=>{
   const original=readFileSync(fromRoot("public/brand/a1-mobi-logo.svg"),"utf8");
-  const inverted=readFileSync(fromRoot("public/brand/a1-mobi-logo-on-dark.svg"),"utf8");
   const white=readFileSync(fromRoot("public/brand/a1-mobi-logo-white.svg"),"utf8");
-  expect(inverted).toBe(original.replace('fill="url(#b)"','fill="#ffffff"'));
-  expect(white).toBe(inverted.replace('fill="url(#o)"','fill="#ffffff"'));
-  expect(inverted).toContain('fill="#ffffff"');
-  expect(inverted).toContain('fill="url(#o)"');
-  expect(white).not.toContain('fill="url(#o)"');
+  const icon=readFileSync(fromRoot("public/brand/a1-mobi-icon.svg"),"utf8");
+  const whiteIcon=readFileSync(fromRoot("public/brand/a1-mobi-icon-white.svg"),"utf8");
+  const whiten=(s:string)=>s.replace('fill="url(#b)"','fill="#ffffff"').replace('fill="url(#o)"','fill="#ffffff"');
+  expect(white).toBe(whiten(original));
+  expect(whiteIcon).toBe(whiten(icon));
+  expect((white.match(/fill="#ffffff"/g)||[])).toHaveLength(2);
+  expect((whiteIcon.match(/fill="#ffffff"/g)||[])).toHaveLength(2);
+  const publicShell=readFileSync(fromRoot("src/components/product-site-shell.tsx"),"utf8");
+  const ownerShell=readFileSync(fromRoot("src/components/app-shell.tsx"),"utf8");
+  expect(publicShell).toContain('footer?"/brand/a1-mobi-logo-white.svg":"/brand/a1-mobi-logo.svg"');
+  expect(ownerShell).toContain('src="/brand/a1-mobi-logo-white.svg"');
+  expect(ownerShell).toContain('src="/brand/a1-mobi-icon-white.svg"');
+  expect(ownerShell).not.toMatch(/<b>Mobi<\/b>|Store platform/);
  });
  it("keeps a valid binary ICO favicon with an embedded PNG",()=>{
   const ico=readFileSync(fromRoot("src/app/favicon.ico"));

@@ -50,8 +50,8 @@ export function AppShell({ locale, children }: {
     <aside className="sidebar">
       <div className="brand-row">
         <Link href={"/"+locale} className="brand" aria-label="A1 Mobi">
-          <Image src="/brand/a1-mobi-icon.svg" alt="" className="a1-mobi-brand-icon" width={43} height={43} unoptimized />
-          <span><b>Mobi</b><small>{ar ? "منصة المتجر" : "Store platform"}</small></span>
+          <Image src="/brand/a1-mobi-logo-white.svg" alt="" className="a1-mobi-sidebar-logo" width={170} height={55} unoptimized priority />
+          <Image src="/brand/a1-mobi-icon-white.svg" alt="" className="a1-mobi-sidebar-icon" width={42} height={42} unoptimized />
         </Link>
         <button className="sidebar-toggle" type="button"
           aria-label={sidebarCollapsed ? (ar?"توسيع القائمة":"Expand sidebar") : (ar?"طي القائمة":"Collapse sidebar")}
@@ -71,7 +71,7 @@ export function AppShell({ locale, children }: {
     <div className="workspace">
       <header className="topbar">
         <Link href={"/"+locale} className="mobile-brand" aria-label="A1 Mobi">
-          <Image src="/brand/a1-mobi-icon.svg" alt="" className="a1-mobi-brand-icon" width={33} height={33} unoptimized /><b>Mobi</b>
+          <Image src="/brand/a1-mobi-icon.svg" alt="" className="a1-mobi-brand-icon" width={33} height={33} unoptimized />
         </Link>
         <span className="workspace-title">{labels[locale][activeIndex] ?? "A1 Mobi"}</span>
         <select className="mobile-workspaces" aria-label={ar ? "انتقل إلى قسم" : "Go to workspace"}
