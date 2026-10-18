@@ -46,6 +46,8 @@ const dict={
    total:"الطلبات المعروضة",moreRows:"نعرض أحدث 75 طلبًا فقط. للبحث في الطلبات الأقدم نحتاج إلى تصفح جميع السجلات.",activeTotal:"قيد المعالجة",readyTotal:"جاهزة للتسليم",
    dueTotal:"مستحقات الصيانة الجاهزة",intakeDate:"تاريخ الاستلام",ticket:"رقم الطلب",
    issueLabel:"العطل",deviceLabel:"الجهاز",ticketState:"حالة الطلب",notPriced:"لم تُحدد بعد",
+   openTicket:"فتح الطلب",caseDetails:"تفاصيل طلب الصيانة",closeTicket:"إغلاق التفاصيل",
+   nextAction:"الإجراء التالي",noAction:"لا توجد إجراءات متاحة لهذه الحالة",
  },
  en:{back:"Repairs",title:"Repair orders",intro:"Receive devices, diagnose faults, approve estimates and manage repairs in one place.",
  warning:"Test environment — do not enter real customer details.",
@@ -73,6 +75,8 @@ const dict={
    total:"Listed tickets",moreRows:"Showing the latest 75 repairs only. Older records require full-history search.",activeTotal:"In progress",readyTotal:"Ready for pickup",
    dueTotal:"Ready repairs due",intakeDate:"Received",ticket:"Ticket",
    issueLabel:"Issue",deviceLabel:"Device",ticketState:"Status",notPriced:"Not yet priced",
+   openTicket:"Open ticket",caseDetails:"Repair ticket details",closeTicket:"Close details",
+   nextAction:"Next action",noAction:"No further action for this status",
  },
 } as const;
 
@@ -93,10 +97,16 @@ export default function RepairLivePage(){
  const [readyId,setReadyId]=useState<string|null>(null);
  const [search,setSearch]=useState("");
  const [statusFilter,setStatusFilter]=useState<RepairListFilter>("ALL");
+ const [selectedOrderId,setSelectedOrderId]=useState<string|null>(null);
  const overview=summarizeRepairs(orders);
  const visibleOrders=filterRepairs(orders,search,statusFilter);
  const pending=orders.filter(o=>o.status==="INTAKE"||o.status==="DIAGNOSIS");
  const selected=pending.find(o=>o.id===selectedId);
+ const selectedOrder=orders.find(o=>o.id===selectedOrderId);
+ useEffect(()=>{
+  if(!selectedOrderId)return;
+  document.getElementById("mobi-repair-selected")?.scrollIntoView({behavior:"smooth",block:"start"});
+ },[selectedOrderId]);
  async function reload(){
   const res=await fetch("/api/ops/live-02",{cache:"no-store"});
   const data=await res.json();
@@ -238,39 +248,67 @@ export default function RepairLivePage(){
        <strong>{o.estimate===null?t.notPriced:o.estimate.toFixed(2)+" USD"}</strong>
        {(o.status==="READY"||o.status==="DELIVERED")&&<small>{t.balance}: {o.balanceDue.toFixed(2)} USD</small>}
       </td>
-      <td className="mobi-live02-actions">
-       {o.status==="ESTIMATE_PENDING"?<button type="button" disabled={busy}
-        onClick={()=>void send({action:"approve",repairId:o.id})}>{t.approve}</button>:null}
-       {o.status==="APPROVED"?<button type="button" disabled={busy}
-        onClick={()=>void send({action:"start",repairId:o.id})}>{t.start}</button>:null}
-       {o.status==="IN_PROGRESS"?<details className="mobi-live02-ready" open={readyId===o.id} onToggle={e=>{
-         if(e.currentTarget.open){
-          setReadyId(o.id);setFinalPrice("");setLabor("0");setDirect("0");
-         }else if(readyId===o.id){setReadyId(null);}
-        }}>
-        <summary>{t.ready}</summary>
-        <form onSubmit={event=>{event.preventDefault();
-         if(readyId!==o.id || !finalPrice.trim())return;
-         if(!window.confirm(locale==="ar"?"تأكيد السعر النهائي وحالة الجهاز جاهز للاستلام؟":"Confirm the final amount and mark this repair ready?"))return;
-         void send({action:"ready",repairId:o.id,
-         finalPrice:Number(finalPrice),laborCost:Number(labor),directCost:Number(direct)});
-        }}>
-         <label>{t.finalPrice}<input type="number" min="1" step="0.01" required
-          placeholder={o.estimate?.toFixed(2)??""} value={finalPrice} onChange={e=>setFinalPrice(e.target.value)}/></label>
-         <label>{t.labor}<input type="number" min="0" step="0.01" required
-          value={labor} onChange={e=>setLabor(e.target.value)}/></label>
-         <label>{t.direct}<input type="number" min="0" step="0.01" required
-          value={direct} onChange={e=>setDirect(e.target.value)}/></label>
-         <button type="submit" disabled={busy||readyId!==o.id||!finalPrice.trim()}>{t.submitReady}</button>
-        </form>
-       </details>:null}
-       {(o.status==="READY"||o.status==="DELIVERED")&&<RepairSettlementControls
-        order={o} locale={locale} t={t} cashOpen={cashOpen} busy={busy} send={send}/>}
-      </td></tr>)}
+      <td className="mobi-live02-actions"><button type="button" className="mobi-live02-open"
+       aria-expanded={selectedOrderId===o.id} aria-controls="mobi-repair-selected"
+       onClick={()=>{setSelectedOrderId(o.id);if(selectedOrderId===o.id)document.getElementById("mobi-repair-selected")?.scrollIntoView({behavior:"smooth",block:"start"});}}>
+       {t.openTicket}</button>      </td></tr>)}
      {!loading&&visibleOrders.length===0?<tr><td colSpan={5} className="mobi-live02-noorders">
       {orders.length===0?t.empty:t.noMatch}
      </td></tr>:null}
     </tbody></table></div>
+   {selectedOrder&&<section id="mobi-repair-selected" className="mobi-live02-case-detail"
+     aria-label={t.caseDetails}>
+    <header className="mobi-live02-case-head">
+     <div><span>{t.caseDetails}</span>
+      <h3><bdi dir="ltr">{selectedOrder.number}</bdi> · {selectedOrder.customerName}</h3>
+      <p>{selectedOrder.device} · {t.issueLabel}: {selectedOrder.issue}</p>
+     </div>
+     <button type="button" className="mobi-live02-close"
+      onClick={()=>setSelectedOrderId(null)}>{t.closeTicket}</button>
+    </header>
+    <div className="mobi-live02-case-content">
+     <div className="mobi-live02-case-data">
+      <div><span>{t.ticketState}</span><strong className={"mobi-live02-status mobi-live02-status-"+selectedOrder.status.toLowerCase()}>{statusLabel(selectedOrder.status)}</strong></div>
+      <div><span>{t.intakeDate}</span><strong>{new Date(selectedOrder.intakeAt).toLocaleDateString(locale==="ar"?"ar-LB":"en-GB")}</strong></div>
+      <div><span>{t.estimate}</span><strong>{selectedOrder.estimate===null?t.notPriced:selectedOrder.estimate.toFixed(2)+" USD"}</strong></div>
+      <div><span>{t.balance}</span><strong>{selectedOrder.balanceDue.toFixed(2)} USD</strong></div>
+      {selectedOrder.imeiLast4&&<div><span>IMEI</span><strong dir="ltr">••••{selectedOrder.imeiLast4}</strong></div>}
+     </div>
+     <div className="mobi-live02-panel-actions">
+      <h4>{t.nextAction}</h4>
+
+       {selectedOrder.status==="ESTIMATE_PENDING"?<button type="button" disabled={busy}
+        onClick={()=>void send({action:"approve",repairId:selectedOrder.id})}>{t.approve}</button>:null}
+       {selectedOrder.status==="APPROVED"?<button type="button" disabled={busy}
+        onClick={()=>void send({action:"start",repairId:selectedOrder.id})}>{t.start}</button>:null}
+       {selectedOrder.status==="IN_PROGRESS"?<details className="mobi-live02-ready" open={readyId===selectedOrder.id} onToggle={e=>{
+         if(e.currentTarget.open){
+          setReadyId(selectedOrder.id);setFinalPrice("");setLabor("0");setDirect("0");
+         }else if(readyId===selectedOrder.id){setReadyId(null);}
+        }}>
+        <summary>{t.ready}</summary>
+        <form onSubmit={event=>{event.preventDefault();
+         if(readyId!==selectedOrder.id || !finalPrice.trim())return;
+         if(!window.confirm(locale==="ar"?"تأكيد السعر النهائي وحالة الجهاز جاهز للاستلام؟":"Confirm the final amount and mark this repair ready?"))return;
+         void send({action:"ready",repairId:selectedOrder.id,
+         finalPrice:Number(finalPrice),laborCost:Number(labor),directCost:Number(direct)});
+        }}>
+         <label>{t.finalPrice}<input type="number" min="1" step="0.01" required
+          placeholder={selectedOrder.estimate?.toFixed(2)??""} value={finalPrice} onChange={e=>setFinalPrice(e.target.value)}/></label>
+         <label>{t.labor}<input type="number" min="0" step="0.01" required
+          value={labor} onChange={e=>setLabor(e.target.value)}/></label>
+         <label>{t.direct}<input type="number" min="0" step="0.01" required
+          value={direct} onChange={e=>setDirect(e.target.value)}/></label>
+         <button type="submit" disabled={busy||readyId!==selectedOrder.id||!finalPrice.trim()}>{t.submitReady}</button>
+        </form>
+       </details>:null}
+       {(selectedOrder.status==="READY"||selectedOrder.status==="DELIVERED")&&<RepairSettlementControls
+        order={selectedOrder} locale={locale} t={t} cashOpen={cashOpen} busy={busy} send={send}/>}
+     {["INTAKE","DIAGNOSIS","DELIVERED","CANCELLED"].includes(selectedOrder.status)&&
+       <p className="module-sub">{t.noAction}</p>}
+     </div>
+    </div>
+   </section>}
   </section>
  </main>;
 }
