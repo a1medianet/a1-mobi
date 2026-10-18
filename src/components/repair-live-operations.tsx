@@ -43,7 +43,7 @@ const dict={
    search:"بحث برقم الطلب أو العميل أو الجهاز أو آخر 4 أرقام IMEI",
    all:"جميع الطلبات",active:"قيد المعالجة",awaiting:"بانتظار الموافقة",readyFilter:"جاهزة",
    deliveredFilter:"تم تسليمها",noMatch:"لا توجد طلبات تطابق البحث أو التصفية.",
-   total:"الطلبات المعروضة",activeTotal:"قيد المعالجة",readyTotal:"جاهزة للتسليم",
+   total:"الطلبات المعروضة",moreRows:"نعرض أحدث 75 طلبًا فقط. للبحث في الطلبات الأقدم نحتاج إلى تصفح جميع السجلات.",activeTotal:"قيد المعالجة",readyTotal:"جاهزة للتسليم",
    dueTotal:"مستحقات الصيانة الجاهزة",intakeDate:"تاريخ الاستلام",ticket:"رقم الطلب",
    issueLabel:"العطل",deviceLabel:"الجهاز",ticketState:"حالة الطلب",notPriced:"لم تُحدد بعد",
  },
@@ -70,7 +70,7 @@ const dict={
    search:"Search ticket, customer, device or last 4 IMEI digits",
    all:"All repairs",active:"In progress",awaiting:"Awaiting approval",readyFilter:"Ready",
    deliveredFilter:"Delivered",noMatch:"No repairs match the search or filter.",
-   total:"Listed tickets",activeTotal:"In progress",readyTotal:"Ready for pickup",
+   total:"Listed tickets",moreRows:"Showing the latest 75 repairs only. Older records require full-history search.",activeTotal:"In progress",readyTotal:"Ready for pickup",
    dueTotal:"Ready repairs due",intakeDate:"Received",ticket:"Ticket",
    issueLabel:"Issue",deviceLabel:"Device",ticketState:"Status",notPriced:"Not yet priced",
  },
@@ -81,6 +81,7 @@ export default function RepairLivePage(){
  const [orders,setOrders]=useState<Order[]>([]),[busy,setBusy]=useState(false);
  const [message,setMessage]=useState(""),[loading,setLoading]=useState(true);
  const [cashOpen,setCashOpen]=useState(false);
+ const [totalOrders,setTotalOrders]=useState(0);
  const [openingUsd,setOpeningUsd]=useState("0"),[openingLbp,setOpeningLbp]=useState("0");
  const [exchangeRate,setExchangeRate]=useState("");
  const [customerName,setCustomerName]=useState(""),[customerPhone,setCustomerPhone]=useState("");
@@ -100,14 +101,14 @@ export default function RepairLivePage(){
   const res=await fetch("/api/ops/live-02",{cache:"no-store"});
   const data=await res.json();
   if(!res.ok)throw new Error(data.error||"READ_FAILED");
-  setOrders(data.orders as Order[]);setCashOpen(Boolean(data.cashOpen));
+  setOrders(data.orders as Order[]);setCashOpen(Boolean(data.cashOpen));setTotalOrders(Number(data.totalOrders??data.orders.length));
  }
  useEffect(()=>{
   let active=true;
   fetch("/api/ops/live-02",{cache:"no-store"}).then(async response=>{
    const data=await response.json();
    if(!response.ok)throw new Error(data.error||"READ_FAILED");
-   if(active){setOrders(data.orders as Order[]);setCashOpen(Boolean(data.cashOpen));}
+   if(active){setOrders(data.orders as Order[]);setCashOpen(Boolean(data.cashOpen));setTotalOrders(Number(data.totalOrders??data.orders.length));}
   }).catch(e=>{if(active)setMessage(String(e.message));})
   .finally(()=>{if(active)setLoading(false);});
   return()=>{active=false;};
@@ -202,7 +203,7 @@ export default function RepairLivePage(){
   </section>
   <section id="mobi-repair-orders" className="activity-card mobi-live02-orders">
    <div className="mobi-live02-orders-head">
-    <div><h2>{t.orders}</h2><p>{visibleOrders.length} / {orders.length}</p></div>
+    <div><h2>{t.orders}</h2><p>{visibleOrders.length} / {totalOrders}</p></div>
     <div className="mobi-live02-filters">
      <label><span className="visually-hidden">{t.search}</span><input
        type="search" aria-label={t.search} value={search} placeholder={t.search}
@@ -217,6 +218,7 @@ export default function RepairLivePage(){
      </label>
     </div>
    </div>
+   {totalOrders>orders.length?<p role="note" className="module-sub">{t.moreRows}</p>:null}
    {loading?<p className="module-sub">{locale==="ar"?"جارٍ تحميل الطلبات...":"Loading orders..."}</p>:null}
    <div className="table-wrap"><table><thead><tr>
     <th>{t.ticket}</th><th>{t.customer} / {t.deviceLabel}</th><th>{t.ticketState}</th>

@@ -33,3 +33,9 @@ Stage status: Owner repairs visual UAT candidate — not production release
 - General production health remains degraded by recovery email configuration; do not soften health gate.
 - A1-STD-APPLICATION-FOUNDATION@1.0.0, visual A/B/C final signoff and Pre-Launch gate OPEN.
 - No merge, no production deployment, no real customer records.
+
+## Large-shop count correction (2026-10-18)
+- API now returns totalOrders with tenant/branch-scoped COUNT alongside the latest 75 repair rows.
+- Owner table states filtered visible / total branch order count, and explicitly warns when older records are not searchable in the current recent-window list.
+- Dashboard KPI remains scoped to only the returned recent rows; do not claim global branch totals for 75+ tickets. Server-side pagination and history-search remains OPEN.
+- Route test added totalOrders >= returned row count. No financial service changes.

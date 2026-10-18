@@ -58,6 +58,7 @@ runDb("C-LIVE-02 repair HTTP route / PostgreSQL",()=>{
   expect(ready.status).toBe(200);
   expect((await ready.json()).status).toBe("READY");
   const get=await (await route.GET()).json();
+  expect(get.totalOrders).toBeGreaterThanOrEqual(get.orders.length);
   const record=get.orders.find((o:{id:string})=>o.id===repairId);
   expect(record.status).toBe("READY");
   expect(record.balanceDue).toBe(120);

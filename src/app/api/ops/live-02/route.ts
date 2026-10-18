@@ -65,7 +65,10 @@ export async function GET() {
     });
     const cashOpen=Boolean(await db.cashSession.findFirst({where:{
       tenantId:ctx.tenantId,branchId:ctx.branchId,status:"OPEN"},select:{id:true}}));
-    return authJson({cashOpen,orders:rows.map(row=>({
+    const totalOrders=await db.repairOrder.count({
+      where:{tenantId:ctx.tenantId,branchId:ctx.branchId},
+    });
+    return authJson({cashOpen,totalOrders,orders:rows.map(row=>({
       id:row.id,number:row.number,customerName:row.customerName,device:row.deviceDescription,
       issue:row.reportedIssue,imeiLast4:row.imei?.slice(-4)??null,status:row.status,
       estimate:row.estimateAmount===null?null:Number(row.estimateAmount),
