@@ -69,3 +69,10 @@ Remaining gates:
 - Thaghr isolated UAT: **133/133 tests and 50/50 files PASS**, TypeScript and focused ESLint PASS.
 - Evidence and unresolved refund / warranty-claim / recovery-mail gates: `CASH-CONCURRENCY-GATE-07.md`.
 - Production, merge and release remain **HOLD**; PR #12 is Draft.
+
+## SMTP-HOSTINGER-GATE-08 — 2026-10-18
+- Confirmed Hostinger SMTP hostname and port 465 from provider settings; validated live TCP and TLS 1.2 certificate handshake on Thaghr (no authentication or actual mail sent).
+- Provider MX, SPF-record presence and DMARC-record presence checked; DKIM alignment and real deliverability remain open.
+- Non-secret Hostinger defaults documented in `.env.example`; password and webhook secret remain absent and are never stored in GitHub.
+- See `SMTP-HOSTINGER-GATE-08.md` for evidence and remaining HTTPS, test-delivery and production-health requirements.
+- PR #12 remains Draft; Foundation and production release remain HOLD.
