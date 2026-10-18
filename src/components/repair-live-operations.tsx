@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
-import { filterRepairs, summarizeRepairs, type RepairListFilter } from "@/modules/repairs/repair-owner-view";
+import { summarizeRepairs, type RepairListFilter } from "@/modules/repairs/repair-owner-view";
 
 type Order={
  id:string;number:string;customerName:string;device:string;issue:string;imeiLast4:string|null;
@@ -48,6 +48,7 @@ const dict={
    issueLabel:"العطل",deviceLabel:"الجهاز",ticketState:"حالة الطلب",notPriced:"لم تُحدد بعد",
    openTicket:"فتح الطلب",caseDetails:"تفاصيل طلب الصيانة",closeTicket:"إغلاق التفاصيل",
    nextAction:"الإجراء التالي",noAction:"لا توجد إجراءات متاحة لهذه الحالة",
+   previousPage:"السابق",nextPage:"التالي",pageLabel:"صفحة",
  },
  en:{back:"Repairs",title:"Repair orders",intro:"Receive devices, diagnose faults, approve estimates and manage repairs in one place.",
  warning:"Test environment — do not enter real customer details.",
@@ -77,6 +78,7 @@ const dict={
    issueLabel:"Issue",deviceLabel:"Device",ticketState:"Status",notPriced:"Not yet priced",
    openTicket:"Open ticket",caseDetails:"Repair ticket details",closeTicket:"Close details",
    nextAction:"Next action",noAction:"No further action for this status",
+   previousPage:"Previous",nextPage:"Next",pageLabel:"Page",
  },
 } as const;
 
@@ -86,6 +88,9 @@ export default function RepairLivePage(){
  const [message,setMessage]=useState(""),[loading,setLoading]=useState(true);
  const [cashOpen,setCashOpen]=useState(false);
  const [totalOrders,setTotalOrders]=useState(0);
+ const [matchedCount,setMatchedCount]=useState(0);
+ const [page,setPage]=useState(0);
+ const [hasMore,setHasMore]=useState(false);
  const [openingUsd,setOpeningUsd]=useState("0"),[openingLbp,setOpeningLbp]=useState("0");
  const [exchangeRate,setExchangeRate]=useState("");
  const [customerName,setCustomerName]=useState(""),[customerPhone,setCustomerPhone]=useState("");
@@ -99,7 +104,7 @@ export default function RepairLivePage(){
  const [statusFilter,setStatusFilter]=useState<RepairListFilter>("ALL");
  const [selectedOrderId,setSelectedOrderId]=useState<string|null>(null);
  const overview=summarizeRepairs(orders);
- const visibleOrders=filterRepairs(orders,search,statusFilter);
+ const visibleOrders=orders;
  const pending=orders.filter(o=>o.status==="INTAKE"||o.status==="DIAGNOSIS");
  const selected=pending.find(o=>o.id===selectedId);
  const selectedOrder=orders.find(o=>o.id===selectedOrderId);
@@ -107,22 +112,36 @@ export default function RepairLivePage(){
   if(!selectedOrderId)return;
   document.getElementById("mobi-repair-selected")?.scrollIntoView({behavior:"smooth",block:"start"});
  },[selectedOrderId]);
+ const listParams=new URLSearchParams({page:String(page),status:statusFilter});
+ if(search.trim())listParams.set("q",search.trim());
+ const queryUrl="/api/ops/live-02?"+listParams.toString();
+ function acceptPage(data:{
+   orders:Order[];cashOpen:boolean;totalOrders:number;matchedCount:number;hasMore:boolean;
+ }){
+  setOrders(data.orders);setCashOpen(Boolean(data.cashOpen));
+  setTotalOrders(Number(data.totalOrders));setMatchedCount(Number(data.matchedCount));
+  setHasMore(Boolean(data.hasMore));
+ }
  async function reload(){
-  const res=await fetch("/api/ops/live-02",{cache:"no-store"});
+  const res=await fetch(queryUrl,{cache:"no-store"});
   const data=await res.json();
   if(!res.ok)throw new Error(data.error||"READ_FAILED");
-  setOrders(data.orders as Order[]);setCashOpen(Boolean(data.cashOpen));setTotalOrders(Number(data.totalOrders??data.orders.length));
+  acceptPage(data);
  }
  useEffect(()=>{
   let active=true;
-  fetch("/api/ops/live-02",{cache:"no-store"}).then(async response=>{
-   const data=await response.json();
-   if(!response.ok)throw new Error(data.error||"READ_FAILED");
-   if(active){setOrders(data.orders as Order[]);setCashOpen(Boolean(data.cashOpen));setTotalOrders(Number(data.totalOrders??data.orders.length));}
-  }).catch(e=>{if(active)setMessage(String(e.message));})
-  .finally(()=>{if(active)setLoading(false);});
-  return()=>{active=false;};
- },[]);
+  const controller=new AbortController();
+  const job=setTimeout(()=>{
+   setLoading(true);
+   fetch(queryUrl,{cache:"no-store",signal:controller.signal}).then(async response=>{
+    const data=await response.json();
+    if(!response.ok)throw new Error(data.error||"READ_FAILED");
+    if(active){acceptPage(data);setMessage("");}
+   }).catch(e=>{if(active&&e.name!=="AbortError")setMessage(String(e.message));})
+   .finally(()=>{if(active)setLoading(false);});
+  },search?320:0);
+  return()=>{active=false;controller.abort();clearTimeout(job);};
+ },[queryUrl,search]);
  async function send(payload:Record<string,unknown>){
   if(busy)return false;
   setBusy(true);setMessage("");
@@ -213,14 +232,14 @@ export default function RepairLivePage(){
   </section>
   <section id="mobi-repair-orders" className="activity-card mobi-live02-orders">
    <div className="mobi-live02-orders-head">
-    <div><h2>{t.orders}</h2><p>{visibleOrders.length} / {totalOrders}</p></div>
+    <div><h2>{t.orders}</h2><p>{matchedCount} / {totalOrders}</p></div>
     <div className="mobi-live02-filters">
      <label><span className="visually-hidden">{t.search}</span><input
        type="search" aria-label={t.search} value={search} placeholder={t.search}
-       onChange={e=>setSearch(e.target.value)}/></label>
+       onChange={e=>{setSearch(e.target.value);setPage(0);setSelectedOrderId(null);}}/></label>
      <label><span className="visually-hidden">{t.ticketState}</span>
       <select aria-label={t.ticketState} value={statusFilter}
-        onChange={e=>setStatusFilter(e.target.value as RepairListFilter)}>
+        onChange={e=>{setStatusFilter(e.target.value as RepairListFilter);setPage(0);setSelectedOrderId(null);}}>
        <option value="ALL">{t.all}</option><option value="ACTIVE">{t.active}</option>
        <option value="AWAITING">{t.awaiting}</option><option value="READY">{t.readyFilter}</option>
        <option value="DELIVERED">{t.deliveredFilter}</option>
@@ -228,7 +247,6 @@ export default function RepairLivePage(){
      </label>
     </div>
    </div>
-   {totalOrders>orders.length?<p role="note" className="module-sub">{t.moreRows}</p>:null}
    {loading?<p className="module-sub">{locale==="ar"?"جارٍ تحميل الطلبات...":"Loading orders..."}</p>:null}
    <div className="table-wrap"><table><thead><tr>
     <th>{t.ticket}</th><th>{t.customer} / {t.deviceLabel}</th><th>{t.ticketState}</th>
@@ -256,6 +274,13 @@ export default function RepairLivePage(){
       {orders.length===0?t.empty:t.noMatch}
      </td></tr>:null}
     </tbody></table></div>
+   {matchedCount>75&&<nav className="mobi-live02-pagination" aria-label={t.orders}>
+    <button type="button" disabled={loading||busy||page===0}
+      onClick={()=>{setPage(p=>Math.max(0,p-1));setSelectedOrderId(null);}}>{t.previousPage}</button>
+    <span>{t.pageLabel} {page+1} / {Math.max(1,Math.ceil(matchedCount/75))}</span>
+    <button type="button" disabled={loading||busy||!hasMore}
+      onClick={()=>{setPage(p=>p+1);setSelectedOrderId(null);}}>{t.nextPage}</button>
+   </nav>}
    {selectedOrder&&<section id="mobi-repair-selected" className="mobi-live02-case-detail"
      aria-label={t.caseDetails}>
     <header className="mobi-live02-case-head">

@@ -887,3 +887,11 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
  .mobi-live02-orders .mobi-live02-actions{min-width:0}
  .mobi-live02-orders .mobi-live02-actions .mobi-live02-open{width:100%}
 }
+
+/* Owner repair archive pagination */
+.mobi-live02-pagination{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;background:#f8fbff;border-top:1px solid #e5eef9;padding:14px}
+.mobi-live02-pagination button{min-width:82px;min-height:37px;border:1px solid #c9ddfa;border-radius:8px;background:#fff;color:#1265e8;font-weight:800;cursor:pointer;padding:8px 13px}
+.mobi-live02-pagination button:hover:not(:disabled){background:#eaf2ff}
+.mobi-live02-pagination button:disabled{opacity:.43;cursor:not-allowed}
+.mobi-live02-pagination button:focus-visible{outline:2px solid #1265e8;outline-offset:2px}
+.mobi-live02-pagination span{font-size:12px;color:#65758d;font-variant-numeric:tabular-nums}

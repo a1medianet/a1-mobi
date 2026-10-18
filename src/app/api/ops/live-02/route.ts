@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { DeviceServiceContext, DeviceTrustResult, RepairStatus } from "@prisma/client";
+import { DeviceServiceContext, DeviceTrustResult, RepairStatus, Prisma } from "@prisma/client";
 import { openCashSession } from "@/modules/cash/cash-service";
 import { collectRepairCashPayment,deliverSettledRepair } from "@/modules/repairs/repair-live-settlement";
 import { z } from "zod";
@@ -53,22 +53,46 @@ function unavailable(error:unknown) {
 }
 function enabled() { return process.env.A1_MOBI_C_LIVE_02_ENABLED==="1"; }
 
-export async function GET() {
+export async function GET(request?:Request) {
   if(!enabled()) return authJson({error:"NOT_FOUND"},404);
   try {
     const ctx=await currentStoreContext("repair.manage");
-    const rows=await db.repairOrder.findMany({
-      where:{tenantId:ctx.tenantId,branchId:ctx.branchId},
-      orderBy:{intakeAt:"desc"},take:75,
+    const params=new URL(request?.url??"http://127.0.0.1/api/ops/live-02").searchParams;
+    const rawPage=params.get("page")??"0";
+    const q=(params.get("q")??"").trim();
+    const status=params.get("status")??"ALL";
+    if(!/^(0|[1-9][0-9]{0,3})$/.test(rawPage)||Number(rawPage)>1000||
+      q.length>80||!["ALL","ACTIVE","AWAITING","READY","DELIVERED"].includes(status))
+      return authJson({error:"INVALID_LIST_FILTER"},400);
+    const page=Number(rawPage),pageSize=75;
+    const where:Prisma.RepairOrderWhereInput={tenantId:ctx.tenantId,branchId:ctx.branchId};
+    if(status==="ACTIVE")where.status={in:[RepairStatus.INTAKE,RepairStatus.DIAGNOSIS,
+      RepairStatus.ESTIMATE_PENDING,RepairStatus.APPROVED,RepairStatus.IN_PROGRESS]};
+    if(status==="AWAITING")where.status={in:[RepairStatus.ESTIMATE_PENDING,RepairStatus.APPROVED]};
+    if(status==="READY")where.status=RepairStatus.READY;
+    if(status==="DELIVERED")where.status=RepairStatus.DELIVERED;
+    if(q)where.OR=[
+      {number:{contains:q,mode:"insensitive"}},
+      {customerName:{contains:q,mode:"insensitive"}},
+      {deviceDescription:{contains:q,mode:"insensitive"}},
+      {reportedIssue:{contains:q,mode:"insensitive"}},
+      {imei:{contains:q}},
+    ];
+    const [rows,matchedCount,totalOrders,cashOpen]=await Promise.all([
+      db.repairOrder.findMany({
+      where,
+      orderBy:[{intakeAt:"desc"},{id:"desc"}],skip:page*pageSize,take:pageSize,
       include:{statusEvents:{orderBy:{occurredAt:"asc"},select:{toStatus:true,occurredAt:true}},
         warranties:{select:{number:true,expiresAt:true,status:true},take:1}},
-    });
-    const cashOpen=Boolean(await db.cashSession.findFirst({where:{
-      tenantId:ctx.tenantId,branchId:ctx.branchId,status:"OPEN"},select:{id:true}}));
-    const totalOrders=await db.repairOrder.count({
-      where:{tenantId:ctx.tenantId,branchId:ctx.branchId},
-    });
-    return authJson({cashOpen,totalOrders,orders:rows.map(row=>({
+      }),
+      db.repairOrder.count({where}),
+      db.repairOrder.count({where:{tenantId:ctx.tenantId,branchId:ctx.branchId}}),
+      db.cashSession.findFirst({where:{tenantId:ctx.tenantId,branchId:ctx.branchId,
+        status:"OPEN"},select:{id:true}}),
+    ]);
+    return authJson({cashOpen:Boolean(cashOpen),totalOrders,matchedCount,
+      page,pageSize,hasMore:(page+1)*pageSize<matchedCount,
+      orders:rows.map(row=>({
       id:row.id,number:row.number,customerName:row.customerName,device:row.deviceDescription,
       issue:row.reportedIssue,imeiLast4:row.imei?.slice(-4)??null,status:row.status,
       estimate:row.estimateAmount===null?null:Number(row.estimateAmount),
