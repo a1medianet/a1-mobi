@@ -57,7 +57,7 @@ runDb("C-LIVE-02 repair HTTP route / PostgreSQL",()=>{
   const ready=await post({action:"ready",repairId,finalPrice:120,laborCost:20,directCost:5});
   expect(ready.status).toBe(200);
   expect((await ready.json()).status).toBe("READY");
-  const get=await (await route.GET()).json();
+  const get=await (await route.GET(new Request(base+"/api/ops/live-02"))).json();
   expect(get.totalOrders).toBeGreaterThanOrEqual(get.orders.length);
   const record=get.orders.find((o:{id:string})=>o.id===repairId);
   expect(record.status).toBe("READY");
@@ -124,7 +124,7 @@ runDb("C-LIVE-02 repair HTTP route / PostgreSQL",()=>{
     openingExchangeRate:90000});
   expect(opened.status).toBe(201);
   const openId=(await opened.json()).cashSessionId;
-  expect((await (await route.GET()).json()).cashOpen).toBe(true);
+  expect((await (await route.GET(new Request(base+"/api/ops/live-02"))).json()).cashOpen).toBe(true);
   const paid=await post(first);
   expect(paid.status).toBe(201);
   const firstResult=await paid.json();
@@ -163,7 +163,7 @@ runDb("C-LIVE-02 repair HTTP route / PostgreSQL",()=>{
   const deliveredAgain=await post(deliverPayload);
   expect(deliveredAgain.status).toBe(200);
   expect((await deliveredAgain.json()).warrantyId).toBe(delivery.warrantyId);
-  const finalState=await (await route.GET()).json();
+  const finalState=await (await route.GET(new Request(base+"/api/ops/live-02"))).json();
   const item=finalState.orders.find((o:{id:string})=>o.id===repairId);
   expect(item.status).toBe("DELIVERED");
   expect(item.warranty.status).toBe("ACTIVE");
@@ -175,8 +175,8 @@ runDb("C-LIVE-02 repair HTTP route / PostgreSQL",()=>{
 
  it("rejects tenant crossover, invalid transitions and duplicated request",async()=>{
   active=b;
-  const other=(await route.GET()).status;expect(other).toBe(200);
-  const otherRows=(await (await route.GET()).json()).orders;
+  const other=(await route.GET(new Request(base+"/api/ops/live-02"))).status;expect(other).toBe(200);
+  const otherRows=(await (await route.GET(new Request(base+"/api/ops/live-02"))).json()).orders;
   expect(otherRows.some((o:{id:string})=>o.id===repairId)).toBe(false);
   expect((await post({action:"approve",repairId})).status).toBe(404);
   active=a;
@@ -184,15 +184,15 @@ runDb("C-LIVE-02 repair HTTP route / PostgreSQL",()=>{
   expect((await post({action:"ready",repairId,finalPrice:120,laborCost:0,directCost:0})).status).toBe(409);
  },50000);
  it("rejects unauthorized, cross-origin, malformed and disabled requests",async()=>{
-  active=null;expect((await route.GET()).status).toBe(401);
+  active=null;expect((await route.GET(new Request(base+"/api/ops/live-02"))).status).toBe(401);
   active={...a,permissions:new Set()};
-  expect((await route.GET()).status).toBe(403);
+  expect((await route.GET(new Request(base+"/api/ops/live-02"))).status).toBe(403);
   active=a;
   expect((await post({action:"start",repairId}, "https://not-our-store.invalid")).status).toBe(403);
   expect((await post({action:"intake",customerName:"Bad",customerPhone:"123",deviceDescription:"A",
    condition:"B",reportedIssue:"C",imei:"123"})).status).toBe(400);
   process.env.A1_MOBI_C_LIVE_02_ENABLED="0";
-  expect((await route.GET()).status).toBe(404);
+  expect((await route.GET(new Request(base+"/api/ops/live-02"))).status).toBe(404);
   expect((await post({action:"approve",repairId})).status).toBe(404);
   process.env.A1_MOBI_C_LIVE_02_ENABLED="1";
  },50000);

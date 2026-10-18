@@ -37,3 +37,8 @@ Close two open UAT gates without replacing existing A/B pages, production deploy
 ## Still OPEN (NOT production cleared)
 - Global KPI/report reconciliation for all pages, concurrency under large-scale updating, expired warranty/claims, recovery email health, business account settings, A/B/C final reference signoff, Foundation v1.0 and Pre-Launch review.
 - Default feature flag OFF. PR stays Draft and unmerged; no public deployment.
+
+## CI handler signature correction
+- Initial GitHub Actions visual build for af37427 failed because Next.js route generation rejects optional GET(request?:Request).
+- Corrected GET(request:Request), updated 8 route test call sites to pass an explicit HTTP Request.
+- Verify result on the subsequent GitHub CI; never mark af37427 as green.

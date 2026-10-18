@@ -53,11 +53,11 @@ function unavailable(error:unknown) {
 }
 function enabled() { return process.env.A1_MOBI_C_LIVE_02_ENABLED==="1"; }
 
-export async function GET(request?:Request) {
+export async function GET(request:Request) {
   if(!enabled()) return authJson({error:"NOT_FOUND"},404);
   try {
     const ctx=await currentStoreContext("repair.manage");
-    const params=new URL(request?.url??"http://127.0.0.1/api/ops/live-02").searchParams;
+    const params=new URL(request.url).searchParams;
     const rawPage=params.get("page")??"0";
     const q=(params.get("q")??"").trim();
     const status=params.get("status")??"ALL";
