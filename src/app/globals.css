@@ -778,15 +778,15 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 .mobi-live02-orders-head h2{font-size:19px;font-weight:800;margin:0}
 .mobi-live02-orders-head p{font-size:12px;color:#697d96;margin:3px 0 0}
 .mobi-live02-filters{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
-.mobi-live02-filters input,.mobi-live02-filters select{min-height:40px;padding:8px 11px;background:#fff;border:1px solid #ccd9ec;border-radius:9px;color:#14233d;font-size:12px;max-width:100%}
+.mobi-live02-filters input,.mobi-live02-filters select{min-height:42px;padding:8px 11px;background:#fff;border:1px solid #ccd9ec;border-radius:9px;color:#14233d;font-size:13px;max-width:100%}
 .mobi-live02-filters input{width:300px}
 .mobi-live02-orders .table-wrap{overflow-x:auto}
 .mobi-live02-orders table{width:100%;min-width:790px;border-collapse:collapse}
-.mobi-live02-orders th{padding:12px 14px;text-align:start;color:#697d96;background:#f6f9fe;font-size:11px;white-space:nowrap;font-weight:700}
-.mobi-live02-orders td{padding:14px;vertical-align:top;text-align:start;font-size:12px;border-bottom:1px solid #e8eef6}
+.mobi-live02-orders th{padding:12px 14px;text-align:start;color:#536987;background:#f6f9fe;font-size:12px;white-space:nowrap;font-weight:700}
+.mobi-live02-orders td{padding:14px;vertical-align:top;text-align:start;font-size:13px;border-bottom:1px solid #e8eef6}
 .mobi-live02-orders tbody tr:hover{background:#f8fbff}
 .mobi-live02-ticket strong{display:block;font-size:12px;color:#1265e8;direction:ltr;text-align:start}
-.mobi-live02-ticket small,.mobi-live02-customer small,.mobi-live02-customer span,.mobi-live02-price small{display:block;margin-top:5px;color:#63738d;font-size:11px}
+.mobi-live02-ticket small,.mobi-live02-customer small,.mobi-live02-customer span,.mobi-live02-price small{display:block;margin-top:5px;color:#52627b;font-size:12px}
 .mobi-live02-customer strong{font-size:13px}
 .mobi-live02-price strong{font-size:12px;white-space:nowrap}
 .mobi-live02-status{display:inline-flex;align-items:center;gap:6px;border-radius:99px;padding:7px 11px;background:#eaf2ff;color:#1553a0;font-weight:750;white-space:nowrap;font-size:11px}
@@ -829,8 +829,8 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 
 /* C-LIVE-02 VISUAL PASS 03: compact repairs and selected-case workspace */
 .mobi-live02-orders tbody td{vertical-align:middle;padding-block:11px}
-.mobi-live02-orders .mobi-live02-ticket strong{font-size:12px;letter-spacing:.05px;overflow-wrap:anywhere}
-.mobi-live02-orders .mobi-live02-customer strong{font-size:13px;color:#14233d}
+.mobi-live02-orders .mobi-live02-ticket strong{font-size:13px;letter-spacing:.05px;overflow-wrap:anywhere}
+.mobi-live02-orders .mobi-live02-customer strong{font-size:14px;color:#14233d;font-weight:750}
 .mobi-live02-orders .mobi-live02-customer small{line-height:1.45;margin-top:3px}
 .mobi-live02-orders .mobi-live02-actions{min-width:106px}
 .mobi-live02-orders .mobi-live02-actions .mobi-live02-open{

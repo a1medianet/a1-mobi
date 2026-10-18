@@ -11,6 +11,25 @@ type Order={
  timeline:{status:string;at:string}[];
  warranty:{number:string;expiresAt:string;status:string}|null;
 };
+// Cosmetic copy for explicitly tagged synthetic UAT records only.
+// Never alter persistent values, search terms, audit data or normal customer names.
+export function repairOwnerLabel(value:string,locale:"ar"|"en"){
+ const marked=/\[UAT(?:-[A-Za-z0-9-]+)?\]|^UAT\s/i.test(value);
+ if(!marked)return value;
+ const clean=value.replace(/\s*\[UAT(?:-[A-Za-z0-9-]+)?\]\s*/gi," ").replace(/^UAT\s+(?:Test\s+)?/i,"").trim();
+ const aliases:Record<string,{ar:string;en:string}>={
+  "Selected Workspace Settlement":{ar:"عميل تجريبي — طلب مُسلّم",en:"Sample customer — completed repair"},
+  "Browser Settlement":{ar:"عميل تجريبي — تحصيل",en:"Sample customer — payment"},
+  "repair payment journey":{ar:"فحص الجهاز وتحصيل الصيانة",en:"Repair assessment and payment"},
+  "OnePlus Device":{ar:"جهاز OnePlus",en:"OnePlus device"},
+  "Camera repair":{ar:"إصلاح الكاميرا",en:"Camera repair"},
+  "Charging connector":{ar:"إصلاح منفذ الشحن",en:"Charging port repair"},
+  "Battery replacement":{ar:"استبدال البطارية",en:"Battery replacement"},
+  "Screen replacement":{ar:"استبدال الشاشة",en:"Screen replacement"},
+ };
+ return aliases[clean]?.[locale]??clean;
+}
+
 const stage:Record<string,{ar:string;en:string}>={
  INTAKE:{ar:"مستلم",en:"Received"},DIAGNOSIS:{ar:"قيد الفحص",en:"Diagnosing"},
  ESTIMATE_PENDING:{ar:"بانتظار الموافقة",en:"Awaiting approval"},
@@ -202,7 +221,7 @@ export default function RepairLivePage({backToDashboard=false}:{backToDashboard?
     <label>{t.select}
      <select required value={selectedId} onChange={e=>setSelectedId(e.target.value)}>
       <option value="">{t.selectPlaceholder}</option>
-      {pending.map(o=><option key={o.id} value={o.id}>{o.number} · {o.customerName} · {o.device}</option>)}
+      {pending.map(o=><option key={o.id} value={o.id}>{o.number} · {repairOwnerLabel(o.customerName,locale)} · {repairOwnerLabel(o.device,locale)}</option>)}
      </select>
     </label>
     <label>{t.diagnosis}<input required minLength={2} value={diagnosis} onChange={e=>setDiagnosis(e.target.value)}/></label>
@@ -260,7 +279,7 @@ export default function RepairLivePage({backToDashboard=false}:{backToDashboard?
        <small>{new Date(o.intakeAt).toLocaleDateString(locale==="ar"?"ar-LB":"en-GB")}</small>
       </td>
       <td className="mobi-live02-customer">
-       <strong>{o.customerName}</strong><span>{o.device}</span><small>{t.issueLabel}: {o.issue}</small>
+       <strong>{repairOwnerLabel(o.customerName,locale)}</strong><span>{repairOwnerLabel(o.device,locale)}</span><small>{t.issueLabel}: {repairOwnerLabel(o.issue,locale)}</small>
        {o.imeiLast4&&<small dir="ltr">IMEI ••••{o.imeiLast4}</small>}
       </td>
       <td><span className={"mobi-live02-status mobi-live02-status-"+o.status.toLowerCase()}>{statusLabel(o.status)}</span></td>
@@ -287,8 +306,8 @@ export default function RepairLivePage({backToDashboard=false}:{backToDashboard?
      aria-label={t.caseDetails}>
     <header className="mobi-live02-case-head">
      <div><span>{t.caseDetails}</span>
-      <h3><bdi dir="ltr">{selectedOrder.number}</bdi> · {selectedOrder.customerName}</h3>
-      <p>{selectedOrder.device} · {t.issueLabel}: {selectedOrder.issue}</p>
+      <h3><bdi dir="ltr">{selectedOrder.number}</bdi> · {repairOwnerLabel(selectedOrder.customerName,locale)}</h3>
+      <p>{repairOwnerLabel(selectedOrder.device,locale)} · {t.issueLabel}: {repairOwnerLabel(selectedOrder.issue,locale)}</p>
      </div>
      <button type="button" className="mobi-live02-close"
       onClick={()=>setSelectedOrderId(null)}>{t.closeTicket}</button>

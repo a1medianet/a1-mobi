@@ -84,3 +84,10 @@ Remaining gates:
 - Full local synthetic PostgreSQL UAT: **138/138 tests, 51/51 files PASS**. TypeScript and focused ESLint PASS.
 - See `CANONICAL-REPAIRS-GATE-09.md` and evidence images. No customer data used.
 - Final A/B/C signoff, remaining owner modules, Application Foundation, refund/warranty claim and pre-launch remain HOLD. PR #12 stays Draft.
+
+## OWNER-VISUAL-POLISH-GATE-10 — 2026-10-18
+- Polished canonical owner Repairs screen from the real Thaghr browser captures: tagged UAT test-case names/issues are displayed in plain, appropriate AR/EN copy without modifying database, API, search or audit.
+- Improved desktop repair ledger readability (ticket ID, customer name, secondary labels, filters); retained the approved blue/orange identity and clearly-labelled test environment.
+- Local evidence: 9/9 focused tests PASS; TypeScript, ESLint, diff check PASS; full authenticated desktop/mobile browser regression PASS with 6 persisted repair tickets and unchanged financial KPIs.
+- Evidence report and desktop/mobile screenshots: `OWNER-VISUAL-POLISH-GATE-10.md` and `c-live-02-owner-polish-10-*.png`.
+- PR #12 remains Draft, unmerged, no production deploy. A/B/C and Foundation/Pre-Launch signoff still HOLD.
