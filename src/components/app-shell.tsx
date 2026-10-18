@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -49,7 +50,7 @@ export function AppShell({ locale, children }: {
     <aside className="sidebar">
       <div className="brand-row">
         <Link href={"/"+locale} className="brand" aria-label="A1 Mobi">
-          <span className="brand-mark" aria-hidden="true">A1</span>
+          <Image src="/brand/a1-mobi-icon.svg" alt="" className="a1-mobi-brand-icon" width={43} height={43} unoptimized />
           <span><b>Mobi</b><small>{ar ? "منصة المتجر" : "Store platform"}</small></span>
         </Link>
         <button className="sidebar-toggle" type="button"
@@ -70,7 +71,7 @@ export function AppShell({ locale, children }: {
     <div className="workspace">
       <header className="topbar">
         <Link href={"/"+locale} className="mobile-brand" aria-label="A1 Mobi">
-          <span className="brand-mark" aria-hidden="true">A1</span><b>Mobi</b>
+          <Image src="/brand/a1-mobi-icon.svg" alt="" className="a1-mobi-brand-icon" width={33} height={33} unoptimized /><b>Mobi</b>
         </Link>
         <span className="workspace-title">{labels[locale][activeIndex] ?? "A1 Mobi"}</span>
         <select className="mobile-workspaces" aria-label={ar ? "انتقل إلى قسم" : "Go to workspace"}

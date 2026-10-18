@@ -1,10 +1,9 @@
 import Link from "next/link";
+import Image from "next/image";
 
 function MobiWordmark({footer=false}:{footer?:boolean}) {
-  return <span className={"mobi-wordmark"+(footer?" footer-wordmark":"")} dir="ltr" aria-label="A1 Mobi">
-    <span className="mobi-wordmark-a1">A1</span>
-    <span className="mobi-wordmark-signal" aria-hidden="true"><i/><i/><i/></span>
-    <b>Mobi</b>
+  return <span className={"mobi-brand-asset"+(footer?" footer-brand-asset":"")} dir="ltr">
+    <Image src={footer?"/brand/a1-mobi-logo-on-dark.svg":"/brand/a1-mobi-logo.svg"} alt="A1 Mobi" width={190} height={62} priority={!footer} unoptimized />
   </span>;
 }
 

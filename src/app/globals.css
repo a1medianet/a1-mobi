@@ -911,3 +911,18 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 .mobi-live02-pagination button:disabled{opacity:.43;cursor:not-allowed}
 .mobi-live02-pagination button:focus-visible{outline:2px solid #1265e8;outline-offset:2px}
 .mobi-live02-pagination span{font-size:12px;color:#65758d;font-variant-numeric:tabular-nums}
+
+/* A1 Mobi BRAND-13: approved blue/orange emblem and full wordmark. */
+.a1-mobi-brand-icon{display:block;flex:0 0 auto;width:43px;height:43px;object-fit:contain}
+.sidebar .brand{gap:11px}
+.mobile-brand .a1-mobi-brand-icon{width:33px;height:33px}
+.mobi-brand-asset{display:inline-flex;align-items:center;line-height:1;max-width:100%;background:transparent}
+.product-brand>.mobi-brand-asset{background:transparent;border:0;box-shadow:none}
+.mobi-brand-asset>img{display:block;width:184px;max-width:100%;height:auto}
+.product-footer .footer-brand-asset{background:transparent;border:0;border-radius:0;padding:0;width:max-content}
+.product-footer .footer-brand-asset>img{width:174px}
+@media(max-width:760px){.product-nav .mobi-brand-asset>img{width:148px}}
+@media(max-width:450px){.product-nav .mobi-brand-asset>img{width:126px}}
+
+/* Override the retired 38px span badge in the public product header. */
+.product-brand>span.mobi-brand-asset{width:auto;height:auto;min-width:0;display:inline-flex;padding:0;box-shadow:none;border-radius:0;background:transparent}
