@@ -53,3 +53,11 @@ No external project files or production deployment. Preserve prior versions unde
 - Default-off preserves the previous explicitly labelled training POS/inventory views; no schema or payment service changes, no production or Hostinger deployment.
 - Four read-only authenticated Chrome gate checks on AR/EN desktop/mobile passed: canonical route, correct form count, two source-backed metric cards, UAT API 200, no horizontal overflow.
 - See `CANONICAL-POS-INVENTORY-GATE-11.md` and `c-canonical-11-*.png` for evidence. Full regression / CI status must be verified separately.
+
+## CANONICAL-POS-INVENTORY-UI-GATE-12 — 2026-10-18
+- Reviewed user-provided canonical owner POS and inventory screenshots; resolved preallocated 3-column whitespace and split workspaces into meaningful equal-size sections.
+- Reused existing Live-01 source/feature-gate, no new payment subsystem or schema. Client-only changes auto-select newly created product/variant/location for IMEI receipt, reset cleared device/IMEI on successful actions, and localize known payment/device states in AR/EN.
+- Guarded local synthetic UAT `mobi_uat`: registered sample product, received two test devices, sold one and verified invoice persistence; 1 IMEI remains for user to test.
+- Browser evidence: four canonical AR desktop/EN mobile routes PASS, matching full-width workspace layout, persisted nonzero counts and no horizontal overflow; images saved as `c-canonical-12-*.png`.
+- See `CANONICAL-POS-INVENTORY-UI-GATE-12.md`, `c-live-01-uat-demo-flow-12.mjs` and `c-pos-inventory-layout-12-browser.mjs`.
+- Entire ABC final acceptance and production deployment remain HOLD.

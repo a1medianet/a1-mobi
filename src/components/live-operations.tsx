@@ -6,6 +6,17 @@ import { useParams } from "next/navigation";
 type P = { id:string; sku:string; nameAr:string; nameEn:string; isSerialized:boolean; price:number };
 type V = { id:string; model:string; name:string };
 type D = { id:string; productId:string; productName:string; imei:string|null; status:string };
+
+export function liveOperationStatus(value:string,locale:"ar"|"en") {
+ const labels:Record<string,{ar:string;en:string}>={
+  IN_STOCK:{ar:"متوفر",en:"Available"},
+  SOLD:{ar:"تم البيع",en:"Sold"},
+  COMPLETED:{ar:"مكتملة",en:"Completed"},
+  CANCELLED:{ar:"ملغاة",en:"Cancelled"},
+  RETURNED:{ar:"مرتجع",en:"Returned"},
+ };
+ return labels[value]?.[locale]??value;
+}
 type State = { products:P[]; variants:V[]; locations:{id:string;name:string}[];
   devices:D[]; sales:{id:string;invoiceNumber:string;total:number;status:string}[];
   counts:{products:number;availableDevices:number;sales:number} };
@@ -16,6 +27,7 @@ const labels = {
    sku:"SKU", unitCost:"التكلفة USD", price:"سعر البيع USD", product:"المنتج", location:"المخزن",
    imei:"IMEI (15 رقمًا)", device:"الجهاز", save:"حفظ المنتج", stock:"أجهزة متاحة", products:"منتجات", sales:"فواتير",
    received:"تسجيل الاستلام", checkout:"تأكيد البيع النقدي", list:"الأجهزة المسجلة", receipts:"الفواتير المسجلة",
+   needProduct:"أضف منتجًا أولًا ليصبح استلام جهاز ممكنًا.",
    noneAvailable:"لا توجد أجهزة متاحة للبيع. سجّل جهازًا في المخزون أولًا.", startInventory:"فتح المخزون", invoice:"الفاتورة", total:"الإجمالي بالدولار", state:"الحالة",
    note:"بيئة اختبار محلية: تحفظ الإجراءات في بيانات تدريبية فقط. لا تستخدم بيانات عملاء حقيقيين.", back:"لوحة التحكم",
    confirm:"تأكيد إنشاء فاتورة نقدية وخصم الجهاز من مخزون قاعدة الاختبار؟", done:"تم الحفظ بنجاح", error:"خطأ"},
@@ -25,6 +37,7 @@ const labels = {
    sku:"SKU", unitCost:"Cost USD", price:"Price USD", product:"Product", location:"Location",
    imei:"IMEI (15 digits)", device:"Device", save:"Save product", stock:"Available devices", products:"Products", sales:"Invoices",
    received:"Receive device", checkout:"Confirm cash sale", list:"Registered devices", receipts:"Saved invoices",
+   needProduct:"Add a product first before receiving a device.",
    noneAvailable:"No devices available for sale. Receive a device in inventory first.", startInventory:"Open inventory", invoice:"Invoice", total:"Total USD", state:"Status",
    note:"Local test environment: actions persist in test records only. Do not use actual customer data.", back:"Dashboard",
    confirm:"Confirm invoice and stock deduction in the test database?", done:"Saved successfully", error:"Error"},
@@ -50,6 +63,9 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
      const data=await r.json();
      if(!r.ok)throw new Error(data.error||"WRITE_FAILED");
      await refresh();
+     if(input.action==="createProduct"&&typeof data.id==="string"&&typeof data.variantId==="string"&&typeof data.locationId==="string"){
+       setStock(current=>({...current,productId:data.id,variantId:data.variantId,locationId:data.locationId,unitCost:String(input.unitCost??current.unitCost)}));
+     }
      if(input.action==="sell")setDeviceId("");
      if(input.action==="receive")setStock(current=>({...current,imei:""}));
      setError(t.done+(data.invoiceNumber?" · "+data.invoiceNumber:""));
@@ -57,7 +73,7 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
    finally{setBusy(false);}
  }
  const available=state?.devices.filter(x=>x.status==="IN_STOCK")??[];
- return <main className="module-page mobi-live01" lang={locale} dir={locale==="ar"?"rtl":"ltr"}>
+ return <main className={"module-page mobi-live01 mobi-live01-"+mode} lang={locale} dir={locale==="ar"?"rtl":"ltr"}>
   <header className="module-header"><div><Link href={"/"+locale} className="back-link">{t.back}</Link>
    <p className="module-kicker">A1 MOBI · {mode==="pos"?(locale==="ar"?"نقطة البيع":"POINT OF SALE"):mode==="inventory"?(locale==="ar"?"المخزون":"INVENTORY"):(locale==="ar"?"العمليات":"OPERATIONS")}</p><h1>{mode==="pos"?(locale==="ar"?"نقطة البيع":"Point of sale"):mode==="inventory"?(locale==="ar"?"المخزون والأجهزة":"Inventory & devices"):t.title}</h1><p className="module-sub">{mode==="pos"?(locale==="ar"?"بيع الأجهزة المسجلة وإصدار فواتير محفوظة.":"Sell registered devices and issue stored invoices."):mode==="inventory"?(locale==="ar"?"تسجيل المنتجات واستلام أجهزة IMEI وإدارة حالتها.":"Register products and receive IMEI devices into inventory."):t.intro}</p></div>
    <button type="button" className="soft-btn" onClick={()=>void refresh().catch(e=>setError(String(e.message)))}>{t.reload}</button></header>
@@ -65,7 +81,7 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
   {state&&<section className="mobi-live-stats">
    {(mode==="pos"?[[t.stock,state.counts.availableDevices],[t.sales,state.counts.sales]]:mode==="inventory"?[[t.products,state.counts.products],[t.stock,state.counts.availableDevices]]:[[t.products,state.counts.products],[t.stock,state.counts.availableDevices],[t.sales,state.counts.sales]]).map(([name,value])=><article key={name}><span>{name}</span><strong>{value}</strong></article>)}
   </section>}
-  <section className="mobi-live-steps">
+  <div className="mobi-live-workspace"><section className="mobi-live-steps">
    {mode!=="pos"&&<form onSubmit={e=>{e.preventDefault();void send({action:"createProduct",...product,unitCost:Number(product.unitCost),price:Number(product.price)});}}>
     <h2>{mode==="inventory"?(locale==="ar"?"إضافة منتج":"Add product"):t.create}</h2>
     <div className="mobi-live-form-grid">{(["brand","model","variant","sku","nameAr","nameEn","unitCost","price"] as const).map(key=>
@@ -84,6 +100,7 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
      <option value="">—</option>{state?.locations.map(v=><option key={v.id} value={v.id}>{v.name}</option>)}</select></label>
     <label>{t.imei}<input required pattern="[0-9]{15}" inputMode="numeric" maxLength={15} value={stock.imei} onChange={e=>setStock(old=>({...old,imei:e.target.value}))}/></label>
     <label>{t.unitCost}<input required type="number" min={0} step="0.01" value={stock.unitCost} onChange={e=>setStock(old=>({...old,unitCost:e.target.value}))}/></label>
+    {state&&state.products.length===0&&<p className="mobi-live-hint" role="status">{t.needProduct}</p>}
     <button type="submit" className="primary" disabled={busy||!state?.products.length}>{t.received}</button>
    </form>}
    {mode!=="inventory"&&<form onSubmit={e=>{e.preventDefault();if(!window.confirm(t.confirm))return;void send({action:"sell",deviceId,idempotencyKey:crypto.randomUUID()});}}>
@@ -97,9 +114,9 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
   </section>
   <section className="mobi-live-details">
    {mode!=="pos"&&<article><h2>{t.list}</h2><div className="table-wrap"><table><thead><tr><th>IMEI</th><th>{t.product}</th><th>{t.state}</th></tr></thead>
-   <tbody>{state?.devices.map(d=><tr key={d.id}><td><bdi dir="ltr">{d.imei}</bdi></td><td>{d.productName}</td><td>{d.status}</td></tr>)}</tbody></table></div></article>}
+   <tbody>{state?.devices.map(d=><tr key={d.id}><td><bdi dir="ltr">{d.imei}</bdi></td><td>{d.productName}</td><td>{liveOperationStatus(d.status,locale)}</td></tr>)}</tbody></table></div></article>}
    {mode!=="inventory"&&<article><h2>{t.receipts}</h2><div className="table-wrap"><table><thead><tr><th>{t.invoice}</th><th>{t.total}</th><th>{t.state}</th></tr></thead>
-   <tbody>{state?.sales.map(s=><tr key={s.id}><td><bdi dir="ltr">{s.invoiceNumber}</bdi></td><td><bdi dir="ltr">{"$"+s.total.toFixed(2)}</bdi></td><td>{s.status}</td></tr>)}</tbody></table></div></article>}
-  </section>
+   <tbody>{state?.sales.map(s=><tr key={s.id}><td><bdi dir="ltr">{s.invoiceNumber}</bdi></td><td><bdi dir="ltr">{"$"+s.total.toFixed(2)}</bdi></td><td>{liveOperationStatus(s.status,locale)}</td></tr>)}</tbody></table></div></article>}
+  </section></div>
  </main>;
 }
