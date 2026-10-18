@@ -132,7 +132,7 @@ try {
   assert(await evaluate(cdp, 'Boolean(document.querySelector(".mobi-a-device-mockup"))'), "A dashboard device mockup missing");
   assert(await evaluate(cdp, 'Boolean(document.querySelector(".mobi-headline-blue") && document.querySelector(".mobi-headline-orange"))'), "A colored headline missing");
   assert(await evaluate(cdp, '(() => { const i=document.querySelector(".product-nav .product-brand img"); return i?.getAttribute("src")==="/brand/a1-mobi-logo.svg" && i.alt==="A1 Mobi" && i.complete && i.naturalWidth>0; })()'), "Official A1 Mobi wordmark is missing or failed to load");
-  assert(await evaluate(cdp, '(() => { const footer=document.querySelector(".product-footer"); const i=footer?.querySelector("img"); const wrapper=footer?.querySelector(".footer-brand-asset"); return i?.getAttribute("src")==="/brand/a1-mobi-logo-on-dark.svg" && getComputedStyle(wrapper).backgroundColor==="rgba(0, 0, 0, 0)"; })()'), "White-on-dark footer logo is missing or has an opaque background");
+  assert(await evaluate(cdp, '(() => { const footer=document.querySelector(".product-footer"); const i=footer?.querySelector("img"); const wrapper=footer?.querySelector(".footer-brand-asset"); return i?.getAttribute("src")==="/brand/a1-mobi-logo-white.svg" && getComputedStyle(wrapper).backgroundColor==="rgba(0, 0, 0, 0)"; })()'), "White-on-dark footer logo is missing or has an opaque background");
 
   await navigate(cdp, base + "/store-preview", 1440, 900);
   const bViewport = await evaluate(cdp, '({scrollHeight:document.documentElement.scrollHeight,innerHeight:window.innerHeight})');
@@ -236,10 +236,12 @@ try {
   assert(await evaluate(cdp, 'Boolean(document.querySelector(".mobi-c-insight"))'), "C chart missing");
   assert(await evaluate(cdp, 'document.querySelectorAll(".mobi-c-ops-grid .activity-card").length === 2'), "C repair/low-stock panels missing");
   assert(await evaluate(cdp, 'Boolean(document.querySelector(".sidebar-toggle"))'), "C sidebar toggle missing");
+  assert(await evaluate(cdp, '(() => { const a=document.querySelector(".sidebar .brand"); const i=a?.querySelector(".a1-mobi-sidebar-logo"); return i?.getAttribute("src")==="/brand/a1-mobi-logo-white.svg" && i.complete && i.naturalWidth>0 && i.getBoundingClientRect().width>=140 && !a.querySelector("b"); })()'), "C must show one complete pure-white logo without duplicate text");
 
   await evaluate(cdp, 'document.querySelector(".sidebar-toggle").click(); true');
   await sleep(150);
   assert(await evaluate(cdp, 'document.querySelector(".app-shell").classList.contains("sidebar-collapsed")'), "C sidebar did not collapse");
+  assert(await evaluate(cdp, '(() => { const i=document.querySelector(".sidebar .brand .a1-mobi-sidebar-icon"); return i?.getAttribute("src")==="/brand/a1-mobi-icon-white.svg" && i.getBoundingClientRect().width>=30; })()'), "Collapsed dark C sidebar must display only the white emblem");
   await evaluate(cdp, 'document.querySelector(".sidebar-toggle").click(); true');
   await sleep(150);
   await capture(cdp, "c-dashboard-authenticated-desktop");

@@ -43,3 +43,9 @@ Brand identity is closed locally for these placements, **not** final acceptance 
 Other open gates include POS returns/reconciliation, multi-product checkout, warranty claims, real owner pages, B merchant storefront integration, signup/subscription/recovery, independent Claude review, Foundation 1.0.0, Pre-Launch and production rollback.
 
 **NO merge, no Hostinger redeploy, no auto-deploy.**
+
+## CI visual assertion follow-up (same stage)
+
+The first GitHub Visual Evidence workflow after the BRAND-14 logo commit **failed** at its screenshot capture assertion, because `scripts/abc-browser-qa.mjs` still required the superseded `a1-mobi-logo-on-dark.svg` path. This is a stale test expectation, not authorization to restore the orange-accented asset. The gate script now asserts the approved full pure-white footer logo; in authenticated C it also asserts one full pure-white desktop sidebar logo (no duplicate "Mobi" text) and a pure-white emblem in collapsed dark sidebar.
+
+The original GitHub failure remains recorded in run `39157785352`. The next pushed commit must pass a fresh Visual Evidence workflow before this stage can be signed off. `npm run build` had passed before that screenshot step. No production site was modified.

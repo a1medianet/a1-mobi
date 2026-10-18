@@ -45,6 +45,10 @@ describe("A1 Mobi approved brand identity",()=>{
   expect(ownerShell).toContain('src="/brand/a1-mobi-logo-white.svg"');
   expect(ownerShell).toContain('src="/brand/a1-mobi-icon-white.svg"');
   expect(ownerShell).not.toMatch(/<b>Mobi<\/b>|Store platform/);
+  const visualGate=readFileSync(fromRoot("scripts/abc-browser-qa.mjs"),"utf8");
+  expect(visualGate).toContain('i?.getAttribute("src")==="/brand/a1-mobi-logo-white.svg"');
+  expect(visualGate).toContain("C must show one complete pure-white logo without duplicate text");
+  expect(visualGate).not.toContain("a1-mobi-logo-on-dark.svg");
  });
  it("keeps a valid binary ICO favicon with an embedded PNG",()=>{
   const ico=readFileSync(fromRoot("src/app/favicon.ico"));
