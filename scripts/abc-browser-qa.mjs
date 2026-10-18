@@ -236,7 +236,7 @@ try {
   assert(await evaluate(cdp, 'Boolean(document.querySelector(".mobi-c-insight"))'), "C chart missing");
   assert(await evaluate(cdp, 'document.querySelectorAll(".mobi-c-ops-grid .activity-card").length === 2'), "C repair/low-stock panels missing");
   assert(await evaluate(cdp, 'Boolean(document.querySelector(".sidebar-toggle"))'), "C sidebar toggle missing");
-  assert(await evaluate(cdp, '(() => { const a=document.querySelector(".sidebar .brand"); const i=a?.querySelector(".a1-mobi-sidebar-logo"); return i?.getAttribute("src")==="/brand/a1-mobi-logo-white.svg" && i.complete && i.naturalWidth>0 && i.getBoundingClientRect().width>=140 && !a.querySelector("b"); })()'), "C must show one complete pure-white logo without duplicate text");
+  assert(await evaluate(cdp, '(() => { const a=document.querySelector(".sidebar .brand"); const i=a?.querySelector(".a1-mobi-sidebar-logo"); return i?.getAttribute("src")==="/brand/a1-mobi-logo-white.svg" && i.complete && i.naturalWidth>0 && i.getBoundingClientRect().width>=125 && i.getBoundingClientRect().width<=140 && !a.querySelector("b"); })()'), "C must show one complete pure-white logo without duplicate text");
 
   await evaluate(cdp, 'document.querySelector(".sidebar-toggle").click(); true');
   await sleep(150);
