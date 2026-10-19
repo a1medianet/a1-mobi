@@ -13,7 +13,8 @@ export async function getBranchCashSnapshot(scope: { tenantId: string; branchId:
     where,
     orderBy: [{ openedAt: "desc" }, { id: "desc" }],
   });
-  if (!session) return { status: "NONE" as const, openedAt: null, closedAt: null,
+  if (!session) return { status: "NONE" as const, sessionId: null, openingExchangeRate: null,
+    openedAt: null, closedAt: null,
     expectedUsd: null, expectedLbp: null, varianceBase: null, movements: [] };
 
   const movementWhere = { ...where, cashSessionId: session.id };
@@ -36,6 +37,8 @@ export async function getBranchCashSnapshot(scope: { tenantId: string; branchId:
   const round4 = (value: number) => Math.round((value + Number.EPSILON) * 10_000) / 10_000;
   return {
     status: session.status,
+    sessionId: session.id,
+    openingExchangeRate: Number(session.openingExchangeRate),
     openedAt: session.openedAt.toISOString(),
     closedAt: session.closedAt?.toISOString() ?? null,
     expectedUsd: round4(Number(session.openingUsd) + signed("USD")),

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { currentStoreContext } from "@/server/auth-http";
 import { getBranchCashSnapshot } from "@/modules/cash/cash-owner-snapshot";
+import CashClosePanel from "@/components/cash-close-panel";
 
 const labels = {
   ar: {
@@ -48,6 +49,7 @@ export default async function CashOwnerLivePage({ locale }: { locale: "ar" | "en
     throw error;
   }
   const snapshot = await getBranchCashSnapshot({ tenantId: context.tenantId, branchId: context.branchId });
+
   const statusLabel = snapshot.status === "OPEN" ? t.open : snapshot.status === "CLOSED" ? t.closed : t.none;
   const money = (value: number | null, currency: string) => value === null ? "—" :
     new Intl.NumberFormat(locale === "ar" ? "ar-LB" : "en-US", {
@@ -77,6 +79,9 @@ export default async function CashOwnerLivePage({ locale }: { locale: "ar" | "en
           <div className="metric-body"><p>{title}</p><strong><bdi dir="auto">{value}</bdi></strong></div>
         </article>)}
     </section>
+    {snapshot.status === "OPEN" && snapshot.sessionId && snapshot.openingExchangeRate
+      ? <CashClosePanel locale={locale} cashSessionId={snapshot.sessionId}
+        openingRate={snapshot.openingExchangeRate} /> : null}
     {snapshot.status === "NONE" ?
       <section className="activity-card"><p role="status">{t.empty}</p></section> :
       <section className="activity-card">

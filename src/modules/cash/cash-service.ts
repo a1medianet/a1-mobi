@@ -191,8 +191,20 @@ export async function closeCashSession(input: {
       tx.user.findUniqueOrThrow({ where: { id: input.actorId } }),
       input.approverId ? tx.user.findUniqueOrThrow({ where: { id: input.approverId } }) : Promise.resolve(undefined),
     ]);
-    if (actor.tenantId !== input.tenantId || (approver && approver.tenantId !== input.tenantId)) {
-      throw new Error("Cross-tenant cash close is forbidden");
+    if (actor.tenantId !== input.tenantId || actor.branchId !== input.branchId
+      || !actor.isActive) {
+      throw new Error("CASH_ACTOR_SCOPE_DENIED");
+    }
+    if (approver) {
+      if (approver.id === actor.id) throw new Error("SELF_APPROVAL_FORBIDDEN");
+      if (approver.tenantId !== input.tenantId || approver.branchId !== input.branchId
+        || !approver.isActive) throw new Error("APPROVER_NOT_AUTHORIZED");
+      const authorized = await tx.userRole.findFirst({
+        where: { userId: approver.id, role: { tenantId: input.tenantId,
+          permissions: { some: { permission: { code: "cash.manage" } } } } },
+        select: { userId: true },
+      });
+      if (!authorized) throw new Error("APPROVER_NOT_AUTHORIZED");
     }
     const updated = await tx.cashSession.update({
       where: { id: session.id },

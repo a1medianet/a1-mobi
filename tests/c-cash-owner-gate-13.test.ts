@@ -28,7 +28,7 @@ describe("C-13 cash owner read-only UAT gate", () => {
   it("uses actual branch-scoped movements with full aggregates, not the last 30 rows", async () => {
     vi.mocked(db.cashSession.findFirst).mockResolvedValueOnce({
       id: "drawer-1", status: "OPEN", openingUsd: 100,
-      openingLbp: 200000, varianceBase: null,
+      openingLbp: 200000, openingExchangeRate: 89000, varianceBase: null,
       openedAt: new Date("2026-10-18T12:00:00Z"), closedAt: null,
     } as never);
     vi.mocked(db.cashMovement.groupBy).mockResolvedValue([
@@ -59,8 +59,9 @@ describe("C-13 cash owner read-only UAT gate", () => {
   it("shows actual empty state without inventing sample cash totals", async () => {
     vi.mocked(db.cashSession.findFirst).mockResolvedValue(null);
     const value = await getBranchCashSnapshot(scope);
-    expect(value).toEqual({ status: "NONE", openedAt: null, closedAt: null,
-      expectedUsd: null, expectedLbp: null, varianceBase: null, movements: [] });
+    expect(value).toEqual({ status: "NONE", sessionId: null, openingExchangeRate: null,
+      openedAt: null, closedAt: null, expectedUsd: null, expectedLbp: null,
+      varianceBase: null, movements: [] });
     expect(db.cashSession.findFirst).toHaveBeenCalledTimes(2);
     expect(db.cashMovement.findMany).not.toHaveBeenCalled();
   });

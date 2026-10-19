@@ -54,3 +54,6 @@ next-env.d.ts
 
 # C-LIVE-02 visual UAT preview isolated on Thaghr
 /.next-c-live02-ui/
+
+# Isolated C-14 preview build - never commit generated output
+/.next-c14/
