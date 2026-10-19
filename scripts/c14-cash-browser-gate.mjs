@@ -104,7 +104,7 @@ try {
   await new Promise((resolve,reject)=>{socket.onopen=resolve;socket.onerror=reject;});
   cdp=new Cdp(socket);
   await cdp.send("Page.enable");await cdp.send("Runtime.enable");await cdp.send("Network.enable");
-  const ck=await cdp.send("Network.setCookie",{name,value,url:base,path:"/",httpOnly:true,sameSite:"Lax"});
+  const ck=await cdp.send("Network.setCookie",{name,value,url:base,path:"/",httpOnly:true,secure:name.startsWith("__Host-"),sameSite:"Lax"});
   must(ck.success,"BROWSER_COOKIE_REJECTED");
   await viewport(1440,900,false);
   must(await cdp.eval('document.querySelectorAll(".metrics .metric").length===4'),"DESKTOP_METRICS_MISSING");
@@ -127,6 +127,7 @@ try {
   must(preview,"PREVIEW_NOT_RENDERED:"+await cdp.eval('JSON.stringify({panel:document.querySelector(".cash-close-panel")?.innerText?.slice(-320),inputs:[...document.querySelectorAll(".cash-close-fields input")].map(e=>e.value),ready:document.readyState,url:location.href})'));
   const parsed=await cdp.eval('document.querySelector(".cash-close-preview")?.innerText');
   must(parsed.includes("200.00 USD") && parsed.includes("0.00 USD"),"PREVIEW_MONEY_WRONG:"+parsed);
+  await cdp.eval('document.querySelector(".cash-close-preview")?.scrollIntoView()');
   await shot("cash-mobile-preview");
   must(await cdp.eval('!!document.querySelector(".cash-close-preview button.primary")'),"CONFIRM_BUTTON_MISSING");
   await cdp.eval('document.querySelector(".cash-close-preview button.primary").click()');

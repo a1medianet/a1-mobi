@@ -1,42 +1,40 @@
-# A1 Mobi — C-14/01 Safe Checkpoint (19 October 2026)
+# A1 Mobi — C-14/01 Verified Checkpoint (19 October 2026)
 
-**Status:** SAFE WIP — NOT FINAL ACCEPTANCE / NOT PRODUCTION-READY
-**Device:** Thaghr only
-**Branch:** `feat/mobi-abc-continue-20261013` / Draft PR #12
-**Starting commit:** `67f8c817e2538a24f8775464bd409a4c1eef57cd`
-**Environment:** local PostgreSQL `127.0.0.1:5438/mobi_uat`, isolated Next.js port `3218`; existing port `3185` untouched.
+**C-14/01 status:** PASS for zero-variance dual-currency cash close; variance approvals intentionally gated.
+**A1 Mobi Pilot v1.0 status:** PRE-LAUNCH / NO-GO for customer and production until remaining gates pass.
+**Device:** Thaghr exclusively
+**Branch:** `feat/mobi-abc-continue-20261013` / PR #12 remains Draft and unmerged
+**Baseline:** `67f8c817e2538a24f8775464bd409a4c1eef57cd`
 
-## Delivered in this checkpoint
+## C-14/01 delivered
 
-- Branch-scoped cash snapshot with USD/LBP expected balances and last 30 movements.
-- Protected `POST /api/ops/cash/close` with schema validation, origin check, tenant/branch scope, and explicit confirmation.
-- Dual-currency physical count and read-only variance preview in Arabic and English.
-- Zero-variance close path using the existing serializable cash service, journal and audit.
-- **Security restriction:** Approver ID selection does NOT establish independent managerial consent. This pilot API now rejects requests supplying `approverId` or `varianceReason` with `INDEPENDENT_APPROVAL_REQUIRED`. The UI forbids closing a drawer when a variance is present; no fictitious approval is displayed.
-- Isolated Chrome UAT script and saved screenshots.
+- Branch-scoped cash snapshot for USD/LBP with the last 30 movements.
+- Protected `POST /api/ops/cash/close` with explicit confirmation, schema validation, origin protection, tenant/branch and manager permission checks.
+- Client-side USD/LBP count, exchange-rate input, read-only ledger variance preview and true zero-variance close.
+- Persistent CLOSED status and exactly one cash.session.closed audit entry confirmed from a real browser flow against PostgreSQL.
+- Critical policy: choosing an approver ID is not proof of manager approval. The endpoint rejects forged approval with `INDEPENDENT_APPROVAL_REQUIRED` and the UI disables variance close until a separately authenticated manager-approval workflow is implemented. The pilot does not misrepresent variance approval as ready.
 
-## Verified evidence
+## Verification and evidence
 
-- C-14 API suite: **7/7 PASS**, including forged-manager-approval rejection.
+- API cash-close tests: **7/7 PASS**.
 - C-13 cash-owner regression: **5/5 PASS**.
-- PostgreSQL UAT cash authorization: **1/1 PASS** when explicitly using `.env.local` (not skipped).
-- TypeScript `tsc --noEmit`: **PASS**.
-- Focused ESLint: **PASS**.
-- Chrome: successful authenticated desktop and mobile rendering, four metric cards, no mobile horizontal overflow, and successful USD/LBP preview during one warm run. See `c14-browser-result.json` and PNG screenshots.
+- PostgreSQL C-14 UAT test: **1/1 PASS** (explicit `.env.local` to avoid skipped DB checks).
+- Total: **13/13 PASS**; TypeScript `tsc --noEmit` and focused ESLint: **PASS**.
+- Isolated optimized production Next.js 16.4.0 build `next build --webpack` using existing generated Prisma Client: **PASS** (exit 0, all 28 static-page steps completed, /ar/cash and /api/ops/cash/close included).
+- Chrome against isolated `next start` on `127.0.0.1:3218`: **PASS TWICE** (two separate runs, exit 0). Authenticated 1440x900 desktop and 390x844 mobile each showed four cash metrics, no mobile horizontal overflow; preview showed correct USD/LBP amounts; real zero-variance close persisted CLOSED with exactly one audit record in `127.0.0.1:5438/mobi_uat`.
+- Evidence: `c14-browser-result.json`, `cash-desktop-auth.png`, `cash-mobile-auth.png`, `cash-mobile-preview.png`, `cash-mobile-closed.png`; executable browser gate `scripts/c14-cash-browser-gate.mjs`. Synthetic UAT fixtures are removed by the script.
 
-## Unresolved / do not claim PASS
+## Known limitations and controls
 
-1. **Intermittent DB access**: the local Next.js process received Prisma `P1001` against `127.0.0.1:5438`, causing authenticated cash page 500 and login 503 during subsequent browser runs. Docker container `a1-mobi-techzone-uat-20261017` was still running (no restarts); at inspection 44/100 PostgreSQL connections were active. Root cause **not proven**. Do not mask or ignore this instability.
-2. Browser-driven **actual close + audit** test not consistently completed. The script now checks persisted CLOSED state and one audit record, but final verification is pending a stable full run.
-3. Variance closing requires a separately authenticated manager approval flow. Until implemented and tested, intentional no-variance-only pilot policy applies.
-4. Full A/B/C customer journey, SMTP/recovery, inventory/POS, backups and rollback, and Hostinger prelaunch gates remain to be completed and verified independently.
+- During Next.js *development* runs, cold compiles took up to 60 seconds; intermittent Prisma `P1001` against Docker-published UAT database caused HTTP 500 and login 503, despite the container being up (0 restarts at inspection). These symptoms did not recur in the two completed production-build Chrome flows; the underlying intermittent connectivity is not conclusively explained and remains an operational stability check.
+- Conventional `npm run build` prebuild Prisma Client generation hit Windows `EPERM` renaming a shared query engine DLL. The isolated optimized Next.js production build succeeded using the existing generated client. Do not claim the conventional build command is reproducible until this lock is resolved without disrupting other services.
+- Variance closing with an independently authenticated manager is deferred, intentionally denied by both UI and API.
+- Scope not yet accepted: other C journeys (settlements, refunds, warranties, multi-item POS), B real commerce/order/inventory E2E, A signup/login/SMTP/recovery, final A/B/C UX, isolation/security and financial regression suites, HTTPS health monitoring, backup/restore and rollback, Hostinger prelaunch review.
 
-## Release decision
+## Release policy
 
-**NO-GO** for production replacement, PR merge, or first-customer pilot until the above gates pass. This is a checkpoint commit on the existing Draft PR only. Previous Hostinger deployment remains unchanged.
+**No PR merge and no production deployment** before comprehensive prelaunch and explicit owner approval. Existing Hostinger deployment and Thaghr Mobi listener on port 3185 were not changed. `A1 Port` remains the user's remote communication channel only. A1 Assist is independent later integration and is not a Pilot blocker.
 
-## Immediate next execution
+## Next stage
 
-1. Stabilize or isolate the `mobi_uat` PostgreSQL Windows/Docker connectivity.
-2. Rerun `node --env-file=.env.local scripts/c14-cash-browser-gate.mjs`, asserting persisted zero-variance close and single audit, and screenshot the resulting closed state.
-3. Continue C settlement/returns/warranty/POS minimum, then B and A E2E, UX, tenant security and recovery; request explicit production approval only after successful Pre-Launch.
+Finish remaining C first-customer minimum and prove each end-to-end journey; then B, A, UI and Foundation checks; prepare backed-up Hostinger release candidate and rollback exercise; request production approval only after Pre-Launch PASS.
