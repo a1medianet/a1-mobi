@@ -23,6 +23,19 @@ const features={
   ],
 } as const;
 
+function FeatureIcon({ index }: { index: number }) {
+  const icons = [
+    <><circle cx="9" cy="20" r="1"/><circle cx="19" cy="20" r="1"/><path d="M2 3h2l2.8 12h12.7l2-8H5"/></>,
+    <><path d="M14.7 6.3a5 5 0 0 0-6.4 6.4L3 18a2 2 0 0 0 3 3l5.3-5.3a5 5 0 0 0 6.4-6.4l-3.4 3.4-3.6-3.6z"/></>,
+    <><path d="M3 8.5 12 4l9 4.5v10L12 23l-9-4.5z"/><path d="M3 8.5 12 13l9-4.5M12 13v10"/></>,
+    <><circle cx="9" cy="8" r="3"/><path d="M3 21v-2a6 6 0 0 1 12 0v2M17 11a3 3 0 1 0-2-5.5M17 15a5 5 0 0 1 4 5v1"/></>,
+    <><path d="M12 3v12m-4-4 4 4 4-4"/><path d="M4 17v3h16v-3"/></>,
+    <><path d="M4 20V12m5 8V8m5 12V4m5 16v-9M2 21h20"/></>,
+  ];
+  return <svg width="25" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{icons[index]}</svg>;
+}
+
 export default async function ProductLanding({params}:{params:Promise<{locale:string}>}){
   const {locale}=await params;
   if(locale!=="ar"&&locale!=="en") notFound();
@@ -30,7 +43,7 @@ export default async function ProductLanding({params}:{params:Promise<{locale:st
   const counts=demoCatalogCounts();
 
   return <main>
-    <section className="product-hero mobi-marketing-a">
+    <section className="product-hero mobi-marketing-a" aria-label={ar?"نظام تشغيل محلات الهواتف":"Mobile retail operating system"}>
       <div className="product-shell hero-layout">
         <div className="mobi-a-copy">
           <span className="product-eyebrow">{ar?"نظام تشغيل لمتجر الموبايل والصيانة":"MOBILE RETAIL & REPAIR OS"}</span>
@@ -94,11 +107,11 @@ export default async function ProductLanding({params}:{params:Promise<{locale:st
       </div>
     </section>
 
-    <section id="features" className="product-shell product-section mobi-a-features">
+    <section id="features" className="product-shell product-section mobi-a-features" aria-label={ar?"ست قدرات رئيسية":"Six essential capabilities"}>
       <div className="product-section-head"><div><span className="product-eyebrow">{ar?"كل ما تحتاجه للتشغيل":"OPERATIONS"}</span><h2>{ar?"من البيع إلى الصيانة والمحاسبة.":"From sale to repair and reconciliation."}</h2></div><p>{ar?"ست وحدات أساسية مترابطة، بهوية واحدة ورحلة تشغيل واضحة.":"Six connected core capabilities with one visual system and one operating journey."}</p></div>
       <div className="mobi-a-feature-grid">{features[locale].map((feature,index)=>
         <article className="mobi-a-feature-card" key={feature.title}>
-          <div className={"mobi-a-feature-icon "+feature.tone}>{feature.icon}</div>
+          <div className={"mobi-a-feature-icon "+feature.tone}><FeatureIcon index={index}/></div>
           <small>{String(index+1).padStart(2,"0")}</small>
           <h3>{feature.title}</h3>
           <b>{feature.en}</b>
@@ -116,7 +129,7 @@ export default async function ProductLanding({params}:{params:Promise<{locale:st
       <div><span className="product-eyebrow">{ar?"صيانة وتنظيم ومتابعة":"REPAIR WORKFLOW"}</span><h2>{ar?"من استلام الجهاز إلى التسليم بثقة.":"From intake to delivery with confidence."}</h2><p>{ar?"وثّق العطل والحالة وقطع الغيار والدفعات، واحتفظ بسجل واضح لكل عملية صيانة داخل المتجر.":"Track diagnosis, parts, progress and payments with a complete repair record."}</p><Link className="product-cta" href={"/product/"+locale+"/demo#repairs"}>{ar?"شاهد رحلة الصيانة":"Explore repair journey"} →</Link></div>
     </section>
 
-    <section className="mobi-a-why">
+    <section className="mobi-a-why" id="why">
       <div className="product-shell">
         <div className="product-section-head"><div><span className="product-eyebrow">{ar?"لماذا A1 Mobi؟":"WHY A1 MOBI"}</span><h2>{ar?"مصمم لعمل المتجر الحقيقي.":"Built around real store work."}</h2></div><p>{ar?"ليس مجرد شاشة مبيعات؛ بل مسار يربط الجهاز والمخزون والعميل والصيانة والصندوق والتقرير.":"Not just a sales screen: it connects device, stock, customer, repair, cash and reporting truth."}</p></div>
         <div className="mobi-a-why-grid">
@@ -135,6 +148,18 @@ export default async function ProductLanding({params}:{params:Promise<{locale:st
       <aside><strong>{counts.total}</strong><span>{ar?"منتجات تجريبية":"demo products"}</span><strong>{demoRepairs.length}</strong><span>{ar?"أوامر صيانة تجريبية":"demo repair orders"}</span><strong>{demoTopups.length}</strong><span>{ar?"عمليات تعبئة تجريبية":"demo top-ups"}</span></aside>
     </section>
 
+    <section className="mobi-a-proof-strip product-shell" aria-label={ar?"مواصفات النظام":"Product capabilities"}>
+      {[
+        [ar?"6 وحدات مترابطة":"6 connected workflows",ar?"بيع وصيانة ومخزون وعملاء ومشتريات وتقارير":"Sales, repair, stock, customers, purchasing and reports"],
+        [ar?"عربي وإنكليزي":"Arabic + English",ar?"واجهة RTL / LTR":"RTL and LTR layouts"],
+        ["IMEI / Serial",ar?"تتبّع الأجهزة التسلسلية":"Serialized device tracking"],
+        [ar?"صلاحيات الأدوار":"Role permissions",ar?"ضبط الوصول حسب المسؤوليات":"Access scoped to responsibility"],
+      ].map(([head,detail],i)=><article key={head}>
+        <span className={i%2?"orange":"blue"} aria-hidden="true">{["▦","AR","#","✓"][i]}</span>
+        <div><strong>{head}</strong><small>{detail}</small></div>
+      </article>)}
+    </section>
+
     <section className="product-flow">
       <div className="product-shell">
         <div className="product-section-head"><div><span className="product-eyebrow">ONBOARDING</span><h2>{ar?"كيف تبدأ؟":"How do you start?"}</h2></div><p>{ar?"رحلة قصيرة من إنشاء المتجر إلى أول عملية تشغيل.":"A short path from store setup to the first operation."}</p></div>
@@ -151,7 +176,7 @@ export default async function ProductLanding({params}:{params:Promise<{locale:st
 
     <section className="product-shell commercial-band"><div><span className="product-eyebrow">{ar?"لمتجر واحد أو عدة فروع":"ONE STORE · MULTIPLE BRANCHES"}</span><h2>{ar?"ابدأ بمتجر واحد، وتوسّع عندما تحتاج.":"Start with one store and grow when needed."}</h2><p>{ar?"الفروع والمستخدمون والصلاحيات جزء من نفس بنية التشغيل، مع فصل واضح بين بيانات كل جهة وفرع.":"Branches, users and permissions share one operating model with tenant and branch isolation."}</p></div><Link className="product-secondary" href={"/product/"+locale+"/pricing"}>{ar?"عرض الخطط":"View plans"}</Link></section>
 
-    <section className="product-shell final-cta"><span className="product-eyebrow">{ar?"ابدأ بثقة":"GET STARTED"}</span><h2>{ar?"تعرّف على النظام، ثم افتح متجرَك.":"Know the system, then open your store."}</h2><p>{ar?"استعرض الجولة أولًا، ثم أنشئ حساب التجربة عندما تكون جاهزًا.":"Explore the guided tour first, then create your trial account when ready."}</p><div className="product-actions"><Link className="product-cta" href={"/product/"+locale+"/signup"}>{ar?"ابدأ مجانًا الآن":"Start free now"}</Link><Link className="product-secondary" href={"/product/"+locale+"/demo"}>{ar?"شاهد الجولة":"Explore demo"}</Link></div></section>
+    <section className="product-shell final-cta mobi-a-final-cta"><span className="product-eyebrow">{ar?"ابدأ بثقة":"GET STARTED"}</span><h2>{ar?"تعرّف على النظام، ثم افتح متجرَك.":"Know the system, then open your store."}</h2><p>{ar?"استعرض الجولة أولًا، ثم أنشئ حساب التجربة عندما تكون جاهزًا.":"Explore the guided tour first, then create your trial account when ready."}</p><div className="product-actions"><Link className="product-cta" href={"/product/"+locale+"/signup"}>{ar?"ابدأ مجانًا الآن":"Start free now"}</Link><Link className="product-secondary" href={"/product/"+locale+"/demo"}>{ar?"شاهد الجولة":"Explore demo"}</Link></div></section>
   </main>;
 }
 

@@ -17,7 +17,7 @@ export function ProductSiteShell({locale,children}:{locale:"ar"|"en";children:Re
         <nav aria-label={ar?"التنقل الرئيسي للمنتج":"Product navigation"}>
           <Link href={"/product/"+locale}>{ar?"الرئيسية":"Home"}</Link>
           <Link href={"/product/"+locale+"#features"}>{ar?"المميزات":"Features"}</Link>
-          <Link href={"/product/"+locale+"#customers"}>{ar?"قصص العملاء":"Customers"}</Link>
+          <Link href={"/product/"+locale+"#why"}>{ar?"لماذا A1 Mobi؟":"Why A1 Mobi?"}</Link>
           <Link href={"/product/"+locale+"/pricing"}>{ar?"الأسعار":"Pricing"}</Link>
           <Link href={"/product/"+other} hrefLang={other}>{ar?"EN":"العربية"}</Link>
           <Link className="product-login" href={"/"+locale+"/login"}>{ar?"تسجيل الدخول":"Sign in"}</Link>

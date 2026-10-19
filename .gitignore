@@ -60,3 +60,6 @@ next-env.d.ts
 
 # Isolated C15 ABC visual UAT build
 /.next-c15/
+
+# A owner-reference isolated visual review
+/.next-a-ref/
