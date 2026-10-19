@@ -15,3 +15,8 @@ PR: #12 Draft / no merge / no production deploy
 C-13/03 reports aggregation, customer debt and linked-device reconciliation, cash closure/returns UAT, multi-item sale, B storefront, A customer journey, independent Claude acceptance, Foundation and Pre-Launch.
 
 **This version index is not an ABC Finished or production acceptance declaration.**
+
+- **C-13/03 — Branch report read:** canonical AR/EN report cards source recorded branch sale statuses, posted refunds, collected repair payments, closed drawer variances and current branch repair/customer counts. Explicitly no unverified accounting margin/debt/stock valuations. Local **7/7 targeted including real PostgreSQL branch+tenant isolation PASS**, TypeScript/ESLint PASS, AR desktop/EN mobile Chrome PASS. Report: `BRANCH-REPORT-READ-GATE-03.md`.
+
+### Next gate
+C-14: complete reconciliation and **write workflows** (cash closure/returns/warranty), plus multi-item POS and B/A pre-launch. These are NOT certified by the three read-only C-13 screens.
