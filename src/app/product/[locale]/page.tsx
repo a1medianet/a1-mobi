@@ -45,6 +45,10 @@ export default async function ProductLanding({params}:{params:Promise<{locale:st
             <Link className="product-cta mobi-a-primary" href={"/product/"+locale+"/signup"}>{ar?"ابدأ مجانًا الآن":"Start free now"} <span aria-hidden="true">↗</span></Link>
             <Link className="product-secondary mobi-a-video" href={"/product/"+locale+"/demo"}><span aria-hidden="true">▶</span>{ar?"شاهد الجولة":"Watch the tour"}</Link>
           </div>
+          <Link className="mobi-a-store-bridge" href="/store-preview">
+            <span aria-hidden="true">↗</span>
+            {ar?"استعرض واجهة متجر العميل (B)":"Explore the customer storefront (B)"}
+          </Link>
           <div className="hero-trust mobi-a-trust">
             <span><i className="blue">✓</i>{ar?"إعداد متجر بخطوات واضحة":"Guided store setup"}</span>
             <span><i className="orange">✓</i>{ar?"صلاحيات حسب الدور":"Role-based access"}</span>

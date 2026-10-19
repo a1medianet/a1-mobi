@@ -956,3 +956,23 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 .cash-close-error{color:#9d2323}
 .cash-close-success{color:#177347}
 @media(max-width:730px){.cash-close-fields{grid-template-columns:1fr}}
+
+/* C15: invoice basket follows the A1 Mobi blue/orange operational language */
+.mobi-pos-device-list{border:1px solid #dce8f7;border-radius:12px;padding:12px;min-width:0;display:grid;gap:8px;background:#f8fbff;max-height:310px;overflow-y:auto}
+.mobi-pos-device-list legend{padding:0 7px;font-weight:750;color:#19375b;font-size:13px}
+.mobi-live-steps .mobi-pos-device-option{display:flex;flex-direction:row;align-items:center;gap:12px;padding:10px 12px;border:1px solid #e0eaf4;border-radius:10px;background:#fff;cursor:pointer;transition:background .15s,border-color .15s}
+.mobi-live-steps .mobi-pos-device-option:hover,.mobi-live-steps .mobi-pos-device-option.is-selected{border-color:#2773da;background:#eef5ff}
+.mobi-live-steps .mobi-pos-device-option input[type=checkbox]{width:19px;min-width:19px;min-height:19px;height:19px;padding:0;accent-color:#1265e8}
+.mobi-pos-device-copy{display:grid;flex:1;min-width:0;gap:3px}
+.mobi-pos-device-copy strong{font-size:13px;color:#18314e;overflow-wrap:anywhere}
+.mobi-pos-device-copy small{font-size:11px;color:#647b94;text-align:start}
+.mobi-pos-device-option bdi{color:#d56f1c;font-weight:800;font-size:13px;white-space:nowrap}
+.mobi-pos-cart-summary{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;background:#edf5ff;border:1px solid #cae0ff;border-radius:11px;padding:14px;color:#244366;font-size:13px}
+.mobi-pos-cart-summary strong{font-size:17px;color:#1159b9}
+@media(max-width:420px){.mobi-pos-cart-summary{flex-direction:column}.mobi-live-steps .mobi-pos-device-option{gap:7px;padding:8px}}
+@media(prefers-reduced-motion:reduce){.mobi-live-steps .mobi-pos-device-option{transition:none}}
+
+.mobi-a-store-bridge{display:inline-flex;align-items:center;gap:9px;width:max-content;max-width:100%;font-size:13px;font-weight:800;color:#135bbf;text-decoration:none;margin-top:15px;text-underline-offset:4px}
+.mobi-a-store-bridge:hover{text-decoration:underline}
+.mobi-a-store-bridge:focus-visible{outline:2px solid #1265e8;outline-offset:4px}
+.mobi-a-store-bridge>span{background:#fff0e3;color:#c86614;border-radius:8px;padding:5px 9px}

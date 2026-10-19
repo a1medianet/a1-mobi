@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 
 type P = { id:string; sku:string; nameAr:string; nameEn:string; isSerialized:boolean; price:number };
 type V = { id:string; model:string; name:string };
-type D = { id:string; productId:string; productName:string; imei:string|null; status:string };
+type D = { id:string; productId:string; productName:string; productNameEn?:string; imei:string|null; status:string };
 
 export function liveOperationStatus(value:string,locale:"ar"|"en") {
  const labels:Record<string,{ar:string;en:string}>={
@@ -49,7 +49,7 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
  const [busy,setBusy]=useState(false);
  const [product,setProduct]=useState({sku:"",brand:"",model:"",variant:"",nameAr:"",nameEn:"",unitCost:"300",price:"500"});
  const [stock,setStock]=useState({productId:"",variantId:"",locationId:"",imei:"",unitCost:"300"});
- const [deviceId,setDeviceId]=useState("");
+ const [selectedDeviceIds,setSelectedDeviceIds]=useState<string[]>([]);
  async function refresh() {
    const r=await fetch("/api/ops/live-01",{cache:"no-store"}),data=await r.json();
    if(!r.ok)throw new Error(data.error||"READ_FAILED");
@@ -66,13 +66,16 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
      if(input.action==="createProduct"&&typeof data.id==="string"&&typeof data.variantId==="string"&&typeof data.locationId==="string"){
        setStock(current=>({...current,productId:data.id,variantId:data.variantId,locationId:data.locationId,unitCost:String(input.unitCost??current.unitCost)}));
      }
-     if(input.action==="sell")setDeviceId("");
+     if(input.action==="sell"||input.action==="sellCart")setSelectedDeviceIds([]);
      if(input.action==="receive")setStock(current=>({...current,imei:""}));
      setError(t.done+(data.invoiceNumber?" · "+data.invoiceNumber:""));
    }catch(e){setError(t.error+": "+(e instanceof Error?e.message:"UNKNOWN"));}
    finally{setBusy(false);}
  }
  const available=state?.devices.filter(x=>x.status==="IN_STOCK")??[];
+ const selectedDevices=available.filter(device=>selectedDeviceIds.includes(device.id));
+ const cartTotal=selectedDevices.reduce((total,device)=>total+(state?.products.find(p=>p.id===device.productId)?.price??0),0);
+ function toggleDevice(id:string,checked:boolean){setSelectedDeviceIds(previous=>checked?[...previous.filter(item=>item!==id),id]:previous.filter(item=>item!==id));}
  return <main className={"module-page mobi-live01 mobi-live01-"+mode} lang={locale} dir={locale==="ar"?"rtl":"ltr"}>
   <header className="module-header"><div><Link href={"/"+locale} className="back-link">{t.back}</Link>
    <p className="module-kicker">A1 MOBI · {mode==="pos"?(locale==="ar"?"نقطة البيع":"POINT OF SALE"):mode==="inventory"?(locale==="ar"?"المخزون":"INVENTORY"):(locale==="ar"?"العمليات":"OPERATIONS")}</p><h1>{mode==="pos"?(locale==="ar"?"نقطة البيع":"Point of sale"):mode==="inventory"?(locale==="ar"?"المخزون والأجهزة":"Inventory & devices"):t.title}</h1><p className="module-sub">{mode==="pos"?(locale==="ar"?"بيع الأجهزة المسجلة وإصدار فواتير محفوظة.":"Sell registered devices and issue stored invoices."):mode==="inventory"?(locale==="ar"?"تسجيل المنتجات واستلام أجهزة IMEI وإدارة حالتها.":"Register products and receive IMEI devices into inventory."):t.intro}</p></div>
@@ -103,18 +106,33 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
     {state&&state.products.length===0&&<p className="mobi-live-hint" role="status">{t.needProduct}</p>}
     <button type="submit" className="primary" disabled={busy||!state?.products.length}>{t.received}</button>
    </form>}
-   {mode!=="inventory"&&<form onSubmit={e=>{e.preventDefault();if(!window.confirm(t.confirm))return;void send({action:"sell",deviceId,idempotencyKey:crypto.randomUUID()});}}>
+   {mode!=="inventory"&&<form onSubmit={e=>{e.preventDefault();if(!selectedDevices.length||!window.confirm(t.confirm))return;void send({action:"sellCart",deviceIds:selectedDevices.map(d=>d.id),idempotencyKey:crypto.randomUUID()});}}>
     <h2>{mode==="pos"?(locale==="ar"?"بيع جهاز وإصدار فاتورة":"Sell device & issue invoice"):t.sell}</h2>
-    <label>{t.device}<select required value={deviceId} onChange={e=>setDeviceId(e.target.value)}>
-     <option value="">—</option>{available.map(d=><option key={d.id} value={d.id}>{d.productName} · {d.imei}</option>)}</select></label>
+    <fieldset className="mobi-pos-device-list">
+      <legend>{locale==="ar"?"اختر الأجهزة للفاتورة":"Select devices for this invoice"}</legend>
+      {available.map(device=>{
+        const price=state?.products.find(p=>p.id===device.productId)?.price??0;
+        const checked=selectedDeviceIds.includes(device.id);
+        return <label className={"mobi-pos-device-option"+(checked?" is-selected":"")} key={device.id}>
+          <input type="checkbox" checked={checked} disabled={busy||(!checked&&selectedDeviceIds.length>=12)} onChange={event=>toggleDevice(device.id,event.target.checked)}/>
+          <span className="mobi-pos-device-copy"><strong>{locale==="en"?(device.productNameEn||device.productName):device.productName}</strong><small dir="ltr">{device.imei}</small></span>
+          <bdi dir="ltr">{"$"+price.toFixed(2)}</bdi>
+        </label>;
+      })}
+    </fieldset>
+    <p className="mobi-live-hint">{locale==="ar"?"حتى 12 جهازًا في الفاتورة الواحدة":"Up to 12 devices per invoice"}</p>
+    <div className="mobi-pos-cart-summary" aria-live="polite">
+      <span>{locale==="ar"?"الأجهزة المختارة":"Selected devices"}: <strong>{selectedDevices.length}</strong></span>
+      <span>{t.total}: <strong dir="ltr">{"$"+cartTotal.toFixed(2)}</strong></span>
+    </div>
     {state&&available.length===0&&<p className="mobi-live-hint" role="status">{t.noneAvailable} <Link href={"/"+locale+"/inventory"}>{t.startInventory}</Link></p>}
     <p className="mobi-live-hint">{locale==="ar"?"الدفع النقدي بالدولار — تحقق الأجهزة وفاتورة محفوظة":"USD cash — verified device and persisted invoice"}</p>
-    <button type="submit" className="primary" disabled={busy||!available.length}>{t.checkout}</button>
+    <button type="submit" className="primary" disabled={busy||!selectedDevices.length}>{t.checkout}</button>
    </form>}
   </section>
   <section className="mobi-live-details">
    {mode!=="pos"&&<article><h2>{t.list}</h2><div className="table-wrap"><table><thead><tr><th>IMEI</th><th>{t.product}</th><th>{t.state}</th></tr></thead>
-   <tbody>{state?.devices.map(d=><tr key={d.id}><td><bdi dir="ltr">{d.imei}</bdi></td><td>{d.productName}</td><td>{liveOperationStatus(d.status,locale)}</td></tr>)}</tbody></table></div></article>}
+   <tbody>{state?.devices.map(d=><tr key={d.id}><td><bdi dir="ltr">{d.imei}</bdi></td><td>{locale==="en"?(d.productNameEn||d.productName):d.productName}</td><td>{liveOperationStatus(d.status,locale)}</td></tr>)}</tbody></table></div></article>}
    {mode!=="inventory"&&<article><h2>{t.receipts}</h2><div className="table-wrap"><table><thead><tr><th>{t.invoice}</th><th>{t.total}</th><th>{t.state}</th></tr></thead>
    <tbody>{state?.sales.map(s=><tr key={s.id}><td><bdi dir="ltr">{s.invoiceNumber}</bdi></td><td><bdi dir="ltr">{"$"+s.total.toFixed(2)}</bdi></td><td>{liveOperationStatus(s.status,locale)}</td></tr>)}</tbody></table></div></article>}
   </section></div>

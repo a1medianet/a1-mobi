@@ -57,3 +57,6 @@ next-env.d.ts
 
 # Isolated C-14 preview build - never commit generated output
 /.next-c14/
+
+# Isolated C15 ABC visual UAT build
+/.next-c15/

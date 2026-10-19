@@ -8,6 +8,7 @@ import { db } from "@/server/db";
 import { registerProduct, receiveSerializedDevice } from "@/modules/inventory/inventory-service";
 import { checkDeviceTrust } from "@/modules/device-trust/device-trust-service";
 import { checkoutSale } from "@/modules/sell/sell-service";
+import { roundMoney } from "@/modules/sell/pricing";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -40,6 +41,11 @@ const actionSchema = z.discriminatedUnion("action", [
   z.object({
     action: z.literal("sell"),
     deviceId: identifier,
+    idempotencyKey: z.string().uuid(),
+  }).strict(),
+  z.object({
+    action: z.literal("sellCart"),
+    deviceIds: z.array(identifier).min(1).max(12).refine(ids => new Set(ids).size === ids.length),
     idempotencyKey: z.string().uuid(),
   }).strict(),
 ]);
@@ -80,7 +86,7 @@ export async function GET() {
         isSerialized: p.isSerialized, price: Number(p.basePrice) })),
       variants: variants.map(v => ({ id: v.id, name: v.name, model: v.model.name })),
       locations: locations.map(l => ({ id: l.id, name: l.name })),
-      devices: devices.map(v => ({ id: v.id, productId: v.productId, productName: v.product.nameAr,
+      devices: devices.map(v => ({ id: v.id, productId: v.productId, productName: v.product.nameAr, productNameEn: v.product.nameEn,
         imei: v.imei, status: v.status, locationId: v.stockLocationId })),
       sales: sales.map(s => ({ id: s.id, number: s.number, invoiceNumber: s.invoice?.number ?? "",
         total: Number(s.total), status: s.status, createdAt: s.occurredAt.toISOString() })),
@@ -105,7 +111,7 @@ export async function POST(request: Request) {
   if (!parsed.success) return authJson({ error: "INVALID_REQUEST" }, 400);
 
   const input = parsed.data;
-  const permission = input.action === "sell" ? "sell.create" : "foundation.manage";
+  const permission = input.action === "sell" || input.action === "sellCart" ? "sell.create" : "foundation.manage";
   try {
     const ctx = await currentStoreContext(permission);
     if (input.action === "createProduct") {
@@ -165,38 +171,51 @@ export async function POST(request: Request) {
       return authJson({ id: received.id, status: received.status }, 201);
     }
 
-    const device = await db.serializedDevice.findFirst({
-      where: { id: input.deviceId, tenantId: ctx.tenantId,
-        stockLocation: { branchId: ctx.branchId }, status: "IN_STOCK" },
+    const deviceIds = input.action === "sell" ? [input.deviceId] : input.deviceIds;
+    const devices = await db.serializedDevice.findMany({
+      where: {
+        id: { in: deviceIds }, tenantId: ctx.tenantId,
+        stockLocation: { branchId: ctx.branchId }, status: "IN_STOCK",
+      },
       include: { product: true },
     });
-    if (!device?.imei || !device.stockLocationId || !device.product.isActive) {
+    if (devices.length !== deviceIds.length || devices.some(d => !d.imei || !d.stockLocationId || !d.product.isActive)) {
       return authJson({ error: "DEVICE_NOT_AVAILABLE" }, 409);
     }
-    const trust = await checkDeviceTrust({
-      tenantId: ctx.tenantId, branchId: ctx.branchId, actorId: ctx.actorId,
-      context: DeviceServiceContext.SALE, devicePresent: true, imei: device.imei,
-    });
-    if (trust.result !== DeviceTrustResult.CLEAR || trust.blocked) {
-      return authJson({ error: "DEVICE_REQUIRES_MANUAL_REVIEW" }, 409);
+    const found = new Map(devices.map(device => [device.id, device]));
+    const trustChecks: { id: string }[] = [];
+    for (const id of deviceIds) {
+      const device = found.get(id)!;
+      const trust = await checkDeviceTrust({
+        tenantId: ctx.tenantId, branchId: ctx.branchId, actorId: ctx.actorId,
+        context: DeviceServiceContext.SALE, devicePresent: true, imei: device.imei!,
+      });
+      if (trust.result !== DeviceTrustResult.CLEAR || trust.blocked) {
+        return authJson({ error: "DEVICE_REQUIRES_MANUAL_REVIEW" }, 409);
+      }
+      trustChecks.push(trust);
     }
     const token = randomUUID().replace(/-/g, "").slice(0, 16).toUpperCase();
     const sale = await checkoutSale({
       tenantId: ctx.tenantId, branchId: ctx.branchId, actorId: ctx.actorId,
       number: "S-" + token, invoiceNumber: "INV-" + token,
       idempotencyKey: input.idempotencyKey,
-      lines: [{
-        productId: device.productId, stockLocationId: device.stockLocationId,
-        serializedDeviceId: device.id, trustCheckId: trust.id,
-        quantity: 1, finalPrice: Number(device.product.basePrice),
-      }],
+      lines: deviceIds.map((id, index) => {
+        const device = found.get(id)!;
+        return {
+          productId: device.productId, stockLocationId: device.stockLocationId!,
+          serializedDeviceId: device.id, trustCheckId: trustChecks[index].id,
+          quantity: 1, finalPrice: Number(device.product.basePrice),
+        };
+      }),
       payments: [{
         method: PaymentMethod.CASH, currency: "USD",
-        amount: Number(device.product.basePrice), exchangeRate: 1,
+        amount: roundMoney(devices.reduce((sum, d) => sum + Number(d.product.basePrice), 0)),
+        exchangeRate: 1,
       }],
     });
     return authJson({ id: sale.id, number: sale.number,
-      invoiceNumber: sale.invoice?.number, status: sale.status }, 201);
+      invoiceNumber: sale.invoice?.number, status: sale.status, itemCount: sale.lines.length }, 201);
   } catch (error) {
     return rejected(error);
   }

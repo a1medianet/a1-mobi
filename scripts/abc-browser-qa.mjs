@@ -134,7 +134,10 @@ try {
   assert(await evaluate(cdp, '(() => { const i=document.querySelector(".product-nav .product-brand img"); return i?.getAttribute("src")==="/brand/a1-mobi-logo.svg" && i.alt==="A1 Mobi" && i.complete && i.naturalWidth>0; })()'), "Official A1 Mobi wordmark is missing or failed to load");
   assert(await evaluate(cdp, '(() => { const footer=document.querySelector(".product-footer"); const i=footer?.querySelector("img"); const wrapper=footer?.querySelector(".footer-brand-asset"); return i?.getAttribute("src")==="/brand/a1-mobi-logo-white.svg" && getComputedStyle(wrapper).backgroundColor==="rgba(0, 0, 0, 0)"; })()'), "White-on-dark footer logo is missing or has an opaque background");
 
+  assert(await evaluate(cdp, 'document.querySelector("a.mobi-a-store-bridge")?.getAttribute("href") === "/store-preview"'), "A to B storefront journey link missing");
+  await capture(cdp, "a-product-ar-desktop");
   await navigate(cdp, base + "/store-preview", 1440, 900);
+  await capture(cdp, "b-techzone-desktop");
   const bViewport = await evaluate(cdp, '({scrollHeight:document.documentElement.scrollHeight,innerHeight:window.innerHeight})');
   assert(bViewport.scrollHeight > bViewport.innerHeight * 1.5, "B must be a fully scrollable merchant site: " + JSON.stringify(bViewport));
   assert(await evaluate(cdp, 'document.querySelectorAll(".mobi-store-product").length >= 8'), "B should show a real storefront catalog");
@@ -163,7 +166,9 @@ try {
   const aMobile = await evaluate(cdp, '({scrollWidth:document.documentElement.scrollWidth,innerWidth:window.innerWidth})');
   assert(aMobile.scrollWidth <= aMobile.innerWidth, "A mobile horizontal overflow: " + JSON.stringify(aMobile));
   assert(await evaluate(cdp, '!/[\u00d8\u00d9]/u.test(document.body.innerText)'), "A mobile Arabic encoding corrupted");
+  await capture(cdp, "a-product-ar-mobile");
   await navigate(cdp, base + "/store-preview", 390, 844);
+  await capture(cdp, "b-techzone-mobile");
   const bMobile = await evaluate(cdp, '({scrollWidth:document.documentElement.scrollWidth,innerWidth:window.innerWidth})');
   assert(bMobile.scrollWidth <= bMobile.innerWidth, "B mobile horizontal overflow: " + JSON.stringify(bMobile));
   assert(await evaluate(cdp, '!/[\u00d8\u00d9]/u.test(document.body.innerText)'), "B mobile Arabic encoding corrupted");
@@ -245,6 +250,15 @@ try {
   await evaluate(cdp, 'document.querySelector(".sidebar-toggle").click(); true');
   await sleep(150);
   await capture(cdp, "c-dashboard-authenticated-desktop");
+  await navigate(cdp, base + "/ar/pos", 1440, 900);
+  assert(await evaluate(cdp, 'Boolean(document.querySelector(".mobi-pos-device-list"))'), "C15 multi-device basket missing from POS");
+  assert(await evaluate(cdp, 'Boolean(document.querySelector(".mobi-pos-cart-summary"))'), "C15 basket total missing");
+  await capture(cdp, "c-pos-cart-desktop");
+  await navigate(cdp, base + "/ar/pos", 390, 844);
+  const cPosMobile = await evaluate(cdp, '({scrollWidth:document.documentElement.scrollWidth,innerWidth:window.innerWidth})');
+  assert(cPosMobile.scrollWidth <= cPosMobile.innerWidth, "C POS mobile overflow: " + JSON.stringify(cPosMobile));
+  assert(await evaluate(cdp, 'Boolean(document.querySelector(".mobi-pos-device-list"))'), "C POS mobile basket missing");
+  await capture(cdp, "c-pos-cart-mobile");
 
   ws.close();
   console.log("A1_MOBI_ABC_BROWSER_QA_PASS", JSON.stringify({ bViewport }));
