@@ -62,6 +62,8 @@ export function StorePreviewExperience({products,branchAr,branchEn}:StorePreview
   const [query,setQuery]=useState("");
   const [basket,setBasket]=useState<Record<string,number>>({});
   const [basketOpen,setBasketOpen]=useState(false);
+  const [inquiryReady,setInquiryReady]=useState(false);
+  const [copyStatus,setCopyStatus]=useState<"idle"|"success"|"failed">("idle");
   const t=copy[locale];
   const ar=locale==="ar";
   const term=query.trim().toLocaleLowerCase();
@@ -71,8 +73,16 @@ export function StorePreviewExperience({products,branchAr,branchEn}:StorePreview
   const basketItems=useMemo(()=>products.filter(item=>(basket[item.id]??0)>0),[basket,products]);
   const basketCount=basketItems.reduce((sum,item)=>sum+(basket[item.id]??0),0);
   const basketTotal=basketItems.reduce((sum,item)=>sum+item.price*(basket[item.id]??0),0);
-  function addDemo(id:string){setBasket(old=>({...old,[id]:Math.min(9,(old[id]??0)+1)}));setBasketOpen(true);}
-  function reduceDemo(id:string){setBasket(old=>({...old,[id]:Math.max(0,(old[id]??0)-1)}));}
+  function addDemo(id:string){setBasket(old=>({...old,[id]:Math.min(9,(old[id]??0)+1)}));setBasketOpen(true);setInquiryReady(false);setCopyStatus("idle");}
+  function reduceDemo(id:string){setBasket(old=>({...old,[id]:Math.max(0,(old[id]??0)-1)}));setInquiryReady(false);setCopyStatus("idle");}
+  const sampleSummary=[ar?"استفسار تجريبي عن منتجات":"Sample product inquiry","TechZone",...basketItems.map(item=>
+    (ar?item.nameAr:item.nameEn)+" × "+basket[item.id]+" — $"+(item.price*(basket[item.id]??0)).toLocaleString("en-US")
+  ),(ar?"الإجمالي التوضيحي":"Illustrative total")+": $"+basketTotal.toLocaleString("en-US"),
+  ar?"هذه معاينة؛ لم يُرسل أي طلب أو مبلغ.":"Preview only; no order or payment was submitted."].join("\n");
+  async function copySampleInquiry(){
+    try {await navigator.clipboard.writeText(sampleSummary);setCopyStatus("success");}
+    catch {setCopyStatus("failed");}
+  }
 
   function scrollTo(id:string){
     document.getElementById(id)?.scrollIntoView({behavior:"smooth",block:"start"});
@@ -106,7 +116,7 @@ export function StorePreviewExperience({products,branchAr,branchEn}:StorePreview
 
       <div className="mobi-store-header-actions">
         <button className="mobi-store-basket-trigger" type="button" aria-label={t.basketOpen} aria-expanded={basketOpen} aria-controls="mobi-store-basket" onClick={()=>setBasketOpen(old=>!old)}>▤ <strong>{basketCount}</strong></button>
-        <button className="mobi-store-whatsapp" type="button" disabled title={t.whatsappUnavailable}>● {t.whatsapp}</button>
+        <button className="mobi-store-whatsapp mobi-store-contact-shortcut" type="button" title={ar?"شاهد بيانات التواصل المتاحة":"View available contact details"} onClick={()=>scrollTo("store-contact")}>● {t.contact}</button>
         <button className="mobi-store-lang" type="button" onClick={()=>setLocale(ar?"en":"ar")}>{ar?"EN":"العربية"}</button>
         <Link href={"/product/"+locale} dir="ltr">A1 Mobi ↗</Link>
       </div>
@@ -169,7 +179,7 @@ export function StorePreviewExperience({products,branchAr,branchEn}:StorePreview
       <div className="mobi-store-service-banner">
         <span aria-hidden="true">✦</span>
         <div><strong>{t.service}</strong><p>{t.serviceValue}</p></div>
-        <button type="button" disabled title={t.repairUnavailable}>{t.repair}</button>
+        <button type="button" onClick={()=>scrollTo("store-contact")}>{ar?"معلومات التواصل":"Store contact details"}</button>
       </div>
     </section>
 
@@ -224,7 +234,17 @@ export function StorePreviewExperience({products,branchAr,branchEn}:StorePreview
           <div><button type="button" aria-label={"− "+(ar?item.nameAr:item.nameEn)} onClick={()=>reduceDemo(item.id)}>−</button><b>{basket[item.id]}</b><button type="button" aria-label={"+ "+(ar?item.nameAr:item.nameEn)} onClick={()=>addDemo(item.id)}>+</button></div>
         </li>)}</ul>
         <div className="mobi-store-basket-total"><span>{t.basketTotal}</span><strong dir="ltr">{"$"+basketTotal.toLocaleString("en-US")}</strong></div>
-        <button className="mobi-store-basket-clear" type="button" onClick={()=>setBasket({})}>{t.basketClear}</button>
+        <div className="mobi-store-inquiry-actions">
+          <button className="mobi-store-inquiry-prepare" type="button" onClick={()=>{setInquiryReady(true);setCopyStatus("idle");}}>{ar?"تحضير ملخص المنتجات":"Prepare product summary"}</button>
+          <button className="mobi-store-basket-clear" type="button" onClick={()=>{setBasket({});setInquiryReady(false);setCopyStatus("idle");}}>{t.basketClear}</button>
+        </div>
+        {inquiryReady&&<section className="mobi-store-inquiry-preview" aria-label={ar?"ملخص المنتجات التجريبي":"Sample product summary"}>
+          <strong>{ar?"هذا ملخص للتجربة فقط":"Sample summary for review"}</strong>
+          <p>{ar?"لم يتم إرسال طلب للمتجر أو تحصيل أي دفعة. يمكنك نسخ الملخص فقط.":"No order was sent and no payment was made. You can copy this summary only."}</p>
+          <pre dir="auto">{sampleSummary}</pre>
+          <button type="button" className="mobi-store-inquiry-copy" onClick={()=>void copySampleInquiry()}>{ar?"نسخ ملخص المنتجات":"Copy product summary"}</button>
+          <span role="status">{copyStatus==="success"?(ar?"تم نسخ الملخص":"Summary copied"):copyStatus==="failed"?(ar?"تعذّر النسخ؛ حدّد النص أعلاه لنسخه.":"Copy unavailable; select the text above to copy."):null}</span>
+        </section>}
         <p className="mobi-store-basket-notice">{t.cartUnavailable}</p>
       </>}
     </aside>}

@@ -144,7 +144,7 @@ try {
   assert(await evaluate(cdp, '["services","about-store","store-contact"].every(id=>Boolean(document.getElementById(id)))'), "B merchant services/about/contact sections missing");
   assert(await evaluate(cdp, 'document.querySelectorAll(".mobi-store-faq-list details").length === 3'), "B customer FAQ missing");
   assert(await evaluate(cdp, 'document.querySelectorAll(".mobi-store-product").length >= 8'), "B must render expanded merchant catalog");
-  assert(await evaluate(cdp, 'document.querySelector(".mobi-store-whatsapp")?.disabled === true'), "B WhatsApp must be disabled until configured");
+  assert(await evaluate(cdp, 'document.querySelector(".mobi-store-contact-shortcut")?.disabled === false'), "B contact shortcut must be working");
   assert(await evaluate(cdp, 'document.querySelector(".mobi-store-btn-secondary")?.disabled === false'), "B repair information must remain accessible");
   assert(await evaluate(cdp, '[...document.querySelectorAll(".mobi-store-add")].every(button=>!button.disabled)'), "B preview basket needs functional add buttons");
 

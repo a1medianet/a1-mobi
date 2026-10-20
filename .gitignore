@@ -63,3 +63,6 @@ next-env.d.ts
 
 # A owner-reference isolated visual review
 /.next-a-ref/
+
+# B customer-journey isolated preview
+/.next-b-review/
