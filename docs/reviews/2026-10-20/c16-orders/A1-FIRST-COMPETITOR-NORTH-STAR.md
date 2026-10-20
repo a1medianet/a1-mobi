@@ -31,7 +31,7 @@ These are verified feature descriptions from competitors, **not independent proo
 | Stage | Decision | User benefit | Gate |
 |---|---|---|---|
 | **P0 Pilot** | Public customer request -> tenant/branch owner inbox -> explicit confirmation, with actual stock and tenant scoping. | The customer and owner can complete a request without lost messages. | C16 browser real HTTP journey + UAT, PASS. |
-| **P0 Pilot** | Owner confirmation -> existing POS with suggested physical IMEI units; require human-selected checkout and receipt. | Faster next action, no second product search or dangerous automatic sale. | Separate acceptance gate, NOT INCLUDED in C16. |
+| **P0 Pilot** | Owner confirmation -> direct existing POS shortcut; next, suggested physical IMEI units with explicit checkout and receipt. | Faster next action, no second product search or dangerous automatic sale. | Shortcut implemented in C16; physical IMEI pre-selection remains open and requires a separate acceptance gate. |
 | **P0 Pilot** | Visual A/B/C match, operational full-day tests, safe public trial URL. | Demo can be judged by a real phone-shop owner. | Owner review pending, production disabled. |
 | **P1** | Customer self-service order/repair status tracking using reference and proof of phone ownership. | Reduces status calls; increases trust. | Authorization/privacy threat model; no PII exposure via reference alone. |
 | **P1** | Permissioned customer consent + templated bilingual SMS/WhatsApp event updates. | More informed customers with fewer manual calls. | Explicit opt-in, licensed provider, anti-spam. |

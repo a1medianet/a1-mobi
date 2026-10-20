@@ -199,6 +199,7 @@ assert(confirmed,"Customer did not receive confirmation reference");
  await navigate(cdp,origin+"/ar/orders",390,844);
  const ownerMobile=await evaluate(cdp,'({width:document.documentElement.scrollWidth,innerWidth:window.innerWidth})');
  assert(ownerMobile.width<=ownerMobile.innerWidth,"Owner mobile overflow");
+ assert(await evaluate(cdp,'document.querySelector(".mobi-order-pos-link")?.getAttribute("href")==="/ar/pos"'),"Confirmed request must offer direct POS handoff");
  await evaluate(cdp,'[...document.querySelectorAll("nextjs-portal")].forEach(n=>n.style.display="none");true');
  await capture(cdp,"owner-orders-mobile");
  const report={status:"PASS",reference,customerTotal:request.totalAmount,ownerStatus:"CONFIRMED",

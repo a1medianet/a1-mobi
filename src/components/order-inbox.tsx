@@ -1,5 +1,6 @@
 "use client";
 import { useEffect,useState } from "react";
+import Link from "next/link";
 type WebOrder={id:string;number:string;customerName:string;customerPhone:string;customerNote:string|null;status:string;items:unknown;totalAmount:number;currency:string;createdAt:string};
 type ResponseData={branchName:string;slug:string|null;enabled:boolean;orders:WebOrder[]};
 export function OrderInbox({locale}:{locale:"ar"|"en"}){
@@ -73,7 +74,10 @@ export function OrderInbox({locale}:{locale:"ar"|"en"}){
     <div className="mobi-order-inbox-actions">
      {order.status==="NEW"&&<><button disabled={!!busy} onClick={()=>void action({action:"setStatus",id:order.id,status:"CONFIRMED"},order.id)}>{ar?"تأكيد مع الزبون":"Confirm with customer"}</button>
       <button disabled={!!busy} className="secondary" onClick={()=>void action({action:"setStatus",id:order.id,status:"DECLINED"},order.id)}>{ar?"اعتذار عن الطلب":"Decline request"}</button></>}
-     {order.status==="CONFIRMED"&&<button disabled={!!busy} onClick={()=>void action({action:"setStatus",id:order.id,status:"CLOSED"},order.id)}>{ar?"تمت المعالجة خارج الطلب":"Mark handled"}</button>}
+     {order.status==="CONFIRMED"&&<>
+      <Link className="mobi-order-pos-link" href={"/"+locale+"/pos"}>{ar?"فتح نقطة البيع لإتمام المعاملة":"Open POS to complete sale"}</Link>
+      <button disabled={!!busy} onClick={()=>void action({action:"setStatus",id:order.id,status:"CLOSED"},order.id)}>{ar?"تمت المعالجة خارج الطلب":"Mark handled"}</button>
+     </>}
     </div>
    </article>)}</div>}
   </>}
