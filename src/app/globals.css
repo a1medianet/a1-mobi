@@ -1400,3 +1400,20 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 .product-site .signup-page .page-intro.compact p{font-size:16px;max-width:850px;line-height:1.8}
 .product-site .signup-page .signup-layout .product-eyebrow{font-size:12px;letter-spacing:0}
 @media(max-width:640px){.product-site .signup-page .page-intro.compact h1{font-size:clamp(28px,7.8vw,35px)}}
+
+
+/* Match the physical LEFT wordmark location in header and footer, independent
+   of interface language; retain RTL content in Arabic footer link columns. */
+.product-site .product-footer .footer-grid{direction:ltr}
+.product-site .product-footer .footer-grid>.footer-company{
+ direction:ltr;text-align:left;justify-items:start;min-width:0
+}
+.product-site .product-footer .footer-grid>.footer-company .footer-brand{
+ direction:ltr;justify-self:start;display:inline-flex
+}
+.product-site .product-footer .footer-grid>.footer-company>p{
+ max-width:300px;text-align:left;unicode-bidi:plaintext
+}
+.product-site[dir="rtl"] .product-footer .footer-grid>div:not(.footer-company){
+ direction:rtl;text-align:right
+}

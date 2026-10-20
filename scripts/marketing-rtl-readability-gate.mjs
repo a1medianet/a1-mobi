@@ -117,8 +117,8 @@ const chromeProcess=spawn(chrome,[
  "about:blank"
 ],{stdio:["ignore","ignore","ignore"]});
 const report={status:"PASS",desktop:[],mobile:[]};
-const layoutExpr='(()=>{const rc=selector=>{const e=document.querySelector(selector);if(!e)return null;const r=e.getBoundingClientRect();return {x:Math.round(r.x),y:Math.round(r.y),right:Math.round(r.right),width:Math.round(r.width)};};const links=[...document.querySelectorAll(".product-main-links>a")];return {doc:document.documentElement.scrollWidth,viewport:innerWidth,logo:rc(".product-nav .product-brand"),main:rc(".product-main-links"),switcher:rc(".product-language-switch"),switcherHref:document.querySelector(".product-language-switch")?.getAttribute("href"),cta:rc(".product-nav-actions .product-cta"),direction:document.querySelector(".product-main-links")?.getAttribute("dir"),linkXs:links.map(e=>Math.round(e.getBoundingClientRect().x)),labels:links.map(e=>e.textContent),cardFont:getComputedStyle(document.querySelector(".mobi-a-feature-card p")||document.querySelector(".pricing-card li")||document.querySelector(".signup-panel label")||document.body).fontSize,whyWidth:rc(".mobi-a-why .product-shell"),testimonialWidth:rc(".mobi-a-testimonial")};})()';
-const mobileExpr='(()=>{const rc=s=>{const r=document.querySelector(s)?.getBoundingClientRect();return r?{x:Math.round(r.x),right:Math.round(r.right),width:Math.round(r.width)}:null};return {viewport:innerWidth,doc:document.documentElement.scrollWidth,logo:rc(".product-nav .product-brand"),switcher:rc(".product-language-switch"),menu:rc(".product-mobile-menu summary"),mainDisplay:getComputedStyle(document.querySelector(".product-main-links")).display};})()';
+const layoutExpr='(()=>{const rc=selector=>{const e=document.querySelector(selector);if(!e)return null;const r=e.getBoundingClientRect();return {x:Math.round(r.x),y:Math.round(r.y),right:Math.round(r.right),width:Math.round(r.width)};};const links=[...document.querySelectorAll(".product-main-links>a")];return {doc:document.documentElement.scrollWidth,viewport:innerWidth,logo:rc(".product-nav .product-brand"),footerLogo:rc(".product-footer .footer-brand"),footerColumnsDirection:[...document.querySelectorAll(".product-footer .footer-grid>div:not(.footer-company)")].map(e=>getComputedStyle(e).direction),main:rc(".product-main-links"),switcher:rc(".product-language-switch"),switcherHref:document.querySelector(".product-language-switch")?.getAttribute("href"),cta:rc(".product-nav-actions .product-cta"),direction:document.querySelector(".product-main-links")?.getAttribute("dir"),linkXs:links.map(e=>Math.round(e.getBoundingClientRect().x)),labels:links.map(e=>e.textContent),cardFont:getComputedStyle(document.querySelector(".mobi-a-feature-card p")||document.querySelector(".pricing-card li")||document.querySelector(".signup-panel label")||document.body).fontSize,whyWidth:rc(".mobi-a-why .product-shell"),testimonialWidth:rc(".mobi-a-testimonial")};})()';
+const mobileExpr='(()=>{const rc=s=>{const r=document.querySelector(s)?.getBoundingClientRect();return r?{x:Math.round(r.x),right:Math.round(r.right),width:Math.round(r.width)}:null};return {viewport:innerWidth,doc:document.documentElement.scrollWidth,logo:rc(".product-nav .product-brand"),footerLogo:rc(".product-footer .footer-brand"),switcher:rc(".product-language-switch"),menu:rc(".product-mobile-menu summary"),mainDisplay:getComputedStyle(document.querySelector(".product-main-links")).display};})()';
 try{
  await waitFor("http://127.0.0.1:9248/json/version",100);
  const {cdp,ws}=await createCdpTarget("about:blank");
@@ -129,6 +129,8 @@ try{
    const data=await evaluate(cdp,layoutExpr);
    assert(data.doc<=data.viewport,"desktop horizontal overflow "+path+" "+JSON.stringify(data));
    assert(data.logo.x<160&&data.logo.right<420,"logo not left "+path);
+   assert(data.footerLogo?.x<160&&Math.abs(data.footerLogo.x-data.logo.x)<45,"footer logo must stay left near header x "+path+" "+JSON.stringify(data));
+   assert(data.footerColumnsDirection.every(value=>value===(locale==="ar"?"rtl":"ltr")),"footer text direction mismatch "+path);
    assert(data.switcher.x>data.cta.x&&data.switcher.right>1300,"switch not far right "+path+" "+JSON.stringify(data));
    assert(data.direction===(locale==="ar"?"rtl":"ltr"),"nav direction wrong "+path);
    const expectedOther="/product/"+(locale==="ar"?"en":"ar")+(page?"/"+page:"");
@@ -140,6 +142,11 @@ try{
    report.desktop.push({path,...data});
    await evaluate(cdp,'[...document.querySelectorAll("nextjs-portal")].forEach(e=>e.style.display="none");true');
    await capture(cdp,"marketing-"+locale+"-"+(page||"home")+"-desktop");
+   if(!page){
+    await evaluate(cdp,'document.querySelector(".product-footer").scrollIntoView({block:"end"});true');
+    await sleep(190);
+    await capture(cdp,"marketing-"+locale+"-footer-desktop");
+   }
   }
   for(const page of ["","signup","pricing"]){
    const path="/product/"+locale+(page?"/"+page:"");
@@ -147,10 +154,18 @@ try{
    const data=await evaluate(cdp,mobileExpr);
    assert(data.doc<=data.viewport,"mobile overflow "+path+" "+JSON.stringify(data));
    assert(data.logo.x<45&&data.switcher.x>data.logo.right&&data.menu,"mobile header missing "+path);
+   assert(data.footerLogo?.x<45&&Math.abs(data.footerLogo.x-data.logo.x)<20,"mobile footer logo not physically left "+path+" "+JSON.stringify(data));
    assert(data.mainDisplay==="none","desktop links present on mobile "+path);
    await evaluate(cdp,'[...document.querySelectorAll("nextjs-portal")].forEach(e=>e.style.display="none");true');
    await capture(cdp,"marketing-"+locale+"-"+(page||"home")+"-mobile");
    if(!page){
+    await evaluate(cdp,'document.querySelector(".product-footer .footer-company").scrollIntoView({block:"center"});true');
+    await sleep(190);
+    await capture(cdp,"marketing-"+locale+"-footer-mobile");
+   }
+   if(!page){
+    await evaluate(cdp,'window.scrollTo(0,0);true');
+    await sleep(100);
     await evaluate(cdp,'document.querySelector(".product-mobile-menu summary").click();true');
     assert(await evaluate(cdp,'document.querySelector(".product-mobile-menu")?.open===true&&document.querySelectorAll(".product-mobile-menu-items>a").length>=5'),"mobile nav inaccessible");
     await capture(cdp,"marketing-"+locale+"-mobile-menu-open");

@@ -42,3 +42,11 @@ Browser assertions validate: true visual right-to-left navigation order, fixed l
 - Reduced the oversized signup headline and kept form text legible.
 - Re-ran the marketing browser review across **6 desktop and 6 phone cases: PASS**; desktop/mobile signup screenshots were refreshed.
 - Final account creation is not claimed; the owner is about to test the four-step signup together and confirm before any final submission.
+
+## Final brand alignment review — 2026-10-20
+
+Owner screenshot highlighted an inconsistent **physical logo position**: header left but footer right on Arabic marketing pages. This is now corrected in the shared product-site shell, rather than per-page workarounds. Header and footer wordmarks both stay physically left in **Arabic and English**. Footer links independently respect the locale (RTL Arabic, LTR English). The phone layout retains the brand on the left at narrow widths.
+
+**Verified by actual browser coordinates on Thaghr:** 6 desktop + 6 mobile pages (home, pricing, signup; Arabic and English). The test asserts footer logo X close to the header logo X, footer text direction, no horizontal scrolling, and bilingual navigation consistency. Result: **12/12 PASS** with screenshots `marketing-ar-footer-desktop.png`, `marketing-en-footer-desktop.png`, `marketing-ar-footer-mobile.png` and `marketing-en-footer-mobile.png`; machine-readable result `marketing-rtl-readability-result.json`.
+
+No deployment or PR merge; this is a pilot preview visual checkpoint pending owner's confirmation.
