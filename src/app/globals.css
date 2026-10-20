@@ -1417,3 +1417,26 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 .product-site[dir="rtl"] .product-footer .footer-grid>div:not(.footer-company){
  direction:rtl;text-align:right
 }
+
+
+/* A: clear customer-first story; remove visual repetition after 20 Oct review. */
+@media(min-width:641px){
+ .product-site .mobi-a-features .mobi-a-feature-card{min-height:185px;padding:17px 14px 14px}
+}
+.product-site .mobi-a-features .mobi-a-feature-card h3{margin:0 0 5px}
+.product-site .mobi-a-features .mobi-a-feature-card p{line-height:1.65;margin:8px 0 24px}
+.product-site .mobi-a-features .mobi-a-feature-bridge{
+ display:inline-flex;gap:8px;align-items:center;margin:15px 5px 0;
+ color:#1265e8;font-size:14px;font-weight:750;text-decoration:none;
+}
+.product-site .mobi-a-features .mobi-a-feature-bridge:hover{text-decoration:underline}
+.product-site .mobi-a-why-grid h3{margin-top:4px}
+.product-site .mobi-a-why .product-section-head{margin-bottom:20px}
+.product-site .product-flow .product-section-head{margin-bottom:20px}
+.product-site .mobi-a-repair-story h2{margin-top:0}
+.product-site .mobi-a-final-cta h2{margin-top:0}
+@media(max-width:640px){
+ .product-site .mobi-a-features .mobi-a-feature-card{min-height:178px}
+ .product-site .mobi-a-features .mobi-a-feature-card p{font-size:13px;line-height:1.65}
+ .product-site .mobi-a-features .mobi-a-feature-bridge{font-size:13px}
+}

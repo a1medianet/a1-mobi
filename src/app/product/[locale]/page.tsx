@@ -2,16 +2,16 @@ import Link from "next/link";
 import { DemoScenePhoto } from "@/components/demo-product-photo";
 import { notFound } from "next/navigation";
 import { demoCatalogCounts, demoProducts } from "@/demo/data";
-import { demoRepairs, demoCustomers, demoReports, demoTopups } from "@/demo/operations";
+import { demoRepairs, demoCustomers, demoReports } from "@/demo/operations";
 
 const features={
   ar:[
-    {icon:"▣",tone:"blue",title:"نقطة البيع",en:"Point of Sale",copy:"بيع الأجهزة والإكسسوارات مع حماية السعر والمخزون.",target:"demo"},
-    {icon:"⌁",tone:"orange",title:"الصيانة",en:"Repairs",copy:"استلام وتشخيص ومتابعة القطع والدفعات والتسليم.",target:"demo#repairs"},
-    {icon:"▦",tone:"blue",title:"المخزون",en:"Inventory",copy:"أجهزة وIMEI، حركات وجرد وتنبيهات نقص المخزون.",target:"help#inventory"},
-    {icon:"♙",tone:"orange",title:"العملاء",en:"Customers",copy:"ملف العميل وأجهزته والديون وسجل الحركات.",target:"demo"},
-    {icon:"↓",tone:"blue",title:"المشتريات",en:"Purchases",copy:"شراء واستلام الأجهزة والقطع مع حركة مخزون موثقة.",target:"help#inventory"},
-    {icon:"▥",tone:"orange",title:"التقارير",en:"Reports",copy:"ملخصات المبيعات والصيانة والمخزون والديون.",target:"demo"},
+    {icon:"▣",tone:"blue",title:"نقطة البيع",en:"",copy:"بيع سريع وفاتورة واضحة.",target:"demo"},
+    {icon:"⌁",tone:"orange",title:"الصيانة",en:"",copy:"متابعة الإصلاح حتى التسليم.",target:"demo#repairs"},
+    {icon:"▦",tone:"blue",title:"المخزون",en:"",copy:"اعرف المتوفر وحركة كل جهاز.",target:"help#inventory"},
+    {icon:"♙",tone:"orange",title:"العملاء",en:"",copy:"كل بيانات العميل في سجل واحد.",target:"demo"},
+    {icon:"↓",tone:"blue",title:"المشتريات",en:"",copy:"استلام الأجهزة وقطع الغيار.",target:"help#inventory"},
+    {icon:"▥",tone:"orange",title:"التقارير",en:"",copy:"نتائج البيع والصيانة في لمحة.",target:"demo"},
   ],
   en:[
     {icon:"▣",tone:"blue",title:"Point of Sale",en:"POS",copy:"Sell devices and accessories with price and stock protection.",target:"demo"},
@@ -49,23 +49,13 @@ export default async function ProductLanding({params}:{params:Promise<{locale:st
           <span className="product-eyebrow">{ar?"نظام تشغيل لمتجر الموبايل والصيانة":"MOBILE RETAIL & REPAIR OS"}</span>
           <h1>
             {ar
-              ? <>أدر مبيعاتك، إصلاحاتك<br/><span className="mobi-headline-blue">ومخزونك</span> <span className="mobi-headline-orange">في مكان واحد.</span></>
-              : <>Run sales, repairs and<br/><span className="mobi-headline-blue">inventory</span> <span className="mobi-headline-orange">in one place.</span></>}
+              ? <>البيع والصيانة والمخزون<br/><span className="mobi-headline-blue">في </span><span className="mobi-headline-orange">مكان واحد.</span></>
+              : <>Sales, repairs and stock<br/><span className="mobi-headline-blue">in </span><span className="mobi-headline-orange">one place.</span></>}
           </h1>
-          <p>{ar?"نقطة بيع، أجهزة وIMEI، مخزون، صيانة، عملاء وديون، صندوق، تعبئة وتقارير — في مساحة تشغيل واحدة واضحة.":"POS, IMEI devices, inventory, repairs, customers and debt, cash, top-up and reports — in one clear operating workspace."}</p>
-          <p className="mobi-a-english-subline" dir="ltr">{ar?"Mobile retail & repair operating system · AR / EN · Multi-branch ready":"Arabic / English · Multi-branch ready · Built for real store workflows"}</p>
+          <p>{ar?"كل ما تحتاجه لإدارة محل الهواتف وخدمة عملائك، في نظام واحد.":"Everything you need to run your phone shop and serve customers, in one system."}</p>
           <div className="product-actions mobi-a-cta-row">
-            <Link className="product-cta mobi-a-primary" href={"/product/"+locale+"/signup"}>{ar?"ابدأ مجانًا الآن":"Start free now"} <span aria-hidden="true">↗</span></Link>
+            <Link className="product-cta mobi-a-primary" href={"/product/"+locale+"/signup"}>{ar?"ابدأ التجربة":"Start trial"} <span aria-hidden="true">↗</span></Link>
             <Link className="product-secondary mobi-a-video" href={"/product/"+locale+"/demo"}><span aria-hidden="true">▶</span>{ar?"شاهد الجولة":"Watch the tour"}</Link>
-          </div>
-          <Link className="mobi-a-store-bridge" href="/store-preview">
-            <span aria-hidden="true">↗</span>
-            {ar?"استعرض واجهة متجر العميل (B)":"Explore the customer storefront (B)"}
-          </Link>
-          <div className="hero-trust mobi-a-trust">
-            <span><i className="blue">✓</i>{ar?"إعداد متجر بخطوات واضحة":"Guided store setup"}</span>
-            <span><i className="orange">✓</i>{ar?"صلاحيات حسب الدور":"Role-based access"}</span>
-            <span><i className="blue">✓</i>{ar?"عربي / English":"Arabic / English"}</span>
           </div>
         </div>
 
@@ -112,13 +102,15 @@ export default async function ProductLanding({params}:{params:Promise<{locale:st
       <div className="mobi-a-feature-grid">{features[locale].map((feature,index)=>
         <article className="mobi-a-feature-card" key={feature.title}>
           <div className={"mobi-a-feature-icon "+feature.tone}><FeatureIcon index={index}/></div>
-          <small>{String(index+1).padStart(2,"0")}</small>
           <h3>{feature.title}</h3>
-          <b>{feature.en}</b>
+          {feature.en && <b>{feature.en}</b>}
           <p>{feature.copy}</p>
           <Link href={"/product/"+locale+"/"+feature.target} aria-label={(ar?"استكشف ":"Explore ")+feature.title}>↗</Link>
         </article>)}
       </div>
+      <Link className="mobi-a-store-bridge mobi-a-feature-bridge" href="/store-preview">
+        {ar?"شاهد متجرًا تجريبيًا للزبائن":"Explore a sample customer store"} <span aria-hidden="true">↗</span>
+      </Link>
     </section>
 
     <section className="mobi-a-repair-story product-shell">
@@ -126,57 +118,38 @@ export default async function ProductLanding({params}:{params:Promise<{locale:st
         <DemoScenePhoto src="/demo/abc/repair-service.webp" alt={ar?"فني يصلح هاتفًا — صورة توضيحية":"Illustrative phone repair technician"}/>
         <span className="mobi-a-trust-card"><b>{ar?"سجل صيانة واضح":"Clear repair record"}</b><small>{ar?"استلام · تشخيص · قطع · دفع · تسليم":"Intake · diagnosis · parts · payment · delivery"}</small></span>
       </div>
-      <div><span className="product-eyebrow">{ar?"صيانة وتنظيم ومتابعة":"REPAIR WORKFLOW"}</span><h2>{ar?"من استلام الجهاز إلى التسليم بثقة.":"From intake to delivery with confidence."}</h2><p>{ar?"وثّق العطل والحالة وقطع الغيار والدفعات، واحتفظ بسجل واضح لكل عملية صيانة داخل المتجر.":"Track diagnosis, parts, progress and payments with a complete repair record."}</p><Link className="product-cta" href={"/product/"+locale+"/demo#repairs"}>{ar?"شاهد رحلة الصيانة":"Explore repair journey"} →</Link></div>
+      <div><h2>{ar?"تابع الصيانة حتى التسليم.":"Track repairs through delivery."}</h2><p>{ar?"سجل واحد للجهاز والعطل والقطع والدفعات.":"One record for the device, issue, parts and payments."}</p><Link className="product-cta" href={"/product/"+locale+"/demo#repairs"}>{ar?"شاهد رحلة الصيانة":"Explore repair journey"} →</Link></div>
     </section>
 
     <section className="mobi-a-why" id="why">
       <div className="product-shell">
-        <div className="product-section-head"><div><span className="product-eyebrow">{ar?"لماذا A1 Mobi؟":"WHY A1 MOBI"}</span><h2>{ar?"مصمم لعمل المتجر الحقيقي.":"Built around real store work."}</h2></div><p>{ar?"ليس مجرد شاشة مبيعات؛ بل مسار يربط الجهاز والمخزون والعميل والصيانة والصندوق والتقرير.":"Not just a sales screen: it connects device, stock, customer, repair, cash and reporting truth."}</p></div>
+        <div className="product-section-head"><div><span className="product-eyebrow">{ar?"لماذا A1 Mobi؟":"WHY A1 MOBI"}</span><h2>{ar?"مصمم لعمل متجرك.":"Built for your shop."}</h2></div><p>{ar?"تتبّع واضح وصلاحيات تحمي بياناتك.":"Clear tracking and access that protect your data."}</p></div>
         <div className="mobi-a-why-grid">
           {[
-            ar?["01","تتبّع واضح","كل حركة مرتبطة بسجل يمكن مراجعته."]:["01","Traceable operations","Every movement is tied to reviewable evidence."],
-            ar?["02","صلاحيات دقيقة","ما يراه البائع ليس ما يراه المدير."]:["02","Role boundaries","Seller and owner views respect different permissions."],
-            ar?["03","IMEI من البداية","الجهاز المتسلسل يبقى معروفًا طوال رحلته."]:["03","IMEI-aware","Serialized devices stay traceable end-to-end."],
-            ar?["04","تقارير من الحقيقة","المؤشرات مشتقة من العمليات لا من أرقام منفصلة."]:["04","Truth-based reports","Metrics derive from operations, not separate UI numbers."],
+            ar?["01","تتبّع واضح","كل عملية محفوظة وقابلة للمراجعة."]:["01","Traceable operations","Every movement is tied to reviewable evidence."],
+            ar?["02","صلاحيات دقيقة","لكل موظف ما يحتاجه من صلاحيات."]:["02","Role boundaries","Seller and owner views respect different permissions."],
+            ar?["03","تتبّع الأجهزة","تعرف موقع كل جهاز وحالته."]:["03","IMEI-aware","Serialized devices stay traceable end-to-end."],
+            ar?["04","تقارير واضحة","نتائج مستمدة من عمل المتجر."]:["04","Truth-based reports","Metrics derive from operations, not separate UI numbers."],
           ].map(([n,title,copy])=><article key={n}><span>{n}</span><h3>{title}</h3><p>{copy}</p></article>)}
         </div>
       </div>
-    </section>
-
-    <section id="customers" className="product-shell mobi-a-testimonial">
-      <div><span className="product-eyebrow">{ar?"مثال توضيحي · Demo":"ILLUSTRATIVE DEMO"}</span><blockquote>{ar?"«أريد أن أعرف ماذا بيع، ماذا دخل المخزون، أين وصل جهاز الصيانة، ومن يملك صلاحية رؤية الربح — من شاشة واحدة.»":"“I want one place to know what sold, what entered stock, where a repair stands, and who can see profit.”"}</blockquote><p>{ar?"سيناريو مستخدم توضيحي مبني على احتياجات متجر هواتف وصيانة، وليس شهادة عميل حقيقي.":"Illustrative user scenario based on mobile retail and repair needs; not a real customer testimonial."}</p></div>
-      <aside><strong>{counts.total}</strong><span>{ar?"منتجات تجريبية":"demo products"}</span><strong>{demoRepairs.length}</strong><span>{ar?"أوامر صيانة تجريبية":"demo repair orders"}</span><strong>{demoTopups.length}</strong><span>{ar?"عمليات تعبئة تجريبية":"demo top-ups"}</span></aside>
-    </section>
-
-    <section className="mobi-a-proof-strip product-shell" aria-label={ar?"مواصفات النظام":"Product capabilities"}>
-      {[
-        [ar?"6 وحدات مترابطة":"6 connected workflows",ar?"بيع وصيانة ومخزون وعملاء ومشتريات وتقارير":"Sales, repair, stock, customers, purchasing and reports"],
-        [ar?"عربي وإنكليزي":"Arabic + English",ar?"واجهة RTL / LTR":"RTL and LTR layouts"],
-        ["IMEI / Serial",ar?"تتبّع الأجهزة التسلسلية":"Serialized device tracking"],
-        [ar?"صلاحيات الأدوار":"Role permissions",ar?"ضبط الوصول حسب المسؤوليات":"Access scoped to responsibility"],
-      ].map(([head,detail],i)=><article key={head}>
-        <span className={i%2?"orange":"blue"} aria-hidden="true">{["▦","AR","#","✓"][i]}</span>
-        <div><strong>{head}</strong><small>{detail}</small></div>
-      </article>)}
     </section>
 
     <section className="product-flow">
       <div className="product-shell">
-        <div className="product-section-head"><div><span className="product-eyebrow">ONBOARDING</span><h2>{ar?"كيف تبدأ؟":"How do you start?"}</h2></div><p>{ar?"رحلة قصيرة من إنشاء المتجر إلى أول عملية تشغيل.":"A short path from store setup to the first operation."}</p></div>
+        <div className="product-section-head"><div><h2>{ar?"ابدأ في أربع خطوات":"Get started in four steps"}</h2></div></div>
         <div className="flow-grid">
           {[
-            ar?["1","أنشئ الجهة","اسم المتجر، المالك، اللغة."]:["1","Create organization","Store name, owner and language."],
-            ar?["2","أضف الفرع","اسم الفرع وكود التشغيل."]:["2","Add first branch","Branch name and operating code."],
-            ar?["3","فعّل الحساب","ابدأ التجربة واضبط الصلاحيات."]:["3","Activate account","Start the trial and configure access."],
-            ar?["4","ابدأ التشغيل","POS، مخزون، صيانة، فريق وتقارير."]:["4","Start operations","POS, inventory, repairs, team and reports."],
+            ar?["1","أنشئ الجهة","اسم المتجر ولغة العمل."]:["1","Create organization","Store name, owner and language."],
+            ar?["2","أضف الفرع","حدد اسم فرعك الأول."]:["2","Add first branch","Branch name and operating code."],
+            ar?["3","أدخل بيانات المالك","أنشئ حسابك الآمن."]:["3","Add owner details","Secure the owner account."],
+            ar?["4","راجع وابدأ","تحقق من البيانات وابدأ التجربة."]:["4","Review and begin","Review details and start the trial."],
           ].map(([n,title,copy])=><article key={n}><span>{n}</span><h3>{title}</h3><p>{copy}</p></article>)}
         </div>
       </div>
     </section>
 
-    <section className="product-shell commercial-band"><div><span className="product-eyebrow">{ar?"لمتجر واحد أو عدة فروع":"ONE STORE · MULTIPLE BRANCHES"}</span><h2>{ar?"ابدأ بمتجر واحد، وتوسّع عندما تحتاج.":"Start with one store and grow when needed."}</h2><p>{ar?"الفروع والمستخدمون والصلاحيات جزء من نفس بنية التشغيل، مع فصل واضح بين بيانات كل جهة وفرع.":"Branches, users and permissions share one operating model with tenant and branch isolation."}</p></div><Link className="product-secondary" href={"/product/"+locale+"/pricing"}>{ar?"عرض الخطط":"View plans"}</Link></section>
-
-    <section className="product-shell final-cta mobi-a-final-cta"><span className="product-eyebrow">{ar?"ابدأ بثقة":"GET STARTED"}</span><h2>{ar?"تعرّف على النظام، ثم افتح متجرَك.":"Know the system, then open your store."}</h2><p>{ar?"استعرض الجولة أولًا، ثم أنشئ حساب التجربة عندما تكون جاهزًا.":"Explore the guided tour first, then create your trial account when ready."}</p><div className="product-actions"><Link className="product-cta" href={"/product/"+locale+"/signup"}>{ar?"ابدأ مجانًا الآن":"Start free now"}</Link><Link className="product-secondary" href={"/product/"+locale+"/demo"}>{ar?"شاهد الجولة":"Explore demo"}</Link></div></section>
+    <section className="product-shell final-cta mobi-a-final-cta"><h2>{ar?"جاهز لتجربة A1 Mobi؟":"Ready to try A1 Mobi?"}</h2><p>{ar?"أنشئ متجرًا تجريبيًا أو شاهد الجولة.":"Create a trial shop or watch the tour."}</p><div className="product-actions"><Link className="product-cta" href={"/product/"+locale+"/signup"}>{ar?"ابدأ التجربة":"Start trial"}</Link><Link className="product-secondary" href={"/product/"+locale+"/demo"}>{ar?"شاهد الجولة":"Explore demo"}</Link></div></section>
   </main>;
 }
 
