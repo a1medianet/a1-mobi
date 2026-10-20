@@ -6,11 +6,11 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 const labels = {
-  ar: ["الرئيسية","نقطة البيع","المنتجات","المخزون والأجهزة","الصيانة","العملاء والديون","الصندوق","التعبئة","فحص IMEI","التقارير","الإدارة","الفريق والصلاحيات","الحساب والاشتراك"],
-  en: ["Dashboard","Point of sale","Products","Inventory & devices","Repairs","Customers & debt","Cash","Top-up","IMEI check","Reports","Admin","Team & access","Account & subscription"],
+  ar: ["الرئيسية","نقطة البيع","المنتجات","المخزون والأجهزة","الصيانة","العملاء والديون","طلبات المتجر","الصندوق","التعبئة","فحص IMEI","التقارير","الإدارة","الفريق والصلاحيات","الحساب والاشتراك"],
+  en: ["Dashboard","Point of sale","Products","Inventory & devices","Repairs","Customers & debt","Store orders","Cash","Top-up","IMEI check","Reports","Admin","Team & access","Account & subscription"],
 };
-const paths = ["","/pos","/products","/inventory","/repairs","/customers","/cash","/topup","/device-trust","/reports","/admin","/settings/team","/account"];
-const icons = ["⌂","▣","▦","◇","⌁","♙","▤","↗","⌕","▥","⚙","♜","◎"];
+const paths = ["","/pos","/products","/inventory","/repairs","/customers","/orders","/cash","/topup","/device-trust","/reports","/admin","/settings/team","/account"];
+const icons = ["⌂","▣","▦","◇","⌁","♙","▣","▤","↗","⌕","▥","⚙","♜","◎"];
 
 export function AppShell({ locale, children }: {
   locale: "ar" | "en";
@@ -31,7 +31,7 @@ export function AppShell({ locale, children }: {
   const activeIndex = paths.findIndex(path => pathname === "/"+locale+path);
 
   const navigation = (mobile: boolean) => {
-    const indexes = mobile ? [0,1,2,4,12] : labels[locale].map((_,index)=>index);
+    const indexes = mobile ? [0,1,2,4,6,13] : labels[locale].map((_,index)=>index);
     return indexes.map(index => {
       const label = labels[locale][index];
       const active = index === activeIndex;

@@ -66,3 +66,6 @@ next-env.d.ts
 
 # B customer-journey isolated preview
 /.next-b-review/
+
+/.next-c16/
+/.next-c16-prod/
