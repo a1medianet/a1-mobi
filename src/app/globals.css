@@ -344,11 +344,21 @@ h1,h2,h3,.brand b,.mobi-store-hero h1{font-family:"Alexandria","IBM Plex Sans Ar
 .mobi-c-action-arrow{margin-inline-start:auto;background:#fff;color:#1265e8;border-radius:50%;display:grid;place-items:center;font-weight:bold;width:26px;height:26px;flex:none}
 .mobi-c-action.orange .mobi-c-action-arrow{color:#ea6516}
 .mobi-c-insight{background:#fff;border:1px solid #e6ebf3;border-radius:16px;padding:16px 20px;margin-top:16px}
-.mobi-c-insight .section-head{margin:0 0 10px}.mobi-c-bars{display:flex;align-items:flex-end;justify-content:space-around;gap:12px;height:140px;border-bottom:1px solid #dbe4f3;background:repeating-linear-gradient(to top,transparent,transparent 33px,#eef3fa 34px)}
-.mobi-c-bars>div{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px;min-width:0}
-.mobi-c-bar{width:min(45%,75px);min-height:8px;border-radius:7px 7px 0 0;background:linear-gradient(#479cf8,#1265e8)}
-.mobi-c-bars>div:nth-child(2n) .mobi-c-bar{background:linear-gradient(#ffae67,#ff7a1a)}
-.mobi-c-bars small{color:#72849b;font-size:.67rem}
+/* Transaction amounts: shared zero baseline, no minimum fill or decorative bands. */
+ .operation-breakdown-chart{margin:0;color:#20324a}
+.operation-breakdown-heading{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px}
+.operation-breakdown-chart h2{margin:0;font-size:1.1rem;line-height:1.6}
+.operation-breakdown-demo{padding:2px 9px;border-radius:6px;background:#e8f1ff;color:#174e94;font-size:.8125rem;font-weight:600}
+.operation-breakdown-chart figcaption p{margin:5px 0 10px;color:#53647a;font-size:.8125rem;line-height:1.65;max-width:85ch}
+.operation-breakdown-axis{display:flex;justify-content:space-between;border-bottom:1px solid #ccd7e5;padding-bottom:5px;color:#53647a;font-size:.75rem;font-variant-numeric:tabular-nums}
+.operation-breakdown-rows{list-style:none;margin:0;padding:10px 0 0;display:grid;gap:10px}
+.operation-breakdown-label{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:4px;font-size:.875rem;line-height:1.5}
+.operation-breakdown-label strong{font-size:.8125rem;font-variant-numeric:tabular-nums}
+.operation-breakdown-track{height:10px;border-radius:4px;background:#edf2f8;overflow:hidden}
+.operation-breakdown-fill{display:block;height:100%;background:#1769d2;border-radius:4px}
+.operation-breakdown-empty{font-size:.875rem;color:#53647a}
+@media(forced-colors:active){.operation-breakdown-track{outline:1px solid CanvasText}.operation-breakdown-fill{background:Highlight}}
+
 @media(min-width:1100px){.mobi-store-hero{max-height:41dvh}.mobi-store .mobi-store-featured{min-height:190px}}
 @media(max-width:1100px){.mobi-c-spotlight{grid-template-columns:repeat(2,minmax(0,1fr))}.mobi-marketing-a .hero-layout{grid-template-columns:1fr}.mobi-a-visual{height:390px}}
 @media(max-width:640px){.mobi-c-spotlight{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.mobi-c-action{padding:10px;min-height:100px}.mobi-c-action-copy strong{font-size:.73rem}.mobi-a-repair-story{grid-template-columns:1fr;margin-block:45px}.mobi-a-visual{min-height:350px;height:350px}.mobi-a-floating-preview{width:78%;margin-top:55px}.mobi-store-hero{display:flex}.mobi-store-photo{order:0}.mobi-store-hero-copy{order:1}}
@@ -1439,4 +1449,87 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
  .product-site .mobi-a-features .mobi-a-feature-card{min-height:178px}
  .product-site .mobi-a-features .mobi-a-feature-card p{font-size:13px;line-height:1.65}
  .product-site .mobi-a-features .mobi-a-feature-bridge{font-size:13px}
+}
+
+/* B storefront owner review 2026-10-20: realistic product-first display, legibility, no automatic basket modal. */
+.mobi-store-website .mobi-store-hero{min-height:390px;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);align-items:stretch}
+.mobi-store-website .mobi-store-hero-copy{padding:clamp(24px,3vw,44px);gap:14px}
+.mobi-store-website .mobi-store-hero h1{font-size:clamp(30px,3vw,44px);line-height:1.48}
+.mobi-store-website .mobi-store-hero p{font-size:15px;line-height:1.8}
+.mobi-store-website .mobi-store-showcase{min-height:390px;justify-content:space-between;gap:12px}
+.mobi-store-showcase-single{
+ align-self:center;display:grid;justify-items:center;align-content:center;gap:10px;
+ width:min(100%,390px);height:295px;min-width:0;padding:8px 14px;
+ background:#ffffffd8;border:1px solid #fff;border-radius:20px;
+ box-shadow:0 18px 42px #17376321;cursor:pointer;color:#244567;
+}
+.mobi-store-showcase-single:hover,.mobi-store-showcase-single:focus-visible{outline:3px solid #1265e8;outline-offset:2px}
+.mobi-store-showcase-single .demo-product-photo{height:235px;width:100%;display:grid;place-items:center;background:transparent}
+.mobi-store-showcase-single .demo-product-photo img{display:block;max-height:220px;width:100%;object-fit:contain}
+.mobi-store-showcase-single>span:last-child{font-size:14px;font-weight:750;line-height:1.5;text-align:center}
+.mobi-store-website .mobi-store-featured{margin-top:36px}
+.mobi-store-website .mobi-store-section-head{margin-bottom:15px}
+.mobi-store-website .mobi-store-section-head h2,
+.mobi-store-website .mobi-store-section-title h2{font-size:clamp(23px,2vw,31px)}
+.mobi-store-website .mobi-store-products{gap:14px}
+.mobi-store-website .mobi-store-product{min-height:365px}
+.mobi-store-website .mobi-store-product-photo{height:212px;min-height:212px}
+.mobi-store-website .mobi-store-product-photo img{max-height:190px}
+.mobi-store-website .mobi-store-product-body{padding:15px;gap:5px}
+.mobi-store-website .mobi-store-product-body h3{font-size:15px;line-height:1.65;min-height:0;margin:4px 0 11px}
+.mobi-store-website .mobi-store-product-body small{font-size:13px}
+.mobi-store-website .mobi-store-product-body strong{font-size:18px}
+.mobi-store-website .mobi-store-add{
+ display:inline-grid;place-items:center;min-height:44px;min-width:48px;
+ padding:8px;border:0;border-radius:12px;background:#ff7a1a;color:#fff;
+}
+.mobi-store-website .mobi-store-add:hover{background:#db5c00}
+.mobi-store-website .mobi-store-info b{font-size:15px;line-height:1.6}
+.mobi-store-website .mobi-store-info span{font-size:13px;line-height:1.7}
+.mobi-store-website .mobi-store-info>div{padding:16px 17px}
+.mobi-store-website .mobi-store-website button{font:inherit}
+.mobi-store-repair-photo{width:min(100%,780px);height:auto;aspect-ratio:16/9;margin:24px auto}
+.mobi-store-repair-photo>img{object-fit:contain;object-position:center;background:#eaf0f8}
+.mobi-store-website .mobi-store-section{padding-block:50px}
+.mobi-store-basket-panel{top:84px;max-height:min(620px,calc(100dvh - 100px));width:min(430px,calc(100vw - 28px))}
+.mobi-store-added-feedback{
+ position:fixed;bottom:18px;inset-inline-end:18px;z-index:75;
+ display:flex;align-items:center;gap:12px;max-width:min(420px,calc(100vw - 28px));
+ padding:12px 14px;background:#14233d;color:white;
+ border-radius:14px;box-shadow:0 12px 35px #122b4a36;font-size:14px;line-height:1.5;
+}
+.mobi-store-added-feedback button{min-height:40px;border:1px solid #ffffff52;border-radius:9px;padding:7px 10px;background:#1265e8;color:white;font-size:13px;font-weight:750;cursor:pointer}
+.mobi-store-added-feedback button:last-child{background:transparent;font-size:24px;width:36px;padding:2px}
+@media(max-width:999px){
+ .mobi-store-website .mobi-store-hero h1{font-size:clamp(28px,4.5vw,39px)}
+ .mobi-store-website .mobi-store-products{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:640px){
+ .mobi-store-website .mobi-store-hero{display:flex;flex-direction:column}
+ .mobi-store-website .mobi-store-showcase{min-height:290px;height:290px;order:1;padding:13px}
+ .mobi-store-website .mobi-store-hero-copy{order:2;padding:20px}
+ .mobi-store-showcase-single{width:min(100%,290px);height:210px;gap:3px}
+ .mobi-store-showcase-single .demo-product-photo{height:162px}
+ .mobi-store-showcase-single .demo-product-photo img{max-height:155px}
+ .mobi-store-showcase-single>span:last-child{font-size:12px}
+ .mobi-store-showcase-top strong{font-size:20px}
+ .mobi-store-website .mobi-store-hero h1{font-size:clamp(26px,6vw,33px)}
+ .mobi-store-website .mobi-store-info b{font-size:14px}
+ .mobi-store-website .mobi-store-info span{font-size:12px}
+ .mobi-store-website .mobi-store-featured{margin-top:25px}
+ .mobi-store-website .mobi-store-product-body h3{font-size:14px}
+ .mobi-store-website .mobi-store-product-body strong{font-size:17px}
+ .mobi-store-website .mobi-store-add{min-width:44px;min-height:44px}
+ .mobi-store-website .mobi-store-product-photo{height:160px;min-height:160px}
+ .mobi-store-website .mobi-store-product-photo img{max-height:145px}
+ .mobi-store-website .mobi-store-section{padding-block:34px}
+ .mobi-store-repair-photo{width:100%;height:auto;aspect-ratio:16/9}
+ .mobi-store-basket-panel{inset:auto 10px 10px;max-height:min(65dvh,550px);width:auto;border-radius:20px}
+ .mobi-store-added-feedback{bottom:12px;inset-inline:10px;max-width:none;gap:8px;flex-wrap:wrap;font-size:13px}
+}
+@media(max-width:430px){
+ .mobi-store-website .mobi-store-products{grid-template-columns:minmax(0,1fr)}
+ .mobi-store-website .mobi-store-product{min-height:0}
+ .mobi-store-website .mobi-store-product-photo{height:215px;min-height:215px}
+ .mobi-store-website .mobi-store-product-photo img{max-height:196px}
 }

@@ -62,6 +62,7 @@ export function StorePreviewExperience({products,branchAr,branchEn}:StorePreview
   const [query,setQuery]=useState("");
   const [basket,setBasket]=useState<Record<string,number>>({});
   const [basketOpen,setBasketOpen]=useState(false);
+  const [lastAdded,setLastAdded]=useState<string|null>(null);
   const [inquiryReady,setInquiryReady]=useState(false);
   const [copyStatus,setCopyStatus]=useState<"idle"|"success"|"failed">("idle");
   const t=copy[locale];
@@ -73,7 +74,7 @@ export function StorePreviewExperience({products,branchAr,branchEn}:StorePreview
   const basketItems=useMemo(()=>products.filter(item=>(basket[item.id]??0)>0),[basket,products]);
   const basketCount=basketItems.reduce((sum,item)=>sum+(basket[item.id]??0),0);
   const basketTotal=basketItems.reduce((sum,item)=>sum+item.price*(basket[item.id]??0),0);
-  function addDemo(id:string){setBasket(old=>({...old,[id]:Math.min(9,(old[id]??0)+1)}));setBasketOpen(true);setInquiryReady(false);setCopyStatus("idle");}
+  function addDemo(id:string){setBasket(old=>({...old,[id]:Math.min(9,(old[id]??0)+1)}));setLastAdded(id);setInquiryReady(false);setCopyStatus("idle");}
   function reduceDemo(id:string){setBasket(old=>({...old,[id]:Math.max(0,(old[id]??0)-1)}));setInquiryReady(false);setCopyStatus("idle");}
   const sampleSummary=[ar?"استفسار تجريبي عن منتجات":"Sample product inquiry","TechZone",...basketItems.map(item=>
     (ar?item.nameAr:item.nameEn)+" × "+basket[item.id]+" — $"+(item.price*(basket[item.id]??0)).toLocaleString("en-US")
@@ -85,7 +86,7 @@ export function StorePreviewExperience({products,branchAr,branchEn}:StorePreview
   }
 
   function scrollTo(id:string){
-    document.getElementById(id)?.scrollIntoView({behavior:"smooth",block:"start"});
+    document.getElementById(id)?.scrollIntoView({behavior:"auto",block:"start"});
     setOpen(false);
   }
 
@@ -128,18 +129,14 @@ export function StorePreviewExperience({products,branchAr,branchEn}:StorePreview
           <strong>Tech<span>Zone</span></strong>
           <small>{ar?"هواتف مختارة · عرض تجريبي":"Selected phones · Demo"}</small>
         </div>
-        <div className="mobi-store-showcase-phones">
-          {products.filter(product=>product.type==="DEVICE"&&product.imageUrl?.startsWith("/demo/products/")).slice(0,3).map((product,index)=>
-            <button key={product.id} type="button"
-              className={"mobi-store-showcase-phone item-"+index}
-              onClick={()=>{setQuery(product.nameEn);scrollTo("products");}}
-              title={ar?"استعرض هذا الجهاز في الكتالوج":"View this device in catalog"}>
-              <DemoProductPhoto product={product} locale={locale} compact />
-              <span>{product.brand}<small>{product.nameEn.split(" ").slice(0,3).join(" ")}</small></span>
-            </button>
-          )}
-        </div>
-        <span className="mobi-store-showcase-caption">{ar?"اضغط على هاتف لاستعراضه":"Select a phone to explore"}</span>
+        {products.filter(product=>product.type==="DEVICE"&&product.imageUrl?.startsWith("/demo/products/")).slice(0,1).map(product=>
+          <button key={product.id} type="button" className="mobi-store-showcase-single"
+            onClick={()=>{setQuery(product.nameEn);scrollTo("products");}}
+            title={ar?"شاهد الهاتف في الكتالوج":"Explore this phone in the catalog"}>
+            <DemoProductPhoto product={product} locale={locale} compact />
+            <span>{product.nameEn}</span>
+          </button>
+        )}
       </div>
       <div className="mobi-store-hero-copy">
         <span className="mobi-store-kicker">{t.kicker}</span>
@@ -172,12 +169,24 @@ export function StorePreviewExperience({products,branchAr,branchEn}:StorePreview
             <small>{product.brand}</small>
             <h3>{ar?product.nameAr:product.nameEn}</h3>
             <div><strong dir="ltr">{"$"+product.price.toLocaleString("en-US")}</strong>
-              <button className="mobi-store-add" type="button" onClick={()=>addDemo(product.id)}>{t.add}</button>
+              <button className="mobi-store-add" type="button" onClick={()=>addDemo(product.id)}
+                aria-label={t.add+" — "+(ar?product.nameAr:product.nameEn)} title={t.add}>
+                <svg aria-hidden="true" width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                  <path d="M1 1h4l2.5 13.5a2 2 0 0 0 2 1.5h10a2 2 0 0 0 2-1.5L23 6H6"/>
+                  <path d="M14 8v6m-3-3h6"/>
+                </svg>
+              </button>
             </div>
           </div>
         </article>)}
       </div>
       {!filtered.length&&<p className="mobi-store-result-note" role="status">{t.noResults}</p>}
+      {lastAdded&&<div className="mobi-store-added-feedback" role="status">
+        <span>{ar?"أُضيف المنتج إلى سلة المعاينة.":"Product added to the preview basket."}</span>
+        <button type="button" onClick={()=>{setBasketOpen(true);setLastAdded(null);}}>{ar?"عرض السلة":"View basket"} ({basketCount})</button>
+        <button type="button" onClick={()=>setLastAdded(null)} aria-label={ar?"إخفاء التأكيد":"Dismiss confirmation"}>×</button>
+      </div>}
     </section>
 
     <section className="mobi-store-services mobi-store-section" id="services" tabIndex={-1}>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { OperationBreakdownChart } from "@/components/operation-breakdown-chart";
 import { notFound } from "next/navigation";
 import { demoCatalogCounts, demoLowStock, demoStore, demoTransactions } from "@/demo/data";
 import { demoRepairs } from "@/demo/operations";
@@ -140,7 +141,7 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
         </Link>)}</div>
     </section>
 
-    <section className="mobi-c-insight"><div className="section-head"><div><h2>{ar?"حركة السجلات التجريبية":"Demo transaction activity"}</h2><p>{ar?"قيم عمليات البيع والصيانة في بيانات التجربة":"Sample sales and repairs by transaction"}</p></div></div><div className="mobi-c-bars">{demoTransactions.map(row=><div key={row.id}><span className="mobi-c-bar" style={{height:(18+Math.round(82*row.amount/1199))+"%"}} title={row.id+": $"+row.amount}/><small>{row.id.replace(/^[^-]+-/,"")}</small></div>)}</div></section>
+    <OperationBreakdownChart rows={demoTransactions} locale={locale} />
     <section className="mobi-c-ops-grid">
       <article className="activity-card">
         <div className="section-head"><h2>{t.recentRepairs}</h2><Link className="text-link" href={"/"+locale+"/repairs"}>{t.viewAll} →</Link></div>

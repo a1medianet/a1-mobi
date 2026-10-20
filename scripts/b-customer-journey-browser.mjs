@@ -122,8 +122,10 @@ try{
  const {cdp,ws}=await createCdpTarget("about:blank");
  await navigate(cdp,base+"/store-preview",1440,900);
  assert(await evaluate(cdp,'document.querySelectorAll(".mobi-store-product").length>=8'),"B products missing");
- const imageRoles = await evaluate(cdp, '({phones:[...document.querySelectorAll(".mobi-store-showcase-phone img")].map(i=>({alt:i.alt,loaded:i.complete&&i.naturalWidth>0})),repair:document.querySelector(".mobi-store-repair-photo img")?.getAttribute("src"),retail:document.querySelector(".mobi-store-story-photo img")?.getAttribute("src")})');
- assert(imageRoles.phones.length===3 && imageRoles.phones.every(i=>i.loaded&&i.alt.length>4),"B named phone photography missing: "+JSON.stringify(imageRoles));
+ const imageRoles = await evaluate(cdp, '({phones:[...document.querySelectorAll(".mobi-store-showcase-single img")].map(i=>({alt:i.alt,loaded:i.complete&&i.naturalWidth>0})),repair:document.querySelector(".mobi-store-repair-photo img")?.getAttribute("src"),retail:document.querySelector(".mobi-store-story-photo img")?.getAttribute("src")})');
+ assert(imageRoles.phones.length===1 && imageRoles.phones.every(i=>i.loaded&&i.alt.length>4),"B named phone photography missing: "+JSON.stringify(imageRoles));
+ const productPhotos=await evaluate(cdp,'Promise.all([...document.querySelectorAll(".mobi-store-product-photo img")].map(i=>{i.loading="eager";return new Promise(resolve=>{if(i.complete)return resolve({src:i.getAttribute("src"),ok:i.naturalWidth>0});i.addEventListener("load",()=>resolve({src:i.getAttribute("src"),ok:true}),{once:true});i.addEventListener("error",()=>resolve({src:i.getAttribute("src"),ok:false}),{once:true});setTimeout(()=>resolve({src:i.getAttribute("src"),ok:i.naturalWidth>0}),9000);});}))');
+ assert(productPhotos.length===8&&productPhotos.every(i=>i.ok),"Missing product photography: "+JSON.stringify(productPhotos));
  assert(imageRoles.repair==="/demo/abc/repair-service.webp","Repair photo placed in wrong section");
  assert(imageRoles.retail==="/demo/abc/a-retail-hero.webp","Retail scene placed in wrong section");
  await evaluate(cdp,'[...document.querySelectorAll("nextjs-portal")].forEach(e=>e.style.display="none");true');
@@ -133,7 +135,10 @@ try{
  await evaluate(cdp,'document.querySelector(".mobi-store-add").click();true');
  await sleep(300);
  assert(await evaluate(cdp,'document.querySelector(".mobi-store-basket-trigger strong")?.textContent==="1"'),"Cart count incorrect");
- assert(await evaluate(cdp,'Boolean(document.querySelector(".mobi-store-basket-panel"))'),"Cart failed to open");
+ assert(await evaluate(cdp,'!document.querySelector(".mobi-store-basket-panel")'),"Basket must not cover page after adding");
+ assert(await evaluate(cdp,'Boolean(document.querySelector(".mobi-store-added-feedback"))'),"Inline basket confirmation missing");
+ await evaluate(cdp,'document.querySelector(".mobi-store-added-feedback button").click();true');
+ assert(await evaluate(cdp,'Boolean(document.querySelector(".mobi-store-basket-panel"))'),"View basket failed");
  await evaluate(cdp,'document.querySelector(".mobi-store-inquiry-prepare").click();true');
  await sleep(200);
  assert(await evaluate(cdp,'document.querySelector(".mobi-store-inquiry-preview")?.textContent.includes("No order") || document.querySelector(".mobi-store-inquiry-preview")?.textContent.includes("لم يتم")'),"Inquiry disclaimer missing");
@@ -159,6 +164,8 @@ try{
  assert(mobile.width<=mobile.viewport,"B mobile horizontal overflow "+JSON.stringify(mobile));
  await evaluate(cdp,'document.querySelector(".mobi-store-add").click();true');
  await sleep(200);
+ assert(await evaluate(cdp,'!document.querySelector(".mobi-store-basket-panel")'),"Mobile basket must not open automatically");
+ await evaluate(cdp,'document.querySelector(".mobi-store-added-feedback button").click();true');
  await evaluate(cdp,'document.querySelector(".mobi-store-inquiry-prepare").click();true');
  await sleep(200);
  assert(await evaluate(cdp,'Boolean(document.querySelector(".mobi-store-inquiry-preview"))'),"Mobile summary unavailable");
@@ -168,7 +175,7 @@ try{
  await evaluate(cdp,'document.querySelector(".mobi-store-lang").click();true');
  await sleep(300);
  assert(await evaluate(cdp,'document.querySelector(".mobi-store")?.lang==="en"'),"English switch failed");
- await evaluate(cdp,'document.querySelector(".mobi-store-showcase-phone").click();true');
+ await evaluate(cdp,'document.querySelector(".mobi-store-showcase-single").click();true');
  await sleep(220);
  assert(await evaluate(cdp,'document.querySelectorAll(".mobi-store-product").length===1'),"Selecting a showcased phone must show the corresponding product");
  await navigate(cdp,base+"/product/ar",1440,900);
@@ -176,6 +183,6 @@ try{
  await evaluate(cdp,'[...document.querySelectorAll("nextjs-portal")].forEach(e=>e.style.display="none");true');
  await capture(cdp,"a-retail-and-repair-desktop");
  ws.close();
- await writeFile(outputDir+"/b-customer-journey-result.json",JSON.stringify({status:"PASS",mobile,imageRoles,scenarios:["phone-image-model match","showcase-to-catalog","repair image role A/B","retail scene B","add to cart","prepare sample inquiry","copy summary","clear","contact shortcut","mobile 390","English"]},null,2)+"\n");
+ await writeFile(outputDir+"/b-customer-journey-result.json",JSON.stringify({status:"PASS",mobile,imageRoles,productPhotos,scenarios:["phone-image-model match","showcase-to-catalog","repair image role A/B","retail scene B","add to cart","prepare sample inquiry","copy summary","clear","contact shortcut","mobile 390","English"]},null,2)+"\n");
  console.log("B_CUSTOMER_JOURNEY_PASS",JSON.stringify({mobile,scenarios:11}));
 }finally{chromeProcess.kill("SIGTERM");}
