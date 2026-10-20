@@ -122,6 +122,12 @@ try{
  const {cdp,ws}=await createCdpTarget("about:blank");
  await navigate(cdp,base+"/store-preview",1440,900);
  assert(await evaluate(cdp,'document.querySelectorAll(".mobi-store-product").length>=8'),"B products missing");
+ const imageRoles = await evaluate(cdp, '({phones:[...document.querySelectorAll(".mobi-store-showcase-phone img")].map(i=>({alt:i.alt,loaded:i.complete&&i.naturalWidth>0})),repair:document.querySelector(".mobi-store-repair-photo img")?.getAttribute("src"),retail:document.querySelector(".mobi-store-story-photo img")?.getAttribute("src")})');
+ assert(imageRoles.phones.length===3 && imageRoles.phones.every(i=>i.loaded&&i.alt.length>4),"B named phone photography missing: "+JSON.stringify(imageRoles));
+ assert(imageRoles.repair==="/demo/abc/repair-service.webp","Repair photo placed in wrong section");
+ assert(imageRoles.retail==="/demo/abc/a-retail-hero.webp","Retail scene placed in wrong section");
+ await evaluate(cdp,'[...document.querySelectorAll("nextjs-portal")].forEach(e=>e.style.display="none");true');
+ await capture(cdp,"b-showcase-desktop");
  assert(await evaluate(cdp,'document.querySelector(".mobi-store-contact-shortcut")?.disabled===false'),"B contact shortcut inactive");
  assert(await evaluate(cdp,'!document.querySelector(".mobi-store-service-banner button").disabled'),"B repair info button inactive");
  await evaluate(cdp,'document.querySelector(".mobi-store-add").click();true');
@@ -148,6 +154,8 @@ try{
  assert(await evaluate(cdp,'document.getElementById("store-contact").getBoundingClientRect().top < window.innerHeight'),"Contact shortcut failed");
  await navigate(cdp,base+"/store-preview",390,844);
  const mobile=await evaluate(cdp,'({width:document.documentElement.scrollWidth,viewport:window.innerWidth})');
+ await evaluate(cdp,'[...document.querySelectorAll("nextjs-portal")].forEach(e=>e.style.display="none");true');
+ await capture(cdp,"b-showcase-mobile");
  assert(mobile.width<=mobile.viewport,"B mobile horizontal overflow "+JSON.stringify(mobile));
  await evaluate(cdp,'document.querySelector(".mobi-store-add").click();true');
  await sleep(200);
@@ -160,7 +168,14 @@ try{
  await evaluate(cdp,'document.querySelector(".mobi-store-lang").click();true');
  await sleep(300);
  assert(await evaluate(cdp,'document.querySelector(".mobi-store")?.lang==="en"'),"English switch failed");
+ await evaluate(cdp,'document.querySelector(".mobi-store-showcase-phone").click();true');
+ await sleep(220);
+ assert(await evaluate(cdp,'document.querySelectorAll(".mobi-store-product").length===1'),"Selecting a showcased phone must show the corresponding product");
+ await navigate(cdp,base+"/product/ar",1440,900);
+ assert(await evaluate(cdp,'document.querySelector(".mobi-a-repair-image img")?.getAttribute("src")==="/demo/abc/repair-service.webp"'),"A repair photo does not match its service section");
+ await evaluate(cdp,'[...document.querySelectorAll("nextjs-portal")].forEach(e=>e.style.display="none");true');
+ await capture(cdp,"a-retail-and-repair-desktop");
  ws.close();
- await writeFile(outputDir+"/b-customer-journey-result.json",JSON.stringify({status:"PASS",mobile,scenarios:["add to cart","prepare sample inquiry","copy summary","clear","contact shortcut","mobile 390","English"]},null,2)+"\n");
- console.log("B_CUSTOMER_JOURNEY_PASS",JSON.stringify({mobile,scenarios:7}));
+ await writeFile(outputDir+"/b-customer-journey-result.json",JSON.stringify({status:"PASS",mobile,imageRoles,scenarios:["phone-image-model match","showcase-to-catalog","repair image role A/B","retail scene B","add to cart","prepare sample inquiry","copy summary","clear","contact shortcut","mobile 390","English"]},null,2)+"\n");
+ console.log("B_CUSTOMER_JOURNEY_PASS",JSON.stringify({mobile,scenarios:11}));
 }finally{chromeProcess.kill("SIGTERM");}

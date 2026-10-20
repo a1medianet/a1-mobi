@@ -123,12 +123,23 @@ export function StorePreviewExperience({products,branchAr,branchEn}:StorePreview
     </header>
 
     <section className="mobi-store-hero" id="store-home">
-      <div className="mobi-store-photo">
-        <DemoScenePhoto
-          src="/demo/abc/b-techzone-hero.webp"
-          alt={ar?"متجر تقني توضيحي مختلف عن صفحة A":"Illustrative technology retail scene distinct from page A"}
-          eager
-        />
+      <div className="mobi-store-photo mobi-store-showcase" aria-label={ar?"نماذج هواتف متاحة للاستعراض في الكتالوج التجريبي":"Phones featured in the illustrative catalog"}>
+        <div className="mobi-store-showcase-top" dir="ltr">
+          <strong>Tech<span>Zone</span></strong>
+          <small>{ar?"هواتف مختارة · عرض تجريبي":"Selected phones · Demo"}</small>
+        </div>
+        <div className="mobi-store-showcase-phones">
+          {products.filter(product=>product.type==="DEVICE"&&product.imageUrl?.startsWith("/demo/products/")).slice(0,3).map((product,index)=>
+            <button key={product.id} type="button"
+              className={"mobi-store-showcase-phone item-"+index}
+              onClick={()=>{setQuery(product.nameEn);scrollTo("products");}}
+              title={ar?"استعرض هذا الجهاز في الكتالوج":"View this device in catalog"}>
+              <DemoProductPhoto product={product} locale={locale} compact />
+              <span>{product.brand}<small>{product.nameEn.split(" ").slice(0,3).join(" ")}</small></span>
+            </button>
+          )}
+        </div>
+        <span className="mobi-store-showcase-caption">{ar?"اضغط على هاتف لاستعراضه":"Select a phone to explore"}</span>
       </div>
       <div className="mobi-store-hero-copy">
         <span className="mobi-store-kicker">{t.kicker}</span>
@@ -176,6 +187,11 @@ export function StorePreviewExperience({products,branchAr,branchEn}:StorePreview
       ].map(([heading,body],index)=><article key={heading}>
         <span className="mobi-store-step-number">{String(index+1).padStart(2,"0")}</span><h3>{heading}</h3><p>{body}</p>
       </article>)}</div>
+      <figure className="mobi-store-repair-photo">
+        <DemoScenePhoto src="/demo/abc/repair-service.webp"
+          alt={ar?"هاتف قيد الإصلاح وأدوات صيانة دقيقة":"A smartphone repair with precision tools"} />
+        <figcaption>{ar?"صيانة الهواتف · صورة توضيحية":"Phone repair · Illustrative photo"}</figcaption>
+      </figure>
       <div className="mobi-store-service-banner">
         <span aria-hidden="true">✦</span>
         <div><strong>{t.service}</strong><p>{t.serviceValue}</p></div>
@@ -184,10 +200,11 @@ export function StorePreviewExperience({products,branchAr,branchEn}:StorePreview
     </section>
 
     <section className="mobi-store-story mobi-store-section" id="about-store" tabIndex={-1}>
-      <div className="mobi-store-story-art" aria-hidden="true">
+      <div className="mobi-store-story-art mobi-store-story-photo">
+        <DemoScenePhoto src="/demo/abc/a-retail-hero.webp"
+          alt={ar?"عميل يتلقى المساعدة في متجر تجزئة توضيحي":"Illustrative retail customer service at a store counter"} />
         <span>Tech<span>Zone</span></span>
-        <div className="mobi-store-story-device"><span>▣</span><strong>TECHZONE</strong><i/><i/><i/></div>
-        <small>Digital storefront / Retail & repair</small>
+        <small>{ar?"واجهة محل مستقلة · تجربة توضيحية":"Independent storefront · Demo"}</small>
       </div>
       <div className="mobi-store-story-copy">
         <span className="mobi-store-kicker">{t.storyLabel}</span><h2>{t.storyTitle}</h2><p>{t.storyText}</p>

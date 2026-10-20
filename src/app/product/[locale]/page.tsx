@@ -123,7 +123,7 @@ export default async function ProductLanding({params}:{params:Promise<{locale:st
 
     <section className="mobi-a-repair-story product-shell">
       <div className="mobi-a-repair-image">
-        <DemoScenePhoto src="https://images.unsplash.com/photo-1699550403361-27dee0f2a415?auto=format&fit=crop&w=1200&q=84" alt={ar?"فني يصلح هاتفًا — صورة توضيحية":"Illustrative phone repair technician"}/>
+        <DemoScenePhoto src="/demo/abc/repair-service.webp" alt={ar?"فني يصلح هاتفًا — صورة توضيحية":"Illustrative phone repair technician"}/>
         <span className="mobi-a-trust-card"><b>{ar?"سجل صيانة واضح":"Clear repair record"}</b><small>{ar?"استلام · تشخيص · قطع · دفع · تسليم":"Intake · diagnosis · parts · payment · delivery"}</small></span>
       </div>
       <div><span className="product-eyebrow">{ar?"صيانة وتنظيم ومتابعة":"REPAIR WORKFLOW"}</span><h2>{ar?"من استلام الجهاز إلى التسليم بثقة.":"From intake to delivery with confidence."}</h2><p>{ar?"وثّق العطل والحالة وقطع الغيار والدفعات، واحتفظ بسجل واضح لكل عملية صيانة داخل المتجر.":"Track diagnosis, parts, progress and payments with a complete repair record."}</p><Link className="product-cta" href={"/product/"+locale+"/demo#repairs"}>{ar?"شاهد رحلة الصيانة":"Explore repair journey"} →</Link></div>
