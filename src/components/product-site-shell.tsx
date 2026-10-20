@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { ProductLanguageSwitch } from "@/components/product-language-switch";
 
 function MobiWordmark({footer=false}:{footer?:boolean}) {
   return <span className={"mobi-brand-asset"+(footer?" footer-brand-asset":"")} dir="ltr">
@@ -9,20 +10,32 @@ function MobiWordmark({footer=false}:{footer?:boolean}) {
 
 export function ProductSiteShell({locale,children}:{locale:"ar"|"en";children:React.ReactNode}){
   const ar=locale==="ar";
-  const other=ar?"en":"ar";
   return <div lang={locale} dir={ar?"rtl":"ltr"} className="product-site">
     <header className="product-nav">
       <div className="product-shell nav-inner">
         <Link href={"/product/"+locale} className="product-brand" aria-label="A1 Mobi"><MobiWordmark/></Link>
-        <nav aria-label={ar?"التنقل الرئيسي للمنتج":"Product navigation"}>
+        <nav className="product-main-links" dir={ar?"rtl":"ltr"} aria-label={ar?"روابط المنتج الرئيسية":"Main product navigation"}>
           <Link href={"/product/"+locale}>{ar?"الرئيسية":"Home"}</Link>
           <Link href={"/product/"+locale+"#features"}>{ar?"المميزات":"Features"}</Link>
           <Link href={"/product/"+locale+"#why"}>{ar?"لماذا A1 Mobi؟":"Why A1 Mobi?"}</Link>
           <Link href={"/product/"+locale+"/pricing"}>{ar?"الأسعار":"Pricing"}</Link>
-          <Link href={"/product/"+other} hrefLang={other}>{ar?"EN":"العربية"}</Link>
+        </nav>
+        <div className="product-nav-actions" dir="ltr">
           <Link className="product-login" href={"/"+locale+"/login"}>{ar?"تسجيل الدخول":"Sign in"}</Link>
           <Link className="product-cta small" href={"/product/"+locale+"/signup"}>{ar?"ابدأ الآن":"Get started"}</Link>
-        </nav>
+          <ProductLanguageSwitch locale={locale}/>
+        </div>
+        <details className="product-mobile-menu" dir={ar?"rtl":"ltr"}>
+          <summary>{ar?"القائمة":"Menu"} <span aria-hidden="true">☰</span></summary>
+          <div className="product-mobile-menu-items">
+            <Link href={"/product/"+locale}>{ar?"الرئيسية":"Home"}</Link>
+            <Link href={"/product/"+locale+"#features"}>{ar?"المميزات":"Features"}</Link>
+            <Link href={"/product/"+locale+"#why"}>{ar?"لماذا A1 Mobi؟":"Why A1 Mobi?"}</Link>
+            <Link href={"/product/"+locale+"/pricing"}>{ar?"الأسعار":"Pricing"}</Link>
+            <Link href={"/"+locale+"/login"}>{ar?"تسجيل الدخول":"Sign in"}</Link>
+            <Link href={"/product/"+locale+"/signup"}>{ar?"ابدأ الآن":"Get started"}</Link>
+          </div>
+        </details>
       </div>
     </header>
     {children}

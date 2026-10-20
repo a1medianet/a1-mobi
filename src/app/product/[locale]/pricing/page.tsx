@@ -20,6 +20,6 @@ export default async function PricingPage({params}:{params:Promise<{locale:strin
       <ul>{plan.features.map(feature=><li key={feature}>✓ {feature}</li>)}</ul>
       <Link className={plan.primary?"product-cta":"product-secondary"} href={plan.href}>{plan.cta}</Link>
     </article>)}</section>
-    <section className="pricing-note"><b>{ar?"مهم":"Important"}</b><p>{ar?"Mobi لا يكرر منطق الاشتراكات داخله. صلاحيات الخطة والفترة التجريبية وحالة الاشتراك تأتي من A1 Billing Core وتُطبّق على Tenant المتجر.":"Mobi does not duplicate subscription logic. Plan entitlements, trial lifetime and subscription state are delivered by A1 Billing Core and applied to the store tenant."}</p></section>
+    <section className="pricing-note"><b>{ar?"معلومة مهمة":"Good to know"}</b><p>{ar?"يمكنك تجربة النظام قبل اختيار خطتك. ستعرف الخدمات المتاحة لكل متجر والفروع التي يمكنك إدارتها قبل الاشتراك.":"You can try the system before choosing a plan. Review what is included for each store or branch before subscribing."}</p></section>
   </main>;
 }
