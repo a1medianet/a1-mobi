@@ -34,3 +34,11 @@ Browser assertions validate: true visual right-to-left navigation order, fixed l
 - The owner should compare `marketing-ar-home-desktop.png`, `marketing-en-home-desktop.png`, `marketing-ar-signup-desktop.png`, `marketing-ar-pricing-desktop.png` and phone images.
 - **No production deployment, no customer public link, no PR merge.**
 - This closes the specific nav/readability review, **not** the complete A/B/C retail pilot or production security gate.
+
+## Signup review follow-up (2026-10-20)
+
+- Changed the illustrative store-name placeholder to `A1 Mobi` in both languages and the suggested store identifier to `a1-mobi`.
+- Registration stage eyebrow labels are now Arabic on Arabic pages and English on English pages, rather than showing the English `ORGANIZATION` marker on the Arabic form.
+- Reduced the oversized signup headline and kept form text legible.
+- Re-ran the marketing browser review across **6 desktop and 6 phone cases: PASS**; desktop/mobile signup screenshots were refreshed.
+- Final account creation is not claimed; the owner is about to test the four-step signup together and confirm before any final submission.

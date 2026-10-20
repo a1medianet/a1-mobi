@@ -1393,3 +1393,10 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
  .product-site .mobi-a-why-grid p{font-size:13px}
  .product-site .mobi-a-proof-strip small{font-size:12px}
 }
+
+/* Final registration visual review: concise heading and balanced form. */
+.product-site .signup-page .page-intro.compact{padding-bottom:20px}
+.product-site .signup-page .page-intro.compact h1{font-size:clamp(31px,2.7vw,40px);line-height:1.38;max-width:790px;margin-block:9px 12px}
+.product-site .signup-page .page-intro.compact p{font-size:16px;max-width:850px;line-height:1.8}
+.product-site .signup-page .signup-layout .product-eyebrow{font-size:12px;letter-spacing:0}
+@media(max-width:640px){.product-site .signup-page .page-intro.compact h1{font-size:clamp(28px,7.8vw,35px)}}
