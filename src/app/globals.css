@@ -1566,3 +1566,9 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 
 .product-site .demo-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media(max-width:640px){.product-site .demo-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Respect the customer storefront language when switching to English. */
+.mobi-store[dir="ltr"] .mobi-store-hero,
+.mobi-store[dir="ltr"] .mobi-store-header-search,
+.mobi-store[dir="ltr"] .mobi-store-header nav,
+.mobi-store[dir="ltr"] .mobi-store-header-actions{direction:ltr}
