@@ -1601,3 +1601,37 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 .operation-breakdown-columns .operation-breakdown-label{display:grid;gap:2px;justify-items:center;text-align:center;line-height:1.35}
 .operation-breakdown-columns .operation-breakdown-label strong{font-size:.77rem}
 @media(max-width:480px){.operation-breakdown-columns{gap:8px}.operation-breakdown-columns .operation-breakdown-track{height:130px}.operation-breakdown-columns .operation-breakdown-label{font-size:.8rem}}.mobi-report-periods{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}.mobi-report-periods a{padding:8px 16px;border:1px solid #cbd9ed;border-radius:9px;text-decoration:none;color:#164781;background:white}.mobi-report-periods a.active{background:#1265e8;color:white;border-color:#1265e8}.mobi-report-comparison{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) minmax(100px,.7fr);gap:12px;margin:12px 0 22px}.mobi-report-comparison>div{border:1px solid #dde7f3;background:#f8fbff;border-radius:13px;padding:16px;min-width:0;display:flex;flex-direction:column;gap:6px}.mobi-report-comparison small{font-size:12px;color:#546983}.mobi-report-comparison strong{font-size:clamp(16px,2vw,24px);color:#14233d;overflow-wrap:anywhere}.mobi-report-comparison span{font-size:12px;color:#546983}.mobi-report-comparison .mobi-report-compare-bars{height:95px;display:flex;align-items:flex-end;justify-content:center;gap:14px;padding:13px}.mobi-report-compare-bars span{width:31px;max-height:100%;background:#1265e8;border-radius:5px 5px 0 0}.mobi-report-compare-bars span.previous{background:#ff7a1a}@media(max-width:800px){.mobi-report-comparison{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:420px){.mobi-report-comparison{grid-template-columns:1fr 1fr}.mobi-report-comparison>div{padding:12px}.mobi-report-periods a{flex:1;text-align:center}}
+
+/* Sign-in P0 polish: the login is a dedicated viewport, not a second landing header. */
+.mobi-auth-shell:has(.mobi-login-shell)>.mobi-auth-header{display:none}
+.mobi-auth-shell:has(.mobi-login-shell),.mobi-auth-shell:has(.mobi-login-shell)>.mobi-auth-content{min-height:100svh}
+.mobi-auth-shell:has(.mobi-login-shell)>.mobi-auth-content{display:block}
+.mobi-login-shell{min-height:100svh;height:100svh;overflow:hidden;grid-template-columns:minmax(0,1fr) minmax(420px,1fr)}
+.mobi-login-showcase{padding:clamp(20px,2.5vw,42px);gap:10px}
+.mobi-login-brand{font-size:17px}.mobi-login-brand img{width:38px;height:38px}
+.mobi-login-art{height:clamp(140px,25vh,235px)}.mobi-login-device{transform:rotate(-9deg) scale(.76)}
+.mobi-login-showcase-copy h2{font-size:clamp(24px,2.3vw,34px);margin:8px 0;line-height:1.35}
+.mobi-login-showcase-copy p{font-size:14px;line-height:1.7}
+.mobi-login-capabilities{margin-top:12px}
+.mobi-login-panel{padding:clamp(16px,2vw,30px)}
+.mobi-login-panel .auth-card{padding:clamp(18px,2vw,27px)!important;box-shadow:0 10px 35px #162e5a0e}
+.mobi-login-panel .auth-card h1{font-size:clamp(21px,2vw,27px)!important;margin-bottom:8px!important}
+.mobi-login-panel .auth-card h1+p{margin-bottom:15px!important}
+.mobi-login-panel .auth-card form{gap:12px!important}
+.mobi-login-panel .auth-card input{min-height:42px!important;margin-top:4px!important}
+.mobi-login-panel .auth-card button.primary{min-height:44px}
+.mobi-login-panel .auth-card>p:last-child{margin-top:13px!important;font-size:13px!important}
+@media(max-width:860px){
+ .mobi-login-shell{height:auto;min-height:100svh;overflow:visible;grid-template-columns:1fr}
+ .mobi-login-showcase{min-height:auto;padding:18px 24px}
+ .mobi-login-panel{min-height:0}
+ .mobi-login-panel .auth-card{margin:15px auto!important}
+}
+@media(min-width:861px) and (max-height:760px){
+ .mobi-login-showcase{padding:16px 28px}
+ .mobi-login-art{height:100px}.mobi-login-device{transform:rotate(-9deg) scale(.55)}
+ .mobi-login-showcase-copy h2{font-size:23px}
+ .mobi-login-panel .auth-card{padding:16px 22px!important}
+ .mobi-login-panel .auth-card form{gap:8px!important}
+ .mobi-login-panel .auth-card input{min-height:38px!important}
+}
