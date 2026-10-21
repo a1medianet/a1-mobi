@@ -1671,3 +1671,9 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 .mobi-recovery-centered h1{font-size:clamp(20px,2.3vh,24px)!important;font-weight:700!important}
 .mobi-recovery-centered .primary{display:flex;justify-content:center;align-items:center;text-align:center;min-height:44px}
 @media(max-height:600px){.mobi-auth-content:has(.mobi-recovery-centered){place-items:start center;overflow:auto}.mobi-recovery-centered{padding:14px!important}}
+.mobi-recovery-wrap{width:min(100%,470px);display:flex;flex-direction:column;gap:12px}
+.mobi-recovery-wrap .mobi-recovery-top{display:flex;justify-content:flex-end}
+.mobi-recovery-wrap .mobi-recovery-centered{width:100%}
+.mobi-recovery-wrap .mobi-recovery-top{justify-content:space-between;align-items:center;gap:14px}
+.mobi-recovery-brand{display:flex;align-items:center}
+.mobi-recovery-brand img{width:116px;height:auto;max-height:37px;object-fit:contain}

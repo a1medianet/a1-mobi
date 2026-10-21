@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, type FormEvent } from "react";
 
 const copy = {
@@ -134,7 +135,7 @@ export function RecoveryForm({
     }
   }
 
-  return <section className="auth-card mobi-recovery-centered" style={{
+  return <div className="mobi-recovery-wrap"><div className="mobi-recovery-top"><Link href={"/product/" + locale} className="mobi-recovery-brand" aria-label="A1 Mobi"><Image src="/brand/a1-mobi-logo.svg" width={116} height={40} alt="A1 Mobi" /></Link><Link href={locale === "ar" ? "/en/recover" + (token ? "?token=" + encodeURIComponent(token) : "") : "/ar/recover" + (token ? "?token=" + encodeURIComponent(token) : "")} className="mobi-login-lang" hrefLang={locale === "ar" ? "en" : "ar"}>{locale === "ar" ? "English" : "العربية"}</Link></div><section className="auth-card mobi-recovery-centered" style={{
     maxWidth: 600,
     margin: "32px auto",
     padding: 28,
@@ -183,5 +184,5 @@ export function RecoveryForm({
     <p style={{ marginTop: 22 }}>
       <Link href={"/" + locale + "/login"}>{t.login}</Link>
     </p>
-  </section>;
+  </section></div>;
 }
