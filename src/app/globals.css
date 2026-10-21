@@ -1533,3 +1533,36 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
  .mobi-store-website .mobi-store-product-photo{height:215px;min-height:215px}
  .mobi-store-website .mobi-store-product-photo img{max-height:196px}
 }
+
+/* THAGHR feedback: shared auth branding and balanced customer layouts. */
+.mobi-auth-header{direction:ltr}
+.mobi-auth-header nav{direction:inherit}
+.mobi-auth-shell[dir="rtl"] .mobi-auth-header nav{direction:rtl}
+.mobi-auth-brand .mobi-brand-asset img{width:160px;height:auto;display:block}
+.mobi-auth-content{padding-top:8px}
+.product-site .product-actions a,.product-site .mobi-a-repair-story .product-cta{display:inline-flex;align-items:center;justify-content:center;gap:10px}
+.product-site .product-footer .footer-grid{grid-template-columns:1fr 1fr 1fr;gap:clamp(24px,4vw,56px)}
+.product-site .mobi-a-feature-grid{align-items:stretch}
+.product-site .mobi-a-features .mobi-a-feature-card{height:100%}
+.product-site .demo-grid{align-items:stretch}
+.product-site .demo-row small{font-size:13px;line-height:1.7}
+.mobi-store-website .mobi-store-showcase-single{background:transparent;border:0;box-shadow:none;width:100%;padding:0}
+.mobi-store-showcase-single .demo-product-photo img{mix-blend-mode:multiply}
+.mobi-store-website .mobi-store-repair-photo{width:100%;aspect-ratio:16/7;height:auto}
+.mobi-store-website .mobi-store-repair-photo>img{object-fit:cover;object-position:center 49%}
+.mobi-store-website .mobi-store-faq{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;align-items:start}
+.mobi-store-website .mobi-store-faq-list{max-width:none}
+.mobi-store-website .mobi-store-contact-section{grid-template-columns:1fr 1fr}
+.mobi-store-website .mobi-shop-logo{flex-shrink:0;width:28px;height:36px}
+@media(max-width:760px){.product-site .product-footer .footer-grid{grid-template-columns:1fr 1fr}.product-site .footer-company{grid-column:1/-1}}
+@media(max-width:640px){
+ .mobi-store-website .mobi-store-faq,.mobi-store-website .mobi-store-contact-section{grid-template-columns:1fr;gap:16px}
+ .mobi-store-website .mobi-store-repair-photo{aspect-ratio:4/3}
+ .mobi-store-website .mobi-store-basket-panel{max-height:45dvh;width:min(360px,calc(100vw - 20px));inset:auto 10px 10px auto;padding:16px}
+ .mobi-store-website .mobi-store-showcase-single{height:210px;width:100%}
+ .mobi-store-website .mobi-store-showcase-single .demo-product-photo{height:175px}
+ .mobi-store-website .mobi-store-showcase-single .demo-product-photo img{max-height:175px}
+}
+
+.product-site .demo-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:640px){.product-site .demo-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}

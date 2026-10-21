@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { headers } from "next/headers";
 import Link from "next/link";
+import { MobiWordmark } from "@/components/product-site-shell";
 import { AppShell } from "@/components/app-shell";
 import { currentStoreContext } from "@/server/auth-http";
 
@@ -17,7 +18,7 @@ export default async function LocaleLayout({ children, params }: {
   if (isAuthPage) {
     return <div lang={locale} dir={ar?"rtl":"ltr"} className="mobi-auth-shell">
       <header className="mobi-auth-header">
-        <Link href={"/product/"+locale} className="mobi-auth-brand" dir="ltr">A1 <strong>Mobi</strong></Link>
+        <Link href={"/product/"+locale} className="mobi-auth-brand" dir="ltr" aria-label="A1 Mobi"><MobiWordmark/></Link>
         <nav aria-label={ar?"روابط الحساب":"Account links"}>
           <Link href={"/product/"+locale}>{ar?"عن النظام":"About Mobi"}</Link>
           <Link href={"/product/"+locale+"/demo"}>{ar?"جولة تعريفية":"Product tour"}</Link>

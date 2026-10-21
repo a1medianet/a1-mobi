@@ -8,13 +8,6 @@ export default async function DemoPage({params}:{params:Promise<{locale:string}>
   if(locale!=="ar" && locale!=="en") notFound();
   const ar=locale==="ar";
   const counts=demoCatalogCounts();
-  const modules=[
-    [ar?"إدارة نقاط البيع":"Point-of-sale operations","pos"],
-    [ar?"تنظيم المنتجات":"Product management","products"],
-    [ar?"تتبع المخزون":"Inventory tracking","inventory"],
-    [ar?"متابعة الصيانة":"Repair tracking","repairs"],
-    [ar?"إدارة الفريق":"Team administration","admin"],
-  ];
   return <main className="product-shell product-page">
     <section className="page-intro">
       <span className="product-eyebrow">{ar?"جولة تعريفية":"PRODUCT WALKTHROUGH"}</span>
@@ -43,7 +36,7 @@ export default async function DemoPage({params}:{params:Promise<{locale:string}>
       <article className="demo-panel">
         <div className="panel-title"><span className="product-eyebrow">{ar?"سجل توضيحي":"SAMPLE ACTIVITY"}</span><h2>{ar?"كيف تظهر عمليات المتجر؟":"How store operations appear"}</h2></div>
         {demoTransactions.map(row=><div className="demo-row" key={row.id}>
-          <span aria-hidden="true">▣</span><div><b>{row.id} · {ar?row.customerAr:row.customerEn}</b><small>{row.time} · {"$"+row.amount} · {row.status}</small></div>
+          <span aria-hidden="true">▣</span><div><b>{row.id} · {ar?row.customerAr:row.customerEn}</b><small>{row.time} · {"$"+row.amount} · {ar?({IN_REPAIR:"قيد الصيانة",COMPLETED:"مكتملة",READY:"جاهزة"}[row.status]):({IN_REPAIR:"In repair",COMPLETED:"Completed",READY:"Ready"}[row.status])}</small></div>
         </div>)}
       </article>
     </section>
@@ -53,10 +46,6 @@ export default async function DemoPage({params}:{params:Promise<{locale:string}>
         <span aria-hidden="true">↗</span><div><b>{repair.number} · {repair.device}</b><small>{ar?repair.issueAr:repair.issueEn} · {ar?"تقدير توضيحي":"Sample estimate"}: ${repair.estimate}</small></div>
       </div>)}
     </section>
-    <section className="journey-links" aria-label={ar?"أقسام إدارة المتجر":"Store management modules"}>
-      {modules.map(([label,key])=><Link href={"/"+locale+"/login"} key={key}>
-        <span aria-hidden="true">↗</span><b>{label}</b><small>{ar?"بعد تسجيل الدخول":"Available after sign-in"} →</small>
-      </Link>)}
-    </section>
+
   </main>;
 }

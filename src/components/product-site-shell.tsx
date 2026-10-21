@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ProductLanguageSwitch } from "@/components/product-language-switch";
 
-function MobiWordmark({footer=false}:{footer?:boolean}) {
+export function MobiWordmark({footer=false}:{footer?:boolean}) {
   return <span className={"mobi-brand-asset"+(footer?" footer-brand-asset":"")} dir="ltr">
     <Image src={footer?"/brand/a1-mobi-logo-white.svg":"/brand/a1-mobi-logo.svg"} alt="A1 Mobi" width={190} height={62} priority={!footer} unoptimized />
   </span>;
@@ -17,7 +17,7 @@ export function ProductSiteShell({locale,children}:{locale:"ar"|"en";children:Re
         <nav className="product-main-links" dir={ar?"rtl":"ltr"} aria-label={ar?"روابط المنتج الرئيسية":"Main product navigation"}>
           <Link href={"/product/"+locale}>{ar?"الرئيسية":"Home"}</Link>
           <Link href={"/product/"+locale+"#features"}>{ar?"المميزات":"Features"}</Link>
-          <Link href={"/product/"+locale+"#why"}>{ar?"لماذا A1 Mobi؟":"Why A1 Mobi?"}</Link>
+          <Link href={"/product/"+locale+"#why"}>{ar?"لماذا تختار موبي؟":"Why A1 Mobi?"}</Link>
           <Link href={"/product/"+locale+"/pricing"}>{ar?"الأسعار":"Pricing"}</Link>
         </nav>
         <div className="product-nav-actions" dir="ltr">
@@ -30,7 +30,7 @@ export function ProductSiteShell({locale,children}:{locale:"ar"|"en";children:Re
           <div className="product-mobile-menu-items">
             <Link href={"/product/"+locale}>{ar?"الرئيسية":"Home"}</Link>
             <Link href={"/product/"+locale+"#features"}>{ar?"المميزات":"Features"}</Link>
-            <Link href={"/product/"+locale+"#why"}>{ar?"لماذا A1 Mobi؟":"Why A1 Mobi?"}</Link>
+            <Link href={"/product/"+locale+"#why"}>{ar?"لماذا تختار موبي؟":"Why A1 Mobi?"}</Link>
             <Link href={"/product/"+locale+"/pricing"}>{ar?"الأسعار":"Pricing"}</Link>
             <Link href={"/"+locale+"/login"}>{ar?"تسجيل الدخول":"Sign in"}</Link>
             <Link href={"/product/"+locale+"/signup"}>{ar?"ابدأ الآن":"Get started"}</Link>

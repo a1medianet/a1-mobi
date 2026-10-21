@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+
+import { authRequest, SESSION_TIMEOUT_MS, LOGIN_TIMEOUT_MS } from "@/core/auth/client-request";
 
 const copy = {
   ar: {
@@ -22,6 +24,7 @@ const copy = {
     invalid: "تعذر الدخول. تحقق من البيانات وحالة حسابك.",
     limit: "محاولات كثيرة. حاول مجددًا بعد 15 دقيقة.",
     unavailable: "الخدمة غير متاحة الآن. حاول لاحقًا.",
+    timeout: "استغرق الاتصال وقتًا طويلًا. تحقق من اتصالك وحاول تسجيل الدخول مجددًا.",
     active: "جلسة المتجر متصلة",
     logout: "تسجيل الخروج",
     preview: "فتح معاينة التطبيق",
@@ -47,6 +50,7 @@ const copy = {
     invalid: "Unable to sign in. Check your details and account status.",
     limit: "Too many attempts. Try again in 15 minutes.",
     unavailable: "Service unavailable. Try again later.",
+    timeout: "The connection took too long. Check your connection and try signing in again.",
     active: "Store session connected",
     logout: "Sign out",
     preview: "Open app preview",
@@ -61,7 +65,8 @@ export function LoginForm({ locale, initialTenant = "", initialEmail = "", retur
 }) {
   const t = copy[locale];
   const [active, setActive] = useState(false);
-  const [checking, setChecking] = useState(true);
+  const lifetime = useRef<AbortController | null>(null);
+  const sessionCheck = useRef<AbortController | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [needsFactor, setNeedsFactor] = useState(false);
@@ -69,28 +74,29 @@ export function LoginForm({ locale, initialTenant = "", initialEmail = "", retur
 
   useEffect(() => {
     const controller = new AbortController();
-    fetch("/api/auth/session", { cache: "no-store", signal: controller.signal })
-      .then(response => {
-        setActive(response.ok);
-        setChecking(false);
-      })
-      .catch(() => {
-        if (!controller.signal.aborted) setChecking(false);
-      });
-    return () => controller.abort();
+    const session = new AbortController();
+    lifetime.current = controller;
+    sessionCheck.current = session;
+    authRequest("/api/auth/session", { cache: "no-store" }, SESSION_TIMEOUT_MS, session.signal)
+      .then(response => { if (!session.signal.aborted) setActive(response.ok); })
+      .catch(() => { /* Keep the form available; never infer authorization from failure. */ });
+    return () => { controller.abort(); session.abort(); };
   }, []);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy) return;
 
+    const signal = lifetime.current?.signal;
+    if (!signal || signal.aborted) return;
+    sessionCheck.current?.abort();
     const form = event.currentTarget;
     const fields = new FormData(form);
     setBusy(true);
     setError("");
 
     try {
-      const response = await fetch("/api/auth/login", {
+      const response = await authRequest("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -101,10 +107,11 @@ export function LoginForm({ locale, initialTenant = "", initialEmail = "", retur
             ? { secondFactor: fields.get("secondFactor") }
             : {}),
         }),
-      });
+      }, LOGIN_TIMEOUT_MS, signal);
+      if (signal.aborted) return;
 
       if (!response.ok) {
-        const body = await response.json().catch(() => ({})) as { error?: string };
+        const body = response.body;
         if (body.error === "MFA_REQUIRED") {
           setNeedsFactor(true);
           setError(t.factorRequired);
@@ -126,24 +133,27 @@ export function LoginForm({ locale, initialTenant = "", initialEmail = "", retur
         // Session cookie is set by the API; the protected page is rechecked by proxy.
         window.location.assign(returnTo);
       }
-    } catch {
-      setError(t.unavailable);
+    } catch (cause) {
+      if (!signal.aborted) setError(cause instanceof Error && cause.message === "TIMEOUT" ? t.timeout : t.unavailable);
     } finally {
-      setBusy(false);
+      if (!signal.aborted) setBusy(false);
     }
   }
 
   async function logout() {
+    const signal = lifetime.current?.signal;
+    if (!signal || signal.aborted) return;
     setBusy(true);
     setError("");
     try {
-      const response = await fetch("/api/auth/logout", { method: "POST" });
+      const response = await authRequest("/api/auth/logout", { method: "POST" }, LOGIN_TIMEOUT_MS, signal);
+      if (signal.aborted) return;
       if (response.ok) setActive(false);
       else setError(t.unavailable);
     } catch {
-      setError(t.unavailable);
+      if (!signal.aborted) setError(t.unavailable);
     } finally {
-      setBusy(false);
+      if (!signal.aborted) setBusy(false);
     }
   }
 
@@ -168,7 +178,7 @@ export function LoginForm({ locale, initialTenant = "", initialEmail = "", retur
     <h1 style={{ fontSize: 28, marginBottom: 12 }}>{t.title}</h1>
     <p style={{ marginBottom: 24 }}>{t.intro}</p>
 
-    {checking ? <p role="status">{t.busy}</p> : active ? <div>
+    {active ? <div>
       <p role="status" style={{ marginBottom: 16 }}>{t.active}</p>
       <button className="primary" onClick={logout} disabled={busy}>
         {busy ? t.busy : t.logout}

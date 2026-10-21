@@ -54,7 +54,7 @@ export default async function ProductLanding({params}:{params:Promise<{locale:st
           </h1>
           <p>{ar?"كل ما تحتاجه لإدارة محل الهواتف وخدمة عملائك، في نظام واحد.":"Everything you need to run your phone shop and serve customers, in one system."}</p>
           <div className="product-actions mobi-a-cta-row">
-            <Link className="product-cta mobi-a-primary" href={"/product/"+locale+"/signup"}>{ar?"ابدأ التجربة":"Start trial"} <span aria-hidden="true">↗</span></Link>
+            <Link className="product-cta mobi-a-primary" href={"/product/"+locale+"/signup"}>{ar?"ابدأ التجربة":"Start trial"} <span aria-hidden="true">{ar?"←":"→"}</span></Link>
             <Link className="product-secondary mobi-a-video" href={"/product/"+locale+"/demo"}><span aria-hidden="true">▶</span>{ar?"شاهد الجولة":"Watch the tour"}</Link>
           </div>
         </div>
@@ -98,19 +98,16 @@ export default async function ProductLanding({params}:{params:Promise<{locale:st
     </section>
 
     <section id="features" className="product-shell product-section mobi-a-features" aria-label={ar?"ست قدرات رئيسية":"Six essential capabilities"}>
-      <div className="product-section-head"><div><span className="product-eyebrow">{ar?"كل ما تحتاجه للتشغيل":"OPERATIONS"}</span><h2>{ar?"من البيع إلى الصيانة والمحاسبة.":"From sale to repair and reconciliation."}</h2></div><p>{ar?"ست وحدات أساسية مترابطة، بهوية واحدة ورحلة تشغيل واضحة.":"Six connected core capabilities with one visual system and one operating journey."}</p></div>
+      <div className="product-section-head"><div><span className="product-eyebrow">{ar?"كل ما تحتاجه للتشغيل":"OPERATIONS"}</span><h2>{ar?"من البيع إلى الصيانة والمحاسبة.":"From sale to repair and reconciliation."}</h2></div><p>{ar?"أدوات مترابطة لتنظيم العمل اليومي وخدمة عملائك.":"Connected tools to organize daily work and serve your customers."}</p></div>
       <div className="mobi-a-feature-grid">{features[locale].map((feature,index)=>
         <article className="mobi-a-feature-card" key={feature.title}>
           <div className={"mobi-a-feature-icon "+feature.tone}><FeatureIcon index={index}/></div>
           <h3>{feature.title}</h3>
           {feature.en && <b>{feature.en}</b>}
           <p>{feature.copy}</p>
-          <Link href={"/product/"+locale+"/"+feature.target} aria-label={(ar?"استكشف ":"Explore ")+feature.title}>↗</Link>
+          <Link href={"/product/"+locale+"/"+feature.target} aria-label={(ar?"استكشف ":"Explore ")+feature.title}><span aria-hidden="true">{ar?"←":"→"}</span></Link>
         </article>)}
       </div>
-      <Link className="mobi-a-store-bridge mobi-a-feature-bridge" href="/store-preview">
-        {ar?"شاهد متجرًا تجريبيًا للزبائن":"Explore a sample customer store"} <span aria-hidden="true">↗</span>
-      </Link>
     </section>
 
     <section className="mobi-a-repair-story product-shell">
@@ -118,12 +115,12 @@ export default async function ProductLanding({params}:{params:Promise<{locale:st
         <DemoScenePhoto src="/demo/abc/repair-service.webp" alt={ar?"فني يصلح هاتفًا — صورة توضيحية":"Illustrative phone repair technician"}/>
         <span className="mobi-a-trust-card"><b>{ar?"سجل صيانة واضح":"Clear repair record"}</b><small>{ar?"استلام · تشخيص · قطع · دفع · تسليم":"Intake · diagnosis · parts · payment · delivery"}</small></span>
       </div>
-      <div><h2>{ar?"تابع الصيانة حتى التسليم.":"Track repairs through delivery."}</h2><p>{ar?"سجل واحد للجهاز والعطل والقطع والدفعات.":"One record for the device, issue, parts and payments."}</p><Link className="product-cta" href={"/product/"+locale+"/demo#repairs"}>{ar?"شاهد رحلة الصيانة":"Explore repair journey"} →</Link></div>
+      <div><h2>{ar?"تابع الصيانة حتى التسليم.":"Track repairs through delivery."}</h2><p>{ar?"سجل واحد للجهاز والعطل والقطع والدفعات.":"One record for the device, issue, parts and payments."}</p><Link className="product-cta" href={"/product/"+locale+"/demo#repairs"}>{ar?"شاهد رحلة الصيانة":"Explore repair journey"} <span aria-hidden="true">{ar?"←":"→"}</span></Link></div>
     </section>
 
     <section className="mobi-a-why" id="why">
       <div className="product-shell">
-        <div className="product-section-head"><div><span className="product-eyebrow">{ar?"لماذا A1 Mobi؟":"WHY A1 MOBI"}</span><h2>{ar?"مصمم لعمل متجرك.":"Built for your shop."}</h2></div><p>{ar?"تتبّع واضح وصلاحيات تحمي بياناتك.":"Clear tracking and access that protect your data."}</p></div>
+        <div className="product-section-head"><div><span className="product-eyebrow">{ar?"لماذا تختار موبي؟":"WHY A1 MOBI"}</span><h2>{ar?"مصمم لعمل متجرك.":"Built for your shop."}</h2></div><p>{ar?"تتبّع واضح وصلاحيات تحمي بياناتك.":"Clear tracking and access that protect your data."}</p></div>
         <div className="mobi-a-why-grid">
           {[
             ar?["01","تتبّع واضح","كل عملية محفوظة وقابلة للمراجعة."]:["01","Traceable operations","Every movement is tied to reviewable evidence."],
@@ -140,7 +137,7 @@ export default async function ProductLanding({params}:{params:Promise<{locale:st
         <div className="product-section-head"><div><h2>{ar?"ابدأ في أربع خطوات":"Get started in four steps"}</h2></div></div>
         <div className="flow-grid">
           {[
-            ar?["1","أنشئ الجهة","اسم المتجر ولغة العمل."]:["1","Create organization","Store name, owner and language."],
+            ar?["1","أنشئ متجرك","اسم المتجر ولغة العمل."]:["1","Create your store","Store name, owner and language."],
             ar?["2","أضف الفرع","حدد اسم فرعك الأول."]:["2","Add first branch","Branch name and operating code."],
             ar?["3","أدخل بيانات المالك","أنشئ حسابك الآمن."]:["3","Add owner details","Secure the owner account."],
             ar?["4","راجع وابدأ","تحقق من البيانات وابدأ التجربة."]:["4","Review and begin","Review details and start the trial."],
@@ -149,7 +146,7 @@ export default async function ProductLanding({params}:{params:Promise<{locale:st
       </div>
     </section>
 
-    <section className="product-shell final-cta mobi-a-final-cta"><h2>{ar?"جاهز لتجربة A1 Mobi؟":"Ready to try A1 Mobi?"}</h2><p>{ar?"أنشئ متجرًا تجريبيًا أو شاهد الجولة.":"Create a trial shop or watch the tour."}</p><div className="product-actions"><Link className="product-cta" href={"/product/"+locale+"/signup"}>{ar?"ابدأ التجربة":"Start trial"}</Link><Link className="product-secondary" href={"/product/"+locale+"/demo"}>{ar?"شاهد الجولة":"Explore demo"}</Link></div></section>
+    <section className="product-shell final-cta mobi-a-final-cta"><h2>{ar?"جاهز لتجربة موبي؟":"Ready to try A1 Mobi?"}</h2><p>{ar?"أنشئ متجرًا تجريبيًا أو شاهد الجولة.":"Create a trial shop or watch the tour."}</p><div className="product-actions"><Link className="product-cta" href={"/product/"+locale+"/signup"}>{ar?"ابدأ التجربة":"Start trial"}</Link><Link className="product-secondary" href={"/product/"+locale+"/demo"}>{ar?"شاهد الجولة":"Explore demo"}</Link></div></section>
   </main>;
 }
 

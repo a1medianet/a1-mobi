@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { DemoProduct } from "@/demo/data";
 import { DemoProductPhoto, DemoScenePhoto } from "@/components/demo-product-photo";
 
@@ -13,50 +13,51 @@ type StorePreviewExperienceProps={
 
 const copy={
   ar:{
-    brandSub:"متجر تجريبي · هواتف وصيانة",
+    brandSub:"هواتف وإكسسوارات وصيانة",
     home:"الرئيسية",products:"المنتجات",repairs:"الصيانة",about:"معلومات عنا",contact:"تواصل",
     search:"ابحث عن هاتف أو إكسسوار",whatsapp:"WhatsApp",whatsappUnavailable:"WhatsApp غير مهيّأ في هذه المعاينة",
     kicker:"مرحبًا بك في TechZone",title:"أحدث الهواتف.",accent:"وخدمة تثق بها.",sub:"اختر جهازك القادم، واستكشف الإكسسوارات وخدمات الصيانة من مكان واحد.",
     discover:"اكتشف المنتجات",repair:"احجز صيانة",repairUnavailable:"حجز الصيانة غير متاح في هذه المعاينة",
     demo:"TechZone علامة تجريبية توضيحية · الصور والأسعار لا تمثّل عروض متجر حقيقي",
-    location:"الموقع",hours:"ساعات العمل",hoursValue:"تُحدّد من إعدادات المتجر",service:"صيانة الأجهزة",serviceValue:"استلام · تشخيص · متابعة · تسليم",
+    location:"الموقع",hours:"ساعات العمل",hoursValue:"غير متاحة حاليًا",service:"صيانة الأجهزة",serviceValue:"استلام · تشخيص · متابعة · تسليم",
     contactLabel:"التواصل",contactValue:"رقم المتجر غير مهيّأ في المعاينة",
-    section:"أبرز منتجاتنا",sample:"اختيارات تجريبية · USD",add:"أضف إلى السلة",cartUnavailable:"لا يمكن إرسال طلب أو دفع في المعاينة",basket:"سلة المعاينة",basketNote:"سلة تفاعلية للتوضيح فقط؛ لا تُنشئ طلبًا ولا تخصم دفعة.",basketEmpty:"السلة فارغة",basketTotal:"المجموع التوضيحي",basketClear:"إفراغ السلة",basketClose:"إغلاق السلة",basketOpen:"فتح السلة",repairExplore:"استكشف الصيانة",
-    noResults:"لا توجد منتجات مطابقة. جرّب اسمًا آخر.",result:"منتجات توضيحية",trust1:"أجهزة مختارة",trust2:"صيانة منظمة",trust3:"متابعة واضحة",powered:"Powered by A1 Mobi",
-    storyLabel:"قصتنا",storyTitle:"تجربة رقمية تشبه متجرًا حقيقيًا.",storyText:"يعرض نموذج TechZone طريقة تعريف العملاء بالمنتجات والخدمات والفروع، مع تجربة واضحة على الهاتف والكمبيوتر. جميع البيانات للتوضيح فقط.",
-    serviceLabel:"خدماتنا",serviceTitle:"من الاستلام إلى تسليم الجهاز.",serviceText:"تعرف على مراحل الصيانة التي يمكن لمتجرك عرضها للزوار بوضوح، قبل تفعيل نظام الحجز الفعلي.",
+    section:"أبرز منتجاتنا",sample:"أسعار توضيحية · USD",add:"أضف إلى السلة",cartUnavailable:"لا يمكن إرسال طلب أو دفع في المعاينة",basket:"سلة المعاينة",basketNote:"سلة تفاعلية للتوضيح فقط؛ لا تُنشئ طلبًا ولا تخصم دفعة.",basketEmpty:"السلة فارغة",basketTotal:"المجموع التوضيحي",basketClear:"إفراغ السلة",basketClose:"إغلاق السلة",basketOpen:"فتح السلة",repairExplore:"استكشف الصيانة",
+    noResults:"لا توجد منتجات مطابقة. جرّب اسمًا آخر.",result:"منتجات توضيحية",trust1:"أجهزة مختارة",trust2:"صيانة منظمة",trust3:"متابعة واضحة",powered:"A1 Media Network",
+    storyLabel:"قصتنا",storyTitle:"الهاتف المناسب. والعناية التي يحتاجها.",storyText:"استكشف الهواتف والإكسسوارات، وتعرّف على خطوات فحص جهازك وإصلاحه في TechZone.",
+    serviceLabel:"خدماتنا",serviceTitle:"من الاستلام إلى تسليم الجهاز.",serviceText:"تعرّف على خطوات فحص الجهاز وتقدير التكلفة والمتابعة حتى التسليم.",
     service1:"استلام الجهاز",service2:"الفحص والتشخيص",service3:"تقدير التكلفة",service4:"الجاهزية والتسليم",
     service1Text:"توثيق بيانات الجهاز والحالة عند الاستلام.",service2Text:"تقييم العطل والخطوات المطلوبة للإصلاح.",service3Text:"توضيح التكلفة والحصول على موافقة العميل.",service4Text:"متابعة الحالة حتى التسليم النهائي.",
-    trustLabel:"لماذا هذا التصميم؟",trustHeading:"مساحة واحدة، رحلة عميل أوضح.",trustDesc:"هوية مستقلة لكل متجر، كتالوج قابل للبحث، معلومات خدمات مرتبة وتجربة ثنائية اللغة.",
-    trustFeature1:"واجهة مستقلة للجهة",trustFeature2:"كتالوج وأسعار واضحة",trustFeature3:"رحلة صيانة مفهومة",
-    faqLabel:"أسئلة متكررة",faqTitle:"كل شيء واضح قبل الزيارة.",faq1:"هل يمكن شراء المنتجات من هذه المعاينة؟",faqAnswer1:"يمكن تجربة السلة فقط؛ الدفع والطلبات الحقيقية غير مفعّلة.",faq2:"هل يمكن حجز موعد صيانة؟",faqAnswer2:"يمكن الاطلاع على مراحل الخدمة، لكن الحجز يتطلب تهيئة الجهة الفعلية.",faq3:"هل الأسعار والموقع وساعات العمل حقيقية؟",faqAnswer3:"لا، جميعها بيانات توضيحية قابلة للاستبدال ببيانات الجهة عند التفعيل.",
-    contactHeading:"كن قريبًا من عملائك.",contactDesc:"هذه معاينة لهوية متجر يمكن تخصيص عنوانه وأوقات عمله ووسائل تواصله من لوحة الإدارة.",contactAction:"اطّلع على منصة A1 Mobi",contactNote:"لا رقم هاتف أو واتساب حقيقي متصل بهذه المعاينة.",catalogHint:"ابحث أو استعرض المنتجات التوضيحية أدناه.",siteDemo:"نموذج متجر إلكتروني متكامل قابل للتمرير",
+    trustLabel:"اختيارك أسهل",trustHeading:"كل ما يخص هاتفك في مكان واحد.",trustDesc:"قارن الهواتف، ابحث عن الإكسسوارات وتعرّف على مراحل الصيانة.",
+    trustFeature1:"هواتف وإكسسوارات",trustFeature2:"تفاصيل المنتجات",trustFeature3:"خطوات صيانة واضحة",
+    faqLabel:"أسئلة متكررة",faqTitle:"كل شيء واضح قبل الزيارة.",faq1:"كيف أختار الهاتف المناسب؟",faqAnswer1:"ابحث باسم الهاتف أو العلامة التجارية وقارن المواصفات المعروضة. الأسعار توضيحية والشراء غير متاح هنا.",faq2:"ما خطوات صيانة الهاتف؟",faqAnswer2:"تبدأ بفحص الجهاز وتحديد العطل، ثم تقدير التكلفة قبل الإصلاح. الحجز غير متاح عبر هذه الصفحة.",faq3:"ماذا أجهّز قبل تسليم جهازي؟",faqAnswer3:"احتفظ بنسخة احتياطية من بياناتك وسجّل وصف العطل والملحقات التي ستسلّمها مع الجهاز.",
+    contactHeading:"لديك سؤال عن هاتف أو صيانة؟",contactDesc:"تصفّح المنتجات وخطوات الصيانة أعلاه. بيانات زيارة المتجر والتواصل المباشر غير متاحة حاليًا.",contactAction:"اطّلع على منصة A1 Mobi",contactNote:"لا رقم هاتف أو واتساب حقيقي متصل بهذه المعاينة.",catalogHint:"ابحث أو استعرض المنتجات التوضيحية أدناه.",siteDemo:"هواتف · إكسسوارات · صيانة",
     menu:"القائمة",close:"إغلاق",
   },
   en:{
-    brandSub:"Demo store · phones & repair",
+    brandSub:"Phones, accessories & repair",
     home:"Home",products:"Products",repairs:"Repairs",about:"About",contact:"Contact",
     search:"Search phones or accessories",whatsapp:"WhatsApp",whatsappUnavailable:"WhatsApp is not configured in this preview",
     kicker:"Welcome to TechZone",title:"Latest phones.",accent:"Service you can trust.",sub:"Choose your next device and explore accessories and repair services in one place.",
     discover:"Explore products",repair:"Book repair",repairUnavailable:"Repair booking is not available in this preview",
     demo:"TechZone is an illustrative demo brand · images and prices are not real-store offers",
-    location:"Location",hours:"Working hours",hoursValue:"Configured by each store",service:"Device repair",serviceValue:"Intake · diagnosis · tracking · delivery",
+    location:"Location",hours:"Working hours",hoursValue:"Currently unavailable",service:"Device repair",serviceValue:"Intake · diagnosis · tracking · delivery",
     contactLabel:"Contact",contactValue:"Store phone is not configured in preview",
-    section:"Featured products",sample:"Demo selection · USD",add:"Add to cart",cartUnavailable:"No checkout or payment is available in this demo",basket:"Preview basket",basketNote:"Interactive demo only. No real order or payment is created.",basketEmpty:"Basket is empty",basketTotal:"Illustrative total",basketClear:"Clear basket",basketClose:"Close basket",basketOpen:"Open basket",repairExplore:"Explore repairs",
-    noResults:"No matching products. Try another search.",result:"demo products",trust1:"Selected devices",trust2:"Organized repair",trust3:"Clear tracking",powered:"Powered by A1 Mobi",
-    storyLabel:"Our story",storyTitle:"A real-store experience, built for the web.",storyText:"TechZone demonstrates how a merchant can showcase products, services and locations in an independent storefront on desktop and mobile. All displayed data is illustrative.",
-    serviceLabel:"Services",serviceTitle:"From device intake to handover.",serviceText:"Show customers what to expect from the repair process before real appointment bookings are configured.",
+    section:"Featured products",sample:"Illustrative prices · USD",add:"Add to cart",cartUnavailable:"No checkout or payment is available in this demo",basket:"Preview basket",basketNote:"Interactive demo only. No real order or payment is created.",basketEmpty:"Basket is empty",basketTotal:"Illustrative total",basketClear:"Clear basket",basketClose:"Close basket",basketOpen:"Open basket",repairExplore:"Explore repairs",
+    noResults:"No matching products. Try another search.",result:"demo products",trust1:"Selected devices",trust2:"Organized repair",trust3:"Clear tracking",powered:"A1 Media Network",
+    storyLabel:"Our story",storyTitle:"Find your phone. Explore repair care.",storyText:"Explore phones and accessories, and learn how device inspection and repair work at TechZone.",
+    serviceLabel:"Services",serviceTitle:"From device intake to handover.",serviceText:"Learn about device inspection, cost estimates and progress through handover.",
     service1:"Device intake",service2:"Inspection & diagnosis",service3:"Cost estimate",service4:"Ready & delivered",
     service1Text:"Record device information and condition upon arrival.",service2Text:"Assess the issue and required repair work.",service3Text:"Explain the cost and obtain customer approval.",service4Text:"Track progress through final handover.",
-    trustLabel:"Why this experience?",trustHeading:"One space. A clearer customer journey.",trustDesc:"An independent shop identity, searchable product catalog, organized service details and bilingual navigation.",
-    trustFeature1:"Independent merchant identity",trustFeature2:"Clear catalog and prices",trustFeature3:"Understandable repair workflow",
-    faqLabel:"Common questions",faqTitle:"Know before you visit.",faq1:"Can I buy from this demo store?",faqAnswer1:"The sample basket is interactive, but real orders and payments are disabled.",faq2:"Can I book a repair appointment?",faqAnswer2:"You can explore the service steps; bookings need a configured real merchant.",faq3:"Are these prices, addresses and hours real?",faqAnswer3:"No. They are illustrative information and will be replaced when a merchant configures their store.",
-    contactHeading:"Stay close to your customers.",contactDesc:"A preview of a store whose address, business hours and channels can be configured from the owner dashboard.",contactAction:"Explore A1 Mobi",contactNote:"No real store phone or WhatsApp is linked to this preview.",catalogHint:"Search or browse the illustrated product range.",siteDemo:"A complete scrollable storefront preview",
+    trustLabel:"Explore with confidence",trustHeading:"Your phone needs, in one place.",trustDesc:"Compare phones, find accessories and explore the repair process.",
+    trustFeature1:"Phones and accessories",trustFeature2:"Product details",trustFeature3:"Clear repair steps",
+    faqLabel:"Common questions",faqTitle:"Know before you visit.",faq1:"How do I choose a phone?",faqAnswer1:"Search by phone or brand and compare the listed details. Prices are illustrative; purchases are unavailable here.",faq2:"What happens during a repair?",faqAnswer2:"Inspection identifies the issue, followed by a cost estimate before repair. Booking is unavailable on this page.",faq3:"How should I prepare my device?",faqAnswer3:"Back up your data and note the issue and any accessories you plan to hand over.",
+    contactHeading:"Questions about a phone or repair?",contactDesc:"Browse the products and repair steps above. Store visit details and direct contact are currently unavailable.",contactAction:"Explore A1 Mobi",contactNote:"No real store phone or WhatsApp is linked to this preview.",catalogHint:"Search or browse the illustrated product range.",siteDemo:"Phones · Accessories · Repair",
     menu:"Menu",close:"Close",
   },
 } as const;
 
-export function StorePreviewExperience({products,branchAr,branchEn}:StorePreviewExperienceProps){
+export function StorePreviewExperience({products}:StorePreviewExperienceProps){
+  const basketTrigger = useRef<HTMLButtonElement>(null);
   const [locale,setLocale]=useState<"ar"|"en">("ar");
   const [open,setOpen]=useState(false);
   const [query,setQuery]=useState("");
@@ -116,7 +117,7 @@ export function StorePreviewExperience({products,branchAr,branchEn}:StorePreview
       </nav>
 
       <div className="mobi-store-header-actions">
-        <button className="mobi-store-basket-trigger" type="button" aria-label={t.basketOpen} aria-expanded={basketOpen} aria-controls="mobi-store-basket" onClick={()=>setBasketOpen(old=>!old)}>▤ <strong>{basketCount}</strong></button>
+        <button ref={basketTrigger} className="mobi-store-basket-trigger" type="button" aria-label={t.basketOpen} aria-expanded={basketOpen} aria-controls="mobi-store-basket" onClick={()=>setBasketOpen(old=>!old)}>▤ <strong>{basketCount}</strong></button>
         <button className="mobi-store-whatsapp mobi-store-contact-shortcut" type="button" title={ar?"شاهد بيانات التواصل المتاحة":"View available contact details"} onClick={()=>scrollTo("store-contact")}>● {t.contact}</button>
         <button className="mobi-store-lang" type="button" onClick={()=>setLocale(ar?"en":"ar")}>{ar?"EN":"العربية"}</button>
         <Link href={"/product/"+locale} dir="ltr">A1 Mobi ↗</Link>
@@ -143,7 +144,7 @@ export function StorePreviewExperience({products,branchAr,branchEn}:StorePreview
         <h1>{t.title}<br/><em>{t.accent}</em></h1>
         <p>{t.sub}</p>
         <div className="mobi-store-buttons">
-          <button type="button" className="mobi-store-btn mobi-store-btn-primary" onClick={()=>scrollTo("products")}>{t.discover} ←</button>
+          <button type="button" className="mobi-store-btn mobi-store-btn-primary" onClick={()=>scrollTo("products")}>{t.discover} <span aria-hidden="true">{ar?"←":"→"}</span></button>
           <button type="button" className="mobi-store-btn mobi-store-btn-secondary" onClick={()=>scrollTo("services")}>{t.repairExplore}</button>
         </div>
         <span className="mobi-store-caption">{t.demo}</span>
@@ -151,7 +152,7 @@ export function StorePreviewExperience({products,branchAr,branchEn}:StorePreview
     </section>
 
     <section className="mobi-store-info" id="visit" tabIndex={-1} aria-label={ar?"معلومات المتجر":"Store information"}>
-      <div><b>⌖ {t.location}</b><span>{ar?branchAr:branchEn}</span></div>
+      <div><b>⌖ {t.location}</b><span>{ar?"العنوان غير متاح حاليًا":"Address currently unavailable"}</span></div>
       <div><b>◷ {t.hours}</b><span>{t.hoursValue}</span></div>
       <div id="service-summary"><b>✦ {t.service}</b><span>{t.serviceValue}</span></div>
       <div><b>◉ {t.contactLabel}</b><span>{t.contactValue}</span></div>
@@ -213,7 +214,7 @@ export function StorePreviewExperience({products,branchAr,branchEn}:StorePreview
         <DemoScenePhoto src="/demo/abc/a-retail-hero.webp"
           alt={ar?"عميل يتلقى المساعدة في متجر تجزئة توضيحي":"Illustrative retail customer service at a store counter"} />
         <span>Tech<span>Zone</span></span>
-        <small>{ar?"واجهة محل مستقلة · تجربة توضيحية":"Independent storefront · Demo"}</small>
+        <small>{ar?"هواتف وإكسسوارات وصيانة":"Phones, accessories & repair"}</small>
       </div>
       <div className="mobi-store-story-copy">
         <span className="mobi-store-kicker">{t.storyLabel}</span><h2>{t.storyTitle}</h2><p>{t.storyText}</p>
@@ -240,7 +241,7 @@ export function StorePreviewExperience({products,branchAr,branchEn}:StorePreview
     <section className="mobi-store-contact-section mobi-store-section" id="store-contact" tabIndex={-1}>
       <div><span className="mobi-store-kicker">{t.contactLabel}</span><h2>{t.contactHeading}</h2><p>{t.contactDesc}</p><small>{t.contactNote}</small></div>
       <div className="mobi-store-contact-card"><strong>TechZone</strong>
-        <p>⌖ {ar?branchAr:branchEn}</p><p>◷ {t.hoursValue}</p>
+        <p>⌖ {ar?"العنوان غير متاح حاليًا":"Address currently unavailable"}</p><p>◷ {t.hoursValue}</p>
         <Link href={"/product/"+locale}>{t.contactAction} ↗</Link>
       </div>
     </section>
@@ -251,8 +252,8 @@ export function StorePreviewExperience({products,branchAr,branchEn}:StorePreview
       <div><strong>{t.about}</strong><button type="button" onClick={()=>scrollTo("about-store")}>{t.storyLabel}</button><button type="button" onClick={()=>scrollTo("store-contact")}>{t.contact}</button></div>
       <div className="mobi-store-footer-powered"><span>✓ {t.trust1} · {t.trust2} · {t.trust3}</span><span>{t.powered}</span></div>
     </footer>
-    {basketOpen&&<aside id="mobi-store-basket" className="mobi-store-basket-panel" role="dialog" aria-modal="false" aria-label={t.basket}>
-      <div className="mobi-store-basket-title"><h2>{t.basket} ({basketCount})</h2><button type="button" aria-label={t.basketClose} onClick={()=>setBasketOpen(false)}>×</button></div>
+    {basketOpen&&<aside id="mobi-store-basket" className="mobi-store-basket-panel" role="dialog" aria-modal="false" tabIndex={-1} onKeyDown={event=>{if(event.key==="Escape"){setBasketOpen(false);basketTrigger.current?.focus();}}} aria-label={t.basket}>
+      <div className="mobi-store-basket-title"><h2>{t.basket} ({basketCount})</h2><button type="button" aria-label={t.basketClose} autoFocus onClick={()=>{setBasketOpen(false);basketTrigger.current?.focus();}}>×</button></div>
       <p className="mobi-store-basket-notice">{t.basketNote}</p>
       {basketItems.length===0?<p role="status">{t.basketEmpty}</p>:<>
         <ul className="mobi-store-basket-list">{basketItems.map(item=><li key={item.id}>
