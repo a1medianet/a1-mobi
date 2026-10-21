@@ -96,7 +96,7 @@ export function TrialSignup({locale}:{locale:"ar"|"en"}){
       <span className="product-eyebrow">{ar?"الخطوة ٤ · المراجعة":"STEP 4 · REVIEW"}</span><h2>{ar?"راجع ثم ابدأ 7 أيام":"Review and start seven days"}</h2>
       <div className="review-grid">
         <div><small>{ar?"الجهة":"Organization"}</small><strong>{store}</strong></div>
-        <div><small>Tenant</small><strong dir="ltr">{effectiveSlug}</strong></div>
+        <div><small>{ar?"معرّف المتجر":"Store ID"}</small><strong dir="ltr">{effectiveSlug}</strong></div>
         <div><small>{ar?"الفرع":"Branch"}</small><strong>{branch}</strong></div>
         <div><small>{ar?"الكود":"Code"}</small><strong dir="ltr">{branchCode}</strong></div>
         <div><small>{ar?"المالك":"Owner"}</small><strong>{ownerName}</strong></div>
