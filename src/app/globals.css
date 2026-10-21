@@ -1704,3 +1704,17 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 .product-site .mobi-a-final-cta{margin-block:24px 32px!important}
 .product-site .demo-grid{row-gap:24px!important}
 @media(max-width:640px){.product-site .product-nav .product-brand .mobi-brand-asset img{width:88px!important}.product-site .mobi-a-features{margin-top:22px!important;margin-bottom:28px!important}.product-site .mobi-marketing-a .mobi-a-copy h1{font-size:clamp(27px,8vw,36px)!important}.product-site .page-intro h1{font-size:clamp(26px,7vw,34px)!important}}
+
+/* Final proportional public branding (2026-10-21) */
+.product-site .product-nav .product-brand .mobi-brand-asset img{width:101px!important;height:auto}
+.product-site .product-footer .footer-brand-asset>img{width:101px!important;height:auto;max-width:none}
+.product-site .page-intro h1{font-size:clamp(25px,2.35vw,34px)!important;line-height:1.38!important}
+.product-site .mobi-marketing-a .mobi-a-copy h1{font-size:clamp(28px,2.9vw,41px)!important;line-height:1.32!important}
+.product-site .product-section-head h2,.product-site .mobi-a-repair-story h2,.product-site .mobi-a-why h2{font-size:clamp(22px,2.05vw,29px)!important}
+.product-site .mobi-a-final-cta h2{font-size:clamp(22px,2.15vw,30px)!important}
+@media(max-width:640px){
+ .product-site .product-nav .product-brand .mobi-brand-asset img{width:92px!important}
+ .product-site .product-footer .footer-brand-asset>img{width:92px!important}
+ .product-site .page-intro h1{font-size:clamp(25px,6.7vw,31px)!important}
+ .product-site .mobi-marketing-a .mobi-a-copy h1{font-size:clamp(27px,7.4vw,34px)!important}
+}
