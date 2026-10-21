@@ -34,14 +34,14 @@ export function OperationBreakdownChart({ rows, locale }: { rows: readonly Opera
       </figcaption>
       {total === 0 && <p className="operation-breakdown-empty">{ar ? "لا توجد عمليات تجريبية؛ جميع الأعداد والنسب صفر." : "No demo operations; all counts and shares are zero."}</p>}
       <div className="operation-breakdown-axis" aria-hidden="true"><span>0%</span><span>50%</span><span>100%</span></div>
-      <ul className="operation-breakdown-rows">
+      <ul className="operation-breakdown-rows operation-breakdown-columns">
         {categories.map(({ kind, count, width, share }) => <li key={kind}>
           <div className="operation-breakdown-label">
             <span>{labels[locale][kind]}</span>
             <strong><bdi dir={ar ? "rtl" : "ltr"}>{ar ? `${count} من ${total}` : `${count} of ${total}`}</bdi> <bdi dir="ltr">({share}%)</bdi></strong>
           </div>
           <div className="operation-breakdown-track" aria-hidden="true">
-            <span className="operation-breakdown-fill" style={{ width: `${width}%` }} />
+            <span className="operation-breakdown-fill" style={{ height: `${width}%` }} />
           </div>
         </li>)}
       </ul>

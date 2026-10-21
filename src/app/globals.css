@@ -1590,3 +1590,14 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 .mobi-login-panel .auth-card{width:100%;max-width:475px!important;margin:auto!important;border:0!important;box-shadow:0 20px 65px #162e5a12;border-radius:24px!important;padding:clamp(22px,3vw,40px)!important}.mobi-login-panel .auth-card h1{font-weight:800;letter-spacing:-.025em;color:#14233d}.mobi-login-panel .auth-card input:focus-visible{outline:3px solid #1265e83b;outline-offset:2px;border-color:#1265e8!important}.mobi-login-panel .auth-card button.primary{min-height:48px;border-radius:12px;background:#1265e8;color:white;font-weight:700}.mobi-login-panel .auth-card a{color:#1265e8}
 @media(max-width:860px){.mobi-login-shell{grid-template-columns:1fr}.mobi-login-showcase{padding:20px 24px;min-height:160px}.mobi-login-showcase .mobi-login-brand,.mobi-login-art,.mobi-login-capabilities{display:none}.mobi-login-showcase-copy h2{font-size:23px;margin:6px 0}.mobi-login-showcase-copy p{font-size:13px;line-height:1.6}.mobi-login-panel{padding:18px}.mobi-login-panel .auth-card{margin:24px auto!important;max-width:520px!important}}
 @media(max-width:430px){.mobi-login-showcase{min-height:142px}.mobi-login-showcase-copy h2{font-size:20px}.mobi-login-panel .auth-card{padding:24px 18px!important;box-shadow:0 12px 32px #162e5a0d}.mobi-login-panel{padding:14px}}
+
+/* Pilot demo operation columns: bar height equals exact share of total operations. */
+.operation-breakdown-columns{grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:clamp(10px,3vw,28px)}
+.operation-breakdown-columns>li{display:flex;flex-direction:column-reverse;gap:10px;min-width:0}
+.operation-breakdown-columns .operation-breakdown-track{height:170px;width:100%;border-radius:9px 9px 0 0;display:flex;align-items:flex-end;justify-content:center;background:repeating-linear-gradient(to top,#edf2f8 0px,#edf2f8 1px,transparent 1px,transparent 42.5px),#f8fbff}
+.operation-breakdown-columns .operation-breakdown-fill{height:0;width:min(100%,100px);border-radius:8px 8px 0 0;background:linear-gradient(180deg,#1265e8,#0a4ebf);flex:none}
+.operation-breakdown-columns>li:nth-child(2) .operation-breakdown-fill{background:linear-gradient(180deg,#ff9a44,#ff7a1a)}
+.operation-breakdown-columns>li:nth-child(3) .operation-breakdown-fill{background:linear-gradient(180deg,#44a9d9,#087eb2)}
+.operation-breakdown-columns .operation-breakdown-label{display:grid;gap:2px;justify-items:center;text-align:center;line-height:1.35}
+.operation-breakdown-columns .operation-breakdown-label strong{font-size:.77rem}
+@media(max-width:480px){.operation-breakdown-columns{gap:8px}.operation-breakdown-columns .operation-breakdown-track{height:130px}.operation-breakdown-columns .operation-breakdown-label{font-size:.8rem}}

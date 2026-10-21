@@ -45,15 +45,15 @@ describe("demo operation breakdown", () => {
     expect(html).toContain("(40%)");
     expect(html).toContain("(20%)");
     expect(html.match(/<li>/g)).toHaveLength(3);
-    expect(html.match(/width:40%/g)).toHaveLength(2);
-    expect(html).toContain("width:20%");
+    expect(html.match(/height:40%/g)).toHaveLength(2);
+    expect(html).toContain("height:20%");
     expect(html).toContain(`dir="${locale === "ar" ? "rtl" : "ltr"}"`);
     expect(html).toContain('aria-describedby="operation-breakdown-caption"');
     expect(html).not.toContain("USD");
     expect(html).not.toContain("$");
     const empty = renderToStaticMarkup(createElement(OperationBreakdownChart, { rows: [], locale }));
     expect(empty).toContain(locale === "ar" ? "لا توجد عمليات" : "No demo operations");
-    expect(empty.match(/width:0%/g)).toHaveLength(3);
+    expect(empty.match(/height:0%/g)).toHaveLength(3);
     expect(empty).not.toMatch(/NaN|Infinity/);
   });
 });
