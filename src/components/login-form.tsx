@@ -169,7 +169,7 @@ export function LoginForm({ locale, initialTenant = "", initialEmail = "", retur
   } as const;
 
   return <main className="mobi-login-shell" dir={locale === "ar" ? "rtl" : "ltr"}>
-    <div className="mobi-login-panel mobi-admin-login-panel"><div className="mobi-login-top"><Link href={"/product/" + locale} className="mobi-login-small-brand">A1 <strong>Mobi</strong></Link><Link href={locale === "ar" ? "/en/login" : "/ar/login"} className="mobi-login-lang" hrefLang={locale === "ar" ? "en" : "ar"}>{locale === "ar" ? "English" : "\u0627\u0644\u0639\u0631\u0628\u064a\u0629"}</Link></div><section className="auth-card" style={{
+    <div className="mobi-login-panel mobi-admin-login-panel"><div className="mobi-login-top"><Link href={"/product/" + locale} className="mobi-login-small-brand" aria-label="A1 Mobi"><Image src="/brand/a1-mobi-logo.svg" width={145} height={50} alt="A1 Mobi" priority /></Link><Link href={locale === "ar" ? "/en/login" : "/ar/login"} className="mobi-login-lang" hrefLang={locale === "ar" ? "en" : "ar"}>{locale === "ar" ? "English" : "\u0627\u0644\u0639\u0631\u0628\u064a\u0629"}</Link></div><section className="auth-card" style={{
     maxWidth: 560,
     margin: "32px auto",
     padding: 28,
@@ -178,7 +178,7 @@ export function LoginForm({ locale, initialTenant = "", initialEmail = "", retur
     borderRadius: 16,
   }}>
     <h1 style={{ fontSize: 28, marginBottom: 12 }}>{t.title}</h1>
-    <p style={{ marginBottom: 24 }}>{t.intro}</p>
+
 
     {active ? <div>
       <p role="status" style={{ marginBottom: 16 }}>{t.active}</p>
@@ -193,8 +193,8 @@ export function LoginForm({ locale, initialTenant = "", initialEmail = "", retur
     </div> : <form onSubmit={submit} style={{ display: "grid", gap: 20 }}>
       <label>{t.tenant}
         <input name="tenant" defaultValue={initialTenant} autoComplete="organization" required maxLength={80}
-          pattern="[a-zA-Z0-9-]+" aria-describedby="tenant-hint" dir="ltr" style={inputStyle} />
-        <small id="tenant-hint" className="mobi-field-hint">{t.tenantHint}</small>
+          pattern="[a-zA-Z0-9-]+" dir="ltr" style={inputStyle} />
+
       </label>
       <label>{t.email}
         <input name="email" defaultValue={initialEmail} type="email" autoComplete="username" required
@@ -205,9 +205,9 @@ export function LoginForm({ locale, initialTenant = "", initialEmail = "", retur
         <div className="mobi-password-field">
         <input id="login-password" name="password" type={showPassword ? "text" : "password"} autoComplete="current-password"
           required maxLength={256} dir="ltr" style={inputStyle} />
-        <button type="button" aria-controls="login-password" aria-pressed={showPassword}
+        <button type="button" aria-controls="login-password" aria-pressed={showPassword} aria-label={showPassword ? t.hidePassword : t.showPassword} title={showPassword ? t.hidePassword : t.showPassword}
           onClick={() => setShowPassword(value => !value)}>
-          {showPassword ? t.hidePassword : t.showPassword}
+          {showPassword ? <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.3A10.9 10.9 0 0 1 12 5c5.2 0 9 5 9 7a12.3 12.3 0 0 1-3.5 4.2M6.3 6.3C3.7 8 3 10.5 3 12c0 2 3.8 7 9 7 1.1 0 2.1-.2 3.1-.6"/></svg> : <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>}
         </button>
         </div>
       </div>
@@ -218,11 +218,11 @@ export function LoginForm({ locale, initialTenant = "", initialEmail = "", retur
           {t.factorHint}
         </small>
       </label>}
-      <button className="primary" disabled={busy}>{busy ? t.busy : t.submit}</button>
+      <button className="primary mobi-login-submit" disabled={busy}>{busy ? t.busy : t.submit}</button>
       <Link href={"/" + locale + "/recover"}>{t.recover}</Link>
     </form>}
 
     {error && <p role="alert" style={{ color: "#b91c1c", marginTop: 20 }}>{error}</p>}
-    <p style={{ marginTop: 24, fontSize: 16, color: "#475569" }}>{t.note}</p>
+
   </section></div></main>;
 }

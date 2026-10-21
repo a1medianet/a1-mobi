@@ -1649,3 +1649,14 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 .mobi-admin-login-panel .auth-card button.primary{min-height:43px}
 @media(max-height:700px){.mobi-admin-login-panel{gap:5px}.mobi-admin-login-panel .auth-card{padding:12px 22px!important}.mobi-admin-login-panel .auth-card h1+p{margin-bottom:8px!important}.mobi-admin-login-panel .auth-card form{gap:7px!important}.mobi-admin-login-panel .auth-card>p:last-child{margin-top:8px!important}}
 @media(max-width:600px){.mobi-login-shell:has(.mobi-admin-login-panel){height:auto;min-height:100svh;overflow:auto}.mobi-auth-shell:has(.mobi-admin-login-panel){height:auto;min-height:100svh;overflow:auto}.mobi-admin-login-panel{max-height:none;width:min(100%,450px)}}
+
+/* Compact bilingual administrative sign-in refinements */
+.mobi-admin-login-panel .mobi-login-top{align-items:center}
+.mobi-admin-login-panel .mobi-login-small-brand{display:flex;align-items:center;min-height:44px}
+.mobi-admin-login-panel .mobi-login-small-brand img{display:block;width:145px;height:auto;max-height:46px;object-fit:contain}
+.mobi-admin-login-panel .mobi-password-field{display:flex;align-items:center;gap:8px}
+.mobi-admin-login-panel .mobi-password-field input{flex:1;min-width:0}
+.mobi-admin-login-panel .mobi-password-field button{width:44px;min-width:44px;height:42px;padding:0;display:grid;place-items:center;border:1px solid #cad7e9;border-radius:10px;background:#f8fbff;color:#36547b}
+.mobi-admin-login-panel .mobi-password-field button:hover,.mobi-admin-login-panel .mobi-password-field button:focus-visible{color:#1265e8;border-color:#1265e8}
+.mobi-admin-login-panel .mobi-login-submit{text-align:center!important;display:flex;align-items:center;justify-content:center}
+.mobi-admin-login-panel .auth-card>h1{margin-bottom:22px!important}
