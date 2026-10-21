@@ -53,7 +53,17 @@ describe("C-13 owner reports branch-safe read model",()=>{
   }));
  });
 
- it("returns real zeroes when no entries are posted, not demo sample values",async()=>{
+ it.each([1,7,30,365])("scopes sales and returns to exactly %i rolling days",async days=>{
+  const result=await getBranchOperatingReport({...scope,now,durationDays:days});
+  expect(result.range).toEqual({from:new Date(now.getTime()-days*86400000).toISOString(),to:now.toISOString()});
+  const interval={gte:new Date(now.getTime()-days*86400000),lt:now};
+  expect(db.sale.aggregate).toHaveBeenCalledWith(expect.objectContaining({where:expect.objectContaining({...scope,occurredAt:interval})}));
+  expect(db.saleReturn.aggregate).toHaveBeenCalledWith(expect.objectContaining({where:expect.objectContaining({...scope,occurredAt:interval})}));
+ });
+ it.each([0,-1,1.5,367,Number.NaN])("rejects invalid duration %s before touching the database",async durationDays=>{
+  await expect(getBranchOperatingReport({...scope,now,durationDays})).rejects.toThrow("INVALID_REPORT_WINDOW");
+  expect(db.sale.aggregate).not.toHaveBeenCalled();
+ }); it("returns real zeroes when no entries are posted, not demo sample values",async()=>{
   vi.mocked(db.sale.aggregate).mockResolvedValue({_sum:{total:null},_count:{_all:0}} as never);
   vi.mocked(db.saleReturn.aggregate).mockResolvedValue({_sum:{refundBase:null},_count:{_all:0}} as never);
   vi.mocked(db.payment.aggregate).mockResolvedValue({_sum:{baseAmount:null}} as never);
