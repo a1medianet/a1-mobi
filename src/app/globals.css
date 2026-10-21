@@ -1663,3 +1663,11 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 /* Final admin login identity proportions — AR/EN */
 .mobi-admin-login-panel .mobi-login-small-brand img{width:116px;height:auto;max-height:37px;object-fit:contain}
 .mobi-admin-login-panel .auth-card>h1{font-size:clamp(18px,2.2vh,22px)!important;font-weight:700!important;line-height:1.35;margin-bottom:18px!important}
+/* Recovery is a centered administrative utility, not a marketing page. */
+.mobi-auth-shell:has(.mobi-recovery-centered)>.mobi-auth-header{display:none}
+.mobi-auth-shell:has(.mobi-recovery-centered){min-height:100svh;background:radial-gradient(circle at 50% 12%,#e7f0ff,#f8fafc 70%)}
+.mobi-auth-content:has(.mobi-recovery-centered){min-height:100svh;display:grid;place-items:center;padding:18px}
+.mobi-recovery-centered{width:min(100%,470px);margin:0!important;padding:clamp(20px,3vh,30px)!important;box-shadow:0 18px 55px #143b7a13;border-radius:20px!important}
+.mobi-recovery-centered h1{font-size:clamp(20px,2.3vh,24px)!important;font-weight:700!important}
+.mobi-recovery-centered .primary{display:flex;justify-content:center;align-items:center;text-align:center;min-height:44px}
+@media(max-height:600px){.mobi-auth-content:has(.mobi-recovery-centered){place-items:start center;overflow:auto}.mobi-recovery-centered{padding:14px!important}}

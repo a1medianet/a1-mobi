@@ -134,7 +134,7 @@ export function RecoveryForm({
     }
   }
 
-  return <section className="auth-card" style={{
+  return <section className="auth-card mobi-recovery-centered" style={{
     maxWidth: 600,
     margin: "32px auto",
     padding: 28,
