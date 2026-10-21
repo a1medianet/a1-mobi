@@ -1691,3 +1691,16 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 .product-site .mobi-a-features{margin-bottom:38px}
 @media(max-width:1050px){.product-site .demo-grid{grid-template-columns:1fr;gap:18px}.product-site .demo-grid>.demo-panel{height:auto}}
 @media(max-width:640px){.product-site .product-nav .product-brand .mobi-brand-asset img{width:94px!important}.product-site .product-page .page-intro h1{font-size:clamp(26px,7vw,34px)}.product-site .demo-grid{gap:15px;margin-block:22px 36px}.product-site .mobi-marketing-a{margin-bottom:24px}}
+
+/* A visual finishing pass — consistent typography and separated cards */
+.product-site .product-nav .product-brand .mobi-brand-asset img{width:96px!important}
+.product-site .page-intro h1{font-size:clamp(27px,2.65vw,38px)!important;line-height:1.35!important;letter-spacing:-.02em}
+.product-site .mobi-marketing-a .mobi-a-copy h1{font-size:clamp(31px,3.25vw,46px)!important;line-height:1.26!important}
+.product-site .product-section-head h2,.product-site .mobi-a-repair-story h2,.product-site .mobi-a-why h2{font-size:clamp(24px,2.3vw,32px)!important;line-height:1.4!important}
+.product-site .mobi-a-final-cta h2{font-size:clamp(24px,2.5vw,34px)!important;line-height:1.3!important;font-weight:750!important}
+.product-site .mobi-marketing-a{margin-bottom:0!important}
+.product-site .mobi-a-features{margin-top:34px!important;margin-bottom:42px!important;position:relative;z-index:1}
+.product-site .mobi-a-features .mobi-a-feature-grid{margin-top:0!important}
+.product-site .mobi-a-final-cta{margin-block:24px 32px!important}
+.product-site .demo-grid{row-gap:24px!important}
+@media(max-width:640px){.product-site .product-nav .product-brand .mobi-brand-asset img{width:88px!important}.product-site .mobi-a-features{margin-top:22px!important;margin-bottom:28px!important}.product-site .mobi-marketing-a .mobi-a-copy h1{font-size:clamp(27px,8vw,36px)!important}.product-site .page-intro h1{font-size:clamp(26px,7vw,34px)!important}}
