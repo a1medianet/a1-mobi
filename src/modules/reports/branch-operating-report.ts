@@ -16,12 +16,14 @@ const round4 = (value: number) => Math.round((value + Number.EPSILON) * 10000) /
 // A compact, branch-bound operating report. This is NOT the older tenant-wide
 // buildOwnerSummary; it intentionally avoids unverified profit/stock/debt totals.
 export async function getBranchOperatingReport(scope:{
-  tenantId:string;branchId:string;now?:Date;
+  tenantId:string;branchId:string;now?:Date;durationDays?:number;
 }) {
   if(!scope.tenantId||!scope.branchId)throw new Error("REPORT_SCOPE_REQUIRED");
   const to=scope.now??new Date();
   if(!Number.isFinite(to.getTime()))throw new Error("INVALID_REPORT_WINDOW");
-  const from=new Date(to.getTime()-30*24*60*60*1000);
+  const days=scope.durationDays??30;
+  if(!Number.isInteger(days)||days<1||days>366)throw new Error("INVALID_REPORT_WINDOW");
+  const from=new Date(to.getTime()-days*24*60*60*1000);
   const branch={tenantId:scope.tenantId,branchId:scope.branchId};
   const range={gte:from,lt:to};
 
