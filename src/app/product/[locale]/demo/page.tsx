@@ -39,12 +39,12 @@ export default async function DemoPage({params}:{params:Promise<{locale:string}>
           <span aria-hidden="true">▣</span><div><b>{row.id} · {ar?row.customerAr:row.customerEn}</b><small>{row.time} · {"$"+row.amount} · {ar?({IN_REPAIR:"قيد الصيانة",COMPLETED:"مكتملة",READY:"جاهزة"}[row.status]):({IN_REPAIR:"In repair",COMPLETED:"Completed",READY:"Ready"}[row.status])}</small></div>
         </div>)}
       </article>
-    </section>
     <section id="repairs" className="demo-panel" aria-label={ar?"سجل صيانة توضيحي":"Sample repair records"}>
       <div className="panel-title"><span className="product-eyebrow">{ar?"صيانة توضيحية":"SAMPLE REPAIRS"}</span><h2>{ar?"من التشخيص إلى التسليم":"From diagnosis to delivery"}</h2></div>
       {demoRepairs.map(repair=><div className="demo-row" key={repair.number}>
         <span aria-hidden="true">↗</span><div><b>{repair.number} · {repair.device}</b><small>{ar?repair.issueAr:repair.issueEn} · {ar?"تقدير توضيحي":"Sample estimate"}: ${repair.estimate}</small></div>
       </div>)}
+    </section>
     </section>
 
   </main>;

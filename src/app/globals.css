@@ -1677,3 +1677,17 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 .mobi-recovery-wrap .mobi-recovery-top{justify-content:space-between;align-items:center;gap:14px}
 .mobi-recovery-brand{display:flex;align-items:center}
 .mobi-recovery-brand img{width:116px;height:auto;max-height:37px;object-fit:contain}
+
+/* A/B/C visual closeout: restrained logo/heading scales and balanced, detached sections. */
+.product-site .product-nav .product-brand .mobi-brand-asset img{width:112px!important;height:auto}
+.product-site .product-page .page-intro h1{font-size:clamp(28px,3vw,42px);line-height:1.38}
+.product-site .product-page .page-intro{padding-block:38px 24px}
+.product-site .demo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:stretch;margin-block:26px 48px}
+.product-site .demo-grid>.demo-panel{margin:0;min-width:0;padding:24px 20px;height:100%}
+.product-site .demo-grid>.demo-panel .panel-title h2{font-size:clamp(18px,1.55vw,23px);line-height:1.45}
+.product-site .demo-grid .demo-row{gap:10px}
+.product-site .mobi-marketing-a{margin-bottom:36px}
+.product-site .mobi-marketing-a + .mobi-a-features{margin-top:0}
+.product-site .mobi-a-features{margin-bottom:38px}
+@media(max-width:1050px){.product-site .demo-grid{grid-template-columns:1fr;gap:18px}.product-site .demo-grid>.demo-panel{height:auto}}
+@media(max-width:640px){.product-site .product-nav .product-brand .mobi-brand-asset img{width:94px!important}.product-site .product-page .page-intro h1{font-size:clamp(26px,7vw,34px)}.product-site .demo-grid{gap:15px;margin-block:22px 36px}.product-site .mobi-marketing-a{margin-bottom:24px}}
