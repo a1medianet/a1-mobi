@@ -1635,3 +1635,17 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
  .mobi-login-panel .auth-card form{gap:8px!important}
  .mobi-login-panel .auth-card input{min-height:38px!important}
 }
+
+/* Admin-only sign-in: calm centered card, never a second marketing landing. */
+.mobi-auth-shell:has(.mobi-admin-login-panel){height:100svh;min-height:100svh;overflow:hidden;background:radial-gradient(circle at 50% 12%,#e7f0ff 0%,#f6f9fd 48%,#f8fafc 100%)}
+.mobi-auth-shell:has(.mobi-admin-login-panel)>.mobi-auth-content{height:100svh;min-height:0}
+.mobi-login-shell:has(.mobi-admin-login-panel){display:flex;justify-content:center;align-items:center;width:100%;height:100svh;min-height:0;overflow:hidden;background:transparent;padding:clamp(12px,2vh,24px)}
+.mobi-admin-login-panel{width:min(100%,460px);padding:0!important;min-height:0;max-height:calc(100svh - 24px);display:flex;flex-direction:column;gap:12px}
+.mobi-admin-login-panel .mobi-login-top{padding:0 8px}
+.mobi-admin-login-panel .auth-card{width:100%;max-width:none!important;margin:0!important;padding:clamp(18px,2.7vh,30px)!important;border:1px solid #e3ebf5!important;border-radius:20px!important;box-shadow:0 18px 55px #143b7a13}
+.mobi-admin-login-panel .auth-card h1{font-size:clamp(21px,2.8vh,27px)!important}
+.mobi-admin-login-panel .auth-card form{gap:clamp(8px,1.3vh,14px)!important}
+.mobi-admin-login-panel .auth-card input{min-height:40px!important}
+.mobi-admin-login-panel .auth-card button.primary{min-height:43px}
+@media(max-height:700px){.mobi-admin-login-panel{gap:5px}.mobi-admin-login-panel .auth-card{padding:12px 22px!important}.mobi-admin-login-panel .auth-card h1+p{margin-bottom:8px!important}.mobi-admin-login-panel .auth-card form{gap:7px!important}.mobi-admin-login-panel .auth-card>p:last-child{margin-top:8px!important}}
+@media(max-width:600px){.mobi-login-shell:has(.mobi-admin-login-panel){height:auto;min-height:100svh;overflow:auto}.mobi-auth-shell:has(.mobi-admin-login-panel){height:auto;min-height:100svh;overflow:auto}.mobi-admin-login-panel{max-height:none;width:min(100%,450px)}}
