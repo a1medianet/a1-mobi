@@ -1660,3 +1660,6 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 .mobi-admin-login-panel .mobi-password-field button:hover,.mobi-admin-login-panel .mobi-password-field button:focus-visible{color:#1265e8;border-color:#1265e8}
 .mobi-admin-login-panel .mobi-login-submit{text-align:center!important;display:flex;align-items:center;justify-content:center}
 .mobi-admin-login-panel .auth-card>h1{margin-bottom:22px!important}
+/* Final admin login identity proportions — AR/EN */
+.mobi-admin-login-panel .mobi-login-small-brand img{width:116px;height:auto;max-height:37px;object-fit:contain}
+.mobi-admin-login-panel .auth-card>h1{font-size:clamp(18px,2.2vh,22px)!important;font-weight:700!important;line-height:1.35;margin-bottom:18px!important}
