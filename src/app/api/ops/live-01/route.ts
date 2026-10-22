@@ -61,7 +61,7 @@ function rejected(error: unknown) {
   if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
     return authJson({ error: "ALREADY_EXISTS" }, 409);
   }
-  if (/ALREADY|Insufficient stock|not available|Duplicate|STOCK_LOCATION_NOT_FOUND/.test(code)) {
+  if (/ALREADY|RECEIPT_IDEMPOTENCY_CONFLICT|Insufficient stock|not available|Duplicate|STOCK_LOCATION_NOT_FOUND/.test(code)) {
     return authJson({ error: "CONFLICT_OR_OUT_OF_STOCK" }, 409);
   }
   // Do not return raw domain exceptions, SQL, PII, or authorization details to clients.
@@ -187,7 +187,19 @@ export async function POST(request: Request) {
         const products=await tx.product.findMany({where:{tenantId:ctx.tenantId,id:{in:ids},isActive:true,isSerialized:false}});
         if (products.length!==ids.length) throw new Error("RECEIPT_PRODUCT_NOT_FOUND");
         const existing=await tx.stockMovement.findFirst({where:{tenantId:ctx.tenantId,idempotencyKey:input.idempotencyKey}});
-        if(existing) return {alreadyProcessed:true};
+        if(existing) {
+          const previous=await tx.stockMovement.findMany({where:{
+            tenantId:ctx.tenantId,referenceType:"BULK_RECEIPT",referenceId:input.idempotencyKey,
+          }});
+          const expected=new Map(input.lines.map(line=>[line.productId,line]));
+          const identical=previous.length===input.lines.length&&previous.every(row=>{
+            const line=expected.get(row.productId);
+            return row.branchId===ctx.branchId&&row.toLocationId===location.id&&row.type==="PURCHASE_RECEIPT"&&
+              !!line&&Number(row.quantity)===line.quantity&&Number(row.unitCost)===line.unitCost;
+          });
+          if(!identical) throw new Error("RECEIPT_IDEMPOTENCY_CONFLICT");
+          return {alreadyProcessed:true};
+        }
         for(const [index,line] of input.lines.entries()) {
           await tx.stockMovement.create({data:{
             tenantId:ctx.tenantId,branchId:ctx.branchId,productId:line.productId,
@@ -204,7 +216,8 @@ export async function POST(request: Request) {
         return {received:input.lines.length,alreadyProcessed:false};
       });
       return authJson(receipt,receipt.alreadyProcessed?200:201);
-    }    const deviceIds = input.action === "sell" ? [input.deviceId] : input.deviceIds;
+    }
+    const deviceIds = input.action === "sell" ? [input.deviceId] : input.deviceIds;
     const devices = await db.serializedDevice.findMany({
       where: {
         id: { in: deviceIds }, tenantId: ctx.tenantId,

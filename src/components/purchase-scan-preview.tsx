@@ -10,7 +10,7 @@ export function PurchaseScanPreview({products,locations,locale,onSaved}:{product
  function add(){
   try {
    setLines(addScannedReceiptProduct(scan,products,lines,Number(cost)));
-   setScan("");setMessage("");
+   setScan("");setMessage("");setReceiptKey("");
   } catch(e) {
    const reason=e instanceof Error?e.message:"";
    const messages:Record<string,[string,string]>={
@@ -32,7 +32,7 @@ export function PurchaseScanPreview({products,locations,locale,onSaved}:{product
     const result=await response.json();
     if(!response.ok)throw new Error(result.error||"SAVE_FAILED");
     setLines([]);setReceiptKey("");setMessage(ar?"تم حفظ حركة الاستلام.":"Purchase receipt saved.");
-    await onSaved();
+    try { await onSaved(); } catch { setMessage(ar?"تم الحفظ. حدّث الصفحة لعرض الأرصدة.":"Saved. Refresh the page to see balances."); }
   } catch(e){setMessage((ar?"تعذر الحفظ: ":"Save failed: ")+(e instanceof Error?e.message:"UNKNOWN"));}
   finally{setSaving(false);}
  } return <section className="mobi-purchase-scan-preview" aria-label={ar?"استلام مشتريات بالمسح":"Purchase scan receiving"}>
@@ -44,9 +44,9 @@ export function PurchaseScanPreview({products,locations,locale,onSaved}:{product
   </div>
   <button type="button" className="primary" disabled={!scan.trim()} onClick={add}>{ar?"أضف للمسودة":"Add to draft"}</button>
   {message&&<p role="status">{message}</p>}
-  <label>{ar?"موقع التخزين":"Stock location"}<select value={locationId} onChange={e=>setLocationId(e.target.value)}><option value="">{ar?"اختر الموقع":"Select location"}</option>{locations.map(loc=><option key={loc.id} value={loc.id}>{loc.name}</option>)}</select></label>
+  <label>{ar?"موقع التخزين":"Stock location"}<select value={locationId} onChange={e=>{setLocationId(e.target.value);setReceiptKey("");}}><option value="">{ar?"اختر الموقع":"Select location"}</option>{locations.map(loc=><option key={loc.id} value={loc.id}>{loc.name}</option>)}</select></label>
   {lines.length>0&&<ul>{lines.map(line=>{const item=products.find(p=>p.id===line.productId);return <li key={line.productId}>{ar?item?.nameAr:item?.nameEn} — {line.quantity} × {line.unitCost.toFixed(2)} USD</li>;})}</ul>}
   {lines.length>0&&<button type="button" className="primary" disabled={saving||!locationId} onClick={()=>void save()}>{saving?(ar?"جار الحفظ...":"Saving..."):(ar?"حفظ الاستلام في المخزون":"Post receipt to inventory")}</button>}
-  {lines.length>0&&<button type="button" onClick={()=>{setLines([]);setMessage("");}}>{ar?"إلغاء المسودة":"Clear draft"}</button>}
+  {lines.length>0&&<button type="button" onClick={()=>{setLines([]);setMessage("");setReceiptKey("");}}>{ar?"إلغاء المسودة":"Clear draft"}</button>}
  </section>;
 }
