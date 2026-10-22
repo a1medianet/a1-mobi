@@ -107,6 +107,22 @@ export default function PosPage() {
       : [...current,{product,quantity:1}]);
   }
 
+  const [scanMessage,setScanMessage]=useState("");
+  function addScannedProduct() {
+    const code=query.trim();
+    const match=demoProducts.find(product=>product.barcode.toLowerCase()===code.toLowerCase()||product.sku.toLowerCase()===code.toLowerCase());
+    if(!match) {
+      setScanMessage(locale==="ar"?"الباركود غير معروف. عرّف الصنف أولاً من شاشة المنتجات.":"Unknown barcode. Define this product first in Products.");
+      return;
+    }
+    if(available(match)<=0){
+      setScanMessage(locale==="ar"?"الصنف غير متوفر في المخزون.":"Product is out of stock.");
+      return;
+    }
+    addProduct(match);
+    setScanMessage("");
+    setQuery("");
+  }
   function toggleSuspend() {
     if (suspended && cart.length === 0) {
       setCart(suspended);
@@ -183,10 +199,11 @@ export default function PosPage() {
       <section className="product-panel" aria-label={t.products}>
         <div className="module-toolbar">
           <label className="module-search"><span aria-hidden="true">⌕</span>
-            <input value={query} onChange={event=>setQuery(event.target.value)} aria-label={t.search} placeholder={t.search}/>
+            <input value={query} onChange={event=>{setQuery(event.target.value);setScanMessage("");}} onKeyDown={event=>{if(event.key==="Enter"){event.preventDefault();addScannedProduct();}}} aria-label={t.search} placeholder={t.search}/>
           </label>
           <Link className="text-link" href={"/"+locale+"/products"}>{t.products} →</Link>
         </div>
+        {scanMessage && <p className="empty-search" role="status">{scanMessage}</p>}
         <div className="product-grid">{filtered.map(product => {
           const remaining = available(product);
           return <button className="product-card" key={product.id} onClick={()=>addProduct(product)} disabled={remaining<=0}>
