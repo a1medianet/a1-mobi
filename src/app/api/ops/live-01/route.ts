@@ -39,6 +39,11 @@ const actionSchema = z.discriminatedUnion("action", [
     idempotencyKey: z.string().uuid(),
   }).strict(),
   z.object({
+    action: z.literal("receiveBulk"),
+    locationId: identifier,
+    lines: z.array(z.object({productId:identifier,quantity:z.number().int().positive().max(10000),unitCost:amount}).strict()).min(1).max(50),
+    idempotencyKey: z.string().uuid(),
+  }).strict(),  z.object({
     action: z.literal("sell"),
     deviceId: identifier,
     idempotencyKey: z.string().uuid(),
@@ -171,7 +176,35 @@ export async function POST(request: Request) {
       return authJson({ id: received.id, status: received.status }, 201);
     }
 
-    const deviceIds = input.action === "sell" ? [input.deviceId] : input.deviceIds;
+    if (input.action === "receiveBulk") {
+      if (new Set(input.lines.map(line=>line.productId)).size!==input.lines.length) {
+        return authJson({error:"DUPLICATE_RECEIPT_PRODUCT"},400);
+      }
+      const receipt = await db.$transaction(async tx => {
+        const location=await tx.stockLocation.findFirst({where:{id:input.locationId,tenantId:ctx.tenantId,branchId:ctx.branchId}});
+        if (!location) throw new Error("STOCK_LOCATION_NOT_FOUND");
+        const ids=input.lines.map(line=>line.productId);
+        const products=await tx.product.findMany({where:{tenantId:ctx.tenantId,id:{in:ids},isActive:true,isSerialized:false}});
+        if (products.length!==ids.length) throw new Error("RECEIPT_PRODUCT_NOT_FOUND");
+        const existing=await tx.stockMovement.findFirst({where:{tenantId:ctx.tenantId,idempotencyKey:input.idempotencyKey}});
+        if(existing) return {alreadyProcessed:true};
+        for(const [index,line] of input.lines.entries()) {
+          await tx.stockMovement.create({data:{
+            tenantId:ctx.tenantId,branchId:ctx.branchId,productId:line.productId,
+            toLocationId:location.id,type:"PURCHASE_RECEIPT",quantity:line.quantity,
+            unitCost:line.unitCost,idempotencyKey:index===0?input.idempotencyKey:input.idempotencyKey+":"+index,
+            referenceType:"BULK_RECEIPT",referenceId:input.idempotencyKey,
+          }});
+        }
+        await tx.auditEvent.create({data:{
+          tenantId:ctx.tenantId,branchId:ctx.branchId,actorId:ctx.actorId,
+          action:"inventory.bulk-purchase.received",entityType:"StockMovement",
+          entityId:input.idempotencyKey,after:{locationId:location.id,lines:input.lines},
+        }});
+        return {received:input.lines.length,alreadyProcessed:false};
+      });
+      return authJson(receipt,receipt.alreadyProcessed?200:201);
+    }    const deviceIds = input.action === "sell" ? [input.deviceId] : input.deviceIds;
     const devices = await db.serializedDevice.findMany({
       where: {
         id: { in: deviceIds }, tenantId: ctx.tenantId,
