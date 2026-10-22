@@ -5,7 +5,7 @@ import { selectScannedImei } from "@/modules/pilot/scanner";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
-type P = { id:string; sku:string; nameAr:string; nameEn:string; isSerialized:boolean; price:number };
+type P = { id:string; sku:string; nameAr:string; nameEn:string; isSerialized:boolean; barcodes:string[]; price:number };
 type V = { id:string; model:string; name:string };
 type D = { id:string; productId:string; productName:string; productNameEn?:string; imei:string|null; status:string };
 

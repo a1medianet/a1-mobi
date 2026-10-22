@@ -68,7 +68,7 @@ export async function GET() {
   try {
     const ctx = await currentStoreContext("inventory.read");
     const [products, variants, locations, devices, sales] = await Promise.all([
-      db.product.findMany({ where: { tenantId: ctx.tenantId, isActive: true },
+      db.product.findMany({ where: { tenantId: ctx.tenantId, isActive: true }, include: { barcodes: { select: { value: true } } },
         orderBy: { createdAt: "desc" }, take: 100 }),
       db.deviceVariant.findMany({ where: { tenantId: ctx.tenantId },
         include: { model: true }, take: 100 }),
@@ -83,7 +83,7 @@ export async function GET() {
     return authJson({
       mode: "LIVE_PILOT", branchId: ctx.branchId,
       products: products.map(p => ({ id: p.id, sku: p.sku, nameAr: p.nameAr, nameEn: p.nameEn,
-        isSerialized: p.isSerialized, price: Number(p.basePrice) })),
+        isSerialized: p.isSerialized, barcodes: p.barcodes.map(b => b.value), price: Number(p.basePrice) })),
       variants: variants.map(v => ({ id: v.id, name: v.name, model: v.model.name })),
       locations: locations.map(l => ({ id: l.id, name: l.name })),
       devices: devices.map(v => ({ id: v.id, productId: v.productId, productName: v.product.nameAr, productNameEn: v.product.nameEn,
