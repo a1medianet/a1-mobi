@@ -1,5 +1,7 @@
 "use client";
 import Link from "next/link";
+import { StockCountPanel } from "@/components/stock-count-panel";
+import { SaleReturnPanel } from "@/components/sale-return-panel";
 import { StockPosCart } from "@/components/stock-pos-cart";
 import { PurchaseScanPreview } from "@/components/purchase-scan-preview";
 import { selectScannedImei } from "@/modules/pilot/scanner";
@@ -156,6 +158,8 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
     <button type="submit" className="primary" disabled={busy||!selectedDevices.length}>{t.checkout}</button>
    </form>}
   </section>
+  {mode!=="pos"&&<StockCountPanel products={state?.products??[]} locations={state?.locations??[]} locale={locale}/>}
+  {mode!=="inventory"&&<SaleReturnPanel locale={locale}/>}
   <section className="mobi-live-details">
    {mode!=="pos"&&<article><h2>{t.list}</h2><div className="table-wrap"><table><thead><tr><th>IMEI</th><th>{t.product}</th><th>{t.state}</th></tr></thead>
    <tbody>{state?.devices.map(d=><tr key={d.id}><td><bdi dir="ltr">{d.imei}</bdi></td><td>{locale==="en"?(d.productNameEn||d.productName):d.productName}</td><td>{liveOperationStatus(d.status,locale)}</td></tr>)}</tbody></table></div></article>}

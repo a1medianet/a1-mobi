@@ -54,6 +54,27 @@ runDb("POS nonserialized PostgreSQL", () => {
     await db.user.update({ where: { id: input.actorId }, data: { isActive: false } });
     await expect(checkoutSale(input)).rejects.toThrow("actor branch");
   }, 30000);
+  it("blocks duplicate/invalid returns, scoped replay conflicts and cumulative over-return", async () => {
+    const { tenant, input, location } = await fixture();
+    const sale = await checkoutSale(input);
+    const line = { originalSaleLineId: sale.lines[0].id, stockLocationId: location.id, quantity: 2 };
+    const request = { tenantId: input.tenantId, branchId: input.branchId, actorId: input.actorId, saleId: sale.id, number: `R-${input.number}`, reason: "Return test", idempotencyKey: `r-${input.idempotencyKey}`, lines: [line] };
+    await expect(postSaleReturn({ ...request, lines: [line, line] })).rejects.toThrow("Duplicate original return line");
+    await expect(postSaleReturn({ ...request, lines: [{ ...line, quantity: NaN }] })).rejects.toThrow("positive");
+    const returned = await postSaleReturn(request);
+    const returnAudit = await db.auditEvent.findFirstOrThrow({ where: { entityId: returned.id, action: "sale.return.posted" } });
+    expect(returnAudit.before).toMatchObject({ status: "COMPLETED", lines: [{ returnedQuantity: 0 }] });
+    expect(returnAudit.after).toMatchObject({ status: "PARTIALLY_RETURNED", lines: [{ quantity: 2, returnedQuantity: 2 }] });
+    expect((await postSaleReturn({ ...request, idempotencyKey: ` ${request.idempotencyKey} ` })).id).toBe(returned.id);
+    await expect(postSaleReturn({ ...request, lines: [{ ...line, quantity: 1 }] })).rejects.toThrow("RETURN_IDEMPOTENCY_CONFLICT");
+    const branch = await db.branch.create({ data: { tenantId: tenant.id, code: "OTHER", name: "Other" } });
+    await expect(postSaleReturn({ ...request, branchId: branch.id })).rejects.toThrow("RETURN_IDEMPOTENCY_CONFLICT");
+    await expect(postSaleReturn({ ...request, idempotencyKey: `second-${request.idempotencyKey}`, number: `second-${request.number}` })).rejects.toThrow("exceeds");
+    expect(await db.saleReturn.count({ where: { tenantId: tenant.id } })).toBe(1);
+    expect(await db.stockMovement.count({ where: { tenantId: tenant.id, type: "RETURN" } })).toBe(1);
+    await db.user.update({ where: { id: input.actorId }, data: { isActive: false } });
+    await expect(postSaleReturn(request)).rejects.toThrow("actor branch");
+  }, 30000);
   it("concurrent identical requests create once and can replay after a serialization conflict", async () => {
     const { tenant, input } = await fixture();
     const results = await Promise.allSettled([checkoutSale(input), checkoutSale(input)]);
