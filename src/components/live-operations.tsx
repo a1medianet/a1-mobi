@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { classifyScan } from "@/modules/pilot/scanner";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
@@ -50,6 +51,7 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
  const [product,setProduct]=useState({sku:"",brand:"",model:"",variant:"",nameAr:"",nameEn:"",unitCost:"300",price:"500"});
  const [stock,setStock]=useState({productId:"",variantId:"",locationId:"",imei:"",unitCost:"300"});
  const [selectedDeviceIds,setSelectedDeviceIds]=useState<string[]>([]);
+ const [scanInput,setScanInput]=useState("");
  async function refresh() {
    const r=await fetch("/api/ops/live-01",{cache:"no-store"}),data=await r.json();
    if(!r.ok)throw new Error(data.error||"READ_FAILED");
@@ -76,6 +78,16 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
  const selectedDevices=available.filter(device=>selectedDeviceIds.includes(device.id));
  const cartTotal=selectedDevices.reduce((total,device)=>total+(state?.products.find(p=>p.id===device.productId)?.price??0),0);
  function toggleDevice(id:string,checked:boolean){setSelectedDeviceIds(previous=>checked?[...previous.filter(item=>item!==id),id]:previous.filter(item=>item!==id));}
+ function addScannedDevice() {
+   try {
+     const scan=classifyScan(scanInput);
+     if(scan.kind!=="IMEI") {setError(locale==="ar"?"امسح IMEI لجهاز مسجل؛ باركود المنتجات غير مدعوم هنا بعد.":"Scan a registered device IMEI; product barcodes are not supported here yet.");return;}
+     const match=available.find(device=>device.imei===scan.value);
+     if(!match){setError(locale==="ar"?"الجهاز غير موجود ضمن المخزون المتاح.":"Device is not in available inventory.");return;}
+     setSelectedDeviceIds(previous=>previous.includes(match.id)?previous:[...previous,match.id]);
+     setError("");setScanInput("");
+   } catch {setError(locale==="ar"?"رمز المسح غير صالح.":"Invalid scan code.");}
+ }
  return <main className={"module-page mobi-live01 mobi-live01-"+mode} lang={locale} dir={locale==="ar"?"rtl":"ltr"}>
   <header className="module-header"><div><Link href={"/"+locale} className="back-link">{t.back}</Link>
    <p className="module-kicker">A1 MOBI · {mode==="pos"?(locale==="ar"?"نقطة البيع":"POINT OF SALE"):mode==="inventory"?(locale==="ar"?"المخزون":"INVENTORY"):(locale==="ar"?"العمليات":"OPERATIONS")}</p><h1>{mode==="pos"?(locale==="ar"?"نقطة البيع":"Point of sale"):mode==="inventory"?(locale==="ar"?"المخزون والأجهزة":"Inventory & devices"):t.title}</h1><p className="module-sub">{mode==="pos"?(locale==="ar"?"بيع الأجهزة المسجلة وإصدار فواتير محفوظة.":"Sell registered devices and issue stored invoices."):mode==="inventory"?(locale==="ar"?"تسجيل المنتجات واستلام أجهزة IMEI وإدارة حالتها.":"Register products and receive IMEI devices into inventory."):t.intro}</p></div>
