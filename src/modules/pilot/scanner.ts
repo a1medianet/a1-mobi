@@ -13,7 +13,12 @@ export function classifyScan(raw: string): { kind: ScanKind; value: string } {
     if (!isValidImei(value)) throw new Error("Invalid IMEI checksum");
     return { kind: "IMEI", value };
   }
-  if (/^\d{13}$/.test(value)) return { kind: "EAN13", value };
+  if (/^\d{13}$/.test(value)) {
+    const digits=Array.from(value, Number);
+    const weighted=digits.slice(0,12).reduce((sum,digit,index)=>sum+digit*(index%2===0?1:3),0);
+    if ((10-weighted%10)%10!==digits[12]) throw new Error("Invalid EAN-13 checksum");
+    return { kind: "EAN13", value };
+  }
   if (/^[A-Za-z0-9._/-]{2,64}$/.test(value)) return { kind: "CODE", value };
   throw new Error("Unsupported scanner input");
 }

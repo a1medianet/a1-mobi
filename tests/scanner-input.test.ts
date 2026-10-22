@@ -9,6 +9,7 @@ describe("scanner input contract for POS and inventory", () => {
   });
   it("distinguishes an EAN-13 barcode from an IMEI", () => {
     expect(classifyScan("5901234123457")).toEqual({kind:"EAN13",value:"5901234123457"});
+    expect(()=>classifyScan("5901234123458")).toThrow("Invalid EAN-13 checksum");
   });
   it("classifies internal label and SKU as codes", () => {
     const code=createInternalBarcode(42);

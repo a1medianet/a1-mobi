@@ -17,6 +17,7 @@ export function PurchaseScanPreview({products,locations,locale,onSaved}:{product
    const messages:Record<string,[string,string]>={
     RECEIPT_PRODUCT_NOT_FOUND:["الصنف غير معروف. عرّفه أولًا.","Unknown product. Define it first."],
     SERIALIZED_RECEIVING_REQUIRES_DEVICE:["استخدم استلام IMEI المنفصل.","Use separate IMEI receiving."],
+    RECEIPT_UNIT_COST_CONFLICT:["تكلفة مختلفة للصنف نفسه؛ ألغِ المسودة أو استخدم التكلفة الأصلية.","Different cost for the same item. Clear the draft or use the original cost."],
     INVALID_UNIT_COST:["تكلفة شراء غير صالحة.","Invalid purchase cost."],
    };
    setMessage(messages[reason]?.[ar?0:1]??(ar?"رمز غير صالح.":"Invalid code."));

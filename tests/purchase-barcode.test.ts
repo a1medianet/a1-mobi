@@ -8,6 +8,7 @@ describe("receiving purchases by scanned barcode",()=>{
     const second=addScannedReceiptProduct("PART-ONE",items,first,9.5);
     expect(second).toEqual([{productId:"part-1",quantity:2,unitCost:9.5}]);
     expect(first[0].quantity).toBe(1);
+    expect(()=>addScannedReceiptProduct("PART-ONE",items,first,10.5)).toThrow("RECEIPT_UNIT_COST_CONFLICT");
   });
   it("rejects unknown and serialized stock until separately received",()=>{
     expect(()=>addScannedReceiptProduct("OTHER1234",items,[],10)).toThrow("RECEIPT_PRODUCT_NOT_FOUND");

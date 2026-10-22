@@ -45,6 +45,7 @@ export function addScannedReceiptProduct(
   if (!Number.isFinite(unitCost) || unitCost<0) throw new Error("INVALID_UNIT_COST");
   const existing=lines.find(line=>line.productId===match.id);
   if (!existing) return [...lines,validateReceiptLine({productId:match.id,quantity:1,unitCost})];
+  if (existing.unitCost!==unitCost) throw new Error("RECEIPT_UNIT_COST_CONFLICT");
   const updated={...existing,quantity:existing.quantity+1};
   validateReceiptLine(updated);
   return lines.map(line=>line===existing?updated:line);
