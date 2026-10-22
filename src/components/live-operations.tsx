@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { classifyScan } from "@/modules/pilot/scanner";
+import { selectScannedImei } from "@/modules/pilot/scanner";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
@@ -80,15 +80,20 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
  function toggleDevice(id:string,checked:boolean){setSelectedDeviceIds(previous=>checked?[...previous.filter(item=>item!==id),id]:previous.filter(item=>item!==id));}
  function addScannedDevice() {
    try {
-     const scan=classifyScan(scanInput);
-     if(scan.kind!=="IMEI") {setError(locale==="ar"?"امسح IMEI لجهاز مسجل؛ باركود المنتجات غير مدعوم هنا بعد.":"Scan a registered device IMEI; product barcodes are not supported here yet.");return;}
-     const match=available.find(device=>device.imei===scan.value);
-     if(!match){setError(locale==="ar"?"الجهاز غير موجود ضمن المخزون المتاح.":"Device is not in available inventory.");return;}
-     setSelectedDeviceIds(previous=>previous.includes(match.id)||previous.length>=12?previous:[...previous,match.id]);
-     setError("");setScanInput("");
-   } catch {setError(locale==="ar"?"رمز المسح غير صالح.":"Invalid scan code.");}
- }
- return <main className={"module-page mobi-live01 mobi-live01-"+mode} lang={locale} dir={locale==="ar"?"rtl":"ltr"}>
+     const selection=selectScannedImei(scanInput,available,selectedDeviceIds);
+     setSelectedDeviceIds(selection.selectedIds);
+     setError(selection.changed?"":locale==="ar"?"هذا الجهاز مضاف مسبقًا للفاتورة.":"Device already selected for this invoice.");
+     setScanInput("");
+   } catch (error) {
+     const reason=error instanceof Error?error.message:"";
+     const messages:Record<string,{ar:string;en:string}>={
+       IMEI_REQUIRED:{ar:"امسح IMEI لجهاز مسجل.",en:"Scan a registered device IMEI."},
+       DEVICE_NOT_AVAILABLE:{ar:"الجهاز غير موجود ضمن المخزون المتاح.",en:"Device is not in available inventory."},
+       INVOICE_DEVICE_LIMIT:{ar:"الحد الأقصى 12 جهازًا للفاتورة.",en:"Maximum 12 devices per invoice."},
+     };
+     setError(messages[reason]?.[locale]??(locale==="ar"?"رقم IMEI غير صالح.":"Invalid IMEI."));
+   }
+ } return <main className={"module-page mobi-live01 mobi-live01-"+mode} lang={locale} dir={locale==="ar"?"rtl":"ltr"}>
   <header className="module-header"><div><Link href={"/"+locale} className="back-link">{t.back}</Link>
    <p className="module-kicker">A1 MOBI · {mode==="pos"?(locale==="ar"?"نقطة البيع":"POINT OF SALE"):mode==="inventory"?(locale==="ar"?"المخزون":"INVENTORY"):(locale==="ar"?"العمليات":"OPERATIONS")}</p><h1>{mode==="pos"?(locale==="ar"?"نقطة البيع":"Point of sale"):mode==="inventory"?(locale==="ar"?"المخزون والأجهزة":"Inventory & devices"):t.title}</h1><p className="module-sub">{mode==="pos"?(locale==="ar"?"بيع الأجهزة المسجلة وإصدار فواتير محفوظة.":"Sell registered devices and issue stored invoices."):mode==="inventory"?(locale==="ar"?"تسجيل المنتجات واستلام أجهزة IMEI وإدارة حالتها.":"Register products and receive IMEI devices into inventory."):t.intro}</p></div>
    <button type="button" className="soft-btn" onClick={()=>void refresh().catch(e=>setError(String(e.message)))}>{t.reload}</button></header>
