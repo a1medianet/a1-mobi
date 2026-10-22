@@ -42,6 +42,9 @@ export async function POST(request: Request) {
     if (error instanceof Error && ["AUTH_REQUIRED", "PERMISSION_DENIED"].includes(error.message)) return controlError(error);
     if (error instanceof Prisma.PrismaClientKnownRequestError && ["P2034", "P2002"].includes(error.code)) return authJson({ error: "RETRY_SAME_REQUEST" }, 409);
     if (error instanceof Error && error.message === "RETURN_IDEMPOTENCY_CONFLICT") return authJson({ error: error.message }, 409);
-    return authJson({ error: "RETURN_REJECTED" }, 400);
+    const message = error instanceof Error ? error.message : "";
+    const rejected = /^(Return |Duplicate original return line|Cross-tenant return|Cross-branch return|Invalid return |INVALID_RETURN_|SERIALIZED_RETURN_REQUIRES_TRUST_WORKFLOW)/.test(message);
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2025") return authJson({ error: "RETURN_REJECTED" }, 400);
+    return authJson({ error: "RETURN_REJECTED" }, rejected ? 400 : 503);
   }
 }

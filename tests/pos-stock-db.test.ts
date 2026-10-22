@@ -4,12 +4,15 @@ import { describe, expect, it } from "vitest";
 import { db } from "@/server/db";
 import { checkoutSale, type CheckoutInput } from "@/modules/sell/sell-service";
 import { postSaleReturn } from "@/modules/sell/return-service";
+import { previewStockCount, postStockCount } from "@/modules/inventory/count-service";
 const runDb = process.env.DATABASE_URL ? describe : describe.skip;
 async function fixture(stock = 5) {
   const token = randomUUID();
   const tenant = await db.tenant.create({ data: { slug: `pos-stock-${token}`, name: "POS quantity test" } });
   const branch = await db.branch.create({ data: { tenantId: tenant.id, code: "MAIN", name: "Main" } });
   const actor = await db.user.create({ data: { tenantId: tenant.id, branchId: branch.id, email: `${token}@example.test`, displayName: "Cashier", passwordHash: "test-only" } });
+  const permission = await db.permission.upsert({ where: { code: "foundation.manage" }, update: {}, create: { code: "foundation.manage", description: "Manage foundation" } });
+  await db.role.create({ data: { tenantId: tenant.id, code: "COUNT_OWNER", name: "Count owner", permissions: { create: { permissionId: permission.id } }, userRoles: { create: { userId: actor.id } } } });
   const category = await db.category.create({ data: { tenantId: tenant.id, code: "ACC", nameAr: "ملحقات", nameEn: "Accessories" } });
   const product = await db.product.create({ data: { tenantId: tenant.id, categoryId: category.id, sku: "CASE", nameAr: "غطاء", nameEn: "Case", type: "ACCESSORY", isSerialized: false, costAmount: 1, basePrice: 3, minimumPrice: 2 } });
   const location = await db.stockLocation.create({ data: { tenantId: tenant.id, branchId: branch.id, code: "SHOP", name: "Shop" } });
@@ -91,4 +94,55 @@ runDb("POS nonserialized PostgreSQL", () => {
     expect(await db.sale.count({ where: { tenantId: tenant.id } })).toBe(1);
     expect(await db.stockMovement.count({ where: { tenantId: tenant.id, type: "SALE" } })).toBe(1);
   }, 30000);
+  it("verifies invoice, original lines, branch and status; concurrent returns cannot over-return", async () => {
+    const { input, location, tenant } = await fixture(); const sale=await checkoutSale(input);
+    const other=await fixture(); const foreignSale=await checkoutSale(other.input);
+    const request={tenantId:tenant.id,branchId:input.branchId,actorId:input.actorId,saleId:sale.id,invoiceNumber:input.invoiceNumber,nonserializedOnly:true,number:`R-${randomUUID()}`,reason:"Owner return",idempotencyKey:randomUUID(),lines:[{originalSaleLineId:sale.lines[0].id,stockLocationId:location.id,quantity:2}]};
+    await expect(postSaleReturn({...request,invoiceNumber:"foreign"})).rejects.toThrow("INVALID_RETURN_INVOICE");
+    await expect(postSaleReturn({...request,lines:[{...request.lines[0],originalSaleLineId:foreignSale.lines[0].id}]})).rejects.toThrow("not part");
+    await expect(postSaleReturn({...request,lines:[{...request.lines[0],stockLocationId:other.location.id}]})).rejects.toThrow("location");
+    await expect(postSaleReturn({...request,saleId:foreignSale.id})).rejects.toThrow("Cross-tenant");
+    await db.sale.update({where:{id:sale.id},data:{status:"VOIDED"}});
+    await expect(postSaleReturn(request)).rejects.toThrow("INVALID_RETURN_SALE_STATUS");
+    await db.sale.update({where:{id:sale.id},data:{status:"COMPLETED"}});
+    const results=await Promise.allSettled([postSaleReturn(request),postSaleReturn({...request,idempotencyKey:randomUUID(),number:`R-${randomUUID()}`})]);
+    expect(results.filter(result=>result.status==="fulfilled")).toHaveLength(1);
+    expect(await db.saleReturn.count({where:{saleId:sale.id}})).toBe(1);
+    const winner=results.find(result=>result.status==="fulfilled")!;
+    if(winner.status==="fulfilled")expect(Number(winner.value.refundBase)).toBe(6);
+    expect(await db.stockMovement.count({where:{tenantId:tenant.id,type:"RETURN"}})).toBe(1);
+  },30000);
+  it("posts count variances once, rejects stale snapshots and preserves append-only correction",async()=>{
+    const {input,product,location,tenant}=await fixture();
+    const scope={tenantId:tenant.id,branchId:input.branchId,actorId:input.actorId,productId:product.id,locationId:location.id};
+    const preview=await previewStockCount(scope);expect(preview.quantity).toBe(5);
+    const request={...scope,version:preview.version,countedQty:3,reason:"Physical shelf count",idempotencyKey:randomUUID()};
+    const count=await postStockCount(request);expect(count.status).toBe("POSTED");expect((await postStockCount(request)).id).toBe(count.id);
+    expect((await previewStockCount(scope)).quantity).toBe(3);
+    expect(await db.stockMovement.count({where:{referenceType:"StockCount",referenceId:count.id}})).toBe(1);
+    const audit=await db.auditEvent.findFirstOrThrow({where:{entityId:count.id,action:"inventory.count.posted"}});expect(audit.before).toMatchObject({quantity:5});expect(audit.after).toMatchObject({countedQty:3,expectedQty:5});
+    await expect(postStockCount({...request,countedQty:4})).rejects.toThrow("COUNT_IDEMPOTENCY_CONFLICT");
+    await expect(postStockCount({...request,idempotencyKey:randomUUID()})).rejects.toThrow("STALE_COUNT");
+    const next=await previewStockCount(scope);await postStockCount({...request,idempotencyKey:randomUUID(),version:next.version,countedQty:7,reason:"Recount correction"});expect((await previewStockCount(scope)).quantity).toBe(7);
+    const equal=await previewStockCount(scope);await postStockCount({...request,idempotencyKey:randomUUID(),version:equal.version,countedQty:7});expect(await db.stockCount.count({where:{tenantId:tenant.id}})).toBe(3);expect(await db.stockMovement.count({where:{tenantId:tenant.id,type:"COUNT_VARIANCE"}})).toBe(2);
+    const foreign=await fixture();await expect(previewStockCount({...scope,locationId:foreign.location.id})).rejects.toThrow("INVALID_COUNT_SCOPE");
+    await db.user.update({where:{id:input.actorId},data:{isActive:false}});await expect(postStockCount(request)).rejects.toThrow("INVALID_COUNT_SCOPE");
+  },30000);
+  it("rejects concurrent stale counts even if quantities match after other stock activity",async()=>{
+    const {input,product,location,tenant}=await fixture();const scope={tenantId:tenant.id,branchId:input.branchId,actorId:input.actorId,productId:product.id,locationId:location.id};
+    const snapshot=await previewStockCount(scope);const request={...scope,version:snapshot.version,countedQty:4,reason:"Concurrent count",idempotencyKey:randomUUID()};
+    const results=await Promise.allSettled([postStockCount(request),postStockCount({...request,idempotencyKey:randomUUID()})]);expect(results.filter(result=>result.status==="fulfilled")).toHaveLength(1);expect((await previewStockCount(scope)).quantity).toBe(4);
+    const current=await previewStockCount(scope);await db.stockMovement.create({data:{tenantId:tenant.id,branchId:input.branchId,productId:product.id,toLocationId:location.id,fromLocationId:location.id,type:"TRANSFER",quantity:1,idempotencyKey:randomUUID()}});
+    await expect(postStockCount({...request,version:current.version,idempotencyKey:randomUUID()})).rejects.toThrow("STALE_COUNT");
+  },30000);
+
+  it("concurrent identical returns replay once and a full return remains replayable",async()=>{
+    const {input,location,tenant,product}=await fixture();const sale=await checkoutSale(input);
+    const request={tenantId:tenant.id,branchId:input.branchId,actorId:input.actorId,saleId:sale.id,invoiceNumber:input.invoiceNumber,nonserializedOnly:true,number:`R-${randomUUID()}`,reason:"Full return",idempotencyKey:randomUUID(),lines:[{originalSaleLineId:sale.lines[0].id,stockLocationId:location.id,quantity:3}]};
+    await db.product.update({where:{id:product.id},data:{isSerialized:true}});await expect(postSaleReturn(request)).rejects.toThrow("SERIALIZED_RETURN_REQUIRES_TRUST_WORKFLOW");await db.product.update({where:{id:product.id},data:{isSerialized:false}});
+    const results=await Promise.allSettled([postSaleReturn(request),postSaleReturn(request)]);expect(results.some(result=>result.status==="fulfilled")).toBe(true);
+    const replay=await postSaleReturn(request);for(const result of results)if(result.status==="fulfilled")expect(result.value.id).toBe(replay.id);
+    expect((await db.sale.findUniqueOrThrow({where:{id:sale.id}})).status).toBe("RETURNED");expect(await db.saleReturn.count({where:{saleId:sale.id}})).toBe(1);expect(await db.auditEvent.count({where:{entityId:replay.id,action:"sale.return.posted"}})).toBe(1);
+  },30000);
+
 });

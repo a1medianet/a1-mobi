@@ -158,7 +158,7 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
     <button type="submit" className="primary" disabled={busy||!selectedDevices.length}>{t.checkout}</button>
    </form>}
   </section>
-  {mode!=="pos"&&<StockCountPanel products={state?.products??[]} locations={state?.locations??[]} locale={locale}/>}
+  {mode!=="pos"&&<StockCountPanel products={state?.products??[]} locations={state?.locations??[]} locale={locale} onSaved={refresh}/>}
   {mode!=="inventory"&&<SaleReturnPanel locale={locale}/>}
   <section className="mobi-live-details">
    {mode!=="pos"&&<article><h2>{t.list}</h2><div className="table-wrap"><table><thead><tr><th>IMEI</th><th>{t.product}</th><th>{t.state}</th></tr></thead>
