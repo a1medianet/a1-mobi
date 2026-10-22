@@ -84,7 +84,7 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
      if(scan.kind!=="IMEI") {setError(locale==="ar"?"امسح IMEI لجهاز مسجل؛ باركود المنتجات غير مدعوم هنا بعد.":"Scan a registered device IMEI; product barcodes are not supported here yet.");return;}
      const match=available.find(device=>device.imei===scan.value);
      if(!match){setError(locale==="ar"?"الجهاز غير موجود ضمن المخزون المتاح.":"Device is not in available inventory.");return;}
-     setSelectedDeviceIds(previous=>previous.includes(match.id)?previous:[...previous,match.id]);
+     setSelectedDeviceIds(previous=>previous.includes(match.id)||previous.length>=12?previous:[...previous,match.id]);
      setError("");setScanInput("");
    } catch {setError(locale==="ar"?"رمز المسح غير صالح.":"Invalid scan code.");}
  }
@@ -120,6 +120,11 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
    </form>}
    {mode!=="inventory"&&<form onSubmit={e=>{e.preventDefault();if(!selectedDevices.length||!window.confirm(t.confirm))return;void send({action:"sellCart",deviceIds:selectedDevices.map(d=>d.id),idempotencyKey:crypto.randomUUID()});}}>
     <h2>{mode==="pos"?(locale==="ar"?"بيع جهاز وإصدار فاتورة":"Sell device & issue invoice"):t.sell}</h2>
+    <div className="mobi-pos-imei-scanner">
+      <label htmlFor="mobi-pos-imei-scan">{locale==="ar"?"مسح IMEI لجهاز متاح":"Scan available device IMEI"}</label>
+      <input id="mobi-pos-imei-scan" autoComplete="off" inputMode="numeric" value={scanInput} onChange={e=>setScanInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"){e.preventDefault();addScannedDevice();}}} placeholder="IMEI" aria-label={locale==="ar"?"قارئ IMEI":"IMEI scanner"} />
+      <button type="button" onClick={addScannedDevice} disabled={busy||!scanInput.trim()||selectedDeviceIds.length>=12}>{locale==="ar"?"إضافة الجهاز":"Add device"}</button>
+    </div>
     <fieldset className="mobi-pos-device-list">
       <legend>{locale==="ar"?"اختر الأجهزة للفاتورة":"Select devices for this invoice"}</legend>
       {available.map(device=>{
