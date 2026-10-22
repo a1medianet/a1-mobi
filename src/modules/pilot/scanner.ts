@@ -9,7 +9,10 @@ export function normalizeScan(raw: string): string {
 export function classifyScan(raw: string): { kind: ScanKind; value: string } {
   const value = normalizeScan(raw);
   if (!value) throw new Error("Scan is empty");
-  if (/^\d{15}$/.test(value) && isValidImei(value)) return { kind: "IMEI", value };
+  if (/^\d{15}$/.test(value)) {
+    if (!isValidImei(value)) throw new Error("Invalid IMEI checksum");
+    return { kind: "IMEI", value };
+  }
   if (/^\d{13}$/.test(value)) return { kind: "EAN13", value };
   if (/^[A-Za-z0-9._/-]{2,64}$/.test(value)) return { kind: "CODE", value };
   throw new Error("Unsupported scanner input");

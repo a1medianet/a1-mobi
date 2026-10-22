@@ -18,8 +18,8 @@ describe("scanner input contract for POS and inventory", () => {
   });
   it("rejects empty, malformed and impossible IMEI input", () => {
     expect(()=>classifyScan("  \r\n")).toThrow();
-    expect(()=>classifyScan("490154203237519")).not.toThrow();
-    expect(classifyScan("490154203237519").kind).toBe("CODE");
+    expect(()=>classifyScan("490154203237519")).toThrow("Invalid IMEI checksum");
+    expect(()=>classifyScan("490154203237519\r\n")).toThrow("Invalid IMEI checksum");
     expect(()=>classifyScan("bad code with spaces")).toThrow();
   });
 });
