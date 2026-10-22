@@ -53,13 +53,25 @@ export async function checkoutSale(input: CheckoutInput) {
   if (!input.idempotencyKey.trim()) throw new Error("Sale idempotency key is required");
   if (!input.number.trim() || !input.invoiceNumber.trim()) throw new Error("Sale and invoice numbers are required");
 
+  input = { ...input, idempotencyKey: input.idempotencyKey.trim() };
   return db.$transaction(
     async (tx) => {
       const existing = await tx.sale.findUnique({
         where: { tenantId_idempotencyKey: { tenantId: input.tenantId, idempotencyKey: input.idempotencyKey } },
         include: { lines: true, payments: true, invoice: true },
       });
-      if (existing) return existing;
+      if (existing) {
+        const lineKey = (line: { productId: string; stockLocationId: string; serializedDeviceId?: string | null; quantity: unknown; finalPrice?: number; finalUnitPrice?: unknown }) =>
+          JSON.stringify([line.productId, line.stockLocationId, line.serializedDeviceId ?? null, Number(line.quantity), Number(line.finalPrice ?? line.finalUnitPrice)]);
+        const paymentKey = (payment: { method: string; currency: string; amount: unknown; exchangeRate: unknown; reference?: string | null }) =>
+          JSON.stringify([payment.method, payment.currency.toUpperCase(), Number(payment.amount), Number(payment.exchangeRate), payment.reference ?? null]);
+        if (existing.branchId !== input.branchId || existing.actorId !== input.actorId ||
+          existing.customerId !== (input.customerId ?? null) ||
+          JSON.stringify(existing.lines.map(lineKey).sort()) !== JSON.stringify(input.lines.map(lineKey).sort()) ||
+          JSON.stringify(existing.payments.map(paymentKey).sort()) !== JSON.stringify(input.payments.map(paymentKey).sort())) {
+          throw new Error("SALE_IDEMPOTENCY_CONFLICT");
+        }
+      }
 
       const [tenant, branch, actor, canOverrideFloor] = await Promise.all([
         tx.tenant.findUniqueOrThrow({ where: { id: input.tenantId } }),
@@ -69,6 +81,12 @@ export async function checkoutSale(input: CheckoutInput) {
       ]);
       if (branch.tenantId !== tenant.id || actor.tenantId !== tenant.id) {
         throw new Error("Cross-tenant sale is forbidden");
+      }
+
+      if (!actor.isActive || (actor.branchId && actor.branchId !== branch.id)) throw new Error("Invalid sale actor branch");
+      if (existing) return existing;
+      if (input.customerId && !await tx.customer.findFirst({ where: { id: input.customerId, tenantId: tenant.id } })) {
+        throw new Error("Invalid or cross-tenant customer");
       }
 
       const productIds = [...new Set(input.lines.map((line) => line.productId))];
@@ -126,6 +144,7 @@ export async function checkoutSale(input: CheckoutInput) {
 
       const priced = priceSale(ruleLines, input.payments);
 
+      const stockEvidence = new Map<string, { productId: string; stockLocationId: string; before: number; after: number }>();
       for (const [index, line] of input.lines.entries()) {
         const product = productMap.get(line.productId)!;
         if (!product.isSerialized) {
@@ -149,6 +168,9 @@ export async function checkoutSale(input: CheckoutInput) {
             .filter((candidate) => candidate.productId === line.productId && candidate.stockLocationId === line.stockLocationId)
             .reduce((sum, candidate) => sum + candidate.quantity, 0);
           if (balance < requestedForProduct) throw new Error("Insufficient stock");
+          stockEvidence.set(`${product.id}:${line.stockLocationId}`, {
+            productId: product.id, stockLocationId: line.stockLocationId, before: balance, after: balance - requestedForProduct,
+          });
         }
         if (priced.pricedLines[index].lineTotal < 0) throw new Error("Invalid line total");
       }
@@ -259,7 +281,10 @@ export async function checkoutSale(input: CheckoutInput) {
           action: "sale.checkout",
           entityType: "Sale",
           entityId: sale.id,
+          before: { sale: null, stock: [...stockEvidence.values()].map(({ productId, stockLocationId, before }) => ({ productId, stockLocationId, quantity: before })) },
           after: {
+            stock: [...stockEvidence.values()].map(({ productId, stockLocationId, after }) => ({ productId, stockLocationId, quantity: after })),
+            lines: input.lines.map(line => ({ productId: line.productId, stockLocationId: line.stockLocationId, quantity: line.quantity, finalPrice: line.finalPrice })),
             number: sale.number,
             total: priced.total,
             paidTotal: priced.paidTotal,

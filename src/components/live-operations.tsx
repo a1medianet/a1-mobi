@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { StockPosCart } from "@/components/stock-pos-cart";
 import { PurchaseScanPreview } from "@/components/purchase-scan-preview";
 import { selectScannedImei } from "@/modules/pilot/scanner";
 import { useEffect, useState } from "react";
@@ -125,6 +126,7 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
     {state&&state.products.length===0&&<p className="mobi-live-hint" role="status">{t.needProduct}</p>}
     <button type="submit" className="primary" disabled={busy||!state?.products.length}>{t.received}</button>
    </form>}
+   {mode!=="inventory"&&<StockPosCart products={state?.products??[]} locations={state?.locations??[]} locale={locale} onSaved={refresh}/>}
    {mode!=="inventory"&&<form onSubmit={e=>{e.preventDefault();if(!selectedDevices.length||!window.confirm(t.confirm))return;void send({action:"sellCart",deviceIds:selectedDevices.map(d=>d.id),idempotencyKey:crypto.randomUUID()});}}>
     <h2>{mode==="pos"?(locale==="ar"?"بيع جهاز وإصدار فاتورة":"Sell device & issue invoice"):t.sell}</h2>
     <div className="mobi-pos-imei-scanner">

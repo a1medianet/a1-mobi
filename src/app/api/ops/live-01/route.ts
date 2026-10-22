@@ -49,6 +49,12 @@ const actionSchema = z.discriminatedUnion("action", [
     idempotencyKey: z.string().uuid(),
   }).strict(),
   z.object({
+    action: z.literal("sellBulk"),
+    locationId: identifier,
+    lines: z.array(z.object({ productId: identifier, quantity: z.number().int().positive().max(10000) }).strict()).min(1).max(50),
+    idempotencyKey: z.string().uuid(),
+  }).strict(),
+  z.object({
     action: z.literal("sellCart"),
     deviceIds: z.array(identifier).min(1).max(12).refine(ids => new Set(ids).size === ids.length),
     idempotencyKey: z.string().uuid(),
@@ -58,10 +64,14 @@ const actionSchema = z.discriminatedUnion("action", [
 function rejected(error: unknown) {
   const code = error instanceof Error ? error.message : "";
   if (code === "AUTH_REQUIRED" || code === "PERMISSION_DENIED") return controlError(error);
+  if (code === "SALE_IDEMPOTENCY_CONFLICT") return authJson({ error: "SALE_IDEMPOTENCY_CONFLICT" }, 409);
+  if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2034") {
+    return authJson({ error: "RETRY_SAME_REQUEST" }, 409);
+  }
   if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
     return authJson({ error: "ALREADY_EXISTS" }, 409);
   }
-  if (/ALREADY|RECEIPT_IDEMPOTENCY_CONFLICT|Insufficient stock|not available|Duplicate|STOCK_LOCATION_NOT_FOUND/.test(code)) {
+  if (/ALREADY|RECEIPT_IDEMPOTENCY_CONFLICT|SALE_IDEMPOTENCY_CONFLICT|Insufficient stock|not available|Duplicate|STOCK_LOCATION_NOT_FOUND/.test(code)) {
     return authJson({ error: "CONFLICT_OR_OUT_OF_STOCK" }, 409);
   }
   // Do not return raw domain exceptions, SQL, PII, or authorization details to clients.
@@ -116,7 +126,7 @@ export async function POST(request: Request) {
   if (!parsed.success) return authJson({ error: "INVALID_REQUEST" }, 400);
 
   const input = parsed.data;
-  const permission = input.action === "sell" || input.action === "sellCart" ? "sell.create" : "foundation.manage";
+  const permission = input.action === "sell" || input.action === "sellCart" || input.action === "sellBulk" ? "sell.create" : "foundation.manage";
   try {
     const ctx = await currentStoreContext(permission);
     if (input.action === "createProduct") {
@@ -216,6 +226,29 @@ export async function POST(request: Request) {
         return {received:input.lines.length,alreadyProcessed:false};
       });
       return authJson(receipt,receipt.alreadyProcessed?200:201);
+    }
+    if (input.action === "sellBulk") {
+      if (new Set(input.lines.map(line => line.productId)).size !== input.lines.length) {
+        return authJson({ error: "DUPLICATE_SALE_PRODUCT" }, 400);
+      }
+      const [location, products, tenant] = await Promise.all([
+        db.stockLocation.findFirst({ where: { id: input.locationId, tenantId: ctx.tenantId, branchId: ctx.branchId } }),
+        db.product.findMany({ where: { id: { in: input.lines.map(line => line.productId) }, tenantId: ctx.tenantId, isActive: true, isSerialized: false } }),
+        db.tenant.findUniqueOrThrow({ where: { id: ctx.tenantId }, select: { baseCurrency: true } }),
+      ]);
+      if (!location || products.length !== input.lines.length) return authJson({ error: "PRODUCT_OR_LOCATION_NOT_AVAILABLE" }, 409);
+      if (tenant.baseCurrency !== "USD") return authJson({ error: "UNSUPPORTED_CASH_CURRENCY" }, 400);
+      const found = new Map(products.map(product => [product.id, product]));
+      const lines = input.lines.map(line => ({ ...line, stockLocationId: location.id, finalPrice: Number(found.get(line.productId)!.basePrice) }));
+      const token = input.idempotencyKey.replace(/-/g, "").toUpperCase();
+      const sale = await checkoutSale({
+        tenantId: ctx.tenantId, branchId: ctx.branchId, actorId: ctx.actorId,
+        number: "S-" + token, invoiceNumber: "INV-" + token, idempotencyKey: input.idempotencyKey,
+        lines, payments: [{ method: PaymentMethod.CASH, currency: "USD", exchangeRate: 1,
+          amount: roundMoney(lines.reduce((sum, line) => sum + roundMoney(line.quantity * line.finalPrice), 0)) }],
+      });
+      return authJson({ id: sale.id, number: sale.number, invoiceNumber: sale.invoice?.number,
+        status: sale.status, itemCount: sale.lines.reduce((sum, line) => sum + Number(line.quantity), 0) }, 201);
     }
     const deviceIds = input.action === "sell" ? [input.deviceId] : input.deviceIds;
     const devices = await db.serializedDevice.findMany({
