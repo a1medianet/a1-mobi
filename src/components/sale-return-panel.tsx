@@ -28,7 +28,7 @@ export function SaleReturnPanel({ locale }: { locale: "ar" | "en" }) {
  return <section className="mobi-purchase-scan-preview"><h2>{ar?"مرتجع أصناف غير تسلسلية":"Return nonserialized items"}</h2>
   <p>{ar?"تسجيل قيمة المرتجع وإعادة المخزون. صرف النقد وتسوية الدفع إجراء منفصل.":"Records return value and restores stock. Cash payout and payment settlement are separate."}</p>
   <label>{ar?"رقم الفاتورة":"Invoice number"}<input value={invoice} disabled={busy||locked} onChange={e=>{setInvoice(e.target.value);setData(null);}}/></label>
-  <button type="button" disabled={busy||locked||!invoice.trim()} onClick={()=>void lookup()}>{ar?"تحميل الفاتورة":"Load invoice"}</button>
+  <button type="button" className="mobi-return-load-invoice" disabled={busy||locked||!invoice.trim()} onClick={()=>void lookup()}>{ar?"تحميل الفاتورة":"Load invoice"}</button>
   {data&&<><p>{data.invoiceNumber}</p><label>{ar?"مخزن الإرجاع":"Return location"}<select value={location} disabled={busy||locked} onChange={e=>setLocation(e.target.value)}><option value="">—</option>{data.locations.map(row=><option key={row.id} value={row.id}>{row.name}</option>)}</select></label>
   {data.lines.map(line=><label key={line.id}>{ar?line.nameAr:line.nameEn} · {ar?"المتبقي":"Remaining"}: {line.remaining} · {line.unitPrice}<input type="number" min={0} max={line.remaining} step={1} disabled={busy||locked||line.remaining<=0} value={quantities[line.id]??0} onChange={e=>setQuantities({...quantities,[line.id]:Number(e.target.value)})}/></label>)}
   {!data.lines.some(line=>line.remaining>0)&&<p>{ar?"لا توجد أصناف متاحة هنا. الأجهزة تتطلب مسار التحقق.":"No items available here. Devices require the trust-check workflow."}</p>}
@@ -36,5 +36,11 @@ export function SaleReturnPanel({ locale }: { locale: "ar" | "en" }) {
   <p>{ar?"قيمة المرتجع":"Return value"}: {data.lines.reduce((sum,line)=>sum+(quantities[line.id]||0)*line.unitPrice,0).toFixed(2)}</p>
   <button type="button" className="primary" disabled={busy||(!locked&&(!location||!reason.trim()||!data.lines.some(line=>quantities[line.id]>0)))} onClick={()=>void submit()}>{ar?"تأكيد / إعادة المحاولة":"Confirm / retry"}</button></>}
   {message&&<p role="status">{message}</p>}
+  <style jsx>{`
+   .mobi-return-load-invoice{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:9px 14px;border:1px solid #8bb4e8;border-radius:9px;background:#edf5ff;color:#174f91;font:inherit;font-weight:700;cursor:pointer}
+   .mobi-return-load-invoice:hover:not(:disabled){background:#dbeafe;border-color:#3979c6;color:#123e73}
+   .mobi-return-load-invoice:focus-visible{outline:3px solid #1769e0;outline-offset:3px}
+   .mobi-return-load-invoice:disabled{background:#edf0f4;border-color:#b5c0ce;color:#526174;opacity:1;cursor:not-allowed}
+  `}</style>
  </section>;
 }
