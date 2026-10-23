@@ -43,16 +43,22 @@ export async function POST(request:Request) {
   const ctx=await currentStoreContext("foundation.manage");
   const scope={tenantId:ctx.tenantId,branchId:ctx.branchId};
   if(input.action==="activate"||input.action==="disable"){
-   const branch=(await db.$queryRawUnsafe<Array<{id:string;publicStoreSlug:string|null}>>(
-    'SELECT "id","publicStoreSlug" FROM "Branch" WHERE "id"=$1 AND "tenantId"=$2 LIMIT 1',
+   const branch=(await db.$queryRawUnsafe<Array<{id:string;publicStoreSlug:string|null;acceptingStoreOrders:boolean}>>(
+    'SELECT "id","publicStoreSlug","acceptingStoreOrders" FROM "Branch" WHERE "id"=$1 AND "tenantId"=$2 LIMIT 1',
     scope.branchId,scope.tenantId
    ))[0];
    if(!branch)return authJson({error:"NOT_FOUND"},404);
    const slug=branch.publicStoreSlug??randomBytes(16).toString("hex");
-   await db.$executeRawUnsafe(
-    'UPDATE "Branch" SET "publicStoreSlug"=$1,"acceptingStoreOrders"=$2 WHERE "id"=$3 AND "tenantId"=$4',
-    slug,input.action==="activate",branch.id,scope.tenantId
+   await db.$transaction(async tx=>{
+   const changed=await tx.$executeRawUnsafe(
+    'UPDATE "Branch" SET "publicStoreSlug"=$1,"acceptingStoreOrders"=$2 WHERE "id"=$3 AND "tenantId"=$4 AND "acceptingStoreOrders"=$5 AND "publicStoreSlug" IS NOT DISTINCT FROM $6',
+    slug,input.action==="activate",branch.id,scope.tenantId,branch.acceptingStoreOrders,branch.publicStoreSlug
    );
+   if(changed!==1)throw new Error("CONFLICT");
+   await tx.auditEvent.create({data:{...scope,actorId:ctx.actorId,action:"storefront."+input.action,
+    entityType:"Branch",entityId:branch.id,before:{slug:branch.publicStoreSlug,enabled:branch.acceptingStoreOrders},
+    after:{slug,enabled:input.action==="activate"}}});
+   });
    return authJson({enabled:input.action==="activate",slug});
   }
   const current=(await db.$queryRawUnsafe<Array<{id:string;status:string}>>(
@@ -63,11 +69,15 @@ export async function POST(request:Request) {
   const permitted=current.status==="NEW" ? ["CONFIRMED","DECLINED"].includes(input.status)
     : current.status==="CONFIRMED"&&input.status==="CLOSED";
   if(!permitted)return authJson({error:"INVALID_TRANSITION"},409);
-  const changed=await db.$executeRawUnsafe(
+  await db.$transaction(async tx=>{
+  const changed=await tx.$executeRawUnsafe(
    'UPDATE "StoreOrderRequest" SET "status"=$1,"updatedAt"=NOW() WHERE "id"=$2 AND "tenantId"=$3 AND "branchId"=$4 AND "status"=$5',
    input.status,current.id,scope.tenantId,scope.branchId,current.status
   );
-  if(changed!==1)return authJson({error:"STALE_ORDER"},409);
+  if(changed!==1)throw new Error("CONFLICT");
+  await tx.auditEvent.create({data:{...scope,actorId:ctx.actorId,action:"storefront.request.status",
+   entityType:"StoreOrderRequest",entityId:current.id,before:{status:current.status},after:{status:input.status}}});
+  });
   return authJson({id:current.id,status:input.status});
  }catch(error){
   return controlError(error);

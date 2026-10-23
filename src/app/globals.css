@@ -1718,3 +1718,33 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
  .product-site .page-intro h1{font-size:clamp(25px,6.7vw,31px)!important}
  .product-site .mobi-marketing-a .mobi-a-copy h1{font-size:clamp(27px,7.4vw,34px)!important}
 }
+
+/* POS uses the workspace width, regardless of direction or sidebar state. */
+.mobi-live01-pos{width:100%;max-width:none;min-width:0;container-type:inline-size}
+.mobi-live01-pos .mobi-live-workspace{grid-template-columns:minmax(0,1fr)}
+.mobi-live01-pos .mobi-live-steps{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+.mobi-live01-pos .mobi-live-steps>form{grid-column:auto}
+.mobi-live01-pos .mobi-purchase-scan-preview{min-width:0;background:#fff;border:1px solid #dfebfa;border-radius:17px;padding:22px;display:flex;flex-direction:column;gap:13px;margin:0}
+.mobi-live01-pos .mobi-purchase-scan-preview h2{margin:0;font-size:17px;color:#14233d}
+.mobi-live01-pos .mobi-purchase-scan-preview p{margin:0;font-size:13px;line-height:1.6}
+.mobi-live01-pos .mobi-purchase-scan-preview label{display:flex;flex-direction:column;gap:7px;min-width:0;font-size:13px;color:#50627a}
+.mobi-live01-pos .mobi-purchase-scan-preview :is(input,select,textarea){width:100%;min-width:0;padding:9px 10px;border:1px solid #cad7e8;border-radius:8px;min-height:44px;background:#fff;color:#14233d;font:inherit}
+.mobi-live01-pos button{min-height:44px;border-radius:9px;padding:9px 14px;cursor:pointer}
+.mobi-live01-pos button:disabled{cursor:not-allowed;opacity:.55}
+.mobi-live01-pos .mobi-pos-imei-scanner{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}
+.mobi-live01-pos .mobi-pos-imei-scanner label{grid-column:1/-1}
+.mobi-live01-pos .mobi-pos-stock-lines{list-style:none;padding:0;margin:0;display:grid;gap:10px;max-height:310px;overflow:auto}
+.mobi-live01-pos .mobi-pos-stock-lines li{border:1px solid #dfebfa;border-radius:10px;padding:12px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;overflow-wrap:anywhere}
+.mobi-live01-pos .mobi-live-details{min-width:0}
+.mobi-live01-pos .mobi-live-details .table-wrap{max-height:440px;overflow:auto}
+.mobi-live01-pos .mobi-live-details table{min-width:0;table-layout:fixed}
+.mobi-live01-pos .mobi-live-details :is(th,td){white-space:normal;overflow-wrap:anywhere;font-size:14px}
+.mobi-live01-pos .mobi-live-details th:first-child{width:50%}
+.mobi-live01-pos :is(input[inputmode=numeric],input[type=number],bdi){font-variant-numeric:tabular-nums}
+@container(max-width:760px){.mobi-live01-pos .mobi-live-steps{grid-template-columns:minmax(0,1fr)}.mobi-live01-pos .mobi-purchase-scan-preview{padding:16px}}
+@media(max-width:720px){.app-shell.sidebar-collapsed:has(.mobi-live01-pos) .workspace{width:100%;margin-inline-start:0}}
+
+.mobi-catalog-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:16px;padding:20px}
+.mobi-catalog-form h2{grid-column:1/-1}.mobi-catalog-form label{display:grid;gap:8px;min-width:0}
+.mobi-catalog-form :is(input,select){width:100%;min-width:0;min-height:44px;padding:10px;border:1px solid #cad7e8;border-radius:8px;font:inherit}
+.mobi-catalog-form button,.catalog-card-body button{min-height:44px;padding:8px 16px;border:1px solid #cad7e8;border-radius:8px;cursor:pointer}

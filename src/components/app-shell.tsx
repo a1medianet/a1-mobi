@@ -12,14 +12,16 @@ const labels = {
 const paths = ["","/pos","/products","/inventory","/repairs","/customers","/orders","/cash","/topup","/device-trust","/reports","/admin","/settings/team","/account"];
 const icons = ["⌂","▣","▦","◇","⌁","♙","▣","▤","↗","⌕","▥","⚙","♜","◎"];
 
-export function AppShell({ locale, children }: {
+export function AppShell({ locale, children, live = false }: {
   locale: "ar" | "en";
   children: React.ReactNode;
+  live?: boolean;
 }) {
   const pathname = usePathname();
   const router = useRouter();
   const mobileNav = useRef<HTMLElement>(null);
-  const [sidebarCollapsed,setSidebarCollapsed] = useState(false);
+  const [sidebarPreference,setSidebarPreference] = useState<{path:string;collapsed:boolean}|null>(null);
+  const sidebarCollapsed=sidebarPreference?.path===pathname?sidebarPreference.collapsed:pathname.endsWith("/pos");
 
   useEffect(() => {
     mobileNav.current?.querySelector<HTMLElement>('[aria-current="page"]')?.scrollIntoView({ block:"nearest", inline:"center" });
@@ -56,15 +58,15 @@ export function AppShell({ locale, children }: {
         <button className="sidebar-toggle" type="button"
           aria-label={sidebarCollapsed ? (ar?"توسيع القائمة":"Expand sidebar") : (ar?"طي القائمة":"Collapse sidebar")}
           aria-pressed={sidebarCollapsed}
-          onClick={()=>setSidebarCollapsed(value=>!value)}>
+          onClick={()=>setSidebarPreference({path:pathname,collapsed:!sidebarCollapsed})}>
           <span aria-hidden="true">{sidebarCollapsed ? "»" : "«"}</span>
         </button>
       </div>
       <nav className="nav-list" aria-label={ar ? "أقسام المتجر" : "Store workspaces"}>{navigation(false)}</nav>
       <div className="sidebar-foot">
         <div className="status-dot pilot" aria-hidden="true" />
-        <div><b>{ar ? "بيئة تدريب" : "Practice workspace"}</b>
-          <small>{ar ? "أمثلة للتدريب فقط · ليست مبيعات حقيقية" : "Samples only · not real sales"}</small></div>
+        <div><b>{live?(ar?"مساحة المتجر":"Store workspace"):(ar ? "بيئة تدريب" : "Practice workspace")}</b>
+          <small>{live?(ar?"إدارة عمليات متجرك":"Manage your store operations"):(ar ? "أمثلة للتدريب فقط · ليست مبيعات حقيقية" : "Samples only · not real sales")}</small></div>
       </div>
     </aside>
 
@@ -83,7 +85,7 @@ export function AppShell({ locale, children }: {
         <div className="top-actions">
           <Link className="locale account-link" href={"/"+locale+"/account"}>{ar ? "الحساب" : "Account"}</Link>
           <Link className="locale" href={"/product/"+locale} title={ar?"صفحة المنتج":"Product site"}>{ar?"الموقع":"Site"}</Link>
-          <span className="environment-label pilot-label">{ar?"بيئة تجربة":"Demo mode"}</span>
+          <span className="environment-label pilot-label">{live?(ar?"المتجر":"Store"):(ar?"بيئة تجربة":"Demo mode")}</span>
           <Link className="locale" href={otherPath} hrefLang={other}
             aria-label={ar ? "Switch to English" : "التبديل إلى العربية"}>{ar ? "EN" : "العربية"}</Link>
         </div>

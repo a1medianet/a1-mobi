@@ -35,29 +35,30 @@ export function CustomerOrderForm({slug,branchName,products}:{slug:string;branch
   </header>
   <section className="mobi-order-shop-hero">
    <span>{ar?"متجر يعمل بنظام A1 Mobi":"Powered by A1 Mobi"}</span>
-   <h1>{ar?"تسوق الهواتف بسهولة":"Shop phones with ease"}</h1>
-   <p>{ar?"اختر الأجهزة، أرسل طلبك، ثم انتظر تأكيد المتجر قبل الدفع أو الاستلام.":"Choose devices and send a request. The store will confirm before payment or collection."}</p>
+   <h1>{ar?"تسوق منتجات المتجر":"Shop the store catalog"}</h1>
+   <p>{ar?"اختر المنتجات، أرسل طلبك، ثم انتظر تأكيد المتجر قبل الدفع أو الاستلام.":"Choose products and send a request. The store will confirm before payment or collection."}</p>
   </section>
   {reference?<section className="mobi-order-success" role="status">
    <h2>{ar?"تم استلام طلبك":"Request received"}</h2><strong dir="ltr">{reference}</strong>
    <p>{ar?"الطلب قيد مراجعة المتجر. لم يتم تحصيل دفعة أو حجز المخزون. احتفظ بالرقم للمتابعة.":"The store will review this request. No payment or stock reservation was made. Keep your reference."}</p>
   </section>:<>
-   <section className="mobi-order-products" aria-label={ar?"الهواتف":"Phones"}>
+   {!products.length&&<p role="status">{ar?"لا توجد منتجات متوفرة حاليًا. يرجى العودة لاحقًا.":"No products are available right now. Please check back later."}</p>}
+   <section className="mobi-order-products" aria-label={ar?"المنتجات":"Products"}>
     {products.map(p=><article key={p.id}>
       <div className="mobi-order-phone-icon" aria-hidden="true">▣</div>
       <h2>{ar?p.nameAr:p.nameEn}</h2><small dir="ltr">{p.sku}</small>
       <p>{ar?"المتوفر: ":"Available: "}{p.available}</p><strong dir="ltr">{"$"+p.price.toFixed(2)}</strong>
       <div className="mobi-order-qty">
-       <button type="button" aria-label={ar?"إنقاص":"Remove"} onClick={()=>change(p.id,-1,p.available)}>−</button>
+       <button type="button" disabled={busy||!(basket[p.id]>0)} aria-label={ar?"إنقاص":"Remove"} onClick={()=>change(p.id,-1,p.available)}>−</button>
        <output>{basket[p.id]??0}</output>
-       <button type="button" aria-label={ar?"إضافة":"Add"} disabled={units>=12||(basket[p.id]??0)>=p.available} onClick={()=>change(p.id,1,p.available)}>+</button>
+       <button type="button" aria-label={ar?"إضافة":"Add"} disabled={busy||units>=12||(basket[p.id]??0)>=p.available} onClick={()=>change(p.id,1,p.available)}>+</button>
       </div>
      </article>)}
    </section>
    <form className="mobi-order-checkout" onSubmit={e=>void submit(e)}>
     <h2>{ar?"إرسال طلب للمتجر":"Send a request to the store"}</h2>
-    <p>{ar?"اختر جهازًا واحدًا على الأقل. الأسعار للتأكيد النهائي من المتجر.":"Choose at least one phone. Prices and availability are subject to store confirmation."}</p>
-    <div className="mobi-order-total">{ar?"الأجهزة":"Devices"}: {units} · {ar?"المجموع":"Total"}: <strong dir="ltr">{"$"+total.toFixed(2)}</strong></div>
+    <p>{ar?"اختر منتجًا واحدًا على الأقل. الأسعار للتأكيد النهائي من المتجر.":"Choose at least one product. Prices and availability are subject to store confirmation."}</p>
+    <div className="mobi-order-total">{ar?"المنتجات":"Items"}: {units} · {ar?"المجموع":"Total"}: <strong dir="ltr">{"$"+total.toFixed(2)}</strong></div>
     <label>{ar?"اسمك":"Your name"}<input required minLength={2} maxLength={90} value={name} onChange={e=>setName(e.target.value)} autoComplete="name"/></label>
     <label>{ar?"رقم الهاتف":"Phone number"}<input required minLength={7} maxLength={25} type="tel" dir="ltr" value={phone} onChange={e=>setPhone(e.target.value)} autoComplete="tel"/></label>
     <label>{ar?"ملاحظة (اختيارية)":"Note (optional)"}<textarea maxLength={500} rows={2} value={note} onChange={e=>setNote(e.target.value)}/></label>

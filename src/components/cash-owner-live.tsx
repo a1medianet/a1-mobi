@@ -53,7 +53,7 @@ export default async function CashOwnerLivePage({ locale }: { locale: "ar" | "en
   const statusLabel = snapshot.status === "OPEN" ? t.open : snapshot.status === "CLOSED" ? t.closed : t.none;
   const money = (value: number | null, currency: string) => value === null ? "—" :
     new Intl.NumberFormat(locale === "ar" ? "ar-LB" : "en-US", {
-      minimumFractionDigits: currency === "LBP" ? 0 : 2,
+      numberingSystem:"latn", minimumFractionDigits: currency === "LBP" ? 0 : 2,
       maximumFractionDigits: currency === "LBP" ? 0 : 2,
     }).format(value) + " " + currency;
   const when = (time: string) => new Intl.DateTimeFormat(

@@ -14,14 +14,14 @@ export function OrderInbox({locale}:{locale:"ar"|"en"}){
    const res=await fetch("/api/ops/store-orders",{cache:"no-store"});
    if(!res.ok)throw new Error("UNAVAILABLE");
    setData(await res.json());setError("");
-  }catch{setError(ar?"خدمة الطلبات غير مفعلة لهذه التجربة.":"Order inbox is not available for this pilot.");}
+  }catch{setError(ar?"تعذّر تحميل الطلبات. تحقق من تسجيل الدخول وتفعيل الخدمة.":"Could not load requests. Check sign-in and service availability.");}
  }
  useEffect(()=>{
   const controller=new AbortController();
   void fetch("/api/ops/store-orders",{cache:"no-store",signal:controller.signal})
    .then(async res=>{if(!res.ok)throw new Error("UNAVAILABLE");return res.json();})
    .then(result=>{if(!controller.signal.aborted){setData(result);setError("");}})
-   .catch(()=>{if(!controller.signal.aborted)setError(ar?"خدمة الطلبات غير مفعلة لهذه التجربة.":"Order inbox is not available for this pilot.");});
+   .catch(()=>{if(!controller.signal.aborted)setError(ar?"تعذّر تحميل الطلبات. تحقق من تسجيل الدخول وتفعيل الخدمة.":"Could not load requests. Check sign-in and service availability.");});
   return ()=>controller.abort();
  },[ar]);
  async function action(body:unknown,key:string){
@@ -46,7 +46,8 @@ export function OrderInbox({locale}:{locale:"ar"|"en"}){
    <div className="mobi-order-inbox-config">
     <div><strong>{data.branchName}</strong>
      <p>{data.enabled?(ar?"المتجر يستقبل طلبات جديدة":"Accepting requests"):(ar?"استقبال الطلبات متوقف":"Requests paused")}</p>
-     {url&&<p className="mobi-order-link" dir="ltr">{url}</p>}
+     {url&&<p className="mobi-order-link" dir="ltr"><a href={url} target="_blank" rel="noopener noreferrer">{url}</a></p>}
+     <Link href={"/"+locale+"/products"}>{ar?"إدارة منتجات المتجر":"Manage store products"}</Link>
     </div>
     <div className="mobi-order-inbox-actions">
      <button type="button" disabled={!!busy} onClick={()=>void action({action:data.enabled?"disable":"activate"},"toggle")}>
@@ -64,7 +65,7 @@ export function OrderInbox({locale}:{locale:"ar"|"en"}){
    <div className="mobi-order-cards">{data.orders.map(order=><article key={order.id}>
     <div className="mobi-order-card-title"><strong dir="ltr">{order.number}</strong><span>{statusLabel(order.status)}</span></div>
     <p><strong>{order.customerName}</strong> · <a href={"tel:"+order.customerPhone} dir="ltr">{order.customerPhone}</a></p>
-    <small>{new Date(order.createdAt).toLocaleString(ar?"ar-LB":"en-US")}</small>
+    <small>{new Date(order.createdAt).toLocaleString(ar?"ar-LB":"en-US",{numberingSystem:"latn"})}</small>
     <ul>{Array.isArray(order.items)&&order.items.map((item,index)=>{
      const line=item as {nameAr?:string;nameEn?:string;quantity?:number;lineTotal?:number};
      return <li key={index}>{ar?line.nameAr:line.nameEn} × {line.quantity} <b dir="ltr">{"$"+Number(line.lineTotal||0).toFixed(2)}</b></li>;

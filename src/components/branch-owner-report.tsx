@@ -41,7 +41,7 @@ export default async function BranchOwnerReport({locale,period="month"}:{locale:
   const delta=data.salesAfterReturnsUsd-previous.salesAfterReturnsUsd;
   const percent=previous.salesAfterReturnsUsd>0 ? delta/previous.salesAfterReturnsUsd*100 : null;
   const money=(n:number)=>new Intl.NumberFormat(locale==="ar"?"ar-LB":"en-US",
-    {minimumFractionDigits:2,maximumFractionDigits:2}).format(n)+" USD";
+    {numberingSystem:"latn", minimumFractionDigits:2,maximumFractionDigits:2}).format(n)+" USD";
   const cards=[
     [t.gross,money(data.grossRecordedSalesUsd),"blue"],
     [t.returns,money(data.postedReturnsUsd),"rose"],

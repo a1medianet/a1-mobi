@@ -31,5 +31,5 @@ export default async function LocaleLayout({ children, params }: {
   }
   const account = await currentStoreContext().catch(() => null);
   if (!account) redirect("/"+locale+"/login");
-  return <AppShell locale={locale}>{children}</AppShell>;
+  return <AppShell locale={locale} live={process.env.A1_MOBI_C_LIVE_01_ENABLED==="1"}>{children}</AppShell>;
 }

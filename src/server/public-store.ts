@@ -6,18 +6,29 @@ export async function publicStoreCatalog(slug:string){
  ))[0];
  if(!branch)return null;
  const devices=await db.serializedDevice.groupBy({
-  by:["productId"],where:{tenantId:branch.tenantId,status:"IN_STOCK",stockLocation:{branchId:branch.id}},
+  by:["productId"],where:{tenantId:branch.tenantId,status:"IN_STOCK",stockLocation:{branchId:branch.id,tenantId:branch.tenantId}},
   _count:{_all:true}
  });
  const counts=new Map(devices.map(row=>[row.productId,row._count._all]));
- const ids=[...counts.keys()];
+ const locations=await db.stockLocation.findMany({where:{tenantId:branch.tenantId,branchId:branch.id},select:{id:true}});
+ const locationIds=locations.map(l=>l.id);
+ const movements=await db.stockMovement.findMany({where:{tenantId:branch.tenantId,
+  product:{tenantId:branch.tenantId,isSerialized:false,isActive:true},
+  OR:[{toLocationId:{in:locationIds}},{fromLocationId:{in:locationIds}}]},
+  select:{productId:true,quantity:true,toLocationId:true,fromLocationId:true}});
+ const local=new Set(locationIds);
+ for(const row of movements){
+  const delta=(row.toLocationId&&local.has(row.toLocationId)?Number(row.quantity):0)-(row.fromLocationId&&local.has(row.fromLocationId)?Number(row.quantity):0);
+  counts.set(row.productId,(counts.get(row.productId)??0)+delta);
+ }
+ const ids=[...counts].filter(([,count])=>count>=1).map(([id])=>id);
  const products=ids.length?await db.product.findMany({
-  where:{id:{in:ids},tenantId:branch.tenantId,isActive:true,isSerialized:true},
+  where:{id:{in:ids},tenantId:branch.tenantId,isActive:true,type:{in:["DEVICE","ACCESSORY","PART"]}},
   orderBy:{nameEn:"asc"},take:80,
   select:{id:true,sku:true,nameAr:true,nameEn:true,basePrice:true}
  }):[];
  return {...branch,slug,products:products.map(p=>({
   id:p.id,sku:p.sku,nameAr:p.nameAr,nameEn:p.nameEn,
-  price:Number(p.basePrice),available:counts.get(p.id)??0
+  price:Number(p.basePrice),available:Math.max(0,Math.floor(counts.get(p.id)??0))
  })).filter(p=>p.available>0&&p.price>0)};
 }

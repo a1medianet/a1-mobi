@@ -1,4 +1,5 @@
 "use client";
+import { formatNumber } from "@/core/config/number-format";
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
@@ -190,7 +191,7 @@ export default function PosPage() {
       <div><small>{t.receipt}</small><h2><bdi dir="ltr">{receipt.number}</bdi></h2>
         <p>{receipt.customer} · {receipt.items} {t.items}</p></div>
       <div className="receipt-total"><small>{t.paid}</small>
-        <strong><bdi dir="ltr">{receipt.currency==="USD"?"$"+receipt.paidAmount.toFixed(2):receipt.paidAmount.toLocaleString()+" LBP"}</bdi></strong>
+        <strong><bdi dir="ltr">{receipt.currency==="USD"?"$"+receipt.paidAmount.toFixed(2):formatNumber(receipt.paidAmount)+" LBP"}</bdi></strong>
         <span>{t.local}</span></div>
       <button className="soft-btn" onClick={resetSale}>{t.another}</button>
     </section>}
@@ -253,9 +254,9 @@ export default function PosPage() {
 
         <div className="cart-summary">
           <div><span>{t.subtotal}</span><b><bdi dir="ltr">{"$"+total.toFixed(2)}</bdi></b></div>
-          {currency==="LBP" && <div><span>{t.rate}</span><b><bdi dir="ltr">{demoStore.lbpRate.toLocaleString()} LBP/USD</bdi></b></div>}
+          {currency==="LBP" && <div><span>{t.rate}</span><b><bdi dir="ltr">{formatNumber(demoStore.lbpRate)} LBP/USD</bdi></b></div>}
           <div className="cart-total"><span>{t.total}</span><strong><bdi dir="ltr">
-            {currency==="USD"?"$"+total.toFixed(2):paidAmount.toLocaleString()+" LBP"}
+            {currency==="USD"?"$"+total.toFixed(2):formatNumber(paidAmount)+" LBP"}
           </bdi></strong></div>
           <button className="checkout-btn" onClick={completeSale} disabled={!cart.length||busy}>
             {busy?t.completing:t.complete}
