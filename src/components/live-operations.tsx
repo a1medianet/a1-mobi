@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { BarcodeLabelPanel } from "@/components/barcode-label-panel";
 import { StockCountPanel } from "@/components/stock-count-panel";
 import { SaleReturnPanel } from "@/components/sale-return-panel";
 import { StockPosCart } from "@/components/stock-pos-cart";
@@ -114,6 +115,7 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
       onChange={e=>setProduct(old=>({...old,[key]:e.target.value}))}/></label>)}</div>
     <button type="submit" className="primary" disabled={busy}>{t.save}</button>
    </form>}
+   {mode!=="pos"&&<BarcodeLabelPanel products={state?.products??[]} locale={locale}/>}
    {mode!=="pos"&&<PurchaseScanPreview products={state?.products??[]} locations={state?.locations??[]} locale={locale} onSaved={refresh}/>}
    {mode!=="pos"&&<form onSubmit={e=>{e.preventDefault();void send({action:"receive",...stock,unitCost:Number(stock.unitCost),idempotencyKey:crypto.randomUUID()});}}>
     <h2>{mode==="inventory"?(locale==="ar"?"استلام جهاز":"Receive device"):t.receive}</h2>
