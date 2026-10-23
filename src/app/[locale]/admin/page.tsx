@@ -1,3 +1,4 @@
+import { OwnerWorkspace } from "@/components/owner-workspace";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { demoCatalogCounts, demoLowStock, demoStaff, demoStore } from "@/demo/data";
@@ -30,6 +31,7 @@ const copy = {
 export default async function AdminPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (locale !== "ar" && locale !== "en") notFound();
+  if(process.env.A1_MOBI_C_LIVE_01_ENABLED==="1")return <OwnerWorkspace locale={locale} admin/>;
   const t = copy[locale];
   const counts = demoCatalogCounts();
   const low = demoLowStock();

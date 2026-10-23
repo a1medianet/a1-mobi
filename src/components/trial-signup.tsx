@@ -1,4 +1,5 @@
 "use client";
+import { formatDate } from "@/core/config/number-format";
 
 import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
@@ -64,7 +65,7 @@ export function TrialSignup({locale}:{locale:"ar"|"en"}){
       <div><small>{ar?"المتجر":"Store"}</small><strong>{result.tenant}</strong></div>
       <div><small>{ar?"الخطة":"Plan"}</small><strong>{result.trial.planCode}</strong></div>
       <div><small>{ar?"الحالة":"Status"}</small><strong>{result.trial.status}</strong></div>
-      <div><small>{ar?"تنتهي":"Expires"}</small><strong>{result.trial.expiresAt?new Date(result.trial.expiresAt).toLocaleDateString():"—"}</strong></div>
+      <div><small>{ar?"تنتهي":"Expires"}</small><strong>{result.trial.expiresAt?formatDate(result.trial.expiresAt,ar?"ar":"en"):"—"}</strong></div>
     </div>
     <div className="product-actions"><Link className="product-cta" href={result.loginPath}>{ar?"تسجيل الدخول إلى المتجر":"Sign in to store"}</Link><Link className="product-secondary" href={"/product/"+locale+"/demo"}>{ar?"فتح تجربة البيانات":"Open populated demo"}</Link></div>
   </section>;

@@ -1752,3 +1752,10 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 .mobi-catalog-form h2{grid-column:1/-1}.mobi-catalog-form label{display:grid;gap:8px;min-width:0}
 .mobi-catalog-form :is(input,select){width:100%;min-width:0;min-height:44px;padding:10px;border:1px solid #cad7e8;border-radius:8px;font:inherit}
 .mobi-catalog-form button,.catalog-card-body button{min-height:44px;padding:8px 16px;border:1px solid #cad7e8;border-radius:8px;cursor:pointer}
+
+/* Keep occasional inventory and repair tasks available without crowding the work list. */
+.mobi-task-panel{min-width:0;border:1px solid #dce7f6;border-radius:14px;background:#fff;align-self:start}
+.mobi-task-panel>summary{cursor:pointer;padding:16px;font-weight:700;overflow-wrap:anywhere}
+.mobi-task-panel>summary:focus-visible{outline:2px solid #1265e8;outline-offset:2px}
+.mobi-task-panel>form,.mobi-task-panel>.barcode-label-panel{margin:0;border:0}
+.mobi-live02-forms .mobi-task-panel>form{display:flex;flex-direction:column}

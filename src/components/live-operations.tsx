@@ -63,7 +63,7 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
    if(!r.ok)throw new Error(data.error||"READ_FAILED");
    setState(data as State);
  }
- useEffect(()=>{ let mounted=true; fetch("/api/ops/live-01",{cache:"no-store"}).then(async response=>{const data=await response.json();if(!response.ok)throw new Error(data.error||"READ_FAILED");if(mounted)setState(data as State);}).catch(e=>{if(mounted)setError(String(e.message));});return()=>{mounted=false;};},[]);
+ useEffect(()=>{ let mounted=true; fetch("/api/ops/live-01",{cache:"no-store"}).then(async response=>{const data=await response.json();if(!response.ok)throw new Error(data.error||"READ_FAILED");if(mounted)setState(data as State);}).catch(()=>{if(mounted)setError(locale==="ar"?"تعذّر تحميل بيانات المتجر. تحقق من تسجيل الدخول ثم أعد المحاولة.":"Could not load store records. Check sign-in and retry.");});return()=>{mounted=false;};},[locale]);
  async function send(input:Record<string,unknown>) {
    if(busy)return;setBusy(true);setError("");
    try {
@@ -102,21 +102,21 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
  } return <main className={"module-page mobi-live01 mobi-live01-"+mode} lang={locale} dir={locale==="ar"?"rtl":"ltr"}>
   <header className="module-header"><div><Link href={"/"+locale} className="back-link">{t.back}</Link>
    <p className="module-kicker">A1 MOBI · {mode==="pos"?(locale==="ar"?"نقطة البيع":"POINT OF SALE"):mode==="inventory"?(locale==="ar"?"المخزون":"INVENTORY"):(locale==="ar"?"العمليات":"OPERATIONS")}</p><h1>{mode==="pos"?(locale==="ar"?"نقطة البيع":"Point of sale"):mode==="inventory"?(locale==="ar"?"المخزون والأجهزة":"Inventory & devices"):t.title}</h1><p className="module-sub">{mode==="pos"?(locale==="ar"?"بيع الأجهزة المسجلة وإصدار فواتير محفوظة.":"Sell registered devices and issue stored invoices."):mode==="inventory"?(locale==="ar"?"تسجيل المنتجات واستلام أجهزة IMEI وإدارة حالتها.":"Register products and receive IMEI devices into inventory."):t.intro}</p></div>
-   <button type="button" className="soft-btn" onClick={()=>void refresh().catch(e=>setError(String(e.message)))}>{t.reload}</button></header>
+   <button type="button" className="soft-btn" onClick={()=>void refresh().catch(()=>setError(locale==="ar"?"تعذّر تحديث البيانات. حاول مجددًا.":"Could not refresh records. Please retry."))}>{t.reload}</button></header>
   <p role="note" className="preview-notice">{t.note}</p>{error&&<p role="status" className="mobi-live-message">{error}</p>}
   {state&&<section className="mobi-live-stats">
    {(mode==="pos"?[[t.stock,state.counts.availableDevices],[t.sales,state.counts.sales]]:mode==="inventory"?[[t.products,state.counts.products],[t.stock,state.counts.availableDevices]]:[[t.products,state.counts.products],[t.stock,state.counts.availableDevices],[t.sales,state.counts.sales]]).map(([name,value])=><article key={name}><span>{name}</span><strong>{value}</strong></article>)}
   </section>}
   <div className="mobi-live-workspace"><section className="mobi-live-steps">
-   {mode!=="pos"&&<form onSubmit={e=>{e.preventDefault();void send({action:"createProduct",...product,unitCost:Number(product.unitCost),price:Number(product.price)});}}>
+   {mode!=="pos"&&<details className="mobi-task-panel"><summary>{locale==="ar"?"إضافة منتج جديد":"Add a new product"}</summary><form onSubmit={e=>{e.preventDefault();void send({action:"createProduct",...product,unitCost:Number(product.unitCost),price:Number(product.price)});}}>
     <h2>{mode==="inventory"?(locale==="ar"?"إضافة منتج":"Add product"):t.create}</h2>
     <div className="mobi-live-form-grid">{(["brand","model","variant","sku","nameAr","nameEn","unitCost","price"] as const).map(key=>
      <label key={key}>{t[key]}<input required type={key==="price"||key==="unitCost"?"number":"text"} min={key==="price"||key==="unitCost"?0:undefined}
       step={key==="price"||key==="unitCost"?"0.01":undefined} value={product[key]}
       onChange={e=>setProduct(old=>({...old,[key]:e.target.value}))}/></label>)}</div>
     <button type="submit" className="primary" disabled={busy}>{t.save}</button>
-   </form>}
-   {mode!=="pos"&&<BarcodeLabelPanel products={state?.products??[]} locale={locale}/>}
+   </form></details>}
+   {mode!=="pos"&&<details className="mobi-task-panel"><summary>{locale==="ar"?"طباعة ملصقات الباركود":"Print barcode labels"}</summary><BarcodeLabelPanel products={state?.products??[]} locale={locale}/></details>}
    {mode!=="pos"&&<PurchaseScanPreview products={state?.products??[]} locations={state?.locations??[]} locale={locale} onSaved={refresh}/>}
    {mode!=="pos"&&<form onSubmit={e=>{e.preventDefault();void send({action:"receive",...stock,unitCost:Number(stock.unitCost),idempotencyKey:crypto.randomUUID()});}}>
     <h2>{mode==="inventory"?(locale==="ar"?"استلام جهاز":"Receive device"):t.receive}</h2>

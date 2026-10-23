@@ -42,7 +42,7 @@ export function OrderInbox({locale}:{locale:"ar"|"en"}){
    <p>{ar?"تأكيد الطلب لا ينفّذ بيعًا أو يحجز مخزونًا. سجّل البيع عند الاستلام من نقطة البيع.":"Confirming a request does not create a sale or reserve inventory. Complete sales in POS."}</p>
   </header>
   {error&&<p role="alert" className="mobi-order-alert">{error}</p>}
-  {!data?<p>{ar?"جارٍ تحميل الطلبات…":"Loading requests…"}</p>:<>
+  {!data?(error?<button type="button" onClick={()=>void load()}>{ar?"إعادة المحاولة":"Retry"}</button>:<p>{ar?"جارٍ تحميل الطلبات…":"Loading requests…"}</p>):<>
    <div className="mobi-order-inbox-config">
     <div><strong>{data.branchName}</strong>
      <p>{data.enabled?(ar?"المتجر يستقبل طلبات جديدة":"Accepting requests"):(ar?"استقبال الطلبات متوقف":"Requests paused")}</p>
@@ -61,7 +61,7 @@ export function OrderInbox({locale}:{locale:"ar"|"en"}){
    <div className="mobi-order-inbox-tools"><strong>{ar?"الطلبات المستلمة":"Received requests"} ({data.orders.length})</strong>
     <button type="button" onClick={()=>void load()}>{ar?"تحديث":"Refresh"}</button>
    </div>
-   {!data.orders.length?<p className="mobi-order-empty">{ar?"لا توجد طلبات حتى الآن. عند إرسال الزبون طلبًا من رابط المتجر سيظهر هنا.":"No requests yet. Customer requests from the store link will appear here."}</p>:
+   {!data.orders.length?<p className="mobi-order-empty">{data.enabled?(ar?"لا توجد طلبات حتى الآن. عند إرسال الزبون طلبًا من رابط المتجر سيظهر هنا.":"No requests yet. Customer requests from the store link will appear here."):(ar?"استقبال الطلبات متوقف. فعّل رابط المتجر لاستقبال طلبات جديدة.":"Requests are paused. Enable the store link to receive new requests.")}</p>:
    <div className="mobi-order-cards">{data.orders.map(order=><article key={order.id}>
     <div className="mobi-order-card-title"><strong dir="ltr">{order.number}</strong><span>{statusLabel(order.status)}</span></div>
     <p><strong>{order.customerName}</strong> · <a href={"tel:"+order.customerPhone} dir="ltr">{order.customerPhone}</a></p>

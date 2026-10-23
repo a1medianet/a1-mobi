@@ -57,7 +57,7 @@ export default async function CashOwnerLivePage({ locale }: { locale: "ar" | "en
       maximumFractionDigits: currency === "LBP" ? 0 : 2,
     }).format(value) + " " + currency;
   const when = (time: string) => new Intl.DateTimeFormat(
-    locale === "ar" ? "ar-LB" : "en-GB", { dateStyle: "short", timeStyle: "short", timeZone: "Asia/Beirut" },
+    locale === "ar" ? "ar-LB" : "en-GB", { numberingSystem: "latn", dateStyle: "short", timeStyle: "short", timeZone: "Asia/Beirut" },
   ).format(new Date(time));
 
   return <main className="module-page">

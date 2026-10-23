@@ -36,7 +36,7 @@ export default async function CustomerOwnerDirectory({locale}:{locale:"ar"|"en"}
   }
   const rows=await getBranchCustomerDirectory({tenantId:ctx.tenantId,branchId:ctx.branchId});
   const date=(value:string)=>new Intl.DateTimeFormat(locale==="ar"?"ar-LB":"en-GB",
-    {dateStyle:"medium",timeZone:"Asia/Beirut"}).format(new Date(value));
+    {numberingSystem:"latn",dateStyle:"medium",timeZone:"Asia/Beirut"}).format(new Date(value));
   return <main className="module-page">
     <header className="module-header"><div>
       <Link href={"/"+locale} className="back-link">{t.back}</Link>

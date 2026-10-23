@@ -1,3 +1,4 @@
+import { OwnerWorkspace } from "@/components/owner-workspace";
 import Link from "next/link";
 import { OperationBreakdownChart } from "@/components/operation-breakdown-chart";
 import { notFound } from "next/navigation";
@@ -80,6 +81,7 @@ const copy = {
 export default async function Dashboard({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (locale !== "ar" && locale !== "en") notFound();
+  if(process.env.A1_MOBI_C_LIVE_01_ENABLED==="1")return <OwnerWorkspace locale={locale}/>;
   const ar = locale === "ar";
   const t = copy[locale];
   const counts = demoCatalogCounts();

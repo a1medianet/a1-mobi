@@ -23,7 +23,7 @@ export default async function DemoPage({params}:{params:Promise<{locale:string}>
       <article><small>{ar?"الأجهزة المسجلة":"Serialized units"}</small><strong>{counts.serializedUnits}</strong></article>
       <article><small>{ar?"الصيانة":"Repairs"}</small><strong>{demoRepairs.length}</strong></article>
       <article><small>{ar?"العملاء":"Customers"}</small><strong>{demoCustomers.length}</strong></article>
-      <article><small>{ar?"مبيعات توضيحية":"Sample sales"}</small><strong>{"$"+demoReports.salesUsd.toLocaleString()}</strong></article>
+      <article><small>{ar?"مبيعات توضيحية":"Sample sales"}</small><strong>{"$"+demoReports.salesUsd.toLocaleString("en-US")}</strong></article>
       <article><small>{ar?"خدمات التعبئة":"Top-ups"}</small><strong>{demoTopups.length}</strong></article>
     </section>
     <section className="demo-grid">

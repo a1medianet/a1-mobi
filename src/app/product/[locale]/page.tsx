@@ -76,7 +76,7 @@ export default async function ProductLanding({params}:{params:Promise<{locale:st
                 <div className="mobi-a-mini-main">
                   <div className="mobi-a-mini-actions"><span/><span/><span/><span/></div>
                   <div className="mobi-a-mini-kpis">
-                    <article><small>{ar?"المبيعات":"Sales"}</small><b>{"$"+demoReports.salesUsd.toLocaleString()}</b></article>
+                    <article><small>{ar?"المبيعات":"Sales"}</small><b>{"$"+demoReports.salesUsd.toLocaleString("en-US")}</b></article>
                     <article><small>{ar?"الصيانة":"Repairs"}</small><b>{demoRepairs.length}</b></article>
                     <article><small>{ar?"المنتجات":"Products"}</small><b>{counts.total}</b></article>
                     <article><small>{ar?"العملاء":"Customers"}</small><b>{demoCustomers.length}</b></article>
@@ -89,7 +89,7 @@ export default async function ProductLanding({params}:{params:Promise<{locale:st
               <span>A1</span>
               <b>{ar?"بيع جديد":"New sale"}</b>
               <small>{demoProducts[0]?.brand}</small>
-              <strong>{"$"+(demoProducts[0]?.price??0).toLocaleString()}</strong>
+              <strong>{"$"+(demoProducts[0]?.price??0).toLocaleString("en-US")}</strong>
               <i/>
             </div>
           </aside>
