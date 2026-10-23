@@ -137,7 +137,7 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
     <div className="mobi-pos-imei-scanner">
       <label htmlFor="mobi-pos-imei-scan">{locale==="ar"?"مسح IMEI لجهاز متاح":"Scan available device IMEI"}</label>
       <input id="mobi-pos-imei-scan" autoComplete="off" inputMode="numeric" value={scanInput} onChange={e=>setScanInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"){e.preventDefault();addScannedDevice();}}} placeholder="IMEI" aria-label={locale==="ar"?"قارئ IMEI":"IMEI scanner"} />
-      <button type="button" onClick={addScannedDevice} disabled={busy||!scanInput.trim()||selectedDeviceIds.length>=12}>{locale==="ar"?"إضافة الجهاز":"Add device"}</button>
+      <button type="button" className="mobi-pos-secondary" onClick={addScannedDevice} disabled={busy||!scanInput.trim()||selectedDeviceIds.length>=12}>{locale==="ar"?"إضافة الجهاز":"Add device"}</button>
     </div>
     <fieldset className="mobi-pos-device-list">
       <legend>{locale==="ar"?"اختر الأجهزة للفاتورة":"Select devices for this invoice"}</legend>
@@ -156,7 +156,7 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
       <span>{locale==="ar"?"الأجهزة المختارة":"Selected devices"}: <strong>{selectedDevices.length}</strong></span>
       <span>{t.total}: <strong dir="ltr">{"$"+formatNumber(cartTotal,locale,{minimumFractionDigits:2,maximumFractionDigits:2})}</strong></span>
     </div>
-    {state&&available.length===0&&<p className="mobi-live-hint" role="status">{t.noneAvailable} <Link href={"/"+locale+"/inventory"}>{t.startInventory}</Link></p>}
+    {state&&available.length===0&&<p className="mobi-live-hint" role="status">{t.noneAvailable} <Link className="mobi-pos-secondary" href={"/"+locale+"/inventory"}>{t.startInventory}</Link></p>}
     <p className="mobi-live-hint">{locale==="ar"?"الدفع النقدي بالدولار — تحقق الأجهزة وفاتورة محفوظة":"USD cash — verified device and persisted invoice"}</p>
     <button type="submit" className="primary" disabled={busy||!selectedDevices.length}>{t.checkout}</button>
    </form>}

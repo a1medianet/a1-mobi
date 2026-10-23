@@ -45,7 +45,7 @@ export function StockPosCart({ products, locations, locale, onSaved }: { product
     <h2>{ar ? "بيع أصناف بالباركود أو SKU" : "Sell items by barcode or SKU"}</h2>
     <p>{ar ? "دفع نقدي بالدولار بالسعر المسجل. يتحقق الخادم من المخزون عند التأكيد." : "Exact USD cash at the registered price. Stock is checked on confirmation."}</p>
     <label>{ar ? "الباركود أو SKU" : "Barcode or SKU"}<input autoComplete="off" value={scan} disabled={locked} onChange={event => setScan(event.target.value)} onKeyDown={event => { if (event.key === "Enter") { event.preventDefault(); add(); } }} /></label>
-    <button type="button" disabled={locked || !scan.trim()} onClick={add}>{ar ? "إضافة" : "Add item"}</button>
+    <button type="button" className="mobi-pos-secondary" disabled={locked || !scan.trim()} onClick={add}>{ar ? "إضافة" : "Add item"}</button>
     <label>{ar ? "المخزن" : "Stock location"}<select value={locationId} disabled={locked} onChange={event => setLocationId(event.target.value)}><option value="">—</option>{locations.map(location => <option key={location.id} value={location.id}>{location.name}</option>)}</select></label>
     <ul className="mobi-pos-stock-lines">{lines.map(line => { const product = products.find(item => item.id === line.productId); return <li key={line.productId}>
       {ar ? product?.nameAr : product?.nameEn} · {product?.sku}

@@ -1731,6 +1731,10 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 .mobi-live01-pos .mobi-purchase-scan-preview :is(input,select,textarea){width:100%;min-width:0;padding:9px 10px;border:1px solid #cad7e8;border-radius:8px;min-height:44px;background:#fff;color:#14233d;font:inherit}
 .mobi-live01-pos button{min-height:44px;border-radius:9px;padding:9px 14px;cursor:pointer}
 .mobi-live01-pos button:disabled{cursor:not-allowed;opacity:.55}
+.mobi-live01-pos :is(button:not(.primary),a.mobi-pos-secondary){display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:9px 14px;border:1px solid #8bb4e8;border-radius:9px;background:#edf5ff;color:#174f91;font:inherit;font-weight:700;text-decoration:none}
+.mobi-live01-pos :is(button:not(.primary),a.mobi-pos-secondary):hover:not(:disabled){background:#dbeafe;border-color:#3979c6;color:#123e73}
+.mobi-live01-pos :is(button:not(.primary),a.mobi-pos-secondary):focus-visible{outline:3px solid #1769e0;outline-offset:3px}
+.mobi-live01-pos button:not(.primary):disabled{background:#edf0f4;border-color:#b5c0ce;color:#526174;opacity:1;cursor:not-allowed}
 .mobi-live01-pos .mobi-pos-imei-scanner{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end}
 .mobi-live01-pos .mobi-pos-imei-scanner label{grid-column:1/-1}
 .mobi-live01-pos .mobi-pos-stock-lines{list-style:none;padding:0;margin:0;display:grid;gap:10px;max-height:310px;overflow:auto}
