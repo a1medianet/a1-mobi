@@ -39,11 +39,11 @@ export type CheckoutInput = {
   payments: CheckoutPaymentInput[];
 };
 
-async function actorCanOverride(tx: Prisma.TransactionClient, actorId: string) {
+async function actorCanOverride(tx: Prisma.TransactionClient, actorId: string, tenantId: string) {
   const count = await tx.rolePermission.count({
     where: {
       permission: { code: "sell.price.override" },
-      role: { userRoles: { some: { userId: actorId } } },
+      role: { tenantId, userRoles: { some: { userId: actorId } } },
     },
   });
   return count > 0;
@@ -77,7 +77,7 @@ export async function checkoutSale(input: CheckoutInput) {
         tx.tenant.findUniqueOrThrow({ where: { id: input.tenantId } }),
         tx.branch.findUniqueOrThrow({ where: { id: input.branchId } }),
         tx.user.findUniqueOrThrow({ where: { id: input.actorId } }),
-        actorCanOverride(tx, input.actorId),
+        actorCanOverride(tx, input.actorId, input.tenantId),
       ]);
       if (branch.tenantId !== tenant.id || actor.tenantId !== tenant.id) {
         throw new Error("Cross-tenant sale is forbidden");

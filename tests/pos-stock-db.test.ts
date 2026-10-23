@@ -22,6 +22,27 @@ async function fixture(stock = 5) {
   return { tenant, branch, actor, product, location, input };
 }
 runDb("POS nonserialized PostgreSQL", () => {
+  it("ignores foreign-tenant override grants and records a reasoned local override", async () => {
+    const { tenant, actor, input } = await fixture();
+    const foreign = await fixture();
+    const permission = await db.permission.upsert({ where: { code: "sell.price.override" }, update: {}, create: { code: "sell.price.override", description: "Override floor" } });
+    await db.role.create({ data: { tenantId: foreign.tenant.id, code: "FOREIGN_OVERRIDE", name: "Foreign override", permissions: { create: { permissionId: permission.id } }, userRoles: { create: { userId: actor.id } } } });
+    const discounted = { ...input, lines: [{ ...input.lines[0], finalPrice: 1, overrideReason: "Owner approved damaged packaging" }], payments: [{ ...input.payments[0], amount: 3 }] };
+    await expect(checkoutSale(discounted)).rejects.toThrow("requires permission");
+    expect(await db.sale.count({ where: { tenantId: tenant.id } })).toBe(0);
+    expect(await db.stockMovement.count({ where: { tenantId: tenant.id, type: "SALE" } })).toBe(0);
+    expect(await db.auditEvent.count({ where: { tenantId: tenant.id } })).toBe(0);
+    const role = await db.role.create({ data: { tenantId: tenant.id, code: "LOCAL_OVERRIDE", name: "Local override", permissions: { create: { permissionId: permission.id } }, userRoles: { create: { userId: actor.id } } } });
+    await expect(checkoutSale({ ...discounted, lines: [{ ...discounted.lines[0], overrideReason: " " }] })).rejects.toThrow("actor and reason");
+    const sale = await checkoutSale(discounted);
+    expect(sale.lines[0]).toMatchObject({ priceOverrideActorId: actor.id, priceOverrideReason: discounted.lines[0].overrideReason });
+    const audit = await db.auditEvent.findFirstOrThrow({ where: { tenantId: tenant.id, entityId: sale.id, action: "sale.checkout" } });
+    expect(audit.before).toMatchObject({ stock: [{ quantity: 5 }] });
+    expect(audit.after).toMatchObject({ stock: [{ quantity: 2 }], total: 3 });
+    await db.rolePermission.delete({ where: { roleId_permissionId: { roleId: role.id, permissionId: permission.id } } });
+    await expect(checkoutSale({ ...discounted, idempotencyKey: randomUUID(), number: `revoked-${input.number}`, invoiceNumber: `revoked-${input.invoiceNumber}` })).rejects.toThrow("requires permission");
+    expect(await db.sale.count({ where: { tenantId: tenant.id } })).toBe(1);
+  }, 30000);
   it("deducts quantities atomically, audits balances, replays once and returns stock with reversal evidence", async () => {
     const { tenant, input, location } = await fixture();
     const sale = await checkoutSale(input);
