@@ -1,4 +1,5 @@
 "use client";
+import { formatUsd } from "@/core/config/number-format";
 import { useEffect,useState } from "react";
 import Link from "next/link";
 type WebOrder={id:string;number:string;customerName:string;customerPhone:string;customerNote:string|null;status:string;items:unknown;totalAmount:number;currency:string;createdAt:string};
@@ -35,7 +36,7 @@ export function OrderInbox({locale}:{locale:"ar"|"en"}){
  }
  const url=data?.slug?(typeof window!=="undefined"?window.location.origin:"")+"/shop/"+data.slug:"";
  const statusLabel=(status:string)=>({NEW:ar?"جديد":"New",CONFIRMED:ar?"تم التأكيد":"Confirmed",
-  DECLINED:ar?"مرفوض":"Declined",CLOSED:ar?"تمت المعالجة":"Handled"}[status]??status);
+  DECLINED:ar?"مرفوض":"Declined",CLOSED:ar?"تمت المعالجة":"Handled"}[status]??(ar?"الحالة غير متاحة":"Status unavailable"));
  return <section className="mobi-order-inbox" lang={locale} dir={ar?"rtl":"ltr"}>
   <header><span>{ar?"طلبات زبائن المتجر":"Customer requests"}</span>
    <h1>{ar?"كل طلب يصل إلى هنا":"Every customer request in one place"}</h1>
@@ -68,10 +69,10 @@ export function OrderInbox({locale}:{locale:"ar"|"en"}){
     <small>{new Date(order.createdAt).toLocaleString(ar?"ar-LB":"en-US",{numberingSystem:"latn"})}</small>
     <ul>{Array.isArray(order.items)&&order.items.map((item,index)=>{
      const line=item as {nameAr?:string;nameEn?:string;quantity?:number;lineTotal?:number};
-     return <li key={index}>{ar?line.nameAr:line.nameEn} × {line.quantity} <b dir="ltr">{"$"+Number(line.lineTotal||0).toFixed(2)}</b></li>;
+     return <li key={index}>{ar?line.nameAr:line.nameEn} × {line.quantity} <b dir="ltr">{formatUsd(Number(line.lineTotal||0))}</b></li>;
     })}</ul>
     {order.customerNote&&<p className="mobi-order-customer-note">{order.customerNote}</p>}
-    <p>{ar?"المجموع المطلوب":"Requested total"}: <strong dir="ltr">{"$"+order.totalAmount.toFixed(2)}</strong></p>
+    <p>{ar?"المجموع المطلوب":"Requested total"}: <strong dir="ltr">{formatUsd(order.totalAmount)}</strong></p>
     <div className="mobi-order-inbox-actions">
      {order.status==="NEW"&&<><button disabled={!!busy} onClick={()=>void action({action:"setStatus",id:order.id,status:"CONFIRMED"},order.id)}>{ar?"تأكيد مع الزبون":"Confirm with customer"}</button>
       <button disabled={!!busy} className="secondary" onClick={()=>void action({action:"setStatus",id:order.id,status:"DECLINED"},order.id)}>{ar?"اعتذار عن الطلب":"Decline request"}</button></>}

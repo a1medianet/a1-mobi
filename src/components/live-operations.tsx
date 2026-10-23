@@ -22,7 +22,7 @@ export function liveOperationStatus(value:string,locale:"ar"|"en") {
   CANCELLED:{ar:"ملغاة",en:"Cancelled"},
   RETURNED:{ar:"مرتجع",en:"Returned"},
  };
- return labels[value]?.[locale]??value;
+ return labels[value]?.[locale]??(locale==="ar"?"الحالة غير متاحة":"Status unavailable");
 }
 type State = { products:P[]; variants:V[]; locations:{id:string;name:string}[];
   devices:D[]; sales:{id:string;invoiceNumber:string;total:number;status:string}[];

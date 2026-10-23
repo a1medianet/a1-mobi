@@ -9,3 +9,8 @@ export function formatDate(value: string | Date, locale: "ar" | "en", options: I
     ...options, numberingSystem: "latn", timeZone: "Asia/Beirut",
   }).format(new Date(value));
 }
+
+/** USD amounts use one unambiguous presentation in both languages. */
+export function formatUsd(value: number): string {
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", numberingSystem: "latn", minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+}

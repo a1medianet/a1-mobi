@@ -1,4 +1,6 @@
 "use client";
+import { formatUsd } from "@/core/config/number-format";
+import Link from "next/link";
 import { useState } from "react";
 type Item={productId:string;quantity:number};
 type Product={id:string;sku:string;nameAr:string;nameEn:string;price:number;available:number};
@@ -31,6 +33,7 @@ export function CustomerOrderForm({slug,branchName,products}:{slug:string;branch
  }
  return <main className="mobi-order-shop" lang={language} dir={ar?"rtl":"ltr"}>
   <header><strong>A1 <span>Mobi</span></strong><span>{branchName}</span>
+   <Link href={"/"+language+"/login"}>{ar?"دخول إدارة المتجر":"Store management sign-in"}</Link>
    <button type="button" onClick={()=>setLanguage(ar?"en":"ar")}>{ar?"EN":"العربية"}</button>
   </header>
   <section className="mobi-order-shop-hero">
@@ -47,7 +50,7 @@ export function CustomerOrderForm({slug,branchName,products}:{slug:string;branch
     {products.map(p=><article key={p.id}>
       <div className="mobi-order-phone-icon" aria-hidden="true">▣</div>
       <h2>{ar?p.nameAr:p.nameEn}</h2><small dir="ltr">{p.sku}</small>
-      <p>{ar?"المتوفر: ":"Available: "}{p.available}</p><strong dir="ltr">{"$"+p.price.toFixed(2)}</strong>
+      <p>{ar?"المتوفر: ":"Available: "}{p.available}</p><strong dir="ltr">{formatUsd(p.price)}</strong>
       <div className="mobi-order-qty">
        <button type="button" disabled={busy||!(basket[p.id]>0)} aria-label={ar?"إنقاص":"Remove"} onClick={()=>change(p.id,-1,p.available)}>−</button>
        <output>{basket[p.id]??0}</output>
@@ -58,7 +61,7 @@ export function CustomerOrderForm({slug,branchName,products}:{slug:string;branch
    <form className="mobi-order-checkout" onSubmit={e=>void submit(e)}>
     <h2>{ar?"إرسال طلب للمتجر":"Send a request to the store"}</h2>
     <p>{ar?"اختر منتجًا واحدًا على الأقل. الأسعار للتأكيد النهائي من المتجر.":"Choose at least one product. Prices and availability are subject to store confirmation."}</p>
-    <div className="mobi-order-total">{ar?"المنتجات":"Items"}: {units} · {ar?"المجموع":"Total"}: <strong dir="ltr">{"$"+total.toFixed(2)}</strong></div>
+    <div className="mobi-order-total">{ar?"المنتجات":"Items"}: {units} · {ar?"المجموع":"Total"}: <strong dir="ltr">{formatUsd(total)}</strong></div>
     <label>{ar?"اسمك":"Your name"}<input required minLength={2} maxLength={90} value={name} onChange={e=>setName(e.target.value)} autoComplete="name"/></label>
     <label>{ar?"رقم الهاتف":"Phone number"}<input required minLength={7} maxLength={25} type="tel" dir="ltr" value={phone} onChange={e=>setPhone(e.target.value)} autoComplete="tel"/></label>
     <label>{ar?"ملاحظة (اختيارية)":"Note (optional)"}<textarea maxLength={500} rows={2} value={note} onChange={e=>setNote(e.target.value)}/></label>

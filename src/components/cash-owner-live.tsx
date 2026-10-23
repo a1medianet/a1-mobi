@@ -1,3 +1,4 @@
+import { CashOpenPanel } from "@/components/cash-open-panel";
 import Link from "next/link";
 import { currentStoreContext } from "@/server/auth-http";
 import { getBranchCashSnapshot } from "@/modules/cash/cash-owner-snapshot";
@@ -82,6 +83,7 @@ export default async function CashOwnerLivePage({ locale }: { locale: "ar" | "en
     {snapshot.status === "OPEN" && snapshot.sessionId && snapshot.openingExchangeRate
       ? <CashClosePanel locale={locale} cashSessionId={snapshot.sessionId}
         openingRate={snapshot.openingExchangeRate} /> : null}
+    {snapshot.status !== "OPEN" && <CashOpenPanel locale={locale} />}
     {snapshot.status === "NONE" ?
       <section className="activity-card"><p role="status">{t.empty}</p></section> :
       <section className="activity-card">

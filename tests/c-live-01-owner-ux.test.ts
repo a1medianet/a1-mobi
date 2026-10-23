@@ -13,7 +13,8 @@ describe("C canonical POS and inventory owner labels",()=>{
   expect(liveOperationStatus("SOLD","en")).toBe("Sold");
   expect(liveOperationStatus("COMPLETED","en")).toBe("Completed");
  });
- it("preserves unrecognized server values rather than misreporting a financial state",()=>{
-  expect(liveOperationStatus("REVIEW_REQUIRED","ar")).toBe("REVIEW_REQUIRED");
+ it("hides unknown server codes without inventing a financial state",()=>{
+  expect(liveOperationStatus("REVIEW_REQUIRED","ar")).toBe("الحالة غير متاحة");
+  expect(liveOperationStatus("REVIEW_REQUIRED","en")).toBe("Status unavailable");
  });
 });

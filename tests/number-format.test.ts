@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatDate, formatNumber } from "../src/core/config/number-format";
+import { formatDate, formatNumber, formatUsd } from "../src/core/config/number-format";
 describe("ASCII number formatting", () => {
   for (const locale of ["ar", "en"] as const) {
     it(`keeps ${locale} dates in ASCII digits and Beirut time`, () => {
@@ -16,4 +16,10 @@ describe("ASCII number formatting", () => {
       expect(formatNumber(12, locale, { numberingSystem: "arab" })).toBe("12");
     });
   }
+});
+
+it("formats USD with ASCII digits and exactly two decimals", () => {
+  expect(formatUsd(1234.5)).toBe("$1,234.50");
+  expect(formatUsd(-12)).toBe("-$12.00");
+  expect(formatUsd(0)).toBe("$0.00");
 });

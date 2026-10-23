@@ -29,7 +29,7 @@ export function OperationBreakdownChart({ rows, locale }: { rows: readonly Opera
           <span className="operation-breakdown-demo">{ar ? "بيانات تجريبية" : "Demo data"}</span>
         </div>
         <p id="operation-breakdown-caption">{ar
-          ? "عدد العمليات حسب النوع من جميع العينات؛ ليست إيرادات أو أرباحًا، ولا تخص يومًا محددًا. النسب المعروضة مقربة ومجموعها ١٠٠٪ عند وجود بيانات."
+          ? "عدد العمليات حسب النوع من جميع العينات؛ ليست إيرادات أو أرباحًا، ولا تخص يومًا محددًا. النسب المعروضة مقربة ومجموعها 100% عند وجود بيانات."
           : "Operation counts by type across all samples; not revenue, margin, or a specific day. Displayed shares are rounded to total 100% when data exists."}</p>
       </figcaption>
       {total === 0 && <p className="operation-breakdown-empty">{ar ? "لا توجد عمليات تجريبية؛ جميع الأعداد والنسب صفر." : "No demo operations; all counts and shares are zero."}</p>}

@@ -1,4 +1,5 @@
 "use client";
+import { formatUsd } from "@/core/config/number-format";
 
 import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
@@ -78,8 +79,8 @@ export function StorePreviewExperience({products}:StorePreviewExperienceProps){
   function addDemo(id:string){setBasket(old=>({...old,[id]:Math.min(9,(old[id]??0)+1)}));setLastAdded(id);setInquiryReady(false);setCopyStatus("idle");}
   function reduceDemo(id:string){setBasket(old=>({...old,[id]:Math.max(0,(old[id]??0)-1)}));setInquiryReady(false);setCopyStatus("idle");}
   const sampleSummary=[ar?"استفسار تجريبي عن منتجات":"Sample product inquiry","TechZone",...basketItems.map(item=>
-    (ar?item.nameAr:item.nameEn)+" × "+basket[item.id]+" — $"+(item.price*(basket[item.id]??0)).toLocaleString("en-US")
-  ),(ar?"الإجمالي التوضيحي":"Illustrative total")+": $"+basketTotal.toLocaleString("en-US"),
+    (ar?item.nameAr:item.nameEn)+" × "+basket[item.id]+" — "+formatUsd(item.price*(basket[item.id]??0))
+  ),(ar?"الإجمالي التوضيحي":"Illustrative total")+": "+formatUsd(basketTotal),
   ar?"هذه معاينة؛ لم يُرسل أي طلب أو مبلغ.":"Preview only; no order or payment was submitted."].join("\n");
   async function copySampleInquiry(){
     try {await navigator.clipboard.writeText(sampleSummary);setCopyStatus("success");}
@@ -92,6 +93,7 @@ export function StorePreviewExperience({products}:StorePreviewExperienceProps){
   }
 
   return <main className="mobi-store mobi-store-website" lang={locale} dir={ar?"rtl":"ltr"}>
+    <aside className="preview-notice" role="note">{t.demo} · <Link href={"/"+locale+"/login"}>{ar?"دخول صاحب المتجر لإدارة متجره":"Store owner sign-in · manage your store"}</Link></aside>
     <header className="mobi-store-header">
       <div className="mobi-shop-brand" dir="ltr">
         <svg className="mobi-shop-logo" width="34" height="42" viewBox="0 0 32 40" fill="none" aria-hidden="true">
@@ -169,7 +171,7 @@ export function StorePreviewExperience({products}:StorePreviewExperienceProps){
           <div className="mobi-store-product-body">
             <small>{product.brand}</small>
             <h3>{ar?product.nameAr:product.nameEn}</h3>
-            <div><strong dir="ltr">{"$"+product.price.toLocaleString("en-US")}</strong>
+            <div><strong dir="ltr">{formatUsd(product.price)}</strong>
               <button className="mobi-store-add" type="button" onClick={()=>addDemo(product.id)}
                 aria-label={t.add+" — "+(ar?product.nameAr:product.nameEn)} title={t.add}>
                 <svg aria-hidden="true" width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
@@ -260,7 +262,7 @@ export function StorePreviewExperience({products}:StorePreviewExperienceProps){
           <span>{ar?item.nameAr:item.nameEn}</span>
           <div><button type="button" aria-label={"− "+(ar?item.nameAr:item.nameEn)} onClick={()=>reduceDemo(item.id)}>−</button><b>{basket[item.id]}</b><button type="button" aria-label={"+ "+(ar?item.nameAr:item.nameEn)} onClick={()=>addDemo(item.id)}>+</button></div>
         </li>)}</ul>
-        <div className="mobi-store-basket-total"><span>{t.basketTotal}</span><strong dir="ltr">{"$"+basketTotal.toLocaleString("en-US")}</strong></div>
+        <div className="mobi-store-basket-total"><span>{t.basketTotal}</span><strong dir="ltr">{formatUsd(basketTotal)}</strong></div>
         <div className="mobi-store-inquiry-actions">
           <button className="mobi-store-inquiry-prepare" type="button" onClick={()=>{setInquiryReady(true);setCopyStatus("idle");}}>{ar?"تحضير ملخص المنتجات":"Prepare product summary"}</button>
           <button className="mobi-store-basket-clear" type="button" onClick={()=>{setBasket({});setInquiryReady(false);setCopyStatus("idle");}}>{t.basketClear}</button>
