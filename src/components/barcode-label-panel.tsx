@@ -36,7 +36,7 @@ export function BarcodeLabelPanel({products,locale}:{products:Product[];locale:"
     <label>{ar?"المنتج (القائمة المحملة)":"Product (loaded catalog)"}<select data-testid="label-product" value={id} onChange={e=>{setId(e.target.value);setError("");}}><option value="">—</option>{products.map(p=><option key={p.id} value={p.id}>{ar?p.nameAr:p.nameEn} · {p.sku}</option>)}</select></label>
     <label>{ar?"عدد الملصقات (1–100)":"Label quantity (1–100)"}<input data-testid="label-quantity" type="number" min="1" max="100" step="1" value={quantity} onChange={e=>setQuantity(e.target.value)}/></label>
     {error&&<p role="alert">{error}</p>}
-    {product&&!barcode&&<p role="alert">{ar?"لا يوجد رمز صالح للطباعة. يلزم EAN-13 صحيح أو رمز Code128/SKU مدعوم بطول 2–32 حرفًا.":"No printable identifier. A valid EAN-13 or supported Code128/SKU of 2–32 characters is required."}</p>}
+    {product&&!barcode&&<p role="alert">{ar?"لا يوجد رمز صالح للطباعة. يلزم EAN-13 صحيح أو رمز Code128/SKU مدعوم بطول 2–20 حرفًا.":"No printable identifier. A valid EAN-13 or supported Code128/SKU of 2–20 characters is required."}</p>}
     <button type="button" data-testid="label-print" disabled={!valid} onClick={()=>window.print()}>{ar?"طباعة الملصقات":"Print labels"}</button>
     <div className="barcode-label-preview">{labels}</div>
     {labels&&createPortal(<div id="barcode-label-print-root">{labels}</div>,document.body)}

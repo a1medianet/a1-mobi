@@ -42,7 +42,7 @@ describe("printable label encoders",()=>{
     const runs=encoded.bits.slice(10,-10).match(/1+|0+/g)!.map(s=>s.length).join(" ");
     expect(runs).toBe("2 1 1 2 1 4 1 1 1 3 2 3 1 3 1 1 2 3 1 3 1 3 2 1 2 2 2 1 2 2 2 3 3 1 1 1 2");
   });
-  it.each(["5901234123458","1234567890123","<script>","a".repeat(33),"رمز","A B"])("rejects invalid or unsafe value %s",value=>expect(()=>encodeLabelBarcode(value)).toThrow());
+  it.each(["5901234123458","1234567890123","<script>","a".repeat(21),"رمز","A B"])("rejects invalid or unsafe value %s",value=>expect(()=>encodeLabelBarcode(value)).toThrow());
   it("falls back to the existing SKU without correcting invalid EAN",()=>expect(selectLabelBarcode({sku:"ABC123",barcodes:["5901234123458"]}).value).toBe("ABC123"));
   it.each([0,101,1.5,NaN,Infinity])("rejects quantity %s",n=>expect(()=>labelQuantity(n)).toThrow());
   it("accepts quantity bounds",()=>{expect(labelQuantity(1)).toBe(1);expect(labelQuantity(100)).toBe(100);});

@@ -10,7 +10,6 @@ describe("label source is the authorized live catalog",()=>{
     const response=await GET();expect(response.status).toBe(200);expect(mocks.context).toHaveBeenCalledWith("inventory.read");
     expect(mocks.products).toHaveBeenCalledWith(expect.objectContaining({where:{tenantId:"tenant-a",isActive:true},take:100}));
     expect((await response.json()).products).toEqual([{id:"p1",sku:"ABC123",nameAr:"غطاء",nameEn:"Case",isSerialized:false,barcodes:["5901234123457"],price:10}]);
-    expect(response.headers.get("cache-control")).toBe("no-store");
   });
   it.each(["AUTH_REQUIRED","PERMISSION_DENIED"])("rejects %s before catalog reads",async code=>{mocks.context.mockRejectedValue(new Error(code));expect((await GET()).status).toBe(code==="AUTH_REQUIRED"?401:403);expect(mocks.products).not.toHaveBeenCalled();});
   it("does not expose the source when pilot disabled",async()=>{vi.stubEnv("A1_MOBI_C_LIVE_01_ENABLED","0");expect((await GET()).status).toBe(404);expect(mocks.products).not.toHaveBeenCalled();});

@@ -37,9 +37,11 @@ export function addScannedReceiptProduct(
 ): ReceiptLine[] {
   const scan=classifyScan(rawScan);
   if (scan.kind==="IMEI") throw new Error("SERIALIZED_RECEIVING_REQUIRES_DEVICE");
-  const match=products.find(product =>
+  const matches=products.filter(product =>
     product.sku.toUpperCase()===scan.value.toUpperCase() ||
     product.barcodes.some(barcode=>barcode.toUpperCase()===scan.value.toUpperCase()));
+  if (matches.length>1) throw new Error("RECEIPT_PRODUCT_AMBIGUOUS");
+  const match=matches[0];
   if (!match) throw new Error("RECEIPT_PRODUCT_NOT_FOUND");
   if (match.isSerialized) throw new Error("SERIALIZED_RECEIVING_REQUIRES_DEVICE");
   if (!Number.isFinite(unitCost) || unitCost<0) throw new Error("INVALID_UNIT_COST");

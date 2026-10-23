@@ -19,4 +19,12 @@ describe("receiving purchases by scanned barcode",()=>{
     expect(()=>addScannedReceiptProduct("PART-ONE",items,[],Number.NaN)).toThrow("INVALID_UNIT_COST");
     expect(()=>addScannedReceiptProduct("PART-ONE",items,[],-1)).toThrow("INVALID_UNIT_COST");
   });
+  it("rejects a barcode/SKU collision instead of receiving the first product",()=>{
+    const collision={id:"part-2",sku:"OTHER",barcodes:["PART-ONE"],isSerialized:false};
+    const draft=[{productId:"part-1",quantity:1,unitCost:10}];
+    for(const catalog of [[...items,collision],[collision,...items]]) {
+      expect(()=>addScannedReceiptProduct("part-one",catalog,draft,10)).toThrow("RECEIPT_PRODUCT_AMBIGUOUS");
+    }
+    expect(draft).toEqual([{productId:"part-1",quantity:1,unitCost:10}]);
+  });
 });

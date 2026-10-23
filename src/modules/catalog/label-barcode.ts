@@ -14,6 +14,7 @@ export function encodeLabelBarcode(value: string): LabelBarcode {
     const right = digits.slice(7).map(n=>[...L[n]].map(b=>b==="0"?"1":"0").join("")).join("");
     return { value, format:"EAN13", bits:"0".repeat(11)+"101"+left+"01010"+right+"101"+"0".repeat(7) };
   }
+  // At 74mm, 20 characters leave at least 0.269mm per module, including quiet zones.
   if (!/^[A-Za-z0-9._/-]{2,20}$/.test(value)) throw new Error("UNPRINTABLE_IDENTIFIER");
   const codes = [...value].map(c=>c.charCodeAt(0)-32);
   const checksum = (104+codes.reduce((sum,n,i)=>sum+n*(i+1),0))%103;
