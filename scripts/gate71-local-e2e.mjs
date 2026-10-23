@@ -14,6 +14,7 @@ const secret = randomBytes(32).toString('hex');
 const slug = `gate71-${Date.now()}`;
 const email = `${slug}@example.test`;
 let db, server, chrome, socket, cookie, fixture;
+const originals = new Map();
 let stage = 'local-database-preflight';
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 function pass(name, detail) { results.push({ name, status: 'PASS', detail }); console.log(`PASS ${name}`); }
@@ -47,7 +48,7 @@ async function browserJourney() {
   try { await fetch(`http://127.0.0.1:${cdpPort}/json/version`); occupied = true; } catch { /* free */ }
   assert.equal(occupied, false, 'dedicated CDP port must be free');
   chrome = spawn('C:/Program Files/Google/Chrome/Application/chrome.exe', [
-    '--headless', '--disable-gpu', '--no-first-run', '--no-default-browser-check',
+    '--headless', '--no-sandbox', '--disable-gpu', '--no-first-run', '--no-default-browser-check',
     `--remote-debugging-port=${cdpPort}`, `--user-data-dir=${process.cwd()}/.local/${slug}-chrome`, 'about:blank',
   ], { stdio: 'ignore', windowsHide: true });
   chrome.on('error', () => {});
@@ -89,7 +90,7 @@ async function browserJourney() {
   async function scan(selector, code) {
     await ev(`document.querySelector(${JSON.stringify(selector)}).focus();true`);
     await send('Input.insertText', { text: code });
-    await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 });
+    await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13, text: '\r', unmodifiedText: '\r' });
     await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 });
     await until(`document.querySelector(${JSON.stringify(selector)}).value===''`);
   }
@@ -172,11 +173,15 @@ async function browserJourney() {
   await shot('authenticated-inventory-count');
 
   for (const locale of ['en', 'ar']) {
+    stage = `browser-label-load-${locale}`;
     await nav(`/${locale}/inventory`);
     await until('document.querySelector("[data-testid=label-product]")?.options.length>1');
+    stage = `browser-label-enter-${locale}`;
     await scan('[data-testid=label-scan]', '5901234123457');
+    stage = `browser-label-quantity-${locale}`;
     await set('[data-testid=label-quantity]', 3);
     await until('document.querySelectorAll("#barcode-label-print-root article").length===3');
+    stage = `browser-label-print-${locale}`;
     assert.equal(await ev('document.querySelector("[data-testid=label-print]").disabled'), false);
     await ev('document.fonts.ready.then(()=>true)');
     await shot(`labels-${locale}-screen`);
@@ -184,6 +189,7 @@ async function browserJourney() {
     const layout = await ev(`(()=>{const root=document.querySelector('#barcode-label-print-root');return {isolated:[...document.body.children].filter(e=>e!==root).every(e=>getComputedStyle(e).display==='none'),labels:[...root.querySelectorAll('article')].map(e=>({w:e.getBoundingClientRect().width,h:e.getBoundingClientRect().height,overflow:e.scrollHeight>e.clientHeight,code:e.querySelector('.barcode-label-value').textContent}))};})()`);
     assert.equal(layout.isolated, true);
     for (const label of layout.labels) { assert.ok(Math.abs(label.w - 80 * 96 / 25.4) < 1); assert.ok(Math.abs(label.h - 40 * 96 / 25.4) < 1); assert.equal(label.overflow, false); assert.equal(label.code, '5901234123457'); }
+    await shot(`labels-${locale}-print-media`);
     const pdf = await send('Page.printToPDF', { preferCSSPageSize: true, printBackground: true, displayHeaderFooter: false, marginTop: 0, marginBottom: 0, marginLeft: 0, marginRight: 0 });
     const bytes = Buffer.from(pdf.data, 'base64');
     assert.equal((bytes.toString('latin1').match(/\/Type\s*\/Page\b/g) || []).length, 3, 'three label PDF pages');
@@ -191,8 +197,9 @@ async function browserJourney() {
     await send('Emulation.setEmulatedMedia', { media: '' });
     pass(`browser-print-render-${locale}`, 'Three isolated 80×40mm PDF pages; CSS dimensions and overflow checked. No physical hardware claim.');
   }
+  stage = 'browser-completion';
   assert.equal(exceptions.length, 0, 'uncaught browser exceptions');
-  await send('Browser.close');
+  pass(stage, 'No uncaught JavaScript exceptions; browser is terminated by owned-process teardown, without waiting for a reply from a closed CDP endpoint');
 }
 
 try {
@@ -207,6 +214,7 @@ try {
   await db.$queryRaw`SELECT 1`;
   pass(stage, 'Literal loopback PostgreSQL port 5437; SELECT 1');
   stage = 'local-dev-server';
+  for (const path of ['AGENTS.md', 'tsconfig.json']) originals.set(path, await readFile(path, 'utf8'));
   let occupied = false;
   try { await fetch(base + '/en/login', { signal: AbortSignal.timeout(1000) }); occupied = true; } catch { /* free */ }
   assert.equal(occupied, false, 'dedicated local app port must be free');
@@ -267,17 +275,32 @@ try {
 } catch (error) {
   // Error messages may contain credentials, query arguments or environment values. Do not serialize them.
   results.push({ name: stage, status: 'BLOCKED_OR_FAILED', errorClass: error.name,
+    reason: ['LOCAL_SERVICE_NOT_READY', 'CDP_CONNECT_FAILED', 'CDP_COMMAND_FAILED', 'CDP_TIMEOUT', 'BROWSER_CONDITION_TIMEOUT'].includes(error.message) ? error.message : undefined,
     assertion: error.code === 'ERR_ASSERTION' ? String(error.message).split('\n')[0] : undefined });
   console.log(`BLOCKED_OR_FAILED ${stage} (${error.name})`);
   process.exitCode = 1;
 } finally {
   socket?.close(); chrome?.kill(); server?.kill();
+  if (server && server.exitCode === null) await Promise.race([new Promise(resolve => server.once('exit', resolve)), delay(2000)]);
+  // Remove only this dev run's generated additions; retain original and concurrent edits.
+  for (const [path, original] of originals) {
+    const current = await readFile(path, 'utf8');
+    if (path === 'AGENTS.md' && !original.includes('<!-- BEGIN:nextjs-agent-rules -->')) {
+      const cleaned = current.replace(/\s*<!-- BEGIN:nextjs-agent-rules -->[\s\S]*?<!-- END:nextjs-agent-rules -->\s*/g, '');
+      if (cleaned !== current) await writeFile(path, cleaned.trimEnd() === original.trimEnd() ? original : cleaned);
+    } else if (path === 'tsconfig.json') {
+      const parsed = JSON.parse(current), prior = JSON.parse(original);
+      parsed.include = parsed.include.filter(entry => prior.include.includes(entry) || !entry.startsWith('.local/gate71-next/'));
+      if (JSON.stringify(parsed) === JSON.stringify(prior)) await writeFile(path, original);
+      else if (JSON.stringify(parsed) !== JSON.stringify(JSON.parse(current))) await writeFile(path, JSON.stringify(parsed, null, 2) + '\n');
+    }
+  }
   if (db && fixture) {
     // Keep business records for review; revoke every session generated for this isolated owner.
     try { await db.session.updateMany({ where: { userId: fixture.ownerId }, data: { revokedAt: new Date() } }); }
     catch { results.push({ name: 'fixture-session-revocation', status: 'FAILED' }); process.exitCode = 1; }
   }
   await db?.$disconnect();
-  await writeFile(`${out}/results.json`, JSON.stringify({ scope: 'Thaghr local 5437 only', generatedAt: new Date().toISOString(), fixtureTenantId: fixture?.tenantId, results,
+  await writeFile(`${out}/results.json`, JSON.stringify({ scope: 'Thaghr local 5437 only', status: process.exitCode ? 'INCOMPLETE' : 'PASS', generatedAt: new Date().toISOString(), fixtureTenantId: fixture?.tenantId, results,
     limits: ['No physical scanner or printer validation', 'No release approval', 'Synthetic business records retained; fixture sessions revoked when reachable'] }, null, 2));
 }
