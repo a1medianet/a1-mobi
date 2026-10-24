@@ -11,7 +11,9 @@
   @page { size: 80mm 40mm; margin: 0; }
   html, body { margin: 0 !important; padding: 0 !important; min-width: 0 !important; background: white !important; }
   body:has(> #barcode-label-print-root) > :not(#barcode-label-print-root) { display: none !important; }
-  #barcode-label-print-root { display: block !important; color: black; background: white; print-color-adjust: exact; }
+  #barcode-label-print-root { display: block !important; direction: ltr; color: black; background: white; print-color-adjust: exact; }
+  /* Anchor both RTL and LTR sheets to the 80mm print page, not the screen-width RTL edge. */
+  #barcode-label-print-root .barcode-label-sheet { width: 80mm; max-width: 80mm; margin: 0; }
   #barcode-label-print-root .barcode-label { margin: 0; border: 0; border-radius: 0; box-shadow: none; break-after: page; }
   #barcode-label-print-root .barcode-label:last-child { break-after: auto; }
 }

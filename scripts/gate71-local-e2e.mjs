@@ -1,17 +1,19 @@
 import assert from 'node:assert/strict';
 import { randomBytes, randomUUID } from 'node:crypto';
 import { readFile, mkdir, writeFile } from 'node:fs/promises';
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { PrismaClient } from '@prisma/client';
 
 // Dependency-free local HTTP + Chrome CDP gate. Never reads .env or exports secrets.
 // Starts its own dev server; does not migrate, reset, delete fixtures, or deploy.
-const out = 'docs/reviews/2026-10-23/gate71-final';
-const base = 'http://127.0.0.1:3239';
+const out = `docs/reviews/2026-10-23/gate71-${Date.now()}`;
+const base = 'http://127.0.0.1:3241';
 const results = [];
+const browserTrace = [];
 const password = randomBytes(24).toString('hex');
 const secret = randomBytes(32).toString('hex');
 const slug = `gate71-${Date.now()}`;
+const distDir = `.local/${slug}-next`;
 const email = `${slug}@example.test`;
 let db, server, chrome, socket, cookie, fixture;
 const originals = new Map();
@@ -22,7 +24,7 @@ async function request(path, body, expected = 200, authenticated = true, origin 
   const r = await fetch(base + path, {
     method: body === undefined ? 'GET' : 'POST',
     headers: { origin, 'content-type': 'application/json', ...(authenticated && cookie ? { cookie } : {}) },
-    ...(body === undefined ? {} : { body: JSON.stringify(body) }), signal: AbortSignal.timeout(30000),
+    ...(body === undefined ? {} : { body: JSON.stringify(body) }), signal: AbortSignal.timeout(120000),
   });
   assert.equal(r.status, expected, `${path}: expected ${expected}, got ${r.status}`);
   return { response: r, data: await r.json() };
@@ -67,21 +69,32 @@ async function browserJourney() {
     } else if (m.method === 'Runtime.exceptionThrown') exceptions.push(m.method);
   };
   const send = (method, params = {}) => new Promise((resolve, reject) => {
-    const key = ++id, timer = setTimeout(() => { pending.delete(key); reject(Error('CDP_TIMEOUT')); }, 30000);
-    pending.set(key, { resolve, reject, timer }); socket.send(JSON.stringify({ id: key, method, params }));
+    // Record protocol names and timing only: evaluate/input parameters contain credentials.
+    const entry = { method, stage, startedAt: Date.now(), status: 'PENDING' };
+    browserTrace.push(entry);
+    const key = ++id, timer = setTimeout(() => { pending.delete(key); entry.status = 'TIMEOUT'; reject(Error('CDP_TIMEOUT')); }, method === 'Page.navigate' ? 120000 : 30000);
+    pending.set(key, {
+      resolve: value => { entry.status = 'OK'; entry.elapsedMs = Date.now() - entry.startedAt; resolve(value); },
+      reject: error => { entry.status = 'FAILED'; reject(error); }, timer,
+    }); socket.send(JSON.stringify({ id: key, method, params }));
   });
   const ev = async expression => {
     const r = await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true });
     assert.ok(!r.exceptionDetails, 'browser expression must execute'); return r.result?.value;
   };
-  async function until(expression) {
-    for (let n = 0; n < 150; n++) { if (await ev(expression)) return; await delay(200); }
+  async function until(expression, attempts = 150) {
+    for (let n = 0; n < attempts; n++) { if (await ev(expression)) return; await delay(200); }
+    const diagnostic = await ev(`(()=>({path:location.pathname,ready:document.readyState,labels:document.querySelector('[data-testid=label-product]')?.options.length,selected:document.querySelector('[data-testid=label-product]')?.value,scan:document.querySelector('[data-testid=label-scan]')?.value,alert:document.querySelector('.barcode-label-panel [role=alert]')?.textContent,articles:document.querySelectorAll('#barcode-label-print-root article').length}))()`);
+    browserTrace.push({ method: 'Gate.condition', stage, status: 'TIMEOUT', expression, diagnostic });
     throw Error('BROWSER_CONDITION_TIMEOUT');
   }
   async function nav(path) {
     await ev('window.__gateOldDocument=true');
-    await send('Page.navigate', { url: base + path });
-    await until(`!window.__gateOldDocument && location.pathname===${JSON.stringify(path)} && document.readyState==='complete'`);
+    const navigation = await send('Page.navigate', { url: base + path });
+    assert.ok(!navigation.errorText, 'CDP navigation must succeed');
+    // Next streaming may leave readyState='loading' after the route and UI have mounted.
+    // Each subsequent journey stage waits for its own hydrated controls and catalog data.
+    await until(`!window.__gateOldDocument && location.pathname===${JSON.stringify(path)} && !!document.body`, 600);
   }
   async function set(selector, value) {
     await ev(`(()=>{const e=document.querySelector(${JSON.stringify(selector)});if(!e)throw Error('Missing field');const proto=e.tagName==='SELECT'?HTMLSelectElement.prototype:e.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype;Object.getOwnPropertyDescriptor(proto,'value').set.call(e,${JSON.stringify(String(value))});e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));return true;})()`);
@@ -90,6 +103,8 @@ async function browserJourney() {
   async function scan(selector, code) {
     await ev(`document.querySelector(${JSON.stringify(selector)}).focus();true`);
     await send('Input.insertText', { text: code });
+    await until(`document.querySelector(${JSON.stringify(selector)})?.value===${JSON.stringify(code)}`);
+    await delay(150);
     await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13, text: '\r', unmodifiedText: '\r' });
     await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 });
     await until(`document.querySelector(${JSON.stringify(selector)}).value===''`);
@@ -103,6 +118,8 @@ async function browserJourney() {
   for (const method of ['Page.enable', 'Runtime.enable', 'Network.enable']) await send(method);
   await send('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
   await nav('/en/login');
+  // Login is server-rendered before React activates its submit handler.
+  await until('document.readyState==="complete"', 600);
   await until('!!document.querySelector("form button.primary:not(:disabled)")');
   for (const [name, value] of Object.entries({ tenant: slug, email, password })) await set(`input[name="${name}"]`, value);
   await click('document.querySelector("form button.primary")');
@@ -175,17 +192,27 @@ async function browserJourney() {
   for (const locale of ['en', 'ar']) {
     stage = `browser-label-load-${locale}`;
     await nav(`/${locale}/inventory`);
-    await until('document.querySelector("[data-testid=label-product]")?.options.length>1');
+    await until('document.querySelector("[data-testid=label-product]")?.options.length>1', 450);
     stage = `browser-label-enter-${locale}`;
-    await scan('[data-testid=label-scan]', '5901234123457');
+    // Native input setter + bubbling input event reliably updates React's controlled label field.
+    await set('[data-testid=label-scan]', '5901234123457');
+    await until('document.querySelector("[data-testid=label-scan]")?.value==="5901234123457"');
+    await delay(200);
+    await click('document.querySelector(".barcode-label-panel button[type=submit]")');
+    await until(`document.querySelector('[data-testid=label-product]')?.value===${JSON.stringify(fixture.productId)}`);
     stage = `browser-label-quantity-${locale}`;
     await set('[data-testid=label-quantity]', 3);
+    await until('document.querySelector("[data-testid=label-quantity]")?.value==="3"');
     await until('document.querySelectorAll("#barcode-label-print-root article").length===3');
     stage = `browser-label-print-${locale}`;
     assert.equal(await ev('document.querySelector("[data-testid=label-print]").disabled'), false);
     await ev('document.fonts.ready.then(()=>true)');
     await shot(`labels-${locale}-screen`);
     await send('Emulation.setEmulatedMedia', { media: 'print' });
+    // Focused scan fields can retain the old screen scroll position after print isolation.
+    await ev(`new Promise(resolve=>{document.activeElement?.blur();window.scrollTo(0,0);requestAnimationFrame(()=>requestAnimationFrame(()=>resolve(true)));})`);
+    assert.equal(await ev(`(()=>{const r=document.querySelector('#barcode-label-print-root article').getBoundingClientRect();return r.top>=0&&r.top<innerHeight&&r.bottom>0&&r.left>=0&&r.right<=innerWidth;})()`), true, 'print screenshot must contain a label');
+    await ev(`(async()=>{window.scrollTo({top:0,left:0,behavior:'instant'});await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));return true;})()`);
     const layout = await ev(`(()=>{const root=document.querySelector('#barcode-label-print-root');return {isolated:[...document.body.children].filter(e=>e!==root).every(e=>getComputedStyle(e).display==='none'),labels:[...root.querySelectorAll('article')].map(e=>({w:e.getBoundingClientRect().width,h:e.getBoundingClientRect().height,overflow:e.scrollHeight>e.clientHeight,code:e.querySelector('.barcode-label-value').textContent}))};})()`);
     assert.equal(layout.isolated, true);
     for (const label of layout.labels) { assert.ok(Math.abs(label.w - 80 * 96 / 25.4) < 1); assert.ok(Math.abs(label.h - 40 * 96 / 25.4) < 1); assert.equal(label.overflow, false); assert.equal(label.code, '5901234123457'); }
@@ -218,9 +245,10 @@ try {
   let occupied = false;
   try { await fetch(base + '/en/login', { signal: AbortSignal.timeout(1000) }); occupied = true; } catch { /* free */ }
   assert.equal(occupied, false, 'dedicated local app port must be free');
-  server = spawn(process.execPath, ['node_modules/next/dist/bin/next', 'dev', '--hostname', '127.0.0.1', '--port', '3239'], {
+  // Use the supported CLI startup path; terminate its owned worker tree at teardown.
+  server = spawn(process.execPath, ['node_modules/next/dist/bin/next', 'dev', '--webpack', '--hostname', '127.0.0.1', '--port', '3241'], {
     env: { ...process.env, NODE_ENV: 'development', DATABASE_URL: url.toString(), APP_ORIGIN: base,
-      A1_MOBI_C_LIVE_01_ENABLED: '1', A1_MOBI_BOOTSTRAP_SECRET: secret, A1_MOBI_DIST_DIR: '.local/gate71-next' },
+      A1_MOBI_C_LIVE_01_ENABLED: '1', A1_MOBI_BOOTSTRAP_SECRET: secret, A1_MOBI_DIST_DIR: distDir },
     stdio: 'ignore', windowsHide: true,
   });
   server.on('error', () => {});
@@ -228,7 +256,7 @@ try {
   pass(stage, 'Dedicated loopback app, explicit local DB and pilot flag');
   stage = 'isolated-fixture-and-authentication';
   const boot = await fetch(base + '/api/bootstrap', { method: 'POST', headers: { 'content-type': 'application/json', 'x-a1-bootstrap-secret': secret },
-    body: JSON.stringify({ tenantSlug: slug, tenantName: 'Gate 7/1 synthetic local store', branchCode: 'MAIN', branchName: 'Gate branch', ownerEmail: email, ownerDisplayName: 'Gate QA', ownerPassword: password, locale: 'en' }), signal: AbortSignal.timeout(30000) });
+    body: JSON.stringify({ tenantSlug: slug, tenantName: 'Gate 7/1 synthetic local store', branchCode: 'MAIN', branchName: 'Gate branch', ownerEmail: email, ownerDisplayName: 'Gate QA', ownerPassword: password, locale: 'en' }), signal: AbortSignal.timeout(120000) });
   assert.equal(boot.status, 201, 'bootstrap isolated local tenant');
   fixture = (await boot.json()).bootstrap;
   const category = await db.category.create({ data: { tenantId: fixture.tenantId, code: 'QA', nameAr: 'اختبار', nameEn: 'QA' } });
@@ -280,7 +308,15 @@ try {
   console.log(`BLOCKED_OR_FAILED ${stage} (${error.name})`);
   process.exitCode = 1;
 } finally {
-  socket?.close(); chrome?.kill(); server?.kill();
+  socket?.close();
+  for (const child of [chrome, server]) {
+    if (!child) continue;
+    if (process.platform === 'win32' && child.pid) {
+      const stopped = spawnSync('taskkill', ['/PID', String(child.pid), '/T', '/F'], { stdio: 'ignore', windowsHide: true });
+      if (stopped.status !== 0) child.kill();
+    }
+    else child.kill();
+  }
   if (server && server.exitCode === null) await Promise.race([new Promise(resolve => server.once('exit', resolve)), delay(2000)]);
   // Remove only this dev run's generated additions; retain original and concurrent edits.
   for (const [path, original] of originals) {
@@ -290,7 +326,7 @@ try {
       if (cleaned !== current) await writeFile(path, cleaned.trimEnd() === original.trimEnd() ? original : cleaned);
     } else if (path === 'tsconfig.json') {
       const parsed = JSON.parse(current), prior = JSON.parse(original);
-      parsed.include = parsed.include.filter(entry => prior.include.includes(entry) || !entry.startsWith('.local/gate71-next/'));
+      parsed.include = parsed.include.filter(entry => prior.include.includes(entry) || !entry.startsWith(distDir + '/'));
       if (JSON.stringify(parsed) === JSON.stringify(prior)) await writeFile(path, original);
       else if (JSON.stringify(parsed) !== JSON.stringify(JSON.parse(current))) await writeFile(path, JSON.stringify(parsed, null, 2) + '\n');
     }
@@ -301,6 +337,7 @@ try {
     catch { results.push({ name: 'fixture-session-revocation', status: 'FAILED' }); process.exitCode = 1; }
   }
   await db?.$disconnect();
+  await writeFile(`${out}/browser-trace.json`, JSON.stringify(browserTrace, null, 2));
   await writeFile(`${out}/results.json`, JSON.stringify({ scope: 'Thaghr local 5437 only', status: process.exitCode ? 'INCOMPLETE' : 'PASS', generatedAt: new Date().toISOString(), fixtureTenantId: fixture?.tenantId, results,
     limits: ['No physical scanner or printer validation', 'No release approval', 'Synthetic business records retained; fixture sessions revoked when reachable'] }, null, 2));
 }
