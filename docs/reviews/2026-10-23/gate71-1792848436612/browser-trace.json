@@ -1,0 +1,1521 @@
+[
+  {
+    "method": "Page.enable",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848536641,
+    "status": "OK",
+    "elapsedMs": 142
+  },
+  {
+    "method": "Runtime.enable",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848536783,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Network.enable",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848536787,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Emulation.setDeviceMetricsOverride",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848536789,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848536794,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Page.navigate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848536797,
+    "status": "OK",
+    "elapsedMs": 1116
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848537914,
+    "status": "OK",
+    "elapsedMs": 81
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848537995,
+    "status": "OK",
+    "elapsedMs": 10
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848538207,
+    "status": "OK",
+    "elapsedMs": 123
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848538535,
+    "status": "OK",
+    "elapsedMs": 23
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848538769,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848538971,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848539184,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848539389,
+    "status": "OK",
+    "elapsedMs": 37
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848539638,
+    "status": "OK",
+    "elapsedMs": 7
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848539855,
+    "status": "OK",
+    "elapsedMs": 31
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848540090,
+    "status": "OK",
+    "elapsedMs": 61
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848540355,
+    "status": "OK",
+    "elapsedMs": 28
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848540603,
+    "status": "OK",
+    "elapsedMs": 26
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848540840,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848541057,
+    "status": "OK",
+    "elapsedMs": 36
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848541306,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848541520,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848541740,
+    "status": "OK",
+    "elapsedMs": 9
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848541957,
+    "status": "OK",
+    "elapsedMs": 951
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848543108,
+    "status": "OK",
+    "elapsedMs": 52
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848543160,
+    "status": "OK",
+    "elapsedMs": 25
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848543185,
+    "status": "OK",
+    "elapsedMs": 174
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848543359,
+    "status": "OK",
+    "elapsedMs": 7
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848543366,
+    "status": "OK",
+    "elapsedMs": 16
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848543382,
+    "status": "OK",
+    "elapsedMs": 30
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848543412,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848543626,
+    "status": "OK",
+    "elapsedMs": 8
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848543849,
+    "status": "OK",
+    "elapsedMs": 10
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848544060,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848544270,
+    "status": "OK",
+    "elapsedMs": 9307
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848553577,
+    "status": "OK",
+    "elapsedMs": 314
+  },
+  {
+    "method": "Network.getCookies",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848553891,
+    "status": "OK",
+    "elapsedMs": 9
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848553901,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Page.navigate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848553903,
+    "status": "OK",
+    "elapsedMs": 7592
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848561495,
+    "status": "OK",
+    "elapsedMs": 27
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848561724,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848561727,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848561936,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848562150,
+    "status": "OK",
+    "elapsedMs": 9
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848562373,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848562588,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848562799,
+    "status": "OK",
+    "elapsedMs": 440
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848563446,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848563663,
+    "status": "OK",
+    "elapsedMs": 7
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848563882,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848563884,
+    "status": "OK",
+    "elapsedMs": 6
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848563890,
+    "status": "OK",
+    "elapsedMs": 6
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848563896,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Input.insertText",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848563900,
+    "status": "OK",
+    "elapsedMs": 7
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848563907,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Input.dispatchKeyEvent",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848564070,
+    "status": "OK",
+    "elapsedMs": 7
+  },
+  {
+    "method": "Input.dispatchKeyEvent",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848564077,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848564080,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848564081,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Input.insertText",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848564083,
+    "status": "OK",
+    "elapsedMs": 7
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848564090,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Input.dispatchKeyEvent",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848564257,
+    "status": "OK",
+    "elapsedMs": 7
+  },
+  {
+    "method": "Input.dispatchKeyEvent",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848564265,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848564268,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848564270,
+    "status": "OK",
+    "elapsedMs": 9
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848564279,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848564486,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848564560,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Page.navigate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848564563,
+    "status": "OK",
+    "elapsedMs": 4807
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848569370,
+    "status": "OK",
+    "elapsedMs": 41
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848569411,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848569621,
+    "status": "OK",
+    "elapsedMs": 8
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848569839,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848570056,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848570272,
+    "status": "OK",
+    "elapsedMs": 6
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848570487,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848570689,
+    "status": "OK",
+    "elapsedMs": 692
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848571591,
+    "status": "OK",
+    "elapsedMs": 35
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848571840,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848572051,
+    "status": "OK",
+    "elapsedMs": 8
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848572059,
+    "status": "OK",
+    "elapsedMs": 15
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848572074,
+    "status": "OK",
+    "elapsedMs": 8
+  },
+  {
+    "method": "Input.insertText",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848572082,
+    "status": "OK",
+    "elapsedMs": 27
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848572109,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Input.dispatchKeyEvent",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848572276,
+    "status": "OK",
+    "elapsedMs": 14
+  },
+  {
+    "method": "Input.dispatchKeyEvent",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848572290,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848572293,
+    "status": "OK",
+    "elapsedMs": 8
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848572301,
+    "status": "OK",
+    "elapsedMs": 12
+  },
+  {
+    "method": "Input.insertText",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848572313,
+    "status": "OK",
+    "elapsedMs": 14
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848572327,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Input.dispatchKeyEvent",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848572497,
+    "status": "OK",
+    "elapsedMs": 13
+  },
+  {
+    "method": "Input.dispatchKeyEvent",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848572510,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848572515,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848572517,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848572522,
+    "status": "OK",
+    "elapsedMs": 23
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848572545,
+    "status": "OK",
+    "elapsedMs": 14
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848572764,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848572969,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848572971,
+    "status": "OK",
+    "elapsedMs": 13
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848573095,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848573097,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848573101,
+    "status": "OK",
+    "elapsedMs": 8
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848573109,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848573319,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848573320,
+    "status": "OK",
+    "elapsedMs": 6
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848573326,
+    "status": "OK",
+    "elapsedMs": 10
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848573336,
+    "status": "OK",
+    "elapsedMs": 6
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848573342,
+    "status": "OK",
+    "elapsedMs": 45
+  },
+  {
+    "method": "Page.handleJavaScriptDialog",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848573346,
+    "status": "OK",
+    "elapsedMs": 38
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848573387,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848573604,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848573680,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Page.navigate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848573681,
+    "status": "OK",
+    "elapsedMs": 353
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848574034,
+    "status": "OK",
+    "elapsedMs": 43
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848574077,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848574281,
+    "status": "OK",
+    "elapsedMs": 9
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848574496,
+    "status": "OK",
+    "elapsedMs": 14
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848574714,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848574921,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848575135,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848575339,
+    "status": "OK",
+    "elapsedMs": 534
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848576087,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848576291,
+    "status": "OK",
+    "elapsedMs": 23
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848576520,
+    "status": "OK",
+    "elapsedMs": 11
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848576531,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848576533,
+    "status": "OK",
+    "elapsedMs": 9
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848576542,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848576545,
+    "status": "OK",
+    "elapsedMs": 6
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848576551,
+    "status": "OK",
+    "elapsedMs": 30
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848576581,
+    "status": "OK",
+    "elapsedMs": 6
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848576788,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848576790,
+    "status": "OK",
+    "elapsedMs": 7
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848576797,
+    "status": "OK",
+    "elapsedMs": 10
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848576807,
+    "status": "OK",
+    "elapsedMs": 25
+  },
+  {
+    "method": "Page.handleJavaScriptDialog",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848576809,
+    "status": "OK",
+    "elapsedMs": 21
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848576832,
+    "status": "OK",
+    "elapsedMs": 6
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848577039,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848577244,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Page.captureScreenshot",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792848577339,
+    "status": "OK",
+    "elapsedMs": 402
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-en",
+    "startedAt": 1792848577751,
+    "status": "OK",
+    "elapsedMs": 12
+  },
+  {
+    "method": "Page.navigate",
+    "stage": "browser-label-load-en",
+    "startedAt": 1792848577763,
+    "status": "OK",
+    "elapsedMs": 27206
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-en",
+    "startedAt": 1792848604969,
+    "status": "OK",
+    "elapsedMs": 47
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-en",
+    "startedAt": 1792848605016,
+    "status": "OK",
+    "elapsedMs": 6
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-en",
+    "startedAt": 1792848605236,
+    "status": "OK",
+    "elapsedMs": 80
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-en",
+    "startedAt": 1792848605520,
+    "status": "OK",
+    "elapsedMs": 29
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-en",
+    "startedAt": 1792848605754,
+    "status": "OK",
+    "elapsedMs": 62
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-en",
+    "startedAt": 1792848606016,
+    "status": "OK",
+    "elapsedMs": 9
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-en",
+    "startedAt": 1792848606232,
+    "status": "OK",
+    "elapsedMs": 6
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-en",
+    "startedAt": 1792848606450,
+    "status": "OK",
+    "elapsedMs": 16
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-en",
+    "startedAt": 1792848606669,
+    "status": "OK",
+    "elapsedMs": 24
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-en",
+    "startedAt": 1792848606903,
+    "status": "OK",
+    "elapsedMs": 23
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-en",
+    "startedAt": 1792848607136,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-en",
+    "startedAt": 1792848607340,
+    "status": "OK",
+    "elapsedMs": 702
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-en",
+    "startedAt": 1792848608250,
+    "status": "OK",
+    "elapsedMs": 50
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-en",
+    "startedAt": 1792848608518,
+    "status": "OK",
+    "elapsedMs": 77
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-en",
+    "startedAt": 1792848608810,
+    "status": "OK",
+    "elapsedMs": 8
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-en",
+    "startedAt": 1792848609028,
+    "status": "OK",
+    "elapsedMs": 13
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-en",
+    "startedAt": 1792848609249,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-enter-en",
+    "startedAt": 1792848609252,
+    "status": "OK",
+    "elapsedMs": 14
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-enter-en",
+    "startedAt": 1792848609266,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-enter-en",
+    "startedAt": 1792848609481,
+    "status": "OK",
+    "elapsedMs": 43
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-enter-en",
+    "startedAt": 1792848609524,
+    "status": "OK",
+    "elapsedMs": 19
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-quantity-en",
+    "startedAt": 1792848609543,
+    "status": "OK",
+    "elapsedMs": 43
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-quantity-en",
+    "startedAt": 1792848609586,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-quantity-en",
+    "startedAt": 1792848609589,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-print-en",
+    "startedAt": 1792848609592,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-print-en",
+    "startedAt": 1792848609596,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Page.captureScreenshot",
+    "stage": "browser-label-print-en",
+    "startedAt": 1792848609599,
+    "status": "OK",
+    "elapsedMs": 356
+  },
+  {
+    "method": "Emulation.setEmulatedMedia",
+    "stage": "browser-label-print-en",
+    "startedAt": 1792848609957,
+    "status": "OK",
+    "elapsedMs": 10
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-print-en",
+    "startedAt": 1792848609967,
+    "status": "OK",
+    "elapsedMs": 68
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-print-en",
+    "startedAt": 1792848610035,
+    "status": "OK",
+    "elapsedMs": 20
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-print-en",
+    "startedAt": 1792848610056,
+    "status": "OK",
+    "elapsedMs": 34
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-print-en",
+    "startedAt": 1792848610090,
+    "status": "OK",
+    "elapsedMs": 25
+  },
+  {
+    "method": "Page.captureScreenshot",
+    "stage": "browser-label-print-en",
+    "startedAt": 1792848610115,
+    "status": "OK",
+    "elapsedMs": 152
+  },
+  {
+    "method": "Page.printToPDF",
+    "stage": "browser-label-print-en",
+    "startedAt": 1792848610269,
+    "status": "OK",
+    "elapsedMs": 293
+  },
+  {
+    "method": "Emulation.setEmulatedMedia",
+    "stage": "browser-label-print-en",
+    "startedAt": 1792848610569,
+    "status": "OK",
+    "elapsedMs": 18
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-ar",
+    "startedAt": 1792848610587,
+    "status": "OK",
+    "elapsedMs": 35
+  },
+  {
+    "method": "Page.navigate",
+    "stage": "browser-label-load-ar",
+    "startedAt": 1792848610622,
+    "status": "OK",
+    "elapsedMs": 28240
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-ar",
+    "startedAt": 1792848638862,
+    "status": "OK",
+    "elapsedMs": 26
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-ar",
+    "startedAt": 1792848639092,
+    "status": "OK",
+    "elapsedMs": 14
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-ar",
+    "startedAt": 1792848639106,
+    "status": "OK",
+    "elapsedMs": 11
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-ar",
+    "startedAt": 1792848639325,
+    "status": "OK",
+    "elapsedMs": 61
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-ar",
+    "startedAt": 1792848639588,
+    "status": "OK",
+    "elapsedMs": 39
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-ar",
+    "startedAt": 1792848639833,
+    "status": "OK",
+    "elapsedMs": 13
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-ar",
+    "startedAt": 1792848640057,
+    "status": "OK",
+    "elapsedMs": 61
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-ar",
+    "startedAt": 1792848640321,
+    "status": "OK",
+    "elapsedMs": 7
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-ar",
+    "startedAt": 1792848640540,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-ar",
+    "startedAt": 1792848640744,
+    "status": "OK",
+    "elapsedMs": 84
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-ar",
+    "startedAt": 1792848641040,
+    "status": "OK",
+    "elapsedMs": 19
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-ar",
+    "startedAt": 1792848641259,
+    "status": "OK",
+    "elapsedMs": 72
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-ar",
+    "startedAt": 1792848641538,
+    "status": "OK",
+    "elapsedMs": 71
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-ar",
+    "startedAt": 1792848641821,
+    "status": "OK",
+    "elapsedMs": 30
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-ar",
+    "startedAt": 1792848642056,
+    "status": "OK",
+    "elapsedMs": 23
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-ar",
+    "startedAt": 1792848642279,
+    "status": "OK",
+    "elapsedMs": 785
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-ar",
+    "startedAt": 1792848643274,
+    "status": "OK",
+    "elapsedMs": 36
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-ar",
+    "startedAt": 1792848643523,
+    "status": "OK",
+    "elapsedMs": 50
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-ar",
+    "startedAt": 1792848643773,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-load-ar",
+    "startedAt": 1792848643976,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-enter-ar",
+    "startedAt": 1792848643980,
+    "status": "OK",
+    "elapsedMs": 9
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-enter-ar",
+    "startedAt": 1792848643989,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-enter-ar",
+    "startedAt": 1792848644195,
+    "status": "OK",
+    "elapsedMs": 29
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-enter-ar",
+    "startedAt": 1792848644224,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-quantity-ar",
+    "startedAt": 1792848644226,
+    "status": "OK",
+    "elapsedMs": 53
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-quantity-ar",
+    "startedAt": 1792848644279,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-quantity-ar",
+    "startedAt": 1792848644281,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-print-ar",
+    "startedAt": 1792848644283,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-print-ar",
+    "startedAt": 1792848644285,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Page.captureScreenshot",
+    "stage": "browser-label-print-ar",
+    "startedAt": 1792848644286,
+    "status": "OK",
+    "elapsedMs": 411
+  },
+  {
+    "method": "Emulation.setEmulatedMedia",
+    "stage": "browser-label-print-ar",
+    "startedAt": 1792848644700,
+    "status": "OK",
+    "elapsedMs": 15
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-print-ar",
+    "startedAt": 1792848644715,
+    "status": "OK",
+    "elapsedMs": 53
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-print-ar",
+    "startedAt": 1792848644768,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-print-ar",
+    "startedAt": 1792848644769,
+    "status": "OK",
+    "elapsedMs": 15
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "browser-label-print-ar",
+    "startedAt": 1792848644784,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Page.captureScreenshot",
+    "stage": "browser-label-print-ar",
+    "startedAt": 1792848644786,
+    "status": "OK",
+    "elapsedMs": 125
+  },
+  {
+    "method": "Page.printToPDF",
+    "stage": "browser-label-print-ar",
+    "startedAt": 1792848644913,
+    "status": "OK",
+    "elapsedMs": 272
+  },
+  {
+    "method": "Emulation.setEmulatedMedia",
+    "stage": "browser-label-print-ar",
+    "startedAt": 1792848645186,
+    "status": "OK",
+    "elapsedMs": 40
+  }
+]

@@ -14,7 +14,7 @@ export function recoverySmtpConfig() {
     port: process.env.A1_MOBI_SMTP_PORT,
     user: process.env.A1_MOBI_SMTP_USER,
     password: process.env.A1_MOBI_SMTP_PASSWORD,
-    from: process.env.A1_MOBI_SMTP_FROM,
+    from: process.env.A1_MOBI_SMTP_FROM?.trim() || "hi@a1medianet.com",
   });
   return config;
 }

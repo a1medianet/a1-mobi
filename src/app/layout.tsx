@@ -5,6 +5,12 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "A1 Mobi",
   description: "Mobile retail and repair operating platform",
+  applicationName:"A1 Mobi",
+  manifest:"/manifest.webmanifest",
+  icons:{
+    icon:[{url:"/favicon.ico",sizes:"64x64",type:"image/x-icon"},{url:"/icon.png",sizes:"512x512",type:"image/png"}],
+    apple:[{url:"/apple-icon.png",sizes:"180x180",type:"image/png"}]
+  },
 };
 
 export const viewport: Viewport = {

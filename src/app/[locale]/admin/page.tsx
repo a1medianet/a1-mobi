@@ -1,3 +1,4 @@
+import { OwnerWorkspace } from "@/components/owner-workspace";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { demoCatalogCounts, demoLowStock, demoStaff, demoStore } from "@/demo/data";
@@ -8,7 +9,7 @@ const copy = {
     notice:"Pilot Demo — هذه الصفحة تعرض بيانات تشغيل تجريبية ولا تمنح صلاحيات إدارية حقيقية قبل ربط RBAC بالكامل.",
     branch:"الفرع", mode:"الوضع", catalog:"الكتالوج", team:"الفريق", low:"تنبيهات المخزون", security:"أمان الحساب",
     products:"إدارة المنتجات", access:"الفريق والصلاحيات", accountSecurity:"المصادقة والأمان", open:"فتح",
-    readiness:"جاهزية النظام", auth:"Authentication", control:"Users / Roles / RBAC", abuse:"Abuse controls", ops:"Operations / Backup / CI",
+    readiness:"حالة القدرات التجريبية", demoStatus:"تجريبي", auth:"Authentication", control:"Users / Roles / RBAC", abuse:"Abuse controls", ops:"Operations / Backup / CI",
     account:"MFA / Recovery", foundation:"Application Foundation", pass:"PASS", hardening:"HARDENING", partial:"PARTIAL",
     lowTitle:"منتجات تحتاج متابعة", stock:"مخزون", reorder:"حد إعادة الطلب", product:"المنتج",
     roles:"توزيع الفريق التجريبي", role:"الدور", email:"البريد", status:"الحالة",
@@ -19,7 +20,7 @@ const copy = {
     notice:"Pilot Demo — this page shows operational demo data and does not grant live admin authority until RBAC is fully wired.",
     branch:"Branch", mode:"Mode", catalog:"Catalog", team:"Team", low:"Stock alerts", security:"Account security",
     products:"Manage products", access:"Team & access", accountSecurity:"MFA & recovery", open:"Open",
-    readiness:"System readiness", auth:"Authentication", control:"Users / Roles / RBAC", abuse:"Abuse controls", ops:"Operations / Backup / CI",
+    readiness:"Pilot capability status", demoStatus:"DEMO", auth:"Authentication", control:"Users / Roles / RBAC", abuse:"Abuse controls", ops:"Operations / Backup / CI",
     account:"MFA / Recovery", foundation:"Application Foundation", pass:"PASS", hardening:"HARDENING", partial:"PARTIAL",
     lowTitle:"Products needing attention", stock:"Stock", reorder:"Reorder level", product:"Product",
     roles:"Pilot team roles", role:"Role", email:"Email", status:"Status",
@@ -30,11 +31,12 @@ const copy = {
 export default async function AdminPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (locale !== "ar" && locale !== "en") notFound();
+  if(process.env.A1_MOBI_C_LIVE_01_ENABLED==="1")return <OwnerWorkspace locale={locale} admin/>;
   const t = copy[locale];
   const counts = demoCatalogCounts();
   const low = demoLowStock();
   const readiness = [
-    [t.auth,t.pass,"done"],[t.control,t.pass,"done"],[t.abuse,t.pass,"done"],[t.ops,t.pass,"done"],
+    [t.auth,t.demoStatus,"pending"],[t.control,t.demoStatus,"pending"],[t.abuse,t.demoStatus,"pending"],[t.ops,t.demoStatus,"pending"],
     [t.account,t.hardening,"pending"],[t.foundation,t.partial,"pending"],
   ] as const;
 

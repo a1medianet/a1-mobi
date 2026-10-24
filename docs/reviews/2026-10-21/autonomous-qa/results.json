@@ -1,0 +1,883 @@
+{
+  "origin": "http://127.0.0.1:3225",
+  "build": "0017812 (owner supplied fixed preview)",
+  "database": "mobi_uat",
+  "viewportSizes": [
+    "1440x900",
+    "390x844"
+  ],
+  "results": [
+    {
+      "name": "login-ar-1440-hydration",
+      "status": "PASS",
+      "ms": 2051,
+      "detail": {
+        "width": 1440,
+        "scroll": 1440,
+        "heading": true,
+        "text": 349,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "login-ar-390-hydration",
+      "status": "PASS",
+      "ms": 1187,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 349,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "login-en-1440-hydration",
+      "status": "PASS",
+      "ms": 1262,
+      "detail": {
+        "width": 1440,
+        "scroll": 1440,
+        "heading": true,
+        "text": 343,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "login-en-390-hydration",
+      "status": "PASS",
+      "ms": 1285,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 343,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "invalid-form-ar",
+      "status": "FAIL",
+      "ms": 6226,
+      "error": "Expected localized invalid-credential error; received: الخدمة غير متاحة الآن. حاول لاحقًا."
+    },
+    {
+      "name": "invalid-form-en",
+      "status": "PASS",
+      "ms": 2256
+    },
+    {
+      "name": "pending-timeout-browser-recovery",
+      "status": "PASS",
+      "ms": 12950
+    },
+    {
+      "name": "bootstrap-isolated-uat",
+      "status": "PASS",
+      "ms": 1445,
+      "detail": {
+        "database": "mobi_uat",
+        "synthetic": true
+      }
+    },
+    {
+      "name": "actual-ar-form-login",
+      "status": "PASS",
+      "ms": 3540,
+      "detail": {
+        "serverSession": 200,
+        "httpOnlyCookie": true,
+        "redirect": "/ar"
+      }
+    },
+    {
+      "name": "C-ar-1440-admin",
+      "status": "PASS",
+      "ms": 1436,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 1447,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-1440-settings-team",
+      "status": "FAIL",
+      "ms": 2074,
+      "error": "Missing content or error page"
+    },
+    {
+      "name": "C-ar-1440-account",
+      "status": "PASS",
+      "ms": 4121,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 767,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-1440-pos",
+      "status": "PASS",
+      "ms": 2093,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 742,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-1440-products",
+      "status": "PASS",
+      "ms": 3309,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 2210,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-1440-inventory",
+      "status": "PASS",
+      "ms": 2362,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 725,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-1440-repairs",
+      "status": "PASS",
+      "ms": 5080,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 1099,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-1440-customers",
+      "status": "PASS",
+      "ms": 1162,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 707,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-1440-cash",
+      "status": "PASS",
+      "ms": 1041,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 621,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-1440-reports",
+      "status": "PASS",
+      "ms": 1677,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 887,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-390-admin",
+      "status": "PASS",
+      "ms": 1166,
+      "detail": {
+        "width": 558,
+        "scroll": 558,
+        "heading": true,
+        "text": 1427,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-390-settings-team",
+      "status": "PASS",
+      "ms": 936,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 1338,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-390-account",
+      "status": "PASS",
+      "ms": 1636,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 762,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-390-pos",
+      "status": "PASS",
+      "ms": 973,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 812,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-390-products",
+      "status": "FAIL",
+      "ms": 818,
+      "error": "Broken visible imagery: /demo/products/airpods-4-anc.png,/demo/products/samsung-25w-official.avif,/demo/products/anker-nano-30w-official.webp,/demo/products/baseus-airpow-20k-official.jpg"
+    },
+    {
+      "name": "C-ar-390-inventory",
+      "status": "PASS",
+      "ms": 796,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 764,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-390-repairs",
+      "status": "PASS",
+      "ms": 967,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 1116,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-390-customers",
+      "status": "PASS",
+      "ms": 888,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 680,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-390-cash",
+      "status": "PASS",
+      "ms": 2278,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 602,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-390-reports",
+      "status": "PASS",
+      "ms": 990,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 867,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-1440-admin",
+      "status": "PASS",
+      "ms": 1686,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 1497,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-1440-settings-team",
+      "status": "PASS",
+      "ms": 1077,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 1402,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-1440-account",
+      "status": "PASS",
+      "ms": 1206,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 859,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-1440-pos",
+      "status": "PASS",
+      "ms": 1491,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 864,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-1440-products",
+      "status": "PASS",
+      "ms": 1519,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 2385,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-1440-inventory",
+      "status": "PASS",
+      "ms": 1284,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 832,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-1440-repairs",
+      "status": "PASS",
+      "ms": 1246,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 1145,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-1440-customers",
+      "status": "PASS",
+      "ms": 1403,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 742,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-1440-cash",
+      "status": "PASS",
+      "ms": 1847,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 648,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-1440-reports",
+      "status": "PASS",
+      "ms": 1052,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 962,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-390-admin",
+      "status": "PASS",
+      "ms": 1001,
+      "detail": {
+        "width": 595,
+        "scroll": 595,
+        "heading": true,
+        "text": 1491,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-390-settings-team",
+      "status": "PASS",
+      "ms": 918,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 1388,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-390-account",
+      "status": "PASS",
+      "ms": 932,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 836,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-390-pos",
+      "status": "PASS",
+      "ms": 1284,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 850,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-390-products",
+      "status": "FAIL",
+      "ms": 2228,
+      "error": "Broken visible imagery: /demo/products/airpods-4-anc.png,/demo/products/samsung-25w-official.avif,/demo/products/anker-nano-30w-official.webp,/demo/products/baseus-airpow-20k-official.jpg"
+    },
+    {
+      "name": "C-en-390-inventory",
+      "status": "PASS",
+      "ms": 1621,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 812,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-390-repairs",
+      "status": "PASS",
+      "ms": 1270,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 1087,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-390-customers",
+      "status": "PASS",
+      "ms": 1037,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 726,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-390-cash",
+      "status": "PASS",
+      "ms": 925,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 644,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-390-reports",
+      "status": "PASS",
+      "ms": 859,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 955,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-key-navigation-actual-clicks",
+      "status": "FAIL",
+      "ms": 4010,
+      "error": "Broken visible imagery: /demo/products/airpods-4-anc.png,/demo/products/samsung-25w-official.avif,/demo/products/anker-nano-30w-official.webp,/demo/products/baseus-airpow-20k-official.jpg"
+    },
+    {
+      "name": "ar-logout-revokes-session",
+      "status": "PASS",
+      "ms": 1172
+    },
+    {
+      "name": "actual-en-form-login-fresh-session",
+      "status": "PASS",
+      "ms": 2514,
+      "detail": {
+        "serverSession": 200,
+        "httpOnlyCookie": true,
+        "redirect": "/en"
+      }
+    },
+    {
+      "name": "en-logout-revokes-session",
+      "status": "PASS",
+      "ms": 906
+    },
+    {
+      "name": "A-ar-1440-home",
+      "status": "PASS",
+      "ms": 1745,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 1513,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "A-ar-1440-pricing",
+      "status": "PASS",
+      "ms": 6090,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 1019,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "A-ar-1440-demo",
+      "status": "PASS",
+      "ms": 1568,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 1625,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "A-ar-390-home",
+      "status": "PASS",
+      "ms": 1337,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 1464,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "A-ar-390-pricing",
+      "status": "PASS",
+      "ms": 1218,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 970,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "A-ar-390-demo",
+      "status": "PASS",
+      "ms": 1133,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 1576,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "A-en-1440-home",
+      "status": "PASS",
+      "ms": 3391,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 2031,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "A-en-1440-pricing",
+      "status": "PASS",
+      "ms": 1450,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 1144,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "A-en-1440-demo",
+      "status": "PASS",
+      "ms": 1356,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 1744,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "A-en-390-home",
+      "status": "PASS",
+      "ms": 1322,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 1993,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "A-en-390-pricing",
+      "status": "PASS",
+      "ms": 1176,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 1106,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "A-en-390-demo",
+      "status": "PASS",
+      "ms": 1593,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 1706,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "A-ar-actual-links-and-pricing-subjects",
+      "status": "PASS",
+      "ms": 6407,
+      "detail": {
+        "mailtoSubjects": [
+          "A1 Mobi — متجر واحد",
+          "A1 Mobi — عدة فروع"
+        ],
+        "mailClick": "default intercepted; no email sent"
+      }
+    },
+    {
+      "name": "A-en-actual-links-and-pricing-subjects",
+      "status": "PASS",
+      "ms": 5886,
+      "detail": {
+        "mailtoSubjects": [
+          "A1 Mobi — Single store",
+          "A1 Mobi — Multiple branches"
+        ],
+        "mailClick": "default intercepted; no email sent"
+      }
+    },
+    {
+      "name": "B-layout-ar-1440",
+      "status": "PASS",
+      "ms": 2309,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 2460,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "B-layout-ar-390",
+      "status": "PASS",
+      "ms": 1604,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 2406,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "B-layout-en-1440",
+      "status": "PASS",
+      "ms": 2213,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 2765,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "B-layout-en-390",
+      "status": "PASS",
+      "ms": 1771,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 2714,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "B-en-reading-direction",
+      "status": "FAIL",
+      "ms": 1066,
+      "error": "English hero uses RTL CSS: punctuation and reading order incorrect"
+    },
+    {
+      "name": "B-en-reading-direction-source-correction",
+      "status": "PASS",
+      "ms": 1378,
+      "detail": {
+        "validation": "Source CSS injected into fixed preview for focused verification; no rebuilt application or server modification"
+      }
+    },
+    {
+      "name": "no-uncaught-js-or-console-errors",
+      "status": "PASS",
+      "ms": 0
+    },
+    {
+      "name": "isolated-fixture-cleanup",
+      "status": "PASS",
+      "ms": 2147
+    }
+  ],
+  "errors": [],
+  "blocked": 0,
+  "passed": 69,
+  "failed": 6
+}

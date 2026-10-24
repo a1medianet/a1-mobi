@@ -1,0 +1,64 @@
+{
+  "status": "PASS",
+  "mobile": {
+    "width": 375,
+    "viewport": 390
+  },
+  "imageRoles": {
+    "phones": [
+      {
+        "alt": "iPhone 16 Pro 256GB — Black Titanium",
+        "loaded": true
+      }
+    ],
+    "repair": "/demo/abc/repair-service.webp",
+    "retail": "/demo/abc/a-retail-hero.webp"
+  },
+  "productPhotos": [
+    {
+      "src": "/demo/products/iphone-16-pro.png",
+      "ok": true
+    },
+    {
+      "src": "/demo/products/samsung-s25-ultra.jpg",
+      "ok": true
+    },
+    {
+      "src": "/demo/products/samsung-a56.jpg",
+      "ok": true
+    },
+    {
+      "src": "/demo/products/redmi-note-14-pro-official.webp",
+      "ok": true
+    },
+    {
+      "src": "/demo/products/airpods-4-anc.png",
+      "ok": true
+    },
+    {
+      "src": "/demo/products/samsung-25w-official.avif",
+      "ok": true
+    },
+    {
+      "src": "/demo/products/anker-nano-30w-official.webp",
+      "ok": true
+    },
+    {
+      "src": "/demo/products/baseus-airpow-20k-official.jpg",
+      "ok": true
+    }
+  ],
+  "scenarios": [
+    "phone-image-model match",
+    "showcase-to-catalog",
+    "repair image role A/B",
+    "retail scene B",
+    "add to cart",
+    "prepare sample inquiry",
+    "copy summary",
+    "clear",
+    "contact shortcut",
+    "mobile 390",
+    "English"
+  ]
+}

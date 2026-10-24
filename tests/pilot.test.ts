@@ -7,7 +7,8 @@ describe("pilot peripherals and gate", () => {
   it("normalizes keyboard-wedge scanner input", () => {
     expect(normalizeScan(" 490154203237518\r\n")).toBe("490154203237518");
     expect(classifyScan("490154203237518")).toEqual({ kind: "IMEI", value: "490154203237518" });
-    expect(classifyScan("1234567890123").kind).toBe("EAN13");
+    expect(classifyScan("1234567890128").kind).toBe("EAN13");
+    expect(() => classifyScan("1234567890123")).toThrow("Invalid EAN-13 checksum");
     expect(() => classifyScan("<script>")).toThrow();
   });
 

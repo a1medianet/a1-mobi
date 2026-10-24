@@ -41,12 +41,47 @@ try {
     throw new Error("RESTORE_VERIFICATION_MISMATCH");
   }
 
+  // Verify actual business rows, not just the migration/table structure.
+  // Only compare counts and deterministic MD5 row digests; never print customer data.
+  const businessTables = [
+    "Tenant", "Branch", "Product", "Barcode", "StockLocation", "StockMovement",
+    "StockCount", "StockCountLine", "Sale", "SaleLine", "SaleReturn",
+    "SaleReturnLine", "Payment", "Invoice", "RepairOrder", "Customer",
+    "CashMovement", "DebtEntry", "TopUpTransaction", "AuditEvent",
+  ];
+  const rows = {};
+  for (const table of businessTables) {
+    // Names are code-owned constants, never supplied from user input.
+    const sql = `SELECT count(*)::text || ':' || md5(coalesce(string_agg(md5(row_to_json(t)::text), '' ORDER BY id), '')) FROM "${table}" t`;
+    const source = psql("a1mobi", sql);
+    const restored = psql(restoreDb, sql);
+    if (source !== restored) throw new Error("RESTORE_BUSINESS_ROWS_MISMATCH_" + table);
+    rows[table] = Number(source.split(":")[0]);
+  }
+  if (rows.StockMovement < 1 || rows.Sale < 1 || rows.AuditEvent < 1) {
+    throw new Error("RESTORE_BUSINESS_FIXTURE_MISSING");
+  }
+  const ledgerQueries = {
+    movementQty: 'SELECT coalesce(sum(quantity), 0)::text FROM "StockMovement"',
+    saleTotal: 'SELECT coalesce(sum(total), 0)::text FROM "Sale"',
+    paymentBase: 'SELECT coalesce(sum("baseAmount"), 0)::text FROM "Payment"',
+    refundBase: 'SELECT coalesce(sum("refundBase"), 0)::text FROM "SaleReturn"',
+  };
+  for (const [name, sql] of Object.entries(ledgerQueries)) {
+    if (psql("a1mobi", sql) !== psql(restoreDb, sql)) {
+      throw new Error("RESTORE_LEDGER_MISMATCH_" + name);
+    }
+  }
+
   console.log(JSON.stringify({
     status: "PASS",
     sourceTables: Number(sourceTables),
     restoredTables: Number(restoredTables),
     sourceMigrations: Number(sourceMigrations),
     restoredMigrations: Number(restoredMigrations),
+    matchedBusinessTables: businessTables.length,
+    businessRows: rows,
+    ledgerChecks: Object.keys(ledgerQueries),
   }));
 } finally {
   try { run("docker", ["exec", container, "dropdb", "-U", "a1mobi", "--if-exists", restoreDb]); } catch {}
