@@ -20,7 +20,9 @@
 - TypeScript: PASS after test fixture BlobPart type correction.
 - ESLint: 0 errors, one existing next/no-img-element warning in landing page.
 - Production-only npm audit: 0 known vulnerabilities.
-- Full production build and fresh UI walkthrough to be added only after independently verified.
+- Production build: PASS (next build --webpack, 28/28 static pages, exit 0; Windows native SWC warning used supported WASM fallback).
+- Additional owner/cash/permission/chart/product/print suites: 41/41 PASS.
+- Real Chrome owner catalog compatibility walkthrough: PASS, exit 0 (EN/AR link-and-unlink persisted against local PostgreSQL; desktop RTL/LTR without horizontal overflow; mobile 390px both locales). Evidence: docs/reviews/2026-10-24/catalog-ui-1792967335989/results.json and PNG captures.
 
 ## Gates still requiring explicit acceptance
 1. Physical scanner and actual label/receipt printer on target equipment.
