@@ -27,3 +27,11 @@ Real local Chrome (CDP), Next.js development runtime on 127.0.0.1:3249, local Po
 Run from C:\A1Hub\a1-mobi: node scripts\catalog-compatibility-browser-gate.mjs
 For Arabic-only diagnosis set CATALOG_BROWSER_LOCALE=ar.
 The gate fails closed if dedicated ports are in use and writes evidence under docs/reviews/2026-10-24/catalog-ui-*/.
+## RTL/LTR layout verification — 25 October 2026
+
+- Added desktop sidebar/content geometry assertions and mobile 390px horizontal-overflow assertions to the repeatable Chrome gate.
+- Arabic independent run PASS: catalog-ui-1792963332597/results.json. Geometry: viewport 1440; sidebar x1181–1425; owner workspace x0–1181. Mobile 390px: document scrollWidth 390, sidebar hidden, module width 390.
+- English independent run PASS: catalog-ui-1792963487495/results.json. Geometry: sidebar x0–244; owner workspace x244–1425. Mobile 390px: document scrollWidth 390, sidebar hidden, module width 390.
+- Both phone screenshots visually reviewed. The floating 'Compiling...' label is the local Next.js development indicator, not customer-facing production UI.
+- The earlier apparent Arabic crop was not a true sidebar/content overlap when measured and re-photographed; no production CSS was altered.
+- Remaining: release-wide responsive assessment of all A/B/C screens, production deploy verification and customer acceptance; these two scoped product-page checks do not constitute the entire 7/7+1 gate.

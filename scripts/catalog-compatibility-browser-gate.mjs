@@ -104,12 +104,17 @@ try {
   await send("Emulation.setDeviceMetricsOverride", { width: 1440, height: 960, deviceScaleFactor: 1, mobile: false });
   const [cookieName, cookieValue] = cookie.split(";")[0].split("=");
   await send("Network.setCookie", { name: cookieName, value: cookieValue, url: base, httpOnly: true });
-  for (const locale of (process.env.CATALOG_BROWSER_LOCALE === "ar" ? ["ar"] : ["en", "ar"])) {
+  const requestedLocale = process.env.CATALOG_BROWSER_LOCALE;
+  for (const locale of (requestedLocale === "ar" || requestedLocale === "en" ? [requestedLocale] : ["en", "ar"])) {
     stage = "browser-" + locale;
     const prewarm = await fetch(base + "/" + locale + "/products", { headers: { cookie: cookie.split(";")[0] }, signal: AbortSignal.timeout(120000) });
     assert.equal(prewarm.status, 200, "OWNER_PAGE_NOT_READY");
     await send("Page.navigate", { url: base + "/" + locale + "/products" });
     await wait(`document.readyState==="complete"&&document.querySelector('section[aria-label="${locale === "ar" ? "توافق قطع الصيانة" : "Repair parts compatibility"}"] select')?.options.length>=2`);
+    const geometry = await evalJs(`(()=>{const s=document.querySelector(".sidebar").getBoundingClientRect(),w=document.querySelector(".workspace").getBoundingClientRect(),m=document.querySelector(".module-page").getBoundingClientRect();return {viewport:innerWidth,scroll:document.documentElement.scrollWidth,sidebar:{left:s.left,right:s.right},workspace:{left:w.left,right:w.right},main:{left:m.left,right:m.right}}})()`);
+    console.log("LAYOUT " + locale + " " + JSON.stringify(geometry));
+    assert.ok(geometry.scroll <= geometry.viewport, "DESKTOP_HORIZONTAL_OVERFLOW");
+    assert.ok(locale === "ar" ? geometry.main.right <= geometry.sidebar.left + 1 : geometry.main.left >= geometry.sidebar.right - 1, "SIDEBAR_CONTENT_OVERLAP");
     const label = `section[aria-label="${locale === "ar" ? "توافق قطع الصيانة" : "Repair parts compatibility"}"]`;
     const opts = label + " select";
     await select(opts + ":nth-of-type(1)", part.id).catch(async () => select(label + " label:first-of-type select", part.id));
@@ -124,6 +129,16 @@ try {
     await shot(locale + "-compatibility-removed");
     assert.equal(await db.productCompatibility.count({ where: { productId: part.id, deviceVariantId: variant.id } }), 0);
     pass("owner-browser-" + locale + "-link-unlink");
+    stage = "mobile-" + locale;
+    await send("Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
+    await sleep(700);
+    const mobile = await evalJs(`(()=>({viewport:innerWidth,scroll:document.documentElement.scrollWidth,sidebarHidden:getComputedStyle(document.querySelector(".sidebar")).display==="none",mainWidth:document.querySelector(".module-page").getBoundingClientRect().width}))()`);
+    console.log("LAYOUT mobile-" + locale + " " + JSON.stringify(mobile));
+    assert.ok(mobile.viewport <= 390 && mobile.scroll <= mobile.viewport + 1, "MOBILE_HORIZONTAL_OVERFLOW");
+    assert.ok(mobile.sidebarHidden && mobile.mainWidth <= mobile.viewport + 1, "MOBILE_LAYOUT_OVERFLOW");
+    await shot(locale + "-products-mobile");
+    pass("owner-browser-" + locale + "-mobile-layout");
+    await send("Emulation.setDeviceMetricsOverride", { width: 1440, height: 960, deviceScaleFactor: 1, mobile: false });
   }
 } catch (error) {
   process.exitCode = 1;
