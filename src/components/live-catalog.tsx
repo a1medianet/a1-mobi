@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { PartCompatibilityPanel } from "@/components/part-compatibility-panel";
 import { useEffect,useState } from "react";
 type Product={id:string;sku:string;nameAr:string;nameEn:string;price:number;type:string;isActive:boolean};
 const empty={sku:"",nameAr:"",nameEn:"",price:"",type:"DEVICE"};
@@ -41,5 +42,6 @@ export function LiveCatalog({locale}:{locale:"ar"|"en"}){
    </div></article>)}</div>
    {!products.length&&<p>{ar?"أضف أول منتج ثم استلم مخزونه.":"Add your first product, then receive its stock."}</p>}
   </section>
+  <PartCompatibilityPanel locale={locale} products={products}/>
  </main>;
 }

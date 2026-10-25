@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 const m = vi.hoisted(() => ({
-  context: vi.fn(), product: vi.fn(), variant: vi.fn(), existing: vi.fn(), create: vi.fn(), remove: vi.fn(), audit: vi.fn(), list: vi.fn(),
+  context: vi.fn(), product: vi.fn(), variant: vi.fn(), existing: vi.fn(), create: vi.fn(), remove: vi.fn(), audit: vi.fn(), list: vi.fn(), variants: vi.fn(),
 }));
 vi.mock("@/server/db", () => ({ db: {
-  product: { findFirst: m.product },
+  product: { findFirst: m.product }, deviceVariant: { findMany: m.variants },
   productCompatibility: { findMany: m.list },
   $transaction: async (fn: (tx: unknown) => unknown) => fn({
     product: { findFirst: m.product }, deviceVariant: { findFirst: m.variant },
@@ -28,7 +28,14 @@ describe("parts compatibility scope and audit", () => {
   beforeEach(() => {
     vi.resetAllMocks(); m.context.mockResolvedValue(ctx);
     m.product.mockResolvedValue({ id: "part-a" }); m.variant.mockResolvedValue({ id: "variant-a" });
-    m.existing.mockResolvedValue(null); m.list.mockResolvedValue([]);
+    m.existing.mockResolvedValue(null); m.list.mockResolvedValue([]); m.variants.mockResolvedValue([]);
+  });
+  it("lists only the session tenant's model variants", async () => {
+    m.variants.mockResolvedValue([{ id: "variant-a", name: "128GB", model: { name: "Phone 13", family: { name: "Phones", manufacturer: { name: "Acme" } } } }]);
+    const response = await GET(new Request("http://localhost/api/ops/catalog/compatibility"));
+    expect(response.status).toBe(200);
+    expect(m.variants.mock.calls[0][0].where).toEqual({ tenantId: "tenant-a" });
+    expect((await response.json()).variants).toEqual([{ id: "variant-a", name: "128GB", model: "Phone 13", family: "Phones", manufacturer: "Acme" }]);
   });
   it("filters list by tenant and PART product", async () => {
     const response = await GET(new Request("http://localhost/api/ops/catalog/compatibility?productId=part-a"));

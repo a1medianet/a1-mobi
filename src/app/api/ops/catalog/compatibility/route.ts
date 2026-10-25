@@ -14,7 +14,15 @@ export async function GET(request: Request) {
   try {
     const ctx = await currentStoreContext("inventory.read");
     const productId = new URL(request.url).searchParams.get("productId");
-    if (!productId || productId.length > 90) return authJson({ error: "INVALID_REQUEST" }, 400);
+    if (!productId) {
+      const variants = await db.deviceVariant.findMany({
+        where: { tenantId: ctx.tenantId },
+        select: { id: true, name: true, model: { select: { name: true, family: { select: { name: true, manufacturer: { select: { name: true } } } } } } },
+        orderBy: { createdAt: "desc" }, take: 250,
+      });
+      return authJson({ variants: variants.map(v => ({ id: v.id, name: v.name, model: v.model.name, family: v.model.family.name, manufacturer: v.model.family.manufacturer.name })) });
+    }
+    if (productId.length > 90) return authJson({ error: "INVALID_REQUEST" }, 400);
     const product = await db.product.findFirst({ where: { id: productId, tenantId: ctx.tenantId, type: "PART" }, select: { id: true } });
     if (!product) return authJson({ error: "NOT_FOUND" }, 404);
     const items = await db.productCompatibility.findMany({
