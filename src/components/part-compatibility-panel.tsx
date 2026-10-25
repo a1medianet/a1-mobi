@@ -77,10 +77,12 @@ export function PartCompatibilityPanel({ locale, products }: { locale: "ar" | "e
     {currentPart && <div>
       <h3>{ar ? "الأجهزة المتوافقة" : "Compatible devices"} · {ar ? currentPart.nameAr : currentPart.nameEn}</h3>
       {matches.length === 0 && <p>{ar ? "لا توجد طرازات مرتبطة بعد." : "No linked variants yet."}</p>}
-      <ul>{matches.map(m => <li key={m.deviceVariantId}>
-        {m.deviceVariant.model.name} · {m.deviceVariant.name}{" "}
-        <button type="button" disabled={busy} onClick={() => void mutate("unlink", m.deviceVariantId)}>{ar ? "إزالة" : "Remove"}</button>
-      </li>)}</ul>
+      <ul style={{ display: "flex", flexWrap: "wrap", gap: "0.65rem", padding: 0, listStyle: "none" }}>
+        {matches.map(m => <li key={m.deviceVariantId} style={{ display: "inline-flex", alignItems: "center", gap: "0.75rem", padding: "0.45rem 0.65rem", border: "1px solid #dbe5f1", borderRadius: "0.75rem", background: "#f8fbff" }}>
+          <span>{m.deviceVariant.model.name} · {m.deviceVariant.name}</span>
+          <button type="button" disabled={busy} onClick={() => void mutate("unlink", m.deviceVariantId)} style={{ padding: "0.3rem 0.65rem", border: "1px solid #c7d7eb", borderRadius: "0.5rem", background: "#fff", color: "#173b66", fontWeight: 600 }}>{ar ? "إزالة" : "Remove"}</button>
+        </li>)}
+      </ul>
     </div>}
     {parts.length === 0 && <p>{ar ? "أضف منتجًا من نوع قطعة صيانة أولًا." : "Add a repair part product first."}</p>}
   </section>;
