@@ -25,7 +25,7 @@
 - Real Chrome owner catalog compatibility walkthrough: PASS, exit 0 (EN/AR link-and-unlink persisted against local PostgreSQL; desktop RTL/LTR without horizontal overflow; mobile 390px both locales). Evidence: docs/reviews/2026-10-24/catalog-ui-1792967335989/results.json and PNG captures.
 
 ## Gates still requiring explicit acceptance
-1. Physical scanner and actual label/receipt printer on target equipment.
+1. APPROVED DEFERRED PILOT UAT (owner decision 2026-10-26): physical barcode scanner and physical label/receipt printer will be tested by the real client after Pilot handoff. Not a release blocker for the Pilot build; not a PASS, not a production-device certification. Software barcode/print preview and PDF/print CSS still must pass. Capture actual device make/model, scan/print evidence, defects and client signoff during Pilot.
 2. Role-by-role access attempts and real discount approval.
 3. Owner's create-edit-products/browser operational journey with imported Excel file.
 4. Settlement with tender reconciliation, refunds and drawer finalization under real transactions.
