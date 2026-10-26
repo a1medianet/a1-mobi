@@ -1,0 +1,33 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "local-postgres",
+      "status": "PASS"
+    },
+    {
+      "name": "local-app",
+      "status": "PASS"
+    },
+    {
+      "name": "real-owner-login",
+      "status": "PASS"
+    },
+    {
+      "name": "owner-real-xlsx-upload-db",
+      "status": "PASS"
+    },
+    {
+      "name": "owner-real-csv-upsert-db",
+      "status": "PASS"
+    },
+    {
+      "name": "unauthorized-and-foreign-origin-denied",
+      "status": "PASS"
+    }
+  ],
+  "limits": [
+    "Synthetic local PostgreSQL owner and Next app",
+    "No production deployment or physical hardware"
+  ]
+}

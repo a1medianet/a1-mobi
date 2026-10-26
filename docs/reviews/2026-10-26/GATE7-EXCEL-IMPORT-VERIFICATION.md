@@ -23,6 +23,7 @@
 - Production build: PASS (next build --webpack, 28/28 static pages, exit 0; Windows native SWC warning used supported WASM fallback).
 - Additional owner/cash/permission/chart/product/print suites: 41/41 PASS.
 - Real Chrome owner catalog compatibility walkthrough: PASS, exit 0 (EN/AR link-and-unlink persisted against local PostgreSQL; desktop RTL/LTR without horizontal overflow; mobile 390px both locales). Evidence: docs/reviews/2026-10-24/catalog-ui-1792967335989/results.json and PNG captures.
+- **Authenticated local HTTP XLSX/CSV UAT PASS**, via scripts/catalog-import-http-uat.mjs, real Next runtime and local PostgreSQL: real owner login, genuine XLSX upload creates product/barcode, CSV upsert updates same product, anonymous and cross-origin calls denied. Evidence docs/reviews/2026-10-26/import-http-1792988278995/results.json. Not a full browser file-chooser test.
 
 ## Gates still requiring explicit acceptance
 1. APPROVED DEFERRED PILOT UAT (owner decision 2026-10-26): physical barcode scanner and physical label/receipt printer will be tested by the real client after Pilot handoff. Not a release blocker for the Pilot build; not a PASS, not a production-device certification. Software barcode/print preview and PDF/print CSS still must pass. Capture actual device make/model, scan/print evidence, defects and client signoff during Pilot.
