@@ -1,5 +1,5 @@
 "use client";
-import { formatNumber } from "@/core/config/number-format";
+import { formatUsd } from "@/core/config/number-format";
 import { useRef, useState } from "react";
 import { addScannedCartProduct, setCartQuantity, type ScanCartLine, type ScanCartProduct } from "@/modules/sell/scan-cart";
 import { roundMoney } from "@/modules/sell/pricing";
@@ -52,7 +52,7 @@ export function StockPosCart({ products, locations, locale, onSaved }: { product
       <label>{ar ? "الكمية" : "Quantity"}<input type="number" min={0} max={10000} step={1} value={line.quantity} disabled={locked} onChange={event => { try { setLines(setCartQuantity(lines, line.productId, Number(event.target.value))); } catch { setMessage(ar ? "كمية غير صالحة" : "Invalid quantity"); } }} /></label>
       <button type="button" disabled={locked} onClick={() => setLines(setCartQuantity(lines, line.productId, 0))}>{ar ? "حذف" : "Remove"}</button>
     </li>; })}</ul>
-    <p>{ar ? "الإجمالي USD" : "Total USD"}: {formatNumber(roundMoney(lines.reduce((sum, line) => sum + roundMoney(line.quantity * (products.find(item => item.id === line.productId)?.price ?? 0)), 0)), locale, {minimumFractionDigits:2,maximumFractionDigits:2})}</p>
+    <p>{ar ? "الإجمالي USD" : "Total USD"}: <bdi dir="ltr">{formatUsd(roundMoney(lines.reduce((sum, line) => sum + roundMoney(line.quantity * (products.find(item => item.id === line.productId)?.price ?? 0)), 0)))}</bdi></p>
     {message && <p role="status">{message}</p>}
     <button type="button" className="primary" disabled={saving || !locationId || !lines.length} onClick={() => void checkout()}>{saving ? (ar ? "جار الحفظ" : "Saving…") : (ar ? "تأكيد البيع النقدي / إعادة المحاولة" : "Confirm cash sale / retry")}</button>
   </section>;

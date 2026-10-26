@@ -1,5 +1,5 @@
 "use client";
-import { formatNumber } from "@/core/config/number-format";
+import { formatUsd } from "@/core/config/number-format";
 import Link from "next/link";
 import { BarcodeLabelPanel } from "@/components/barcode-label-panel";
 import { StockCountPanel } from "@/components/stock-count-panel";
@@ -21,6 +21,14 @@ export function liveOperationStatus(value:string,locale:"ar"|"en") {
   COMPLETED:{ar:"مكتملة",en:"Completed"},
   CANCELLED:{ar:"ملغاة",en:"Cancelled"},
   RETURNED:{ar:"مرتجع",en:"Returned"},
+  RESERVED:{ar:"محجوز",en:"Reserved"},
+  IN_REPAIR:{ar:"قيد الصيانة",en:"In repair"},
+  QUARANTINED:{ar:"معزول",en:"Quarantined"},
+  DRAFT:{ar:"مسودة",en:"Draft"},
+  UNPAID:{ar:"غير مدفوعة",en:"Unpaid"},
+  PARTIALLY_PAID:{ar:"مدفوعة جزئيًا",en:"Partially paid"},
+  PARTIALLY_RETURNED:{ar:"مرتجعة جزئيًا",en:"Partially returned"},
+  VOIDED:{ar:"مبطلة",en:"Voided"},
  };
  return labels[value]?.[locale]??(locale==="ar"?"الحالة غير متاحة":"Status unavailable");
 }
@@ -147,14 +155,14 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
         return <label className={"mobi-pos-device-option"+(checked?" is-selected":"")} key={device.id}>
           <input type="checkbox" checked={checked} disabled={busy||(!checked&&selectedDeviceIds.length>=12)} onChange={event=>toggleDevice(device.id,event.target.checked)}/>
           <span className="mobi-pos-device-copy"><strong>{locale==="en"?(device.productNameEn||device.productName):device.productName}</strong><small dir="ltr">{device.imei}</small></span>
-          <bdi dir="ltr">{"$"+formatNumber(price,locale,{minimumFractionDigits:2,maximumFractionDigits:2})}</bdi>
+          <bdi dir="ltr">{formatUsd(price)}</bdi>
         </label>;
       })}
     </fieldset>
     <p className="mobi-live-hint">{locale==="ar"?"حتى 12 جهازًا في الفاتورة الواحدة":"Up to 12 devices per invoice"}</p>
     <div className="mobi-pos-cart-summary" aria-live="polite">
       <span>{locale==="ar"?"الأجهزة المختارة":"Selected devices"}: <strong>{selectedDevices.length}</strong></span>
-      <span>{t.total}: <strong dir="ltr">{"$"+formatNumber(cartTotal,locale,{minimumFractionDigits:2,maximumFractionDigits:2})}</strong></span>
+      <span>{t.total}: <strong dir="ltr">{formatUsd(cartTotal)}</strong></span>
     </div>
     {state&&available.length===0&&<p className="mobi-live-hint" role="status">{t.noneAvailable} <Link className="mobi-pos-secondary" href={"/"+locale+"/inventory"}>{t.startInventory}</Link></p>}
     <p className="mobi-live-hint">{locale==="ar"?"الدفع النقدي بالدولار — تحقق الأجهزة وفاتورة محفوظة":"USD cash — verified device and persisted invoice"}</p>
@@ -167,7 +175,7 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
    {mode!=="pos"&&<article><h2>{t.list}</h2><div className="table-wrap"><table><thead><tr><th>IMEI</th><th>{t.product}</th><th>{t.state}</th></tr></thead>
    <tbody>{state?.devices.map(d=><tr key={d.id}><td><bdi dir="ltr">{d.imei}</bdi></td><td>{locale==="en"?(d.productNameEn||d.productName):d.productName}</td><td>{liveOperationStatus(d.status,locale)}</td></tr>)}</tbody></table></div></article>}
    {mode!=="inventory"&&<article><h2>{t.receipts}</h2><div className="table-wrap"><table><thead><tr><th>{t.invoice}</th><th>{t.total}</th><th>{t.state}</th></tr></thead>
-   <tbody>{state?.sales.map(s=><tr key={s.id}><td><bdi dir="ltr">{s.invoiceNumber}</bdi></td><td><bdi dir="ltr">{"$"+formatNumber(s.total,locale,{minimumFractionDigits:2,maximumFractionDigits:2})}</bdi></td><td>{liveOperationStatus(s.status,locale)}</td></tr>)}</tbody></table></div></article>}
+   <tbody>{state?.sales.map(s=><tr key={s.id}><td><bdi dir="ltr">{s.invoiceNumber}</bdi></td><td><bdi dir="ltr">{formatUsd(s.total)}</bdi></td><td>{liveOperationStatus(s.status,locale)}</td></tr>)}</tbody></table></div></article>}
   </section></div>
  </main>;
 }

@@ -59,7 +59,7 @@ export default async function BranchOwnerReport({locale,period="month"}:{locale:
       <p className="module-kicker">A1 MOBI · REPORTS</p>
       <h1>{t.title}</h1><p className="module-sub">{t.sub}</p>
     </div></header>
-    <p className="preview-notice">{locale==="ar"?`بيئة اختبار: مؤشرات آخر ${durationDays} يومًا من سجلات الفرع؛ ليست حسابات معتمدة.`:`Test environment: metrics from branch records over the past ${durationDays} days; not certified accounts.`}</p>
+    <p className="preview-notice">{locale==="ar"?`بيئة اختبار: مؤشرات آخر ${durationDays} يومًا من سجلات الفرع؛ ليست حسابات معتمدة.`:`Test environment: metrics from branch records over the past ${durationDays} ${durationDays===1?"day":"days"}; not certified accounts.`}</p>
     <nav className="mobi-report-periods" aria-label={locale==="ar"?"الفترة":"Period"}>
       {(["day","week","month","year"] as const).map(key=><Link key={key} href={"/"+locale+"/reports?period="+key} aria-current={period===key?"page":undefined} className={period===key?"active":""}>{({ar:{day:"يوم",week:"أسبوع",month:"شهر",year:"سنة"},en:{day:"Day",week:"Week",month:"Month",year:"Year"}} as const)[locale][key]}</Link>)}
     </nav>
@@ -67,7 +67,7 @@ export default async function BranchOwnerReport({locale,period="month"}:{locale:
       <div><small>{locale==="ar"?"المبيعات بعد المرتجعات":"Sales after returns"} · {locale==="ar"?"الفترة الحالية":"Current period"}</small><strong>{money(data.salesAfterReturnsUsd)}</strong></div>
       <div><small>{locale==="ar"?"الفترة السابقة المماثلة":"Previous equal-length period"}</small><strong>{money(previous.salesAfterReturnsUsd)}</strong></div>
       <div><small>{locale==="ar"?"التغير":"Change"}</small><strong>{percent===null?(locale==="ar"?"غير متاح":"N/A"):(percent>=0?"+":"")+percent.toFixed(1)+"%"}</strong><span>{money(delta)} {locale==="ar"?"فرق القيمة":"difference"}</span></div>
-      <div><p>{locale==="ar"?"الأزرق: الفترة الحالية · البرتقالي: الفترة السابقة. ارتفاع الأعمدة للقيم الموجبة فقط؛ القيم الدقيقة أعلاه بالدولار.":"Blue: current period · orange: previous period. Bar heights show positive values only; exact USD values appear above."}</p><div className="mobi-report-compare-bars" aria-hidden="true">
+      <div><small>{locale==="ar"?"الأزرق: الحالية · البرتقالي: السابقة. القيم الموجبة فقط؛ المبالغ أعلاه بالدولار.":"Blue: current period · orange: previous period. Positive values only; exact USD amounts above."}</small><div className="mobi-report-compare-bars" aria-hidden="true">
         {[data.salesAfterReturnsUsd,previous.salesAfterReturnsUsd].map((value,i)=><span key={i} className={i===0?"current":"previous"} style={{height:(Math.max(0,value)/Math.max(1,data.salesAfterReturnsUsd,previous.salesAfterReturnsUsd)*100)+"%"}} />)}
       </div>
     </div></section>    <section className="report-grid" aria-label={t.title}>{cards.map(([label,value,tone])=>

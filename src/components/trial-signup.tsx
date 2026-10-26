@@ -1,5 +1,6 @@
 "use client";
 import { formatDate } from "@/core/config/number-format";
+import { billingStatusLabel, planLabel } from "@/core/config/display-labels";
 
 import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
@@ -63,8 +64,8 @@ export function TrialSignup({locale}:{locale:"ar"|"en"}){
     <p>{ar?"تم إنشاء الجهة والفرع والمالك وتفعيل صلاحيات التجربة عبر A1 Billing Core.":"Organization, branch and owner were created and trial entitlements were activated through A1 Billing Core."}</p>
     <div className="success-facts">
       <div><small>{ar?"المتجر":"Store"}</small><strong>{result.tenant}</strong></div>
-      <div><small>{ar?"الخطة":"Plan"}</small><strong>{result.trial.planCode}</strong></div>
-      <div><small>{ar?"الحالة":"Status"}</small><strong>{result.trial.status}</strong></div>
+      <div><small>{ar?"الخطة":"Plan"}</small><strong>{planLabel(result.trial.planCode,locale)}</strong></div>
+      <div><small>{ar?"الحالة":"Status"}</small><strong>{billingStatusLabel(result.trial.status,locale)}</strong></div>
       <div><small>{ar?"تنتهي":"Expires"}</small><strong>{result.trial.expiresAt?formatDate(result.trial.expiresAt,ar?"ar":"en"):"—"}</strong></div>
     </div>
     <div className="product-actions"><Link className="product-cta" href={result.loginPath}>{ar?"تسجيل الدخول إلى المتجر":"Sign in to store"}</Link><Link className="product-secondary" href={"/product/"+locale+"/demo"}>{ar?"فتح تجربة البيانات":"Open populated demo"}</Link></div>
@@ -75,26 +76,26 @@ export function TrialSignup({locale}:{locale:"ar"|"en"}){
     <div className="signup-steps">{labels.map((label,index)=><button type="button" key={label} className={step===index+1?"active":step>index+1?"done":""} onClick={()=>index+1<step&&setStep(index+1)}><span>{step>index+1?"✓":index+1}</span>{label}</button>)}</div>
 
     {step===1&&<section className="signup-panel">
-      <span className="product-eyebrow">{ar?"الخطوة ١ · المتجر":"STEP 1 · STORE"}</span><h2>{ar?"أنشئ جهة المتجر":"Create store organization"}</h2><p>{ar?"هذه هي الجهة التجارية التي ستحتوي الفروع والأعضاء وصلاحيات الاشتراك.":"This is the commercial organization that owns branches, members and subscription entitlements."}</p>
+      <span className="product-eyebrow">{ar?"الخطوة 1 · المتجر":"STEP 1 · STORE"}</span><h2>{ar?"أنشئ جهة المتجر":"Create store organization"}</h2><p>{ar?"هذه هي الجهة التجارية التي ستحتوي الفروع والأعضاء وصلاحيات الاشتراك.":"This is the commercial organization that owns branches, members and subscription entitlements."}</p>
       <label>{ar?"اسم المتجر / الجهة":"Store / organization name"}<input value={store} onChange={e=>{setStore(e.target.value);if(!slug)setSlug(slugify(e.target.value))}} placeholder={ar?"مثال: A1 Mobi":"e.g. A1 Mobi"} required/></label>
       <label>{ar?"معرّف المتجر":"Store identifier"}<input value={effectiveSlug} onChange={e=>setSlug(slugify(e.target.value))} dir="ltr" placeholder="a1-mobi" required/></label>
     </section>}
 
     {step===2&&<section className="signup-panel">
-      <span className="product-eyebrow">{ar?"الخطوة ٢ · الفرع":"STEP 2 · BRANCH"}</span><h2>{ar?"أضف أول فرع":"Add first branch"}</h2><p>{ar?"يمكن للجهة امتلاك عدة فروع لاحقًا حسب الخطة.":"The organization can add more branches later according to its plan."}</p>
+      <span className="product-eyebrow">{ar?"الخطوة 2 · الفرع":"STEP 2 · BRANCH"}</span><h2>{ar?"أضف أول فرع":"Add first branch"}</h2><p>{ar?"يمكن للجهة امتلاك عدة فروع لاحقًا حسب الخطة.":"The organization can add more branches later according to its plan."}</p>
       <label>{ar?"اسم الفرع":"Branch name"}<input value={branch} onChange={e=>setBranch(e.target.value)} placeholder={ar?"طرابلس - الفرع الرئيسي":"Tripoli - Main branch"} required/></label>
       <label>{ar?"كود الفرع":"Branch code"}<input value={branchCode} onChange={e=>setBranchCode(e.target.value.toUpperCase().replace(/[^A-Z0-9_-]/g,""))} dir="ltr" required/></label>
     </section>}
 
     {step===3&&<section className="signup-panel">
-      <span className="product-eyebrow">{ar?"الخطوة ٣ · المالك":"STEP 3 · OWNER"}</span><h2>{ar?"حساب مالك المتجر":"Store owner account"}</h2><p>{ar?"هذا المستخدم يحصل على Owner role داخل Tenant الجديد. فعّل MFA بعد أول دخول.":"This user receives the Owner role inside the new tenant. Enable MFA after first sign-in."}</p>
+      <span className="product-eyebrow">{ar?"الخطوة 3 · المالك":"STEP 3 · OWNER"}</span><h2>{ar?"حساب مالك المتجر":"Store owner account"}</h2><p>{ar?"يحصل هذا الحساب على صلاحيات مالك المتجر. فعّل التحقق بخطوتين بعد أول دخول.":"This account receives store owner permissions. Enable two-step verification after first sign-in."}</p>
       <label>{ar?"اسم المالك":"Owner name"}<input value={ownerName} onChange={e=>setOwnerName(e.target.value)} autoComplete="name" required/></label>
       <label>{ar?"البريد":"Email"}<input value={email} onChange={e=>setEmail(e.target.value)} type="email" dir="ltr" autoComplete="email" required/></label>
       <label>{ar?"كلمة المرور":"Password"}<input value={password} onChange={e=>setPassword(e.target.value)} type="password" minLength={12} autoComplete="new-password" required/><small>{ar?"12 محرفًا على الأقل. لا تستخدم كلمة مرور مهمة في تجربة عامة.":"At least 12 characters. Do not reuse an important password in a public trial."}</small></label>
     </section>}
 
     {step===4&&<section className="signup-panel review-panel">
-      <span className="product-eyebrow">{ar?"الخطوة ٤ · المراجعة":"STEP 4 · REVIEW"}</span><h2>{ar?"راجع ثم ابدأ 7 أيام":"Review and start seven days"}</h2>
+      <span className="product-eyebrow">{ar?"الخطوة 4 · المراجعة":"STEP 4 · REVIEW"}</span><h2>{ar?"راجع ثم ابدأ 7 أيام":"Review and start seven days"}</h2>
       <div className="review-grid">
         <div><small>{ar?"الجهة":"Organization"}</small><strong>{store}</strong></div>
         <div><small>{ar?"معرّف المتجر":"Store ID"}</small><strong dir="ltr">{effectiveSlug}</strong></div>

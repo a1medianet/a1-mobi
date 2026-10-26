@@ -1,3 +1,4 @@
+import { formatUsd } from "@/core/config/number-format";
 import { CashOpenPanel } from "@/components/cash-open-panel";
 import Link from "next/link";
 import { currentStoreContext } from "@/server/auth-http";
@@ -52,7 +53,7 @@ export default async function CashOwnerLivePage({ locale }: { locale: "ar" | "en
   const snapshot = await getBranchCashSnapshot({ tenantId: context.tenantId, branchId: context.branchId });
 
   const statusLabel = snapshot.status === "OPEN" ? t.open : snapshot.status === "CLOSED" ? t.closed : t.none;
-  const money = (value: number | null, currency: string) => value === null ? "—" :
+  const money = (value: number | null, currency: string) => value === null ? "—" : currency === "USD" ? formatUsd(value) :
     new Intl.NumberFormat(locale === "ar" ? "ar-LB" : "en-US", {
       numberingSystem:"latn", minimumFractionDigits: currency === "LBP" ? 0 : 2,
       maximumFractionDigits: currency === "LBP" ? 0 : 2,

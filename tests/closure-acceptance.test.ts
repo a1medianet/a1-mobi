@@ -1,3 +1,8 @@
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { StockPosCart } from "@/components/stock-pos-cart";
+import { liveOperationStatus } from "@/components/live-operations";
+import { SaleStatus, SerializedDeviceStatus } from "@prisma/client";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { billingStatusLabel, entitlementLabel, planLabel, roleLabel } from "@/core/config/display-labels";
 const mocks = vi.hoisted(() => ({ context: vi.fn(), open: vi.fn() }));
@@ -26,6 +31,23 @@ describe("Closure acceptance: cash opening boundary", () => {
  it("retains the feature gate", async () => { vi.stubEnv("A1_MOBI_C_LIVE_01_ENABLED","0"); expect((await POST(request(valid))).status).toBe(404); expect(mocks.open).not.toHaveBeenCalled(); });
 });
 describe("Closure acceptance: owner-facing labels", () => {
+ it.each([...new Set([...Object.values(SaleStatus), ...Object.values(SerializedDeviceStatus)])])("translates persisted operational status %s in both languages", status => {
+  for (const locale of ["ar", "en"] as const) {
+   const label = liveOperationStatus(status, locale);
+   expect(label).not.toBe(status);
+   expect(label).not.toMatch(/unavailable|غير متاحة/);
+   if (locale === "ar") expect(label).toMatch(/[\u0600-\u06ff]/);
+  }
+ });
  it("localizes known roles while retaining custom owner names", () => { expect(roleLabel({code:"owner",name:"Owner"},"ar")).toBe("صاحب المتجر"); expect(roleLabel({code:"custom",name:"Shift lead"},"en")).toBe("Shift lead"); });
  it("hides unknown billing codes", () => { expect(billingStatusLabel("BILLING_INTERNAL_FAILURE","en")).toBe("Contact support"); expect(entitlementLabel("secret.internal","en")).toBe("Subscription feature"); expect(planLabel("internal-plan-id","en")).toBe("Store plan"); expect(billingStatusLabel("active","ar")).toBe("نشط"); });
+});
+
+describe("POS currency presentation", () => {
+ it.each(["ar", "en"] as const)("renders the same USD decimal convention in %s", locale => {
+  const html = renderToStaticMarkup(createElement(StockPosCart, { products: [], locations: [], locale, onSaved: async () => {} }));
+  expect(html).toContain("$0.00");
+  expect(html).not.toContain("$0,00");
+  expect(html).not.toMatch(/[٠-٩]/);
+ });
 });
