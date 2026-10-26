@@ -26,7 +26,7 @@ export function OwnerWorkspace({locale,admin=false}:{locale:"ar"|"en";admin?:boo
    <h1>{admin?(ar?"إدارة المتجر":"Store administration"):(ar?"إدارة متجرك من مكان واحد":"Run your store from one place")}</h1>
    <p>{ar?"اختر المهمة للمتابعة إلى سجلات متجرك.":"Choose a task to open your store records."}</p>
   </div></header>
-  <nav className="quick-grid" aria-label={ar?"مهام المتجر":"Store tasks"}>
+  <nav className="quick-grid owner-task-grid" aria-label={ar?"مهام المتجر":"Store tasks"}>
    {links.map(([path,labelAr,labelEn])=><Link className="quick-action" href={"/"+locale+"/"+path} key={path}><b>{ar?labelAr:labelEn}</b></Link>)}
   </nav>
  </main>;

@@ -1759,3 +1759,9 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 .mobi-task-panel>summary:focus-visible{outline:2px solid #1265e8;outline-offset:2px}
 .mobi-task-panel>form,.mobi-task-panel>.barcode-label-panel{margin:0;border:0}
 .mobi-live02-forms .mobi-task-panel>form{display:flex;flex-direction:column}
+
+/* Gate 6: owner task launcher must display complete cards on narrow screens. */
+.module-page .owner-task-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:12px;overflow:visible;padding:0}
+.module-page .owner-task-grid>.quick-action{min-width:0;min-height:96px;overflow-wrap:anywhere}
+@media(max-width:720px){.module-page .owner-task-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.module-page .owner-task-grid>.quick-action{padding:13px;min-height:102px}}
+@media(max-width:350px){.module-page .owner-task-grid{grid-template-columns:minmax(0,1fr)}}
