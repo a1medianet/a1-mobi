@@ -1,0 +1,20 @@
+import {randomUUID} from "node:crypto";
+import {beforeEach,afterEach,describe,it,expect,vi} from "vitest";
+const mocks=vi.hoisted(()=>({context:vi.fn(),preview:vi.fn(),post:vi.fn()}));
+vi.mock("@/modules/inventory/count-service",()=>({previewStockCount:mocks.preview,postStockCount:mocks.post}));
+vi.mock("@/server/auth-http",()=>({currentStoreContext:mocks.context,sameOriginMutation:(r:Request)=>r.headers.get("origin")==="http://localhost",authJson:(b:unknown,s=200)=>Response.json(b,{status:s})}));
+import {POST} from "@/app/api/ops/counts/route";
+const ctx={tenantId:"tenant-a",branchId:"branch-a",actorId:"owner-a"};
+const input=()=>({action:"post",productId:"product-a",locationId:"location-a",version:"a".repeat(64),countedQty:3,reason:"Shelf recount",idempotencyKey:randomUUID()});
+const post=(body:object,origin="http://localhost")=>POST(new Request("http://localhost/api/ops/counts",{method:"POST",headers:{origin,"content-type":"application/json"},body:JSON.stringify(body)}));
+describe("count route",()=>{
+ beforeEach(()=>{vi.resetAllMocks();vi.stubEnv("A1_MOBI_C_LIVE_01_ENABLED","1");mocks.context.mockResolvedValue(ctx);mocks.post.mockResolvedValue({id:"count-a"});mocks.preview.mockResolvedValue({quantity:5,version:"a".repeat(64)});});afterEach(()=>vi.unstubAllEnvs());
+ it("requires owner management and uses session scope",async()=>{const body=input();expect((await post(body)).status).toBe(200);expect(mocks.context).toHaveBeenCalledWith("foundation.manage");expect(mocks.post).toHaveBeenCalledWith({...body,...ctx});});
+ it("previews scoped stock without posting",async()=>{expect((await post({action:"preview",productId:"product-a",locationId:"location-a"})).status).toBe(200);expect(mocks.preview).toHaveBeenCalledWith(expect.objectContaining({...ctx,productId:"product-a",locationId:"location-a"}));expect(mocks.post).not.toHaveBeenCalled();});
+ it.each([-1,1.5,1000001,null])("rejects quantity %s",async countedQty=>{expect((await post({...input(),countedQty})).status).toBe(400);expect(mocks.post).not.toHaveBeenCalled();});
+ it.each([{tenantId:"other"},{branchId:"other"},{actorId:"other"},{reason:" "},{version:"stale"}])("rejects injection or invalid input %j",async extra=>{expect((await post({...input(),...extra})).status).toBe(400);expect(mocks.post).not.toHaveBeenCalled();});
+ it.each(["AUTH_REQUIRED","PERMISSION_DENIED"])("rejects %s",async code=>{mocks.context.mockRejectedValue(new Error(code));expect((await post(input())).status).toBe(code==="AUTH_REQUIRED"?401:403);expect(mocks.post).not.toHaveBeenCalled();});
+ it.each(["STALE_COUNT","COUNT_IDEMPOTENCY_CONFLICT"])("reports %s without posting again",async code=>{mocks.post.mockRejectedValue(new Error(code));const response=await post(input());expect(response.status).toBe(409);expect(await response.json()).toEqual({error:code});});
+ it("rejects foreign origin and disabled pilot",async()=>{expect((await post(input(),"https://foreign.test")).status).toBe(403);vi.stubEnv("A1_MOBI_C_LIVE_01_ENABLED","0");expect((await post(input())).status).toBe(404);expect(mocks.context).not.toHaveBeenCalled();});
+ it("sanitizes failures",async()=>{mocks.post.mockRejectedValue(new Error("private SQL"));const failed=await post(input());expect(failed.status).toBe(503);expect(await failed.json()).toEqual({error:"COUNT_REJECTED"});});
+});

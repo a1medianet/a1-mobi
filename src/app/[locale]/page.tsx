@@ -1,10 +1,13 @@
+import { OwnerWorkspace } from "@/components/owner-workspace";
 import Link from "next/link";
+import { OperationBreakdownChart } from "@/components/operation-breakdown-chart";
 import { notFound } from "next/navigation";
-import { demoCatalogCounts, demoStore, demoTransactions } from "@/demo/data";
+import { demoCatalogCounts, demoLowStock, demoStore, demoTransactions } from "@/demo/data";
+import { demoRepairs } from "@/demo/operations";
 
 const copy = {
   ar: {
-    title: "صباح العمل من مكان واحد",
+    title: "إدارة متجرك من مكان واحد",
     subtitle: "بيع، مخزون، صيانة، عملاء وصندوق — ضمن تجربة متجر موحدة.",
     demo: "وضع التدريب",
     demoNote: "بيانات واقعية للتجربة وليست سجلات مالية أو مخزون إنتاجي.",
@@ -31,6 +34,12 @@ const copy = {
     inRepair: "قيد الصيانة",
     ready: "جاهزة",
     store: "متجر نموذجي",
+    recentRepairs: "آخر تذاكر الصيانة",
+    lowStock: "مخزون منخفض",
+    device: "الجهاز",
+    status: "الحالة",
+    quantity: "الكمية",
+    viewAll: "عرض الكل",
   },
   en: {
     title: "Run the day from one place",
@@ -60,15 +69,24 @@ const copy = {
     inRepair: "In repair",
     ready: "Ready",
     store: "Sample store",
+    recentRepairs: "Recent repair tickets",
+    lowStock: "Low stock",
+    device: "Device",
+    status: "Status",
+    quantity: "Quantity",
+    viewAll: "View all",
   },
 } as const;
 
 export default async function Dashboard({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   if (locale !== "ar" && locale !== "en") notFound();
+  if(process.env.A1_MOBI_C_LIVE_01_ENABLED==="1")return <OwnerWorkspace locale={locale}/>;
   const ar = locale === "ar";
   const t = copy[locale];
   const counts = demoCatalogCounts();
+  const lowStock = demoLowStock().slice(0,4);
+  const recentRepairs = demoRepairs.slice(0,4);
   const metrics = [
     { label:t.sales, value:"$2,284.00", delta:ar?"+ 6 عمليات":"+ 6 sales", tone:"blue", icon:"↗" },
     { label:t.profit, value:"$612.40", delta:ar?"26.8% من المبيعات":"26.8% of sales", tone:"green", icon:"⌁" },
@@ -125,7 +143,22 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
         </Link>)}</div>
     </section>
 
-    <section className="mobi-c-insight"><div className="section-head"><div><h2>{ar?"حركة السجلات التجريبية":"Demo transaction activity"}</h2><p>{ar?"قيم عمليات البيع والصيانة في بيانات التجربة":"Sample sales and repairs by transaction"}</p></div></div><div className="mobi-c-bars">{demoTransactions.map(row=><div key={row.id}><span className="mobi-c-bar" style={{height:(18+Math.round(82*row.amount/1199))+"%"}} title={row.id+": $"+row.amount}/><small>{row.id.replace(/^[^-]+-/,"")}</small></div>)}</div></section>
+    <OperationBreakdownChart rows={demoTransactions} locale={locale} />
+    <section className="mobi-c-ops-grid">
+      <article className="activity-card">
+        <div className="section-head"><h2>{t.recentRepairs}</h2><Link className="text-link" href={"/"+locale+"/repairs"}>{t.viewAll} →</Link></div>
+        <div className="mobi-c-compact-list">
+          {recentRepairs.map(repair=><div key={repair.number}><span className="mobi-c-list-icon orange">⌁</span><div><b><bdi dir="ltr">{repair.number}</bdi> · {repair.device}</b><small>{ar?repair.customerAr:repair.customerEn}</small></div><span className={"pill "+(repair.status==="READY"?"done":"pending")}>{repair.status}</span></div>)}
+        </div>
+      </article>
+      <article className="activity-card">
+        <div className="section-head"><h2>{t.lowStock}</h2><Link className="text-link" href={"/"+locale+"/inventory"}>{t.viewAll} →</Link></div>
+        <div className="mobi-c-compact-list">
+          {lowStock.map(product=><div key={product.id}><span className="mobi-c-list-icon blue">▦</span><div><b>{ar?product.nameAr:product.nameEn}</b><small><bdi dir="ltr">{product.sku}</bdi></small></div><span className="mobi-c-stock-count">{product.stock}</span></div>)}
+        </div>
+      </article>
+    </section>
+
     <section className="activity-card">
       <div className="section-head"><div><h2>{t.activity}</h2><p>{t.demoNote}</p></div>
         <Link className="text-link" href={"/"+locale+"/products"}>{t.products} →</Link>

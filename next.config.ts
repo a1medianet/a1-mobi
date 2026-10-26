@@ -10,6 +10,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  distDir: process.env.A1_MOBI_DIST_DIR || ".next",
   poweredByHeader: false,
   productionBrowserSourceMaps: false,
   async headers() {

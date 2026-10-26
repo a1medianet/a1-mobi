@@ -1,11 +1,21 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { demoRepairs } from "@/demo/operations";
+import RepairLivePage from "@/components/repair-live-operations";
+
+export const dynamic="force-dynamic";
 
 const copy={ar:{back:"لوحة التحكم",title:"الصيانة",sub:"رحلة الصيانة من الاستلام حتى الجاهزية والتسليم",notice:"Pilot Demo — حالات وأسماء تجريبية، ولا يتم حفظ تغييرات من هذه الصفحة.",open:"أوامر مفتوحة",ready:"جاهزة",balance:"رصيد غير محصل",avg:"متوسط التقدير",order:"الأمر",customer:"العميل",device:"الجهاز",issue:"المشكلة",status:"الحالة",estimate:"التقدير",paid:"مدفوع",tech:"الفني"},en:{back:"Dashboard",title:"Repairs",sub:"Repair journey from intake through ready and delivery",notice:"Pilot Demo — cases and names are synthetic; this page does not persist changes.",open:"Open orders",ready:"Ready",balance:"Outstanding",avg:"Average estimate",order:"Order",customer:"Customer",device:"Device",issue:"Issue",status:"Status",estimate:"Estimate",paid:"Paid",tech:"Technician"}} as const;
 
 export default async function RepairsPage({params}:{params:Promise<{locale:string}>}) {
- const {locale}=await params;if(locale!=="ar"&&locale!=="en") notFound();const t=copy[locale];const ar=locale==="ar";
+ const {locale}=await params;
+ if(locale!=="ar"&&locale!=="en") notFound();
+ // Canonical owner navigation uses the existing, tenant-scoped live workflow
+ // only where the UAT flag is explicitly enabled. Production defaults to demo.
+ if(process.env.A1_MOBI_C_LIVE_02_ENABLED==="1"){
+  return <RepairLivePage backToDashboard />;
+ }
+ const t=copy[locale];const ar=locale==="ar";
  const ready=demoRepairs.filter(r=>r.status==="READY").length;const outstanding=demoRepairs.reduce((s,r)=>s+Math.max(0,r.estimate-r.paid),0);const avg=demoRepairs.reduce((s,r)=>s+r.estimate,0)/demoRepairs.length;
  return <main className="module-page"><header className="module-header"><div><Link href={"/"+locale} className="back-link">{t.back}</Link><p className="module-kicker">A1 MOBI · REPAIR</p><h1>{t.title}</h1><p className="module-sub">{t.sub}</p></div></header><p className="preview-notice">{t.notice}</p>
  <section className="metrics ops-metrics">{[[t.open,String(demoRepairs.length),"blue","◇"],[t.ready,String(ready),"green","✓"],[t.balance,"$"+outstanding.toFixed(2),"rose","$"],[t.avg,"$"+avg.toFixed(2),"amber","⌁"]].map(([label,value,tone,icon])=><article className="metric" key={label}><div className={"metric-icon "+tone}>{icon}</div><div className="metric-body"><p>{label}</p><strong><bdi dir="ltr">{value}</bdi></strong></div></article>)}</section>

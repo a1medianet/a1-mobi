@@ -1,0 +1,27 @@
+{
+  "checkpoint": "C15 ABC browser QA",
+  "date": "2026-10-19",
+  "machine": "Thaghr",
+  "mode": "isolated production-mode UAT",
+  "build": "PASS",
+  "buildExitCode": 0,
+  "browser": "PASS",
+  "browserExitCode": 0,
+  "browserRunSeconds": 82.82,
+  "bDesktopViewport": {
+    "scrollHeight": 5014,
+    "innerHeight": 900
+  },
+  "images": [
+    "a-product-ar-desktop.png",
+    "a-product-ar-mobile.png",
+    "b-techzone-desktop.png",
+    "b-techzone-mobile.png",
+    "c-dashboard-authenticated-desktop.png",
+    "c-pos-cart-desktop.png",
+    "c-pos-cart-mobile.png"
+  ],
+  "exactVisualMatching": "PENDING",
+  "productionDeploy": "NOT_PERFORMED",
+  "merge": "NOT_PERFORMED"
+}

@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - closeout/pilot-visual-production-20261007
+      - feat/mobi-abc-continue-20261013
   pull_request:
     branches:
       - feat/operational-ui-shell
+      - feat/mobi-abc-real-site-20261010
   workflow_dispatch:
 
 jobs:
@@ -15,6 +17,7 @@ jobs:
     env:
       DATABASE_URL: postgresql://a1mobi:a1mobi_ci@127.0.0.1:5432/a1mobi?schema=public
       APP_ORIGIN: http://127.0.0.1:3185
+      A1_MOBI_BOOTSTRAP_SECRET: ci-bootstrap-secret-0123456789abcdef0123456789abcdef
     services:
       postgres:
         image: postgres:17-alpine
@@ -72,6 +75,9 @@ jobs:
           capture product-ar-desktop 1440,1100 http://127.0.0.1:3185/product/ar
           capture product-en-desktop 1440,1100 http://127.0.0.1:3185/product/en
           capture product-ar-mobile 390,844 http://127.0.0.1:3185/product/ar
+          capture store-preview-b-desktop 1440,900 http://127.0.0.1:3185/store-preview
+          capture store-preview-b-mobile 390,844 http://127.0.0.1:3185/store-preview
+          capture c-login-ar-desktop 1440,900 http://127.0.0.1:3185/ar/login
           capture demo-ar-desktop 1440,1200 http://127.0.0.1:3185/product/ar/demo
           capture pricing-ar-desktop 1440,1000 http://127.0.0.1:3185/product/ar/pricing
           capture signup-ar-desktop 1440,1100 http://127.0.0.1:3185/product/ar/signup
@@ -87,6 +93,8 @@ jobs:
           capture en-dashboard-desktop 1440,1000 http://127.0.0.1:3185/en
           capture ar-dashboard-mobile 390,844 http://127.0.0.1:3185/ar
           capture ar-products-mobile 390,844 http://127.0.0.1:3185/ar/products
+
+          CHROME_BIN="$browser" ABC_VISUAL_DIR=artifacts/pilot node scripts/abc-browser-qa.mjs
 
           {
             echo "A1 Mobi Product + Pilot Visual Evidence"

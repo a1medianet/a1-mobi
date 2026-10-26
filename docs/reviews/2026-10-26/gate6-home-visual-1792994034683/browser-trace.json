@@ -1,0 +1,2963 @@
+[
+  {
+    "method": "Page.enable",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994210933,
+    "status": "OK",
+    "elapsedMs": 265
+  },
+  {
+    "method": "Runtime.enable",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994211198,
+    "status": "OK",
+    "elapsedMs": 58
+  },
+  {
+    "method": "Network.enable",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994211256,
+    "status": "OK",
+    "elapsedMs": 79
+  },
+  {
+    "method": "Emulation.setDeviceMetricsOverride",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994211335,
+    "status": "OK",
+    "elapsedMs": 62
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994211398,
+    "status": "OK",
+    "elapsedMs": 6
+  },
+  {
+    "method": "Page.navigate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994211404,
+    "status": "OK",
+    "elapsedMs": 3632
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994215036,
+    "status": "OK",
+    "elapsedMs": 317
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994215555,
+    "status": "OK",
+    "elapsedMs": 202
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994215964,
+    "status": "OK",
+    "elapsedMs": 22
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994216198,
+    "status": "OK",
+    "elapsedMs": 392
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994216800,
+    "status": "OK",
+    "elapsedMs": 113
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994217113,
+    "status": "OK",
+    "elapsedMs": 27
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994217344,
+    "status": "OK",
+    "elapsedMs": 100
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994217647,
+    "status": "OK",
+    "elapsedMs": 56
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994217913,
+    "status": "OK",
+    "elapsedMs": 319
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994218445,
+    "status": "OK",
+    "elapsedMs": 97
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994218753,
+    "status": "OK",
+    "elapsedMs": 130
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994219099,
+    "status": "OK",
+    "elapsedMs": 51
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994219357,
+    "status": "OK",
+    "elapsedMs": 152
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994219716,
+    "status": "OK",
+    "elapsedMs": 161
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994220079,
+    "status": "OK",
+    "elapsedMs": 114
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994220394,
+    "status": "OK",
+    "elapsedMs": 301
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994220896,
+    "status": "OK",
+    "elapsedMs": 244
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994221344,
+    "status": "OK",
+    "elapsedMs": 200
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994221745,
+    "status": "OK",
+    "elapsedMs": 86
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994222042,
+    "status": "OK",
+    "elapsedMs": 136
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994222385,
+    "status": "OK",
+    "elapsedMs": 162
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994222762,
+    "status": "OK",
+    "elapsedMs": 14
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994222983,
+    "status": "OK",
+    "elapsedMs": 143
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994223328,
+    "status": "OK",
+    "elapsedMs": 353
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994223896,
+    "status": "OK",
+    "elapsedMs": 242
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994224342,
+    "status": "OK",
+    "elapsedMs": 102
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994224654,
+    "status": "OK",
+    "elapsedMs": 48
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994224906,
+    "status": "OK",
+    "elapsedMs": 58
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994225174,
+    "status": "OK",
+    "elapsedMs": 178
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994225561,
+    "status": "OK",
+    "elapsedMs": 25
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994225794,
+    "status": "OK",
+    "elapsedMs": 178
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994226182,
+    "status": "OK",
+    "elapsedMs": 108
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994226498,
+    "status": "OK",
+    "elapsedMs": 25
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994226735,
+    "status": "OK",
+    "elapsedMs": 21
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994226969,
+    "status": "OK",
+    "elapsedMs": 68
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994227244,
+    "status": "OK",
+    "elapsedMs": 259
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994227704,
+    "status": "OK",
+    "elapsedMs": 579
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994228494,
+    "status": "OK",
+    "elapsedMs": 329
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994229043,
+    "status": "OK",
+    "elapsedMs": 850
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994230102,
+    "status": "OK",
+    "elapsedMs": 467
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994230779,
+    "status": "OK",
+    "elapsedMs": 362
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994231354,
+    "status": "OK",
+    "elapsedMs": 647
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994232210,
+    "status": "OK",
+    "elapsedMs": 228
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994232640,
+    "status": "OK",
+    "elapsedMs": 321
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994233175,
+    "status": "OK",
+    "elapsedMs": 173
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994233560,
+    "status": "OK",
+    "elapsedMs": 33
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994233593,
+    "status": "OK",
+    "elapsedMs": 25
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994233619,
+    "status": "OK",
+    "elapsedMs": 26
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994233645,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994233648,
+    "status": "OK",
+    "elapsedMs": 42
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994233690,
+    "status": "OK",
+    "elapsedMs": 43
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994233733,
+    "status": "OK",
+    "elapsedMs": 7
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994233955,
+    "status": "OK",
+    "elapsedMs": 47
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994234235,
+    "status": "OK",
+    "elapsedMs": 49
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994234502,
+    "status": "OK",
+    "elapsedMs": 29
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994234738,
+    "status": "OK",
+    "elapsedMs": 28
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994234978,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994235193,
+    "status": "OK",
+    "elapsedMs": 21
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994235415,
+    "status": "OK",
+    "elapsedMs": 20
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994235647,
+    "status": "OK",
+    "elapsedMs": 13
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994235866,
+    "status": "OK",
+    "elapsedMs": 6
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994236080,
+    "status": "OK",
+    "elapsedMs": 40
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994236323,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994236534,
+    "status": "OK",
+    "elapsedMs": 21091
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994257625,
+    "status": "OK",
+    "elapsedMs": 263
+  },
+  {
+    "method": "Network.getCookies",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994257888,
+    "status": "OK",
+    "elapsedMs": 13
+  },
+  {
+    "method": "Emulation.setDeviceMetricsOverride",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792994257901,
+    "status": "OK",
+    "elapsedMs": 234
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-390-home",
+    "startedAt": 1792994258135,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Page.navigate",
+    "stage": "owner-route-ar-390-home",
+    "startedAt": 1792994258139,
+    "status": "OK",
+    "elapsedMs": 399
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-390-home",
+    "startedAt": 1792994258538,
+    "status": "OK",
+    "elapsedMs": 40
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-390-home",
+    "startedAt": 1792994258781,
+    "status": "OK",
+    "elapsedMs": 55
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-390-home",
+    "startedAt": 1792994259050,
+    "status": "OK",
+    "elapsedMs": 70
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-390-home",
+    "startedAt": 1792994259334,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-390-home",
+    "startedAt": 1792994259538,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-390-home",
+    "startedAt": 1792994259744,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-390-home",
+    "startedAt": 1792994259945,
+    "status": "OK",
+    "elapsedMs": 768
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-390-home",
+    "startedAt": 1792994260928,
+    "status": "OK",
+    "elapsedMs": 19
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-390-home",
+    "startedAt": 1792994260947,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-390-home",
+    "startedAt": 1792994261102,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-390-home",
+    "startedAt": 1792994261104,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-390-home",
+    "startedAt": 1792994261106,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Page.captureScreenshot",
+    "stage": "owner-route-ar-390-home",
+    "startedAt": 1792994261108,
+    "status": "OK",
+    "elapsedMs": 122
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-390-admin",
+    "startedAt": 1792994261234,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Page.navigate",
+    "stage": "owner-route-ar-390-admin",
+    "startedAt": 1792994261236,
+    "status": "OK",
+    "elapsedMs": 132574
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-390-admin",
+    "startedAt": 1792994393810,
+    "status": "OK",
+    "elapsedMs": 40
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-390-admin",
+    "startedAt": 1792994394050,
+    "status": "OK",
+    "elapsedMs": 13
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-390-admin",
+    "startedAt": 1792994394274,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-390-admin",
+    "startedAt": 1792994394493,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-390-admin",
+    "startedAt": 1792994394709,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-390-admin",
+    "startedAt": 1792994394925,
+    "status": "OK",
+    "elapsedMs": 463
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-390-admin",
+    "startedAt": 1792994395593,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-390-admin",
+    "startedAt": 1792994395598,
+    "status": "OK",
+    "elapsedMs": 6
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-390-admin",
+    "startedAt": 1792994395759,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-390-admin",
+    "startedAt": 1792994395764,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-390-admin",
+    "startedAt": 1792994395767,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Page.captureScreenshot",
+    "stage": "owner-route-ar-390-admin",
+    "startedAt": 1792994395768,
+    "status": "OK",
+    "elapsedMs": 128
+  },
+  {
+    "method": "Emulation.setDeviceMetricsOverride",
+    "stage": "owner-route-ar-390-admin",
+    "startedAt": 1792994395898,
+    "status": "OK",
+    "elapsedMs": 141
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-home",
+    "startedAt": 1792994396039,
+    "status": "OK",
+    "elapsedMs": 35
+  },
+  {
+    "method": "Page.navigate",
+    "stage": "owner-route-ar-1440-home",
+    "startedAt": 1792994396074,
+    "status": "OK",
+    "elapsedMs": 40481
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-home",
+    "startedAt": 1792994436555,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-home",
+    "startedAt": 1792994436760,
+    "status": "OK",
+    "elapsedMs": 27
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-home",
+    "startedAt": 1792994436990,
+    "status": "OK",
+    "elapsedMs": 78
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-home",
+    "startedAt": 1792994437270,
+    "status": "OK",
+    "elapsedMs": 10
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-home",
+    "startedAt": 1792994437490,
+    "status": "OK",
+    "elapsedMs": 20
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-home",
+    "startedAt": 1792994437721,
+    "status": "OK",
+    "elapsedMs": 6
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-home",
+    "startedAt": 1792994437939,
+    "status": "OK",
+    "elapsedMs": 9
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-home",
+    "startedAt": 1792994438159,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-home",
+    "startedAt": 1792994438377,
+    "status": "OK",
+    "elapsedMs": 12
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-home",
+    "startedAt": 1792994438589,
+    "status": "OK",
+    "elapsedMs": 14
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-home",
+    "startedAt": 1792994438802,
+    "status": "OK",
+    "elapsedMs": 834
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-home",
+    "startedAt": 1792994439838,
+    "status": "OK",
+    "elapsedMs": 23
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-home",
+    "startedAt": 1792994439861,
+    "status": "OK",
+    "elapsedMs": 17
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-home",
+    "startedAt": 1792994440041,
+    "status": "OK",
+    "elapsedMs": 12
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-home",
+    "startedAt": 1792994440053,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-home",
+    "startedAt": 1792994440055,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Page.captureScreenshot",
+    "stage": "owner-route-ar-1440-home",
+    "startedAt": 1792994440057,
+    "status": "OK",
+    "elapsedMs": 214
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994440273,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Page.navigate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994440275,
+    "status": "OK",
+    "elapsedMs": 554
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994440829,
+    "status": "OK",
+    "elapsedMs": 26
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994441059,
+    "status": "OK",
+    "elapsedMs": 16
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994441277,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994441490,
+    "status": "OK",
+    "elapsedMs": 20
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994441722,
+    "status": "OK",
+    "elapsedMs": 16
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994441938,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994442141,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994442342,
+    "status": "OK",
+    "elapsedMs": 24
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994442576,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994442793,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994443012,
+    "status": "OK",
+    "elapsedMs": 98
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994443322,
+    "status": "OK",
+    "elapsedMs": 52
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994443575,
+    "status": "OK",
+    "elapsedMs": 43
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994443825,
+    "status": "OK",
+    "elapsedMs": 6
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994444043,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994444257,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994444473,
+    "status": "OK",
+    "elapsedMs": 10
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994444693,
+    "status": "OK",
+    "elapsedMs": 6
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994444906,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994445122,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994445327,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994445542,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994445758,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994445976,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994446191,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994446409,
+    "status": "OK",
+    "elapsedMs": 9
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994446625,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994446838,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994447042,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994447259,
+    "status": "OK",
+    "elapsedMs": 22
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994447489,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994447695,
+    "status": "OK",
+    "elapsedMs": 6
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994447908,
+    "status": "OK",
+    "elapsedMs": 6
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994448122,
+    "status": "OK",
+    "elapsedMs": 6
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994448345,
+    "status": "OK",
+    "elapsedMs": 15
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994448560,
+    "status": "OK",
+    "elapsedMs": 29
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994448792,
+    "status": "OK",
+    "elapsedMs": 10
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994449010,
+    "status": "OK",
+    "elapsedMs": 27
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994449241,
+    "status": "OK",
+    "elapsedMs": 8
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994449458,
+    "status": "OK",
+    "elapsedMs": 9
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994449675,
+    "status": "OK",
+    "elapsedMs": 28
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994449908,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994450126,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994450341,
+    "status": "OK",
+    "elapsedMs": 45
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994450590,
+    "status": "OK",
+    "elapsedMs": 7
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994450806,
+    "status": "OK",
+    "elapsedMs": 63
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994451074,
+    "status": "OK",
+    "elapsedMs": 13
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994451292,
+    "status": "OK",
+    "elapsedMs": 27
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994451526,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994451739,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994451958,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994452174,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994452387,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994452592,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994452793,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994453005,
+    "status": "OK",
+    "elapsedMs": 6
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994453223,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994453427,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994453642,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994453855,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994454069,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994454286,
+    "status": "OK",
+    "elapsedMs": 8
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994454503,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994454706,
+    "status": "OK",
+    "elapsedMs": 18
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994454939,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994455152,
+    "status": "OK",
+    "elapsedMs": 11
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994455373,
+    "status": "OK",
+    "elapsedMs": 22
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994455604,
+    "status": "OK",
+    "elapsedMs": 19
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994455838,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994456054,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994456270,
+    "status": "OK",
+    "elapsedMs": 7
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994456486,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994456688,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994456904,
+    "status": "OK",
+    "elapsedMs": 6
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994457123,
+    "status": "OK",
+    "elapsedMs": 11
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994457340,
+    "status": "OK",
+    "elapsedMs": 25
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994457575,
+    "status": "OK",
+    "elapsedMs": 59
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994457839,
+    "status": "OK",
+    "elapsedMs": 19
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994458072,
+    "status": "OK",
+    "elapsedMs": 23
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994458305,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994458523,
+    "status": "OK",
+    "elapsedMs": 7
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994458739,
+    "status": "OK",
+    "elapsedMs": 11
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994458955,
+    "status": "OK",
+    "elapsedMs": 17
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994459186,
+    "status": "OK",
+    "elapsedMs": 10
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994459404,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994459623,
+    "status": "OK",
+    "elapsedMs": 13
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994459838,
+    "status": "OK",
+    "elapsedMs": 9
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994460057,
+    "status": "OK",
+    "elapsedMs": 42
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994460306,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994460513,
+    "status": "OK",
+    "elapsedMs": 66
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994460788,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994460990,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994461203,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994461418,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994461621,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994461823,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994462031,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994462238,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994462454,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994462656,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994462870,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994463073,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994463288,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994463503,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994463719,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994463922,
+    "status": "OK",
+    "elapsedMs": 12
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994464138,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994464353,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994464569,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994464772,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994464989,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994465203,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994465407,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994465622,
+    "status": "OK",
+    "elapsedMs": 27
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994465854,
+    "status": "OK",
+    "elapsedMs": 7
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994466070,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994466287,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994466505,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994466718,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994466922,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994467139,
+    "status": "OK",
+    "elapsedMs": 10
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994467355,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994467573,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994467789,
+    "status": "OK",
+    "elapsedMs": 7
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994468004,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994468210,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994468419,
+    "status": "OK",
+    "elapsedMs": 14
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994468637,
+    "status": "OK",
+    "elapsedMs": 29
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994468871,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994469087,
+    "status": "OK",
+    "elapsedMs": 6
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994469307,
+    "status": "OK",
+    "elapsedMs": 47
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994469554,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994469771,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994469987,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994470203,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994470419,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994470635,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994470839,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994471042,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994471256,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994471470,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994471687,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994471907,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994472121,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994472323,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994472525,
+    "status": "OK",
+    "elapsedMs": 13
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994472738,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994472953,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994473165,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994473369,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994473587,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994473804,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994474020,
+    "status": "OK",
+    "elapsedMs": 6
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994474238,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994474454,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994474672,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994474887,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994475102,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994475316,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994475522,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994475732,
+    "status": "OK",
+    "elapsedMs": 7
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994475941,
+    "status": "OK",
+    "elapsedMs": 28
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994476171,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994476386,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994476602,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994476804,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994477021,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994477238,
+    "status": "OK",
+    "elapsedMs": 23
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994477477,
+    "status": "OK",
+    "elapsedMs": 7
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994477698,
+    "status": "OK",
+    "elapsedMs": 12
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994477924,
+    "status": "OK",
+    "elapsedMs": 26
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994478155,
+    "status": "OK",
+    "elapsedMs": 14
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994478371,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994478577,
+    "status": "OK",
+    "elapsedMs": 11
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994478791,
+    "status": "OK",
+    "elapsedMs": 7
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994479004,
+    "status": "OK",
+    "elapsedMs": 17
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994479222,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994479424,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994479639,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994479856,
+    "status": "OK",
+    "elapsedMs": 10
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994480072,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994480289,
+    "status": "OK",
+    "elapsedMs": 11
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994480505,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994480713,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994480921,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994481139,
+    "status": "OK",
+    "elapsedMs": 6
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994481354,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994481569,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994481788,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994482005,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994482214,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994482422,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994482630,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994482833,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994483038,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994483252,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994483466,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994483669,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994483872,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994484088,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994484301,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994484504,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994484720,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994484937,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994485152,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994485354,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994485566,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994485768,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994485972,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994486185,
+    "status": "OK",
+    "elapsedMs": 12
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994486404,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994486622,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994486834,
+    "status": "OK",
+    "elapsedMs": 7
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994487054,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994487269,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994487486,
+    "status": "OK",
+    "elapsedMs": 8
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994487695,
+    "status": "OK",
+    "elapsedMs": 7
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994487913,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994488122,
+    "status": "OK",
+    "elapsedMs": 9
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994488339,
+    "status": "OK",
+    "elapsedMs": 13
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994488555,
+    "status": "OK",
+    "elapsedMs": 67
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994488829,
+    "status": "OK",
+    "elapsedMs": 8
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994489037,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994489253,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994489470,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994489687,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994489903,
+    "status": "OK",
+    "elapsedMs": 620
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994490726,
+    "status": "OK",
+    "elapsedMs": 11
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994490737,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994490900,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994490902,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994490904,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Page.captureScreenshot",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994490908,
+    "status": "OK",
+    "elapsedMs": 224
+  },
+  {
+    "method": "Emulation.setDeviceMetricsOverride",
+    "stage": "owner-route-ar-1440-admin",
+    "startedAt": 1792994491133,
+    "status": "OK",
+    "elapsedMs": 60
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-home",
+    "startedAt": 1792994491193,
+    "status": "OK",
+    "elapsedMs": 10
+  },
+  {
+    "method": "Page.navigate",
+    "stage": "owner-route-en-390-home",
+    "startedAt": 1792994491203,
+    "status": "OK",
+    "elapsedMs": 36312
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-home",
+    "startedAt": 1792994527515,
+    "status": "OK",
+    "elapsedMs": 67
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-home",
+    "startedAt": 1792994527795,
+    "status": "OK",
+    "elapsedMs": 88
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-home",
+    "startedAt": 1792994528098,
+    "status": "OK",
+    "elapsedMs": 18
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-home",
+    "startedAt": 1792994528324,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-home",
+    "startedAt": 1792994528534,
+    "status": "OK",
+    "elapsedMs": 53
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-home",
+    "startedAt": 1792994528800,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-home",
+    "startedAt": 1792994529015,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-home",
+    "startedAt": 1792994529230,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-home",
+    "startedAt": 1792994529448,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-home",
+    "startedAt": 1792994529663,
+    "status": "OK",
+    "elapsedMs": 596
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-home",
+    "startedAt": 1792994530465,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-home",
+    "startedAt": 1792994530468,
+    "status": "OK",
+    "elapsedMs": 9
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-home",
+    "startedAt": 1792994530633,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-home",
+    "startedAt": 1792994530635,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-home",
+    "startedAt": 1792994530637,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Page.captureScreenshot",
+    "stage": "owner-route-en-390-home",
+    "startedAt": 1792994530638,
+    "status": "OK",
+    "elapsedMs": 98
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-admin",
+    "startedAt": 1792994530738,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Page.navigate",
+    "stage": "owner-route-en-390-admin",
+    "startedAt": 1792994530739,
+    "status": "OK",
+    "elapsedMs": 35088
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-admin",
+    "startedAt": 1792994565827,
+    "status": "OK",
+    "elapsedMs": 39
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-admin",
+    "startedAt": 1792994566081,
+    "status": "OK",
+    "elapsedMs": 79
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-admin",
+    "startedAt": 1792994566363,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-admin",
+    "startedAt": 1792994566597,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-admin",
+    "startedAt": 1792994566813,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-admin",
+    "startedAt": 1792994567015,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-admin",
+    "startedAt": 1792994567231,
+    "status": "OK",
+    "elapsedMs": 9
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-admin",
+    "startedAt": 1792994567448,
+    "status": "OK",
+    "elapsedMs": 691
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-admin",
+    "startedAt": 1792994568346,
+    "status": "OK",
+    "elapsedMs": 9
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-admin",
+    "startedAt": 1792994568355,
+    "status": "OK",
+    "elapsedMs": 14
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-admin",
+    "startedAt": 1792994568527,
+    "status": "OK",
+    "elapsedMs": 9
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-admin",
+    "startedAt": 1792994568536,
+    "status": "OK",
+    "elapsedMs": 51
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-390-admin",
+    "startedAt": 1792994568587,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Page.captureScreenshot",
+    "stage": "owner-route-en-390-admin",
+    "startedAt": 1792994568590,
+    "status": "OK",
+    "elapsedMs": 151
+  },
+  {
+    "method": "Emulation.setDeviceMetricsOverride",
+    "stage": "owner-route-en-390-admin",
+    "startedAt": 1792994568744,
+    "status": "OK",
+    "elapsedMs": 101
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-1440-home",
+    "startedAt": 1792994568845,
+    "status": "OK",
+    "elapsedMs": 25
+  },
+  {
+    "method": "Page.navigate",
+    "stage": "owner-route-en-1440-home",
+    "startedAt": 1792994568870,
+    "status": "OK",
+    "elapsedMs": 35538
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-1440-home",
+    "startedAt": 1792994604408,
+    "status": "OK",
+    "elapsedMs": 29
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-1440-home",
+    "startedAt": 1792994604644,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-1440-home",
+    "startedAt": 1792994604857,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-1440-home",
+    "startedAt": 1792994605074,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-1440-home",
+    "startedAt": 1792994605277,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-1440-home",
+    "startedAt": 1792994605493,
+    "status": "OK",
+    "elapsedMs": 669
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-1440-home",
+    "startedAt": 1792994606377,
+    "status": "OK",
+    "elapsedMs": 131
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-1440-home",
+    "startedAt": 1792994606709,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-1440-home",
+    "startedAt": 1792994606711,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-1440-home",
+    "startedAt": 1792994606874,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-1440-home",
+    "startedAt": 1792994606876,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-1440-home",
+    "startedAt": 1792994606877,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Page.captureScreenshot",
+    "stage": "owner-route-en-1440-home",
+    "startedAt": 1792994606879,
+    "status": "OK",
+    "elapsedMs": 169
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-1440-admin",
+    "startedAt": 1792994607050,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Page.navigate",
+    "stage": "owner-route-en-1440-admin",
+    "startedAt": 1792994607051,
+    "status": "OK",
+    "elapsedMs": 31987
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-1440-admin",
+    "startedAt": 1792994639038,
+    "status": "OK",
+    "elapsedMs": 32
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-1440-admin",
+    "startedAt": 1792994639272,
+    "status": "OK",
+    "elapsedMs": 19
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-1440-admin",
+    "startedAt": 1792994639492,
+    "status": "OK",
+    "elapsedMs": 9
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-1440-admin",
+    "startedAt": 1792994639710,
+    "status": "OK",
+    "elapsedMs": 10
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-1440-admin",
+    "startedAt": 1792994639927,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-1440-admin",
+    "startedAt": 1792994640129,
+    "status": "OK",
+    "elapsedMs": 581
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-1440-admin",
+    "startedAt": 1792994640925,
+    "status": "OK",
+    "elapsedMs": 69
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-1440-admin",
+    "startedAt": 1792994641196,
+    "status": "OK",
+    "elapsedMs": 9
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-1440-admin",
+    "startedAt": 1792994641205,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-1440-admin",
+    "startedAt": 1792994641358,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-1440-admin",
+    "startedAt": 1792994641360,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "owner-route-en-1440-admin",
+    "startedAt": 1792994641362,
+    "status": "OK",
+    "elapsedMs": 1
+  },
+  {
+    "method": "Page.captureScreenshot",
+    "stage": "owner-route-en-1440-admin",
+    "startedAt": 1792994641363,
+    "status": "OK",
+    "elapsedMs": 229
+  }
+]

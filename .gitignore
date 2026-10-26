@@ -39,3 +39,33 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Thaghr private runtime, never version control
+/.local/
+
+# Dedicated C-LIVE-01 local build output
+/.next-c-live/
+
+# Isolated local C-LIVE-02 preview build
+/.next-c-live02/
+
+# Local C-LIVE-02 settlement verification only
+/.next-c-live02-final/
+
+# C-LIVE-02 visual UAT preview isolated on Thaghr
+/.next-c-live02-ui/
+
+# Isolated C-14 preview build - never commit generated output
+/.next-c14/
+
+# Isolated C15 ABC visual UAT build
+/.next-c15/
+
+# A owner-reference isolated visual review
+/.next-a-ref/
+
+# B customer-journey isolated preview
+/.next-b-review/
+
+/.next-c16/
+/.next-c16-prod/

@@ -1,0 +1,309 @@
+[
+  {
+    "method": "Page.enable",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965897038,
+    "status": "OK",
+    "elapsedMs": 231
+  },
+  {
+    "method": "Runtime.enable",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965897269,
+    "status": "OK",
+    "elapsedMs": 26
+  },
+  {
+    "method": "Network.enable",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965897295,
+    "status": "OK",
+    "elapsedMs": 5
+  },
+  {
+    "method": "Emulation.setDeviceMetricsOverride",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965897301,
+    "status": "OK",
+    "elapsedMs": 39
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965897340,
+    "status": "OK",
+    "elapsedMs": 73
+  },
+  {
+    "method": "Page.navigate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965897413,
+    "status": "OK",
+    "elapsedMs": 1797
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965899210,
+    "status": "OK",
+    "elapsedMs": 486
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965899991,
+    "status": "OK",
+    "elapsedMs": 58
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965900259,
+    "status": "OK",
+    "elapsedMs": 31
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965900504,
+    "status": "OK",
+    "elapsedMs": 23
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965900731,
+    "status": "OK",
+    "elapsedMs": 19
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965900965,
+    "status": "OK",
+    "elapsedMs": 34
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965901204,
+    "status": "OK",
+    "elapsedMs": 43
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965901454,
+    "status": "OK",
+    "elapsedMs": 21
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965901690,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965901906,
+    "status": "OK",
+    "elapsedMs": 20
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965902134,
+    "status": "OK",
+    "elapsedMs": 6
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965902354,
+    "status": "OK",
+    "elapsedMs": 89
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965902648,
+    "status": "OK",
+    "elapsedMs": 91
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965902947,
+    "status": "OK",
+    "elapsedMs": 15
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965903164,
+    "status": "OK",
+    "elapsedMs": 20
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965903385,
+    "status": "OK",
+    "elapsedMs": 30
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965903621,
+    "status": "OK",
+    "elapsedMs": 14
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965903841,
+    "status": "OK",
+    "elapsedMs": 227
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965904284,
+    "status": "OK",
+    "elapsedMs": 314
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965904803,
+    "status": "OK",
+    "elapsedMs": 273
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965905290,
+    "status": "OK",
+    "elapsedMs": 192
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965905688,
+    "status": "OK",
+    "elapsedMs": 8
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965905895,
+    "status": "OK",
+    "elapsedMs": 4
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965906101,
+    "status": "OK",
+    "elapsedMs": 14
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965906319,
+    "status": "OK",
+    "elapsedMs": 3
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965906538,
+    "status": "OK",
+    "elapsedMs": 11
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965906749,
+    "status": "OK",
+    "elapsedMs": 772
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965907725,
+    "status": "OK",
+    "elapsedMs": 7
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965907732,
+    "status": "OK",
+    "elapsedMs": 7
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965907739,
+    "status": "OK",
+    "elapsedMs": 174
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965907913,
+    "status": "OK",
+    "elapsedMs": 9
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965907923,
+    "status": "OK",
+    "elapsedMs": 14
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965907937,
+    "status": "OK",
+    "elapsedMs": 31
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965907968,
+    "status": "OK",
+    "elapsedMs": 10
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965908192,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965908396,
+    "status": "OK",
+    "elapsedMs": 8
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965908615,
+    "status": "OK",
+    "elapsedMs": 2
+  },
+  {
+    "method": "Runtime.evaluate",
+    "stage": "authenticated-browser-journey",
+    "startedAt": 1792965908823,
+    "status": "TIMEOUT"
+  }
+]

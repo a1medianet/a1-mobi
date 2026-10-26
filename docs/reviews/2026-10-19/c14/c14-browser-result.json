@@ -1,0 +1,11 @@
+{
+  "result": "PASS",
+  "date": "2026-10-19T07:05:30.215Z",
+  "desktopMetrics": 4,
+  "mobileMetrics": 4,
+  "preview": "PASS",
+  "close": "PASS",
+  "audit": "PASS",
+  "db": "mobi_uat",
+  "html": "PASS"
+}

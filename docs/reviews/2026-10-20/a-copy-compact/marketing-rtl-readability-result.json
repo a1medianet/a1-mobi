@@ -1,0 +1,519 @@
+{
+  "status": "PASS",
+  "desktop": [
+    {
+      "path": "/product/ar",
+      "doc": 1425,
+      "viewport": 1440,
+      "logo": {
+        "x": 43,
+        "y": 14,
+        "right": 191,
+        "width": 148
+      },
+      "footerLogo": {
+        "x": 43,
+        "y": 2125,
+        "right": 199,
+        "width": 156
+      },
+      "footerColumnsDirection": [
+        "rtl",
+        "rtl"
+      ],
+      "main": {
+        "x": 219,
+        "y": 17,
+        "right": 1106,
+        "width": 886
+      },
+      "switcher": {
+        "x": 1313,
+        "y": 17,
+        "right": 1383,
+        "width": 70
+      },
+      "switcherHref": "/product/en",
+      "cta": {
+        "x": 1231,
+        "y": 17,
+        "right": 1301,
+        "width": 69
+      },
+      "direction": "rtl",
+      "linkXs": [
+        770,
+        695,
+        580,
+        514
+      ],
+      "labels": [
+        "الرئيسية",
+        "المميزات",
+        "لماذا A1 Mobi؟",
+        "الأسعار"
+      ],
+      "cardFont": "14px",
+      "whyWidth": {
+        "x": 43,
+        "y": 1164,
+        "right": 1383,
+        "width": 1340
+      },
+      "featureWidth": {
+        "x": 43,
+        "y": 507,
+        "right": 1383,
+        "width": 1340
+      }
+    },
+    {
+      "path": "/product/ar/pricing",
+      "doc": 1425,
+      "viewport": 1440,
+      "logo": {
+        "x": 43,
+        "y": 14,
+        "right": 191,
+        "width": 148
+      },
+      "footerLogo": {
+        "x": 43,
+        "y": 1010,
+        "right": 182,
+        "width": 139
+      },
+      "footerColumnsDirection": [
+        "rtl",
+        "rtl"
+      ],
+      "main": {
+        "x": 219,
+        "y": 17,
+        "right": 1106,
+        "width": 886
+      },
+      "switcher": {
+        "x": 1313,
+        "y": 17,
+        "right": 1383,
+        "width": 70
+      },
+      "switcherHref": "/product/en/pricing",
+      "cta": {
+        "x": 1231,
+        "y": 17,
+        "right": 1301,
+        "width": 69
+      },
+      "direction": "rtl",
+      "linkXs": [
+        770,
+        695,
+        580,
+        514
+      ],
+      "labels": [
+        "الرئيسية",
+        "المميزات",
+        "لماذا A1 Mobi؟",
+        "الأسعار"
+      ],
+      "cardFont": "15px",
+      "whyWidth": null,
+      "featureWidth": null
+    },
+    {
+      "path": "/product/ar/signup",
+      "doc": 1425,
+      "viewport": 1440,
+      "logo": {
+        "x": 43,
+        "y": 14,
+        "right": 191,
+        "width": 148
+      },
+      "footerLogo": {
+        "x": 43,
+        "y": 902,
+        "right": 182,
+        "width": 139
+      },
+      "footerColumnsDirection": [
+        "rtl",
+        "rtl"
+      ],
+      "main": {
+        "x": 219,
+        "y": 17,
+        "right": 1106,
+        "width": 886
+      },
+      "switcher": {
+        "x": 1313,
+        "y": 17,
+        "right": 1383,
+        "width": 70
+      },
+      "switcherHref": "/product/en/signup",
+      "cta": {
+        "x": 1231,
+        "y": 17,
+        "right": 1301,
+        "width": 69
+      },
+      "direction": "rtl",
+      "linkXs": [
+        770,
+        695,
+        580,
+        514
+      ],
+      "labels": [
+        "الرئيسية",
+        "المميزات",
+        "لماذا A1 Mobi؟",
+        "الأسعار"
+      ],
+      "cardFont": "15px",
+      "whyWidth": null,
+      "featureWidth": null
+    },
+    {
+      "path": "/product/en",
+      "doc": 1425,
+      "viewport": 1440,
+      "logo": {
+        "x": 43,
+        "y": 14,
+        "right": 191,
+        "width": 148
+      },
+      "footerLogo": {
+        "x": 43,
+        "y": 2215,
+        "right": 199,
+        "width": 156
+      },
+      "footerColumnsDirection": [
+        "ltr",
+        "ltr"
+      ],
+      "main": {
+        "x": 219,
+        "y": 17,
+        "right": 1093,
+        "width": 874
+      },
+      "switcher": {
+        "x": 1303,
+        "y": 17,
+        "right": 1383,
+        "width": 80
+      },
+      "switcherHref": "/product/ar",
+      "cta": {
+        "x": 1187,
+        "y": 17,
+        "right": 1291,
+        "width": 104
+      },
+      "direction": "ltr",
+      "linkXs": [
+        488,
+        560,
+        650,
+        776
+      ],
+      "labels": [
+        "Home",
+        "Features",
+        "Why A1 Mobi?",
+        "Pricing"
+      ],
+      "cardFont": "14px",
+      "whyWidth": {
+        "x": 43,
+        "y": 1252,
+        "right": 1383,
+        "width": 1340
+      },
+      "featureWidth": {
+        "x": 43,
+        "y": 507,
+        "right": 1383,
+        "width": 1340
+      }
+    },
+    {
+      "path": "/product/en/pricing",
+      "doc": 1425,
+      "viewport": 1440,
+      "logo": {
+        "x": 43,
+        "y": 14,
+        "right": 191,
+        "width": 148
+      },
+      "footerLogo": {
+        "x": 43,
+        "y": 999,
+        "right": 182,
+        "width": 139
+      },
+      "footerColumnsDirection": [
+        "ltr",
+        "ltr"
+      ],
+      "main": {
+        "x": 219,
+        "y": 17,
+        "right": 1093,
+        "width": 874
+      },
+      "switcher": {
+        "x": 1303,
+        "y": 17,
+        "right": 1383,
+        "width": 80
+      },
+      "switcherHref": "/product/ar/pricing",
+      "cta": {
+        "x": 1187,
+        "y": 17,
+        "right": 1291,
+        "width": 104
+      },
+      "direction": "ltr",
+      "linkXs": [
+        488,
+        560,
+        650,
+        776
+      ],
+      "labels": [
+        "Home",
+        "Features",
+        "Why A1 Mobi?",
+        "Pricing"
+      ],
+      "cardFont": "15px",
+      "whyWidth": null,
+      "featureWidth": null
+    },
+    {
+      "path": "/product/en/signup",
+      "doc": 1425,
+      "viewport": 1440,
+      "logo": {
+        "x": 43,
+        "y": 14,
+        "right": 191,
+        "width": 148
+      },
+      "footerLogo": {
+        "x": 43,
+        "y": 947,
+        "right": 182,
+        "width": 139
+      },
+      "footerColumnsDirection": [
+        "ltr",
+        "ltr"
+      ],
+      "main": {
+        "x": 219,
+        "y": 17,
+        "right": 1093,
+        "width": 874
+      },
+      "switcher": {
+        "x": 1303,
+        "y": 17,
+        "right": 1383,
+        "width": 80
+      },
+      "switcherHref": "/product/ar/signup",
+      "cta": {
+        "x": 1187,
+        "y": 17,
+        "right": 1291,
+        "width": 104
+      },
+      "direction": "ltr",
+      "linkXs": [
+        488,
+        560,
+        650,
+        776
+      ],
+      "labels": [
+        "Home",
+        "Features",
+        "Why A1 Mobi?",
+        "Pricing"
+      ],
+      "cardFont": "15px",
+      "whyWidth": null,
+      "featureWidth": null
+    }
+  ],
+  "mobile": [
+    {
+      "path": "/product/ar",
+      "viewport": 390,
+      "doc": 375,
+      "logo": {
+        "x": 12,
+        "right": 124,
+        "width": 112
+      },
+      "footerLogo": {
+        "x": 12,
+        "right": 168,
+        "width": 156
+      },
+      "switcher": {
+        "x": 251,
+        "right": 300,
+        "width": 49
+      },
+      "menu": {
+        "x": 312,
+        "right": 363,
+        "width": 51
+      },
+      "mainDisplay": "none"
+    },
+    {
+      "path": "/product/ar/signup",
+      "viewport": 390,
+      "doc": 375,
+      "logo": {
+        "x": 28,
+        "right": 140,
+        "width": 112
+      },
+      "footerLogo": {
+        "x": 12,
+        "right": 151,
+        "width": 139
+      },
+      "switcher": {
+        "x": 235,
+        "right": 284,
+        "width": 49
+      },
+      "menu": {
+        "x": 296,
+        "right": 347,
+        "width": 51
+      },
+      "mainDisplay": "none"
+    },
+    {
+      "path": "/product/ar/pricing",
+      "viewport": 390,
+      "doc": 375,
+      "logo": {
+        "x": 28,
+        "right": 140,
+        "width": 112
+      },
+      "footerLogo": {
+        "x": 12,
+        "right": 151,
+        "width": 139
+      },
+      "switcher": {
+        "x": 235,
+        "right": 284,
+        "width": 49
+      },
+      "menu": {
+        "x": 296,
+        "right": 347,
+        "width": 51
+      },
+      "mainDisplay": "none"
+    },
+    {
+      "path": "/product/en",
+      "viewport": 390,
+      "doc": 375,
+      "logo": {
+        "x": 12,
+        "right": 124,
+        "width": 112
+      },
+      "footerLogo": {
+        "x": 12,
+        "right": 168,
+        "width": 156
+      },
+      "switcher": {
+        "x": 251,
+        "right": 300,
+        "width": 49
+      },
+      "menu": {
+        "x": 312,
+        "right": 363,
+        "width": 51
+      },
+      "mainDisplay": "none"
+    },
+    {
+      "path": "/product/en/signup",
+      "viewport": 390,
+      "doc": 375,
+      "logo": {
+        "x": 28,
+        "right": 140,
+        "width": 112
+      },
+      "footerLogo": {
+        "x": 12,
+        "right": 151,
+        "width": 139
+      },
+      "switcher": {
+        "x": 245,
+        "right": 294,
+        "width": 49
+      },
+      "menu": {
+        "x": 306,
+        "right": 357,
+        "width": 51
+      },
+      "mainDisplay": "none"
+    },
+    {
+      "path": "/product/en/pricing",
+      "viewport": 390,
+      "doc": 375,
+      "logo": {
+        "x": 28,
+        "right": 140,
+        "width": 112
+      },
+      "footerLogo": {
+        "x": 12,
+        "right": 151,
+        "width": 139
+      },
+      "switcher": {
+        "x": 245,
+        "right": 294,
+        "width": 49
+      },
+      "menu": {
+        "x": 306,
+        "right": 357,
+        "width": 51
+      },
+      "mainDisplay": "none"
+    }
+  ]
+}

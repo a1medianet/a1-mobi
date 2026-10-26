@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "date": "2026-10-19",
+  "desktop": {
+    "width": 1425,
+    "viewport": 1440,
+    "features": 6,
+    "header": 69,
+    "hero": 435,
+    "featureY": 499,
+    "repairY": 742.296875,
+    "icons": 6
+  },
+  "mobile": {
+    "width": 375,
+    "viewport": 390,
+    "features": 6,
+    "icons": 6
+  },
+  "images": [
+    "a-reference-ar-desktop.png",
+    "a-reference-ar-mobile.png",
+    "a-reference-en-desktop.png"
+  ],
+  "visualSignoff": "PENDING_OWNER",
+  "note": "Dev-mode screenshot; not a public deployment."
+}
