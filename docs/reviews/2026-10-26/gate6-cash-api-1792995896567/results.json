@@ -1,0 +1,48 @@
+{
+  "scope": "Thaghr local 5437 only",
+  "status": "PASS",
+  "generatedAt": "2026-10-26T06:26:52.502Z",
+  "fixtureTenantId": "cmvovixr3000ki0wsltrmcavp",
+  "results": [
+    {
+      "name": "local-database-preflight",
+      "status": "PASS",
+      "detail": "Literal loopback PostgreSQL port 5437; SELECT 1"
+    },
+    {
+      "name": "local-dev-server",
+      "status": "PASS",
+      "detail": "Dedicated loopback app, explicit local DB and pilot flag"
+    },
+    {
+      "name": "isolated-fixture-and-authentication",
+      "status": "PASS",
+      "detail": "Real login, HttpOnly cookie, permissions, isolated tenant catalog and anonymous rejection"
+    },
+    {
+      "name": "http-purchase-sale-return-count",
+      "status": "PASS",
+      "detail": "Balances 0 → 5 → 2 → 3 → 4; exact replays do not duplicate; stale count and foreign origin rejected; before/after audits verified"
+    },
+    {
+      "name": "cash-api-open",
+      "status": "PASS",
+      "detail": "Authenticated local HTTP created exactly one open drawer; duplicate opening refused"
+    },
+    {
+      "name": "cash-api-variance-preview",
+      "status": "PASS",
+      "detail": "Exact count previews zero variance; nonzero variance demands independent approval and cannot be closed by actor"
+    },
+    {
+      "name": "cash-api-close",
+      "status": "PASS",
+      "detail": "Close committed to PostgreSQL with single audit event; replay rejected"
+    }
+  ],
+  "limits": [
+    "No physical scanner or printer validation",
+    "No release approval",
+    "Synthetic business records retained; fixture sessions revoked when reachable"
+  ]
+}
