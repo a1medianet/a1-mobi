@@ -7,7 +7,7 @@ export default async function OrdersPage({params}:{params:Promise<{locale:string
  if(process.env.A1_MOBI_PUBLIC_ORDERS_ENABLED!=="1")return <main className="module-page">
   <h1>{locale==="ar"?"طلبات زبائن المتجر":"Customer requests"}</h1>
   <p role="status">{locale==="ar"?"استقبال الطلبات عبر رابط المتجر غير مفعّل حاليًا. يمكنك متابعة البيع من نقطة البيع.":"Store-link requests are not enabled currently. You can continue selling through POS."}</p>
-  <Link className="primary" href={"/"+locale+"/pos"}>{locale==="ar"?"فتح نقطة البيع":"Open POS"}</Link>
+  <Link className="primary" style={{display:"inline-flex",width:"auto",maxWidth:"100%"}} href={"/"+locale+"/pos"}>{locale==="ar"?"فتح نقطة البيع":"Open POS"}</Link>
  </main>;
  return <OrderInbox locale={locale}/>;
 }
