@@ -107,6 +107,7 @@ export function AppShell({ locale, children, live = false }: {
           {labels[locale].map((label,index)=><option key={paths[index]} value={"/"+locale+paths[index]}>{label}</option>)}
         </select>
         <div className="top-actions">
+          <button className="locale topbar-signout" type="button" onClick={signOut} disabled={signingOut} aria-busy={signingOut}>{signingOut ? (ar ? "جارٍ الخروج…" : "Signing out…") : (ar ? "خروج" : "Log out")}</button>
           <Link className="locale account-link" href={"/"+locale+"/account"}>{ar ? "الحساب" : "Account"}</Link>
           <Link className="locale" href={"/product/"+locale} title={ar?"صفحة المنتج":"Product site"}>{ar?"الموقع":"Site"}</Link>
           <span className="environment-label pilot-label">{live?(ar?"المتجر":"Store"):(ar?"بيئة تجربة":"Demo mode")}</span>
