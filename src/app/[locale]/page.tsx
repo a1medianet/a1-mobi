@@ -148,7 +148,7 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
       <article className="activity-card">
         <div className="section-head"><h2>{t.recentRepairs}</h2><Link className="text-link" href={"/"+locale+"/repairs"}>{t.viewAll} →</Link></div>
         <div className="mobi-c-compact-list">
-          {recentRepairs.map(repair=><div key={repair.number}><span className="mobi-c-list-icon orange">⌁</span><div><b><bdi dir="ltr">{repair.number}</bdi> · {repair.device}</b><small>{ar?repair.customerAr:repair.customerEn}</small></div><span className={"pill "+(repair.status==="READY"?"done":"pending")}>{repair.status}</span></div>)}
+          {recentRepairs.map(repair=><div key={repair.number}><span className="mobi-c-list-icon orange">⌁</span><div><b><bdi dir="ltr">{repair.number}</bdi> · {repair.device}</b><small>{ar?repair.customerAr:repair.customerEn}</small></div><span className={"pill "+(repair.status==="READY"?"done":"pending")}>{ar ? ({READY:"جاهز للتسليم",IN_PROGRESS:"قيد الإصلاح",DIAGNOSIS:"قيد التشخيص",APPROVED:"تمت الموافقة"} as Record<string,string>)[repair.status] ?? repair.status : repair.status.replaceAll("_"," ").toLowerCase().replace(/^./,letter=>letter.toUpperCase())}</span></div>)}
         </div>
       </article>
       <article className="activity-card">
