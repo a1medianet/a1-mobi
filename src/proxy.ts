@@ -17,6 +17,8 @@ export async function proxy(request: NextRequest) {
       const url = request.nextUrl.clone();
       url.pathname = "/" + parts[0] + "/login";
       url.search = "";
+      // Server-generated local pathname only; never trust external redirect URLs.
+      url.searchParams.set("next", request.nextUrl.pathname);
       return NextResponse.redirect(url);
     }
   }

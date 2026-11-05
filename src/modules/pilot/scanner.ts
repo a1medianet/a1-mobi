@@ -9,8 +9,34 @@ export function normalizeScan(raw: string): string {
 export function classifyScan(raw: string): { kind: ScanKind; value: string } {
   const value = normalizeScan(raw);
   if (!value) throw new Error("Scan is empty");
-  if (/^\d{15}$/.test(value) && isValidImei(value)) return { kind: "IMEI", value };
-  if (/^\d{13}$/.test(value)) return { kind: "EAN13", value };
+  if (/^\d{15}$/.test(value)) {
+    if (!isValidImei(value)) throw new Error("Invalid IMEI checksum");
+    return { kind: "IMEI", value };
+  }
+  if (/^\d{13}$/.test(value)) {
+    const digits=Array.from(value, Number);
+    const weighted=digits.slice(0,12).reduce((sum,digit,index)=>sum+digit*(index%2===0?1:3),0);
+    if ((10-weighted%10)%10!==digits[12]) throw new Error("Invalid EAN-13 checksum");
+    return { kind: "EAN13", value };
+  }
   if (/^[A-Za-z0-9._/-]{2,64}$/.test(value)) return { kind: "CODE", value };
   throw new Error("Unsupported scanner input");
+}
+
+export type ImeiSelection = { deviceId: string; selectedIds: string[]; changed: boolean };
+export function selectScannedImei(
+  raw: string,
+  availableDevices: readonly { id: string; imei: string | null }[],
+  selectedIds: readonly string[],
+  maxDevices = 12,
+): ImeiSelection {
+  const scan = classifyScan(raw);
+  if (scan.kind !== "IMEI") throw new Error("IMEI_REQUIRED");
+  const device = availableDevices.find(item => item.imei === scan.value);
+  if (!device) throw new Error("DEVICE_NOT_AVAILABLE");
+  if (selectedIds.includes(device.id)) {
+    return { deviceId: device.id, selectedIds: [...selectedIds], changed: false };
+  }
+  if (selectedIds.length >= maxDevices) throw new Error("INVOICE_DEVICE_LIMIT");
+  return { deviceId: device.id, selectedIds: [...selectedIds, device.id], changed: true };
 }

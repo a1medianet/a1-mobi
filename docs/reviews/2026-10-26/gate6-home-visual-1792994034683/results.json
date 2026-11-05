@@ -1,0 +1,155 @@
+{
+  "scope": "Thaghr local 5437 only",
+  "status": "PASS",
+  "generatedAt": "2026-10-26T06:04:02.790Z",
+  "fixtureTenantId": "cmvoufyqh000ki0wwrg10ugt2",
+  "results": [
+    {
+      "name": "local-database-preflight",
+      "status": "PASS",
+      "detail": "Literal loopback PostgreSQL port 5437; SELECT 1"
+    },
+    {
+      "name": "local-dev-server",
+      "status": "PASS",
+      "detail": "Dedicated loopback app, explicit local DB and pilot flag"
+    },
+    {
+      "name": "isolated-fixture-and-authentication",
+      "status": "PASS",
+      "detail": "Real login, HttpOnly cookie, permissions, isolated tenant catalog and anonymous rejection"
+    },
+    {
+      "name": "http-purchase-sale-return-count",
+      "status": "PASS",
+      "detail": "Balances 0 → 5 → 2 → 3 → 4; exact replays do not duplicate; stale count and foreign origin rejected; before/after audits verified"
+    },
+    {
+      "name": "browser-real-form-login",
+      "status": "PASS",
+      "detail": "Server session 200 and HttpOnly cookie; no authentication mocks"
+    },
+    {
+      "name": "owner-route-ar-390-home",
+      "status": "PASS",
+      "detail": {
+        "path": "/ar",
+        "overflow": false,
+        "scrollWidth": 390,
+        "viewport": 390,
+        "mainText": 176,
+        "links": 14,
+        "options": 14,
+        "hasError": false
+      }
+    },
+    {
+      "name": "owner-route-ar-390-admin",
+      "status": "PASS",
+      "detail": {
+        "path": "/ar/admin",
+        "overflow": false,
+        "scrollWidth": 390,
+        "viewport": 390,
+        "mainText": 145,
+        "links": 14,
+        "options": 14,
+        "hasError": false
+      }
+    },
+    {
+      "name": "owner-route-ar-1440-home",
+      "status": "PASS",
+      "detail": {
+        "path": "/ar",
+        "overflow": false,
+        "scrollWidth": 1425,
+        "viewport": 1440,
+        "mainText": 176,
+        "links": 14,
+        "options": 14,
+        "hasError": false
+      }
+    },
+    {
+      "name": "owner-route-ar-1440-admin",
+      "status": "PASS",
+      "detail": {
+        "path": "/ar/admin",
+        "overflow": false,
+        "scrollWidth": 1425,
+        "viewport": 1440,
+        "mainText": 145,
+        "links": 14,
+        "options": 14,
+        "hasError": false
+      }
+    },
+    {
+      "name": "owner-route-en-390-home",
+      "status": "PASS",
+      "detail": {
+        "path": "/en",
+        "overflow": false,
+        "scrollWidth": 390,
+        "viewport": 390,
+        "mainText": 180,
+        "links": 14,
+        "options": 14,
+        "hasError": false
+      }
+    },
+    {
+      "name": "owner-route-en-390-admin",
+      "status": "PASS",
+      "detail": {
+        "path": "/en/admin",
+        "overflow": false,
+        "scrollWidth": 390,
+        "viewport": 390,
+        "mainText": 162,
+        "links": 14,
+        "options": 14,
+        "hasError": false
+      }
+    },
+    {
+      "name": "owner-route-en-1440-home",
+      "status": "PASS",
+      "detail": {
+        "path": "/en",
+        "overflow": false,
+        "scrollWidth": 1425,
+        "viewport": 1440,
+        "mainText": 180,
+        "links": 14,
+        "options": 14,
+        "hasError": false
+      }
+    },
+    {
+      "name": "owner-route-en-1440-admin",
+      "status": "PASS",
+      "detail": {
+        "path": "/en/admin",
+        "overflow": false,
+        "scrollWidth": 1425,
+        "viewport": 1440,
+        "mainText": 162,
+        "links": 14,
+        "options": 14,
+        "hasError": false
+      }
+    },
+    {
+      "name": "all-routes-complete",
+      "status": "PASS",
+      "detail": "8 owner home/admin screenshot gates across both locales and both viewport sizes"
+    }
+  ],
+  "limits": [
+    "No physical scanner or printer validation",
+    "No release approval",
+    "Synthetic business records retained; fixture sessions revoked when reachable"
+  ]
+}

@@ -1,0 +1,2 @@
+category_code,sku,name_ar,name_en,type,barcode,cost,base_price,minimum_price,low_stock,serialized
+ACCESSORY,CASE-001,غطاء هاتف,Phone Case,ACCESSORY,CASE0001,2,5,3,2,false

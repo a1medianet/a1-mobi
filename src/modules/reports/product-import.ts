@@ -11,12 +11,14 @@ const requiredHeaders = [
 export function validateProductImport(csv: string) {
   const rows = parseCsv(csv);
   if (rows.length < 2) throw new Error("Product import must contain header and data");
+  if (rows.length > 501) throw new Error("Product import cannot exceed 500 items");
   const headers = rows[0].map((header) => header.toLowerCase());
   for (const header of requiredHeaders) {
     if (!headers.includes(header)) throw new Error(`Missing import column: ${header}`);
   }
   const index = Object.fromEntries(headers.map((header, position) => [header, position]));
-  return rows.slice(1).map((row, offset) => {
+  const parsed = rows.slice(1).map((row, offset) => {
+    if (row.length !== headers.length) throw new Error(`Invalid column count at row ${offset + 2}`);
     const type = row[index.type] as ProductType;
     if (!Object.values(ProductType).includes(type)) throw new Error(`Invalid product type at row ${offset + 2}`);
     const numeric = (header: string) => {
@@ -41,6 +43,19 @@ export function validateProductImport(csv: string) {
       serialized: ["1", "true", "yes"].includes(row[index.serialized].trim().toLowerCase()),
     };
   });
+  const skus = new Set<string>();
+  const barcodes = new Set<string>();
+  for (const [offset, row] of parsed.entries()) {
+    if (![row.categoryCode, row.sku, row.nameAr, row.nameEn].every(Boolean)) throw new Error(`Missing required value at row ${offset + 2}`);
+    if (!/^[A-Za-z0-9._-]{2,90}$/.test(row.sku)) throw new Error(`Invalid SKU at row ${offset + 2}`);
+    const sku = row.sku.toUpperCase();
+    if (skus.has(sku)) throw new Error(`Duplicate SKU at row ${offset + 2}`);
+    if (barcodes.has(row.barcode)) throw new Error(`Duplicate barcode at row ${offset + 2}`);
+    skus.add(sku);
+    barcodes.add(row.barcode);
+    if (!Number.isSafeInteger(row.lowStock)) throw new Error(`Invalid low_stock at row ${offset + 2}`);
+  }
+  return parsed;
 }
 
 export async function importProductsCsv(input: {
@@ -55,8 +70,10 @@ export async function importProductsCsv(input: {
     let created = 0;
     let updated = 0;
     for (const row of rows) {
-      const category = await tx.category.findUniqueOrThrow({
+      const category = await tx.category.upsert({
         where: { tenantId_code: { tenantId: input.tenantId, code: row.categoryCode } },
+        create: { tenantId: input.tenantId, code: row.categoryCode, nameAr: row.categoryCode, nameEn: row.categoryCode },
+        update: {},
       });
       const existing = await tx.product.findUnique({
         where: { tenantId_sku: { tenantId: input.tenantId, sku: row.sku } },
@@ -75,6 +92,13 @@ export async function importProductsCsv(input: {
           minimumPrice: row.minimumPrice, lowStockLevel: row.lowStock,
         },
       });
+      const claimedBarcode = await tx.barcode.findUnique({
+        where: { tenantId_value: { tenantId: input.tenantId, value: row.barcode } },
+        select: { productId: true },
+      });
+      if (claimedBarcode && claimedBarcode.productId !== product.id) {
+        throw new Error("Barcode already belongs to another product");
+      }
       await tx.barcode.upsert({
         where: { tenantId_value: { tenantId: input.tenantId, value: row.barcode } },
         create: { tenantId: input.tenantId, productId: product.id, value: row.barcode, isPrimary: true },

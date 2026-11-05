@@ -1,0 +1,59 @@
+{
+  "origin": "http://127.0.0.1:3226",
+  "build": "Preview served at configured origin; no hardcoded build identity",
+  "database": "mobi_uat",
+  "viewportSizes": [
+    "1440x900",
+    "390x844"
+  ],
+  "results": [
+    {
+      "name": "bootstrap-isolated-uat",
+      "status": "PASS",
+      "ms": 1294,
+      "detail": {
+        "database": "mobi_uat",
+        "synthetic": true
+      }
+    },
+    {
+      "name": "actual-ar-form-login",
+      "status": "PASS",
+      "ms": 5717,
+      "detail": {
+        "serverSession": 200,
+        "httpOnlyCookie": true,
+        "redirect": "/ar"
+      }
+    },
+    {
+      "name": "ar-logout-revokes-session",
+      "status": "PASS",
+      "ms": 1032
+    },
+    {
+      "name": "actual-en-form-login-fresh-session",
+      "status": "PASS",
+      "ms": 2641,
+      "detail": {
+        "serverSession": 200,
+        "httpOnlyCookie": true,
+        "redirect": "/en"
+      }
+    },
+    {
+      "name": "no-uncaught-js-or-console-errors",
+      "status": "PASS",
+      "ms": 0
+    },
+    {
+      "name": "isolated-fixture-cleanup",
+      "status": "PASS",
+      "ms": 4601
+    }
+  ],
+  "errors": [],
+  "blocked": 0,
+  "passed": 6,
+  "failed": 0
+}

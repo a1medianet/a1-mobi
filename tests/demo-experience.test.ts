@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { demoCatalogCounts, demoLowStock, demoProducts } from "@/demo/data";
 
@@ -23,7 +25,13 @@ describe("pilot demo experience", () => {
     expect(devices.every(product => !!product.imageUrl)).toBe(true);
     expect(new Set(devices.map(product => product.imageUrl)).size).toBe(devices.length);
     for (const product of devices) {
-      expect(product.imageUrl).toMatch(/^https:\/\//);
+      const imageUrl = product.imageUrl ?? "";
+      if (imageUrl.startsWith("/")) {
+        expect(imageUrl).toMatch(/^\/demo\/products\/[a-z0-9-]+\.(png|jpe?g|webp)$/);
+        expect(existsSync(join(process.cwd(), "public", imageUrl.slice(1)))).toBe(true);
+      } else {
+        expect(imageUrl).toMatch(/^https:\/\/[^\s]+$/);
+      }
     }
   });
 

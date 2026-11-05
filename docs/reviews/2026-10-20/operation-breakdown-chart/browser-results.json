@@ -1,0 +1,110 @@
+[
+  {
+    "locale": "ar",
+    "width": 1440,
+    "mode": "isolated component preview; not authenticated dashboard",
+    "origin": "http://127.0.0.1:3224",
+    "text": "توزيع العمليات التجريبية\nبيانات تجريبية\n\nعدد العمليات حسب النوع من جميع العينات؛ ليست إيرادات أو أرباحًا، ولا تخص يومًا محددًا. النسب المعروضة مقربة ومجموعها ١٠٠٪ عند وجود بيانات.\n\n0%\n50%\n100%\nبيع\n2 من 5 (40%)\nصيانة\n2 من 5 (40%)\nتعبئة\n1 من 5 (20%)",
+    "dir": "rtl",
+    "overflow": false,
+    "bars": [
+      {
+        "width": 40,
+        "ratio": 39.998608017817375,
+        "zeroAligned": true
+      },
+      {
+        "width": 40,
+        "ratio": 39.998608017817375,
+        "zeroAligned": true
+      },
+      {
+        "width": 20,
+        "ratio": 19.999304008908688,
+        "zeroAligned": true
+      }
+    ],
+    "height": 246.8125
+  },
+  {
+    "locale": "ar",
+    "width": 390,
+    "mode": "isolated component preview; not authenticated dashboard",
+    "origin": "http://127.0.0.1:3224",
+    "text": "توزيع العمليات التجريبية\nبيانات تجريبية\n\nعدد العمليات حسب النوع من جميع العينات؛ ليست إيرادات أو أرباحًا، ولا تخص يومًا محددًا. النسب المعروضة مقربة ومجموعها ١٠٠٪ عند وجود بيانات.\n\n0%\n50%\n100%\nبيع\n2 من 5 (40%)\nصيانة\n2 من 5 (40%)\nتعبئة\n1 من 5 (20%)",
+    "dir": "rtl",
+    "overflow": false,
+    "bars": [
+      {
+        "width": 40,
+        "ratio": 39.99606918238994,
+        "zeroAligned": true
+      },
+      {
+        "width": 40,
+        "ratio": 39.99606918238994,
+        "zeroAligned": true
+      },
+      {
+        "width": 20,
+        "ratio": 19.99803459119497,
+        "zeroAligned": true
+      }
+    ],
+    "height": 268.25
+  },
+  {
+    "locale": "en",
+    "width": 1440,
+    "mode": "isolated component preview; not authenticated dashboard",
+    "origin": "http://127.0.0.1:3224",
+    "text": "Demo operation breakdown\nDemo data\n\nOperation counts by type across all samples; not revenue, margin, or a specific day. Displayed shares are rounded to total 100% when data exists.\n\n0%\n50%\n100%\nSale\n2 of 5 (40%)\nRepair\n2 of 5 (40%)\nTop-up\n1 of 5 (20%)",
+    "dir": "ltr",
+    "overflow": false,
+    "bars": [
+      {
+        "width": 40,
+        "ratio": 39.998608017817375,
+        "zeroAligned": true
+      },
+      {
+        "width": 40,
+        "ratio": 39.998608017817375,
+        "zeroAligned": true
+      },
+      {
+        "width": 20,
+        "ratio": 19.999304008908688,
+        "zeroAligned": true
+      }
+    ],
+    "height": 248.3125
+  },
+  {
+    "locale": "en",
+    "width": 390,
+    "mode": "isolated component preview; not authenticated dashboard",
+    "origin": "http://127.0.0.1:3224",
+    "text": "Demo operation breakdown\nDemo data\n\nOperation counts by type across all samples; not revenue, margin, or a specific day. Displayed shares are rounded to total 100% when data exists.\n\n0%\n50%\n100%\nSale\n2 of 5 (40%)\nRepair\n2 of 5 (40%)\nTop-up\n1 of 5 (20%)",
+    "dir": "ltr",
+    "overflow": false,
+    "bars": [
+      {
+        "width": 40,
+        "ratio": 39.99606918238994,
+        "zeroAligned": true
+      },
+      {
+        "width": 40,
+        "ratio": 39.99606918238994,
+        "zeroAligned": true
+      },
+      {
+        "width": 20,
+        "ratio": 19.99803459119497,
+        "zeroAligned": true
+      }
+    ],
+    "height": 303.1875
+  }
+]

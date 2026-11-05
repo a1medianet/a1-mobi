@@ -1,0 +1,165 @@
+{
+  "date": "2026-10-19",
+  "build": "isolated .next-c15",
+  "base": "localhost on Thaghr only",
+  "sections": {
+    "A": [
+      {
+        "path": "/product/ar",
+        "status": 200,
+        "htmlBytes": 36140
+      },
+      {
+        "path": "/product/en",
+        "status": 200,
+        "htmlBytes": 37060
+      },
+      {
+        "path": "/product/ar/demo",
+        "status": 200,
+        "htmlBytes": 29084
+      },
+      {
+        "path": "/product/en/demo",
+        "status": 200,
+        "htmlBytes": 29593
+      },
+      {
+        "path": "/product/ar/pricing",
+        "status": 200,
+        "htmlBytes": 19607
+      },
+      {
+        "path": "/product/ar/help",
+        "status": 200,
+        "htmlBytes": 23217
+      },
+      {
+        "path": "/product/ar/security",
+        "status": 200,
+        "htmlBytes": 18366
+      },
+      {
+        "path": "/product/ar/privacy",
+        "status": 200,
+        "htmlBytes": 17202
+      },
+      {
+        "path": "/product/ar/terms",
+        "status": 200,
+        "htmlBytes": 17138
+      },
+      {
+        "path": "/product/ar/status",
+        "status": 200,
+        "htmlBytes": 16994
+      },
+      {
+        "path": "/product/ar/signup",
+        "status": 200,
+        "htmlBytes": 17467
+      }
+    ],
+    "B": [
+      {
+        "path": "/store-preview",
+        "status": 200,
+        "htmlBytes": 22012
+      }
+    ],
+    "C": [
+      {
+        "path": "/ar",
+        "status": 200,
+        "htmlBytes": 39423
+      },
+      {
+        "path": "/en",
+        "status": 200,
+        "htmlBytes": 39845
+      },
+      {
+        "path": "/ar/admin",
+        "status": 200,
+        "htmlBytes": 24156
+      },
+      {
+        "path": "/ar/pos",
+        "status": 200,
+        "htmlBytes": 14245
+      },
+      {
+        "path": "/ar/products",
+        "status": 200,
+        "htmlBytes": 26079
+      },
+      {
+        "path": "/ar/inventory",
+        "status": 200,
+        "htmlBytes": 14994
+      },
+      {
+        "path": "/ar/repairs",
+        "status": 200,
+        "htmlBytes": 21262
+      },
+      {
+        "path": "/ar/customers",
+        "status": 200,
+        "htmlBytes": 16008
+      },
+      {
+        "path": "/ar/cash",
+        "status": 200,
+        "htmlBytes": 16230
+      },
+      {
+        "path": "/ar/topup",
+        "status": 200,
+        "htmlBytes": 20051
+      },
+      {
+        "path": "/ar/device-trust",
+        "status": 200,
+        "htmlBytes": 14490
+      },
+      {
+        "path": "/ar/reports",
+        "status": 200,
+        "htmlBytes": 18650
+      },
+      {
+        "path": "/ar/settings/team",
+        "status": 200,
+        "htmlBytes": 13236
+      },
+      {
+        "path": "/ar/settings/security",
+        "status": 200,
+        "htmlBytes": 13360
+      },
+      {
+        "path": "/ar/account",
+        "status": 200,
+        "htmlBytes": 17462
+      }
+    ]
+  },
+  "issues": [],
+  "note": "All accounts used by this test are synthetic; no public production release.",
+  "counts": {
+    "A": {
+      "checked": 11,
+      "ok": 11
+    },
+    "B": {
+      "checked": 1,
+      "ok": 1
+    },
+    "C": {
+      "checked": 15,
+      "ok": 15
+    }
+  },
+  "status": "PASS"
+}

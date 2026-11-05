@@ -9,7 +9,7 @@ export type ReturnLineInput = {
 };
 
 export function validateReturnLine(line: ReturnLineInput) {
-  if (line.requestedQuantity <= 0) throw new Error("Return quantity must be positive");
+  if (!Number.isFinite(line.requestedQuantity) || line.requestedQuantity <= 0) throw new Error("Return quantity must be positive");
   const available = roundMoney(line.soldQuantity - line.previouslyReturnedQuantity);
   if (line.requestedQuantity > available) throw new Error("Return quantity exceeds remaining sold quantity");
   if (line.serializedDeviceId && line.requestedQuantity !== 1) {

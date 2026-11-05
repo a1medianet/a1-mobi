@@ -26,6 +26,7 @@ jobs:
       DATABASE_URL: postgresql://a1mobi:a1mobi_ci@127.0.0.1:5432/a1mobi?schema=public
       APP_ORIGIN: http://127.0.0.1:3000
       NODE_ENV: test
+      A1_MOBI_BOOTSTRAP_SECRET: ci-bootstrap-secret-0123456789abcdef0123456789abcdef
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -42,6 +43,20 @@ jobs:
       - run: npm test
       - run: npm audit --omit=dev --audit-level=high
       - run: npm run build
+      - name: A/B/C customer + owner HTTP journey smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          NODE_ENV=production npm run start -- --hostname 127.0.0.1 --port 3000 >/tmp/a1-mobi-abc.log 2>&1 &
+          server_pid=$!
+          cleanup() { kill "$server_pid" >/dev/null 2>&1 || true; }
+          trap cleanup EXIT
+          for i in $(seq 1 45); do
+            if curl -fsS http://127.0.0.1:3000/product/ar >/dev/null; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:3000/product/ar >/dev/null
+          NODE_ENV=production npm run smoke:abc-journey
       - name: Build immutable Node 24 Linux release candidate bundle
         shell: bash
         run: |

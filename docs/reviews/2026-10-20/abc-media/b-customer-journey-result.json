@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "mobile": {
+    "width": 375,
+    "viewport": 390
+  },
+  "imageRoles": {
+    "phones": [
+      {
+        "alt": "iPhone 16 Pro 256GB — Black Titanium",
+        "loaded": true
+      },
+      {
+        "alt": "Samsung Galaxy S25 Ultra 256GB — Titanium Black",
+        "loaded": true
+      },
+      {
+        "alt": "Samsung Galaxy A56 5G 256GB — Graphite",
+        "loaded": true
+      }
+    ],
+    "repair": "/demo/abc/repair-service.webp",
+    "retail": "/demo/abc/a-retail-hero.webp"
+  },
+  "scenarios": [
+    "phone-image-model match",
+    "showcase-to-catalog",
+    "repair image role A/B",
+    "retail scene B",
+    "add to cart",
+    "prepare sample inquiry",
+    "copy summary",
+    "clear",
+    "contact shortcut",
+    "mobile 390",
+    "English"
+  ]
+}

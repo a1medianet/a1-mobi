@@ -1,0 +1,29 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "check": "local-postgres",
+      "status": "PASS"
+    },
+    {
+      "check": "local-next-app",
+      "status": "PASS"
+    },
+    {
+      "check": "owner-real-auth",
+      "status": "PASS"
+    },
+    {
+      "check": "owner-browser-en-link-unlink",
+      "status": "PASS"
+    },
+    {
+      "check": "owner-browser-ar-link-unlink",
+      "status": "PASS"
+    }
+  ],
+  "limits": [
+    "Synthetic owner, local database, real Chrome",
+    "No production deployment or physical device tests"
+  ]
+}

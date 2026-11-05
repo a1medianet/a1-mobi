@@ -1,4 +1,6 @@
+import { billingStatusLabel, entitlementLabel, planLabel } from "@/core/config/display-labels";
 import Link from "next/link";
+import { formatDate } from "@/core/config/number-format";
 import { notFound } from "next/navigation";
 import { currentStoreContext } from "@/server/auth-http";
 import { db } from "@/server/db";
@@ -20,10 +22,9 @@ export default async function AccountPage({params}:{params:Promise<{locale:strin
   if(!tenant||!branch)return <main className="module-page"><div className="module-banner">Account context unavailable.</div></main>;
 
   let billing:{status:string;planCode?:string;expiresAt?:string;features:Record<string,string>}|null=null;
-  let billingError="";
   if(tenant.billingTenantKey){
     try{billing=await getMobiEntitlements(tenant.billingTenantKey)}
-    catch(error){billingError=error instanceof Error?error.message:"A1_BILLING_UNAVAILABLE"}
+    catch{ /* Subscription details are temporarily unavailable. */ }
   }
 
   const enabled=Object.entries(billing?.features||{}).filter(([,value])=>value==="true");
@@ -43,7 +44,7 @@ export default async function AccountPage({params}:{params:Promise<{locale:strin
     <section className="account-grid">
       <article className="account-card"><span className="module-kicker">ORGANIZATION</span><h2>{ar?"بنية الحساب":"Account structure"}</h2><div className="account-facts"><div><small>{ar?"الفروع":"Branches"}</small><strong>{tenant._count.branches}</strong></div><div><small>{ar?"الأعضاء النشطون":"Active members"}</small><strong>{userCount}</strong></div><div><small>{ar?"العملة":"Currency"}</small><strong>{tenant.baseCurrency}</strong></div><div><small>{ar?"اللغة":"Locale"}</small><strong>{tenant.defaultLocale.toUpperCase()}</strong></div></div><div className="account-links"><Link href={"/"+locale+"/settings/team"}>{ar?"الفريق والصلاحيات":"Team & access"}</Link><Link href={"/"+locale+"/settings/security"}>{ar?"أمان الحساب":"Account security"}</Link></div></article>
 
-      <article className="account-card"><span className="module-kicker">SUBSCRIPTION</span><h2>{ar?"الخطة والصلاحيات":"Plan & entitlements"}</h2>{billing?<><div className="subscription-status"><span className={"pill "+(billing.status==="active"||billing.status==="trialing"?"done":"pending")}>{billing.status.toUpperCase()}</span><strong>{billing.planCode||"—"}</strong></div>{billing.expiresAt?<p>{ar?"الاستحقاق الحالي حتى":"Current access through"} <bdi dir="ltr">{new Date(billing.expiresAt).toLocaleString()}</bdi></p>:null}<div className="entitlement-list">{enabled.map(([feature])=><span key={feature}>✓ {feature.replace(".enabled","")}</span>)}{limits.map(([feature,value])=><span key={feature}>{feature}: {value}</span>)}</div></>:<div className="module-banner"><strong>{ar?"تعذر قراءة Billing Core":"Billing Core unavailable"}</strong><p>{billingError|| (ar?"لم يتم ربط Billing Tenant بعد.":"Billing tenant is not bound yet.")}</p></div>}</article>
+      <article className="account-card"><span className="module-kicker">SUBSCRIPTION</span><h2>{ar?"الخطة والصلاحيات":"Plan & entitlements"}</h2>{billing?<><div className="subscription-status"><span className={"pill "+(billing.status==="active"||billing.status==="trialing"?"done":"pending")}>{billingStatusLabel(billing.status,locale)}</span><strong>{planLabel(billing.planCode,locale)}</strong></div>{billing.expiresAt?<p>{ar?"الاستحقاق الحالي حتى":"Current access through"} <bdi dir="ltr">{formatDate(billing.expiresAt,locale,{dateStyle:"medium"})}</bdi></p>:null}<div className="entitlement-list">{enabled.map(([feature])=><span key={feature}>✓ {entitlementLabel(feature,locale)}</span>)}{limits.map(([feature,value])=><span key={feature}>{entitlementLabel(feature,locale)}: {/^\d+(\.\d+)?$/.test(value)?value:(ar?"حسب الخطة":"Per plan")}</span>)}</div></>:<div className="module-banner"><strong>{ar?"تفاصيل الاشتراك غير متاحة":"Subscription details unavailable"}</strong><p>{ar?"تعذّر عرض تفاصيل الاشتراك حاليًا. حاول لاحقًا أو تواصل مع الدعم.":"Subscription details cannot be displayed right now. Try later or contact support."}</p></div>}</article>
     </section>
 
     <BranchManager locale={locale}/>

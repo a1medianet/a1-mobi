@@ -1,4 +1,5 @@
 "use client";
+import { roleLabel } from "@/core/config/display-labels";
 
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 
@@ -162,8 +163,8 @@ export function TeamAdmin({ locale }: { locale: "ar" | "en" }) {
   }, []);
 
   const roleOptions = useMemo(() => roles.map(role => ({
-    id: role.id, label: role.name + (role.isSystem ? " · " + t.system : ""),
-  })), [roles, t.system]);
+    id: role.id, label: roleLabel(role, locale) + (role.isSystem ? " · " + t.system : ""),
+  })), [roles, t.system, locale]);
 
   async function createUser(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setBusy("user"); setError("");
@@ -239,7 +240,7 @@ export function TeamAdmin({ locale }: { locale: "ar" | "en" }) {
             <tbody>{users.map(user => <tr key={user.id}>
               <td><b>{user.displayName}</b></td>
               <td dir="ltr">{user.email}</td>
-              <td>{user.userRoles.map(x => x.role.name).join(", ") || t.noRole}</td>
+              <td>{user.userRoles.map(x => roleLabel(x.role, locale)).join(", ") || t.noRole}</td>
               <td><span className={"pill " + (user.isActive ? "done" : "pending")}>{user.isActive ? t.active : t.inactive}</span></td>
               <td><button className="soft-btn" disabled={busy === user.id} onClick={() => void toggleUser(user)}>
                 {user.isActive ? t.deactivate : t.activate}
@@ -328,7 +329,7 @@ function RoleEditor({ role, registry, locale, onSaved }: {
 
   return <div style={{ border: "1px solid #e8edf3", borderRadius: 11, padding: 14 }}>
     <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
-      <div><b>{role.name}</b><small style={{ display: "block", color: "#718096" }} dir="ltr">{role.code} · {role._count.userRoles} {t.members}</small></div>
+      <div><b>{roleLabel(role, locale)}</b><small style={{ display: "block", color: "#718096" }} dir="ltr">{role.code} · {role._count.userRoles} {t.members}</small></div>
       {role.isSystem ? <span className="pill pending">{t.system}</span> :
         <button className="soft-btn" type="button" disabled={busy} onClick={() => void save()}>{t.save}</button>}
     </div>

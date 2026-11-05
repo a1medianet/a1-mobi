@@ -1,0 +1,73 @@
+{
+  "scope": "Thaghr local 5437 only",
+  "status": "PASS",
+  "generatedAt": "2026-10-25T21:52:07.308Z",
+  "fixtureTenantId": "cmvod1quu000ki0ww6ywt5jf6",
+  "results": [
+    {
+      "name": "local-database-preflight",
+      "status": "PASS",
+      "detail": "Literal loopback PostgreSQL port 5437; SELECT 1"
+    },
+    {
+      "name": "local-dev-server",
+      "status": "PASS",
+      "detail": "Dedicated loopback app, explicit local DB and pilot flag"
+    },
+    {
+      "name": "isolated-fixture-and-authentication",
+      "status": "PASS",
+      "detail": "Real login, HttpOnly cookie, permissions, isolated tenant catalog and anonymous rejection"
+    },
+    {
+      "name": "http-purchase-sale-return-count",
+      "status": "PASS",
+      "detail": "Balances 0 → 5 → 2 → 3 → 4; exact replays do not duplicate; stale count and foreign origin rejected; before/after audits verified"
+    },
+    {
+      "name": "browser-real-form-login",
+      "status": "PASS",
+      "detail": "Server session 200 and HttpOnly cookie; no authentication mocks"
+    },
+    {
+      "name": "browser-purchase-receipt",
+      "status": "PASS",
+      "detail": "Two EAN+Enter scans persisted: 4 → 6"
+    },
+    {
+      "name": "browser-scanned-quantity-sale",
+      "status": "PASS",
+      "detail": "Two scans create quantity 2 and a persisted invoice: 6 → 4"
+    },
+    {
+      "name": "browser-sale-return",
+      "status": "PASS",
+      "detail": "Invoice lookup and reasoned quantity 1 return: 4 → 5; cash payout not tested"
+    },
+    {
+      "name": "browser-stock-count",
+      "status": "PASS",
+      "detail": "Recorded 5, counted 4; persisted variance −1"
+    },
+    {
+      "name": "browser-print-render-en",
+      "status": "PASS",
+      "detail": "Three isolated 80×40mm PDF pages; CSS dimensions and overflow checked. No physical hardware claim."
+    },
+    {
+      "name": "browser-print-render-ar",
+      "status": "PASS",
+      "detail": "Three isolated 80×40mm PDF pages; CSS dimensions and overflow checked. No physical hardware claim."
+    },
+    {
+      "name": "browser-completion",
+      "status": "PASS",
+      "detail": "No uncaught JavaScript exceptions; browser is terminated by owned-process teardown, without waiting for a reply from a closed CDP endpoint"
+    }
+  ],
+  "limits": [
+    "No physical scanner or printer validation",
+    "No release approval",
+    "Synthetic business records retained; fixture sessions revoked when reachable"
+  ]
+}
