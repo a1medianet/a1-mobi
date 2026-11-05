@@ -1765,3 +1765,11 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 .module-page .owner-task-grid>.quick-action{min-width:0;min-height:96px;overflow-wrap:anywhere}
 @media(max-width:720px){.module-page .owner-task-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.module-page .owner-task-grid>.quick-action{padding:13px;min-height:102px}}
 @media(max-width:350px){.module-page .owner-task-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* Explicit session exit, available on desktop sidebar and mobile header. */
+.sidebar-signout{margin:6px 14px 0}
+.sidebar-signout .nav-item{width:100%;border:0;background:transparent;text-align:start;cursor:pointer;font:inherit}
+.sidebar-signout .nav-item:disabled,.topbar-signout:disabled{opacity:.65;cursor:wait}
+.sidebar-signout small[role="alert"]{display:block;color:#ffd2d2;font-size:12px;padding:4px 10px}
+.topbar-signout{display:none;border:1px solid #cbd5e1;background:#fff;color:#183452;border-radius:8px;min-height:40px;padding:0 10px;font-weight:700;cursor:pointer}
+@media(max-width:720px){.topbar-signout{display:inline-flex;align-items:center;justify-content:center}}
