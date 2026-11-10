@@ -111,7 +111,7 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
   <header className="module-header"><div><Link href={"/"+locale} className="back-link">{t.back}</Link>
    <p className="module-kicker">A1 MOBI · {mode==="pos"?(locale==="ar"?"نقطة البيع":"POINT OF SALE"):mode==="inventory"?(locale==="ar"?"المخزون":"INVENTORY"):(locale==="ar"?"العمليات":"OPERATIONS")}</p><h1>{mode==="pos"?(locale==="ar"?"نقطة البيع":"Point of sale"):mode==="inventory"?(locale==="ar"?"المخزون والأجهزة":"Inventory & devices"):t.title}</h1><p className="module-sub">{mode==="pos"?(locale==="ar"?"بيع الأجهزة المسجلة وإصدار فواتير محفوظة.":"Sell registered devices and issue stored invoices."):mode==="inventory"?(locale==="ar"?"تسجيل المنتجات واستلام أجهزة IMEI وإدارة حالتها.":"Register products and receive IMEI devices into inventory."):t.intro}</p></div>
    <button type="button" className="soft-btn" onClick={()=>void refresh().catch(()=>setError(locale==="ar"?"تعذّر تحديث البيانات. حاول مجددًا.":"Could not refresh records. Please retry."))}>{t.reload}</button></header>
-  <p role="note" className="preview-notice">{t.note}</p>{error&&<p role="status" className="mobi-live-message">{error}</p>}
+  {error&&<p role="status" className="mobi-live-message">{error}</p>}
   {state&&<section className="mobi-live-stats">
    {(mode==="pos"?[[t.stock,state.counts.availableDevices],[t.sales,state.counts.sales]]:mode==="inventory"?[[t.products,state.counts.products],[t.stock,state.counts.availableDevices]]:[[t.products,state.counts.products],[t.stock,state.counts.availableDevices],[t.sales,state.counts.sales]]).map(([name,value])=><article key={name}><span>{name}</span><strong>{value}</strong></article>)}
   </section>}
