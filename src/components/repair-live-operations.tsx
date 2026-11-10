@@ -188,7 +188,6 @@ export default function RepairLivePage({backToDashboard=false}:{backToDashboard?
    <h1>{t.title}</h1><p className="module-sub">{t.intro}</p>
   </div><button className="soft-btn" type="button" disabled={busy}
    onClick={()=>void reload().catch(()=>setMessage(locale==="ar"?"تعذّر تحميل بيانات الصيانة. تحقق من تسجيل الدخول ثم أعد المحاولة.":"Could not load repair records. Check sign-in and retry."))}>{t.refresh}</button></header>
-  <p role="note" className="preview-notice">{t.warning}</p>
   {message&&<p role="status" className="mobi-live-message">{message}</p>}
   <nav onClick={event=>{const link=(event.target as HTMLElement).closest("a");if(!link)return;const target=document.getElementById(link.hash.slice(1));const panel=target?.closest("details");if(panel)panel.open=true;}} className="mobi-live02-flow" aria-label={locale==="ar"?"خطوات العمل":"Repair process"}>
    <a href="#mobi-repair-intake"><b>01</b>{locale==="ar"?"الاستلام":"Receive"}</a>

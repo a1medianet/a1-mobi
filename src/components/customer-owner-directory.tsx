@@ -43,7 +43,6 @@ export default async function CustomerOwnerDirectory({locale}:{locale:"ar"|"en"}
       <p className="module-kicker">A1 MOBI · CUSTOMERS</p>
       <h1>{t.title}</h1><p className="module-sub">{t.sub}</p>
     </div></header>
-    <p className="preview-notice">{t.notice}</p>
     <section className="metrics ops-metrics" aria-label={t.title}>
       {[[t.total,rows.total],[t.shown,rows.shown]].map(([label,count])=>
         <article key={label} className="metric"><div className="metric-icon blue">♙</div>
