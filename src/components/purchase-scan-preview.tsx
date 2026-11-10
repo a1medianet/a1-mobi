@@ -4,13 +4,13 @@ import { addScannedReceiptProduct, type ReceiptLine } from "@/modules/inventory/
 type Item={id:string;sku:string;nameAr:string;nameEn:string;isSerialized:boolean;barcodes:string[]};
 type Location={id:string;name:string};
 export function PurchaseScanPreview({products,locations,locale,onSaved}:{products:readonly Item[];locations:readonly Location[];locale:"ar"|"en";onSaved:()=>Promise<void>}) {
- const [scan,setScan]=useState(""); const [cost,setCost]=useState("0");
+ const [scan,setScan]=useState(""); const [cost,setCost]=useState("0"); const [quantity,setQuantity]=useState("1");
  const [lines,setLines]=useState<ReceiptLine[]>([]); const [message,setMessage]=useState(""); const ar=locale==="ar";
  const [locationId,setLocationId]=useState(""); const [saving,setSaving]=useState(false); const [receiptKey,setReceiptKey]=useState("");
  function add(){
   if(saving)return;
   try {
-   setLines(addScannedReceiptProduct(scan,products,lines,Number(cost)));
+   setLines(addScannedReceiptProduct(scan,products,lines,Number(cost),Number(quantity)));
    setScan("");setMessage("");setReceiptKey("");
   } catch(e) {
    const reason=e instanceof Error?e.message:"";
@@ -19,6 +19,7 @@ export function PurchaseScanPreview({products,locations,locale,onSaved}:{product
     RECEIPT_PRODUCT_AMBIGUOUS:["الرمز يطابق أكثر من صنف. استخدم رمزًا فريدًا.","Code matches multiple products. Use a unique identifier."],
     SERIALIZED_RECEIVING_REQUIRES_DEVICE:["استخدم استلام IMEI المنفصل.","Use separate IMEI receiving."],
     RECEIPT_UNIT_COST_CONFLICT:["تكلفة مختلفة للصنف نفسه؛ ألغِ المسودة أو استخدم التكلفة الأصلية.","Different cost for the same item. Clear the draft or use the original cost."],
+    INVALID_PURCHASE_QUANTITY:["الكمية يجب أن تكون عدداً صحيحاً موجباً حتى 100000.","Quantity must be a positive whole number up to 100000."],
     INVALID_UNIT_COST:["تكلفة شراء غير صالحة.","Invalid purchase cost."],
    };
    setMessage(messages[reason]?.[ar?0:1]??(ar?"رمز غير صالح.":"Invalid code."));
@@ -44,8 +45,9 @@ export function PurchaseScanPreview({products,locations,locale,onSaved}:{product
   <div className="mobi-live-form-grid">
    <label>{ar?"الباركود أو SKU":"SKU"}<input value={scan} autoComplete="off" disabled={saving} onChange={e=>setScan(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"){e.preventDefault();add();}}}/></label>
    <label>{ar?"تكلفة الوحدة بالدولار":"Unit cost USD"}<input value={cost} type="number" min="0" step="0.01" disabled={saving} onChange={e=>setCost(e.target.value)}/></label>
+   <label>{ar?"الكمية":"Quantity"}<input value={quantity} type="number" min="1" max="100000" step="1" disabled={saving} onChange={e=>setQuantity(e.target.value)}/></label>
   </div>
-  <button type="button" className="primary" disabled={saving||!scan.trim()} onClick={add}>{ar?"أضف للمسودة":"Add to draft"}</button>
+  <button type="button" className="primary" disabled={saving||!scan.trim()||!Number.isSafeInteger(Number(quantity))||Number(quantity)<1||Number(quantity)>100000} onClick={add}>{ar?"أضف للمسودة":"Add to draft"}</button>
   {message&&<p role="status">{message}</p>}
   <label>{ar?"موقع التخزين":"Stock location"}<select value={locationId} disabled={saving} onChange={e=>{setLocationId(e.target.value);setReceiptKey("");}}><option value="">{ar?"اختر الموقع":"Select location"}</option>{locations.map(loc=><option key={loc.id} value={loc.id}>{loc.name}</option>)}</select></label>
   {lines.length>0&&<ul>{lines.map(line=>{const item=products.find(p=>p.id===line.productId);return <li key={line.productId}>{ar?item?.nameAr:item?.nameEn} — {line.quantity} × {line.unitCost.toFixed(2)} USD</li>;})}</ul>}

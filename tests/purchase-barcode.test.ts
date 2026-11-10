@@ -10,6 +10,15 @@ describe("receiving purchases by scanned barcode",()=>{
     expect(first[0].quantity).toBe(1);
     expect(()=>addScannedReceiptProduct("PART-ONE",items,first,10.5)).toThrow("RECEIPT_UNIT_COST_CONFLICT");
   });
+  it("receives an explicit quantity in one scan and merges it safely",()=>{
+    const first=addScannedReceiptProduct("PART-ONE",items,[],7,5);
+    expect(first).toEqual([{productId:"part-1",quantity:5,unitCost:7}]);
+    expect(addScannedReceiptProduct("PART-ONE",items,first,7,3)[0].quantity).toBe(8);
+    expect(first[0].quantity).toBe(5);
+    for(const invalid of [0,-1,1.5,Number.NaN,100001]){
+      expect(()=>addScannedReceiptProduct("PART-ONE",items,[],7,invalid)).toThrow("INVALID_PURCHASE_QUANTITY");
+    }
+  });
   it("rejects unknown and serialized stock until separately received",()=>{
     expect(()=>addScannedReceiptProduct("OTHER1234",items,[],10)).toThrow("RECEIPT_PRODUCT_NOT_FOUND");
     expect(()=>addScannedReceiptProduct("5901234123457",items,[],10)).toThrow("SERIALIZED_RECEIVING_REQUIRES_DEVICE");
