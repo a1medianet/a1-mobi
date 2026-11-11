@@ -51,7 +51,7 @@ export default function ProductsPage() {
         <h1>{t.title}</h1>
         <p className="module-sub">{t.subtitle}</p>
       </div>
-      <Link className="soft-btn" href={"/"+locale+"/admin"}>{t.admin}</Link>
+      <div className="module-header-actions"><Link className="primary" href={"/"+locale+"/products/manage"}>{locale==="ar"?"إضافة وإدارة المنتجات":"Add & manage products"}</Link><Link className="soft-btn" href={"/"+locale+"/admin"}>{t.admin}</Link></div>
     </header>
 
     <p className="preview-notice" role="status">{t.notice}</p>
