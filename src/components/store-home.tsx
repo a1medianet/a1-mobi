@@ -125,7 +125,7 @@ export async function StoreHome({locale}:{locale:Language}) {
           [t.inventory,"inventory","\u25a4"],[t.trust,"device-trust","\u2315"],[t.topup,"topup","\u2197"]
         ].map(([label,path,icon])=><Link className="quick-action" href={href(path)} key={path}><span className="quick-icon blue">{icon}</span><b>{label}</b></Link>)}</div>
       </section>
-      <section className="mobi-c-insight">
+      {chartTotal>0&&<section className="mobi-c-insight">
         <figure className="operation-breakdown-chart" aria-labelledby="store-ops-heading">
           <figcaption><h2 id="store-ops-heading">{t.chart}</h2><p className="sr-only">{t.chartNote}</p></figcaption>
           {chartTotal===0&&<p className="operation-breakdown-empty">{t.noOperations}</p>}
@@ -136,20 +136,20 @@ export async function StoreHome({locale}:{locale:Language}) {
               <div className="operation-breakdown-track"><span className="operation-breakdown-fill" style={{height:width+"%"}}/></div></li>;
           })}</ul></>}
         </figure>
-      </section>
-      <section className="mobi-c-ops-grid">
-        <article className="activity-card"><div className="section-head"><h2>{t.recentRepairs}</h2><Link className="text-link" href={href("repairs")}>{t.viewAll}</Link></div>
+      </section>}
+      {(data.recentRepairs.length>0||data.recentSales.length>0)&&<section className="mobi-c-ops-grid" data-single={data.recentRepairs.length===0||data.recentSales.length===0?"true":undefined}>
+        {data.recentRepairs.length>0&&<article className="activity-card"><div className="section-head"><h2>{t.recentRepairs}</h2><Link className="text-link" href={href("repairs")}>{t.viewAll}</Link></div>
           <div className="mobi-c-compact-list">{data.recentRepairs.length?data.recentRepairs.map(r=><div key={r.id}>
             <span className="mobi-c-list-icon orange">\u2301</span><div><b><bdi dir="ltr">{r.number}</bdi> \u2014 {r.device}</b><small>{r.name}</small></div><span className="pill pending">{r.status.replaceAll("_"," ")}</span>
           </div>):<p className="store-empty">{t.emptyRepairs}</p>}</div>
-        </article>
-        <article className="activity-card"><div className="section-head"><h2>{t.recentSales}</h2><Link className="text-link" href={href("pos")}>{t.viewAll}</Link></div>
+        </article>}
+        {data.recentSales.length>0&&<article className="activity-card"><div className="section-head"><h2>{t.recentSales}</h2><Link className="text-link" href={href("pos")}>{t.viewAll}</Link></div>
           <div className="mobi-c-compact-list">{data.recentSales.length?data.recentSales.map(s=><div key={s.id}>
             <span className="mobi-c-list-icon blue">\u25a3</span><div><b dir="ltr">{s.number}</b><small>{s.status.replaceAll("_"," ")}</small></div><span className="pill done" dir="ltr">{fmtMoney(s.total,s.currency)}</span>
           </div>):<p className="store-empty">{t.emptySales}</p>}</div>
-        </article>
-      </section>
-      <section className="activity-card">
+        </article>}
+      </section>}
+      {data.recentActivity.length>0&&<section className="activity-card">
         <div className="section-head"><h2>{t.recentActivity}</h2></div>
         {data.recentActivity.length?<div className="table-wrap"><table>
           <thead><tr><th>{t.reference}</th><th>{t.timestamp}</th><th>{t.amount}</th><th>{t.status}</th></tr></thead>
@@ -157,7 +157,7 @@ export async function StoreHome({locale}:{locale:Language}) {
             <td><Link className="invoice" href={href(a.path)}><bdi dir="ltr">{a.label}</bdi></Link></td><td>{fmtDate(a.at,locale)}</td>
             <td><bdi dir="ltr">{a.amount===null?"\u2014":fmtMoney(a.amount,a.currency)}</bdi></td><td>{a.status.replaceAll("_"," ")}</td></tr>)}</tbody>
         </table></div>:<p className="store-empty">{t.noActivity}</p>}
-      </section>
+      </section>}
     </>}
   </main>;
 }

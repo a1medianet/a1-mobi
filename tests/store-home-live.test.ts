@@ -28,6 +28,11 @@ describe("approved original dashboard uses live store records",()=>{
   expect(html.match(/class="mobi-c-action /g)?.length).toBe(4);
   expect(html).toContain("Actual branch");
   expect(html).toContain("0");
+  // Empty shops should not be forced through four large, repetitive blank sections.
+  expect(html).not.toContain('class="mobi-c-insight"');
+  expect(html).not.toContain('class="mobi-c-ops-grid"');
+  expect(html).not.toContain('class="activity-card"');
+  expect(html).toContain('href="/ar/inventory"');
   expect(html).not.toMatch(/2,284|1,612|REP-1042|INV-3108|mock|practice mode|demo-chip/);
   expect(m.products).toHaveBeenCalledWith({where:{tenantId:"tenant-a",isActive:true}});
   expect(m.sales).toHaveBeenCalledWith(expect.objectContaining({
@@ -43,6 +48,7 @@ describe("approved original dashboard uses live store records",()=>{
   m.topups.mockResolvedValue(1);
   const html=renderToStaticMarkup(await StoreHome({locale:"ar"}));
   expect(html).toContain('href="/ar/inventory"');
+  expect(html).toContain('class="mobi-c-insight"');
   expect(html).toContain('style="height:50%"');
   expect((html.match(/style="height:25%"/g)??[]).length).toBe(2);
   expect(html).not.toContain("لا توجد عمليات مسجّلة بعد.");
