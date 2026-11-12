@@ -37,6 +37,16 @@ describe("approved original dashboard uses live store records",()=>{
    tenantId:"tenant-a",stockLocation:{is:{tenantId:"tenant-a",branchId:"branch-b"}}
   })}));
  });
+ it("renders bars only for persisted transactions and keeps inventory shortcut",async()=>{
+  m.salesCount.mockResolvedValue(2);
+  m.repairs.mockResolvedValueOnce(0).mockResolvedValueOnce(0).mockResolvedValueOnce(1);
+  m.topups.mockResolvedValue(1);
+  const html=renderToStaticMarkup(await StoreHome({locale:"ar"}));
+  expect(html).toContain('href="/ar/inventory"');
+  expect(html).toContain('style="height:50%"');
+  expect((html.match(/style="height:25%"/g)??[]).length).toBe(2);
+  expect(html).not.toContain("لا توجد عمليات مسجّلة بعد.");
+ });
  it("with database failures hides fabricated counts and gives an error",async()=>{
   m.products.mockRejectedValueOnce(new Error("DB unreachable"));
   const html=renderToStaticMarkup(await StoreHome({locale:"en"}));

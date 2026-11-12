@@ -1859,3 +1859,6 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
  .store-home .operation-breakdown-label strong{font-size:10px}
 }
 @media(max-width:390px){.store-home .mobi-c-action-copy small{display:none}.store-home .mobi-c-action-copy strong{font-size:12px}.store-home .quick-action .quick-icon{display:none}}
+
+/* HOME-TOOLS: restore inventory shortcut hidden by legacy demo CSS. */
+.store-home.pilot-dashboard > .quick-card .quick-action[href$="/inventory"]{display:flex}

@@ -88,7 +88,7 @@ export async function StoreHome({locale}:{locale:Language}) {
     {path:"customers",title:t.customers,sub:"Customers",icon:"\u2659",tone:"orange",image:"https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=600&q=75"},
   ];
   const metrics=data?[
-    {label:t.completedSales,value:fmtMoney(data.total),detail:"USD sales only",tone:"blue",icon:"\u2197"},
+    {label:t.completedSales,value:fmtMoney(data.total),detail:ar?"\u0645\u0628\u064a\u0639\u0627\u062a \u0628\u0627\u0644\u062f\u0648\u0644\u0627\u0631":"USD sales",tone:"blue",icon:"\u2197"},
     {label:t.activeProducts,value:String(data.products),detail:ar?"\u0645\u0646\u062a\u062c \u0646\u0634\u0637":"Active products",tone:"green",icon:"\u25a6"},
     {label:t.openRepairs,value:String(data.repairs),detail:`${data.ready} ${t.ready}`,tone:"amber",icon:"\u25c7"},
     {label:t.inStock,value:String(data.devices),detail:ar?"\u0641\u064a \u0647\u0630\u0627 \u0627\u0644\u0641\u0631\u0639":"This branch",tone:"rose",icon:"#"},
@@ -106,12 +106,12 @@ export async function StoreHome({locale}:{locale:Language}) {
   for(let i=0;i<leftovers;i++)shares[largest[i]]++;
   return <main className="content pilot-dashboard mobi-c-polish store-home" dir={ar?"rtl":"ltr"}>
     <section className="welcome pilot-welcome">
-      <div><h1>{t.title}</h1><p>{t.sub}</p>{data?.branch&&<div className="store-line"><b>{data.branch}</b></div>}</div>
+      <div><h1>{t.title}</h1><p>{t.sub}</p>{data?.branch&&<div className="store-line"><b>{ar&&data.branch==="Main Branch"?"\u0627\u0644\u0641\u0631\u0639 \u0627\u0644\u0631\u0626\u064a\u0633\u064a":data.branch}</b></div>}</div>
       <div className="hero-actions"><Link className="soft-btn" href={href("admin")}>{t.admin}</Link><Link className="primary" href={href("pos")}><span aria-hidden="true">+</span>{t.sale}</Link></div>
     </section>
     <section className="mobi-c-spotlight" aria-label={ar?"\u0627\u0644\u0639\u0645\u0644\u064a\u0627\u062a \u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629":"Main operations"}>
       {spotlight.map(a=><Link key={a.path} href={href(a.path)} className={"mobi-c-action "+a.tone}>
-        <img src={a.image} alt="" loading="lazy"/><span className="mobi-c-action-copy"><b>{a.icon}</b><strong>{a.title}</strong><small>{a.sub}</small></span><span className="mobi-c-action-arrow" aria-hidden="true">\u2197</span>
+        <img src={a.image} alt="" loading="lazy"/><span className="mobi-c-action-copy"><b>{a.icon}</b><strong>{a.title}</strong><small>{a.sub}</small></span><span className="mobi-c-action-arrow" aria-hidden="true">{"\u2197"}</span>
       </Link>)}
     </section>
     {!data?<section className="activity-card" role="alert"><p>{t.unavailable}</p></section>:<>
