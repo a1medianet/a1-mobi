@@ -40,7 +40,8 @@ describe("demo operation breakdown", () => {
   });
   it.each(["ar", "en"] as const)("renders accessible count text, demo status and explicit semantics in %s", locale => {
     const html = renderToStaticMarkup(createElement(OperationBreakdownChart, { rows: demoTransactions, locale }));
-    for (const label of locale === "ar" ? ["بيع", "صيانة", "تعبئة", "بيانات تجريبية", "ليست إيرادات"] : ["Sale", "Repair", "Top-up", "Demo data", "not revenue"]) expect(html).toContain(label);
+    for (const label of locale === "ar" ? ["بيع", "صيانة", "تعبئة", "عمليات تدريبية", "ليس تقرير مبيعات يومية"] : ["Sale", "Repair", "Top-up", "training operations", "not a daily sales report"]) expect(html).toContain(label);
+    expect(html).not.toContain("operation-breakdown-demo");
     expect(html).toContain(locale === "ar" ? "2 من 5" : "2 of 5");
     expect(html).toContain("(40%)");
     expect(html).toContain("(20%)");

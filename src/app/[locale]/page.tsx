@@ -4,31 +4,32 @@ import { OperationBreakdownChart } from "@/components/operation-breakdown-chart"
 import { notFound } from "next/navigation";
 import { demoCatalogCounts, demoLowStock, demoStore, demoTransactions } from "@/demo/data";
 import { demoRepairs } from "@/demo/operations";
+import { demoDashboardSummary } from "@/demo/dashboard-summary";
 
 const copy = {
   ar: {
     title: "إدارة متجرك من مكان واحد",
     subtitle: "بيع، مخزون، صيانة، عملاء وصندوق — ضمن تجربة متجر موحدة.",
     demo: "وضع التدريب",
-    demoNote: "بيانات واقعية للتجربة وليست سجلات مالية أو مخزون إنتاجي.",
+    demoNote: "بيانات تدريبية، لا تمثل معاملات مالية أو مخزونًا فعليًا.",
     newSale: "عملية بيع جديدة",
     admin: "الإدارة",
     products: "المنتجات",
-    overview: "ملخص اليوم",
-    sales: "مبيعات اليوم",
-    profit: "هامش تقديري",
-    repairs: "صيانة مفتوحة",
+    overview: "ملخص بيانات التدريب",
+    sales: "مبيعات العينة",
+    profit: "عمليات العينة",
+    repairs: "تذاكر الصيانة",
     stock: "تنبيهات المخزون",
     catalog: "منتجات الكتالوج",
     serialized: "وحدات IMEI / Serial",
     quick: "ابدأ من هنا",
-    quickHint: "مسارات المتجر الأساسية جاهزة للمعاينة والتجربة.",
+    quickHint: "انتقل مباشرة إلى أدوات المتجر.",
     trust: "فحص IMEI",
     repair: "استلام صيانة",
     inventory: "المخزون والأجهزة",
     topup: "التعبئة",
     open: "فتح",
-    activity: "أمثلة على حركة المتجر",
+    activity: "حركة المتجر",
     columns: ["المرجع","العميل","الوقت","المبلغ","الحالة"],
     completed: "مكتملة",
     inRepair: "قيد الصيانة",
@@ -49,21 +50,21 @@ const copy = {
     newSale: "New sale",
     admin: "Admin",
     products: "Products",
-    overview: "Today at a glance",
-    sales: "Today's sales",
-    profit: "Estimated margin",
-    repairs: "Open repairs",
+    overview: "Practice data overview",
+    sales: "Sample sales",
+    profit: "Sample operations",
+    repairs: "Repair tickets",
     stock: "Stock alerts",
     catalog: "Catalog products",
     serialized: "IMEI / Serial units",
     quick: "Start here",
-    quickHint: "Core store journeys are ready for visual pilot testing.",
+    quickHint: "Go directly to store tools.",
     trust: "IMEI check",
     repair: "Repair intake",
     inventory: "Inventory & devices",
     topup: "Top-up",
     open: "Open",
-    activity: "Sample store activity",
+    activity: "Store activity",
     columns: ["Reference","Customer","Time","Amount","Status"],
     completed: "Completed",
     inRepair: "In repair",
@@ -85,13 +86,14 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
   const ar = locale === "ar";
   const t = copy[locale];
   const counts = demoCatalogCounts();
+  const summary = demoDashboardSummary();
   const lowStock = demoLowStock().slice(0,4);
   const recentRepairs = demoRepairs.slice(0,4);
   const metrics = [
-    { label:t.sales, value:"$2,284.00", delta:ar?"+ 6 عمليات":"+ 6 sales", tone:"blue", icon:"↗" },
-    { label:t.profit, value:"$612.40", delta:ar?"26.8% من المبيعات":"26.8% of sales", tone:"green", icon:"⌁" },
-    { label:t.repairs, value:"9", delta:ar?"3 جاهزة للتسليم":"3 ready to deliver", tone:"amber", icon:"◇" },
-    { label:t.stock, value:String(counts.lowStock), delta:ar?"تحتاج متابعة":"Need attention", tone:"rose", icon:"!" },
+    { label:t.sales, value:summary.salesUsd.toLocaleString("en-US",{style:"currency",currency:"USD"}), delta:ar?summary.salesCount+" عمليات بيع":summary.salesCount+" sales", tone:"blue", icon:"↗" },
+    { label:t.profit, value:String(summary.sampleCount), delta:ar?"بيع وصيانة وتعبئة":"Sales, repairs & top-ups", tone:"green", icon:"⌁" },
+    { label:t.repairs, value:String(summary.repairsCount), delta:ar?summary.readyRepairs+" جاهزة للتسليم":summary.readyRepairs+" ready to deliver", tone:"amber", icon:"◇" },
+    { label:t.stock, value:String(summary.lowStockCount), delta:ar?"تحتاج متابعة":"Need attention", tone:"rose", icon:"!" },
   ];
   const quick = [
     [t.newSale,"▣","blue","pos"],[t.products,"▦","green","products"],[t.trust,"⌕","violet","device-trust"],
@@ -102,8 +104,8 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
   const spotlightActions = [
     {href:"pos",title:ar?"عملية بيع جديدة":"New sale",sub:"Sales POS",icon:"🛒",tone:"blue",image:"https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=600&q=75"},
     {href:"repairs",title:ar?"تذكرة صيانة جديدة":"New repair ticket",sub:"Repair intake",icon:"🔧",tone:"orange",image:"https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=600&q=75"},
-    {href:"inventory",title:ar?"إضافة منتج جديد":"New inventory item",sub:"Inventory",icon:"▣",tone:"blue",image:"https://images.unsplash.com/photo-1603891128711-11b4b03bb138?auto=format&fit=crop&w=600&q=75"},
-    {href:"customers",title:ar?"إضافة عميل جديد":"New customer",sub:"Customers",icon:"♙",tone:"orange",image:"https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=600&q=75"},
+    {href:"products/manage",title:ar?"إدارة المنتجات":"Manage products",sub:"Products",icon:"▣",tone:"blue",image:"https://images.unsplash.com/photo-1603891128711-11b4b03bb138?auto=format&fit=crop&w=600&q=75"},
+    {href:"customers",title:ar?"العملاء":"Customers",sub:"Customers",icon:"♙",tone:"orange",image:"https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=600&q=75"},
   ];
   return <main className="content pilot-dashboard mobi-c-polish">
     <section className="welcome pilot-welcome">
@@ -146,27 +148,25 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
     <OperationBreakdownChart rows={demoTransactions} locale={locale} />
     <section className="mobi-c-ops-grid">
       <article className="activity-card">
-        <div className="section-head"><h2>{t.recentRepairs}</h2><Link className="text-link" href={"/"+locale+"/repairs"}>{t.viewAll} →</Link></div>
+        <div className="section-head"><h2>{t.recentRepairs}</h2><Link className="text-link" href={"/"+locale+"/repairs"}>{t.viewAll} <span aria-hidden="true">{ar?"←":"→"}</span></Link></div>
         <div className="mobi-c-compact-list">
           {recentRepairs.map(repair=><div key={repair.number}><span className="mobi-c-list-icon orange">⌁</span><div><b><bdi dir="ltr">{repair.number}</bdi> · {repair.device}</b><small>{ar?repair.customerAr:repair.customerEn}</small></div><span className={"pill "+(repair.status==="READY"?"done":"pending")}>{ar ? ({READY:"جاهز للتسليم",IN_PROGRESS:"قيد الإصلاح",DIAGNOSIS:"قيد التشخيص",APPROVED:"تمت الموافقة"} as Record<string,string>)[repair.status] ?? repair.status : repair.status.replaceAll("_"," ").toLowerCase().replace(/^./,letter=>letter.toUpperCase())}</span></div>)}
         </div>
       </article>
       <article className="activity-card">
-        <div className="section-head"><h2>{t.lowStock}</h2><Link className="text-link" href={"/"+locale+"/inventory"}>{t.viewAll} →</Link></div>
+        <div className="section-head"><h2>{t.lowStock}</h2><Link className="text-link" href={"/"+locale+"/inventory"}>{t.viewAll} <span aria-hidden="true">{ar?"←":"→"}</span></Link></div>
         <div className="mobi-c-compact-list">
-          {lowStock.map(product=><div key={product.id}><span className="mobi-c-list-icon blue">▦</span><div><b>{ar?product.nameAr:product.nameEn}</b><small><bdi dir="ltr">{product.sku}</bdi></small></div><span className="mobi-c-stock-count">{product.stock}</span></div>)}
+          {lowStock.map(product=><div key={product.id}><span className="mobi-c-list-icon blue">▦</span><div><b>{ar?product.nameAr:product.nameEn}</b><small><bdi dir="ltr">{product.sku}</bdi></small></div><span className="mobi-c-stock-count" title={ar?`حد التنبيه ${product.reorderAt}`:`Alert threshold ${product.reorderAt}`}><bdi dir="ltr">{product.stock} / {product.reorderAt}</bdi><small>{ar?"الكمية / الحد":"Qty / limit"}</small></span></div>)}
         </div>
       </article>
     </section>
 
     <section className="activity-card">
-      <div className="section-head"><div><h2>{t.activity}</h2><p>{t.demoNote}</p></div>
-        <Link className="text-link" href={"/"+locale+"/products"}>{t.products} →</Link>
-      </div>
+      <div className="section-head"><h2>{t.activity}</h2></div>
       <div className="table-wrap"><table><caption className="sr-only">{t.activity}</caption>
         <thead><tr>{t.columns.map(column => <th scope="col" key={column}>{column}</th>)}</tr></thead>
         <tbody>{demoTransactions.map(row => <tr key={row.id}>
-          <td><b className="invoice"><bdi dir="ltr">#{row.id}</bdi></b></td>
+          <td><Link className="invoice" href={"/"+locale+"/"+(row.kind==="repair"?"repairs":row.kind==="topup"?"topup":"pos")} aria-label={ar?`فتح قسم العملية ${row.id}`:`Open module for ${row.id}`}><bdi dir="ltr">#{row.id}</bdi></Link></td>
           <td>{ar?row.customerAr:row.customerEn}</td>
           <td><bdi dir="ltr">{row.time}</bdi></td>
           <td><bdi dir="ltr">{"$"+row.amount.toFixed(2)}</bdi></td>
@@ -174,6 +174,6 @@ export default async function Dashboard({ params }: { params: Promise<{ locale: 
         </tr>)}</tbody>
       </table></div>
     </section>
-    <footer><span>A1 Mobi · {t.demo}</span><span>{t.demoNote}</span></footer>
+    <footer><span>A1 Mobi · {t.demo}</span></footer>
   </main>;
 }

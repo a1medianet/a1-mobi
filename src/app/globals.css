@@ -1801,3 +1801,16 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 .operation-breakdown-chart .operation-breakdown-columns{grid-column:2;grid-row:3;padding:0}
 .operation-breakdown-chart .operation-breakdown-columns .operation-breakdown-fill{height:auto}
 @media(max-width:480px){.operation-breakdown-chart .operation-breakdown-axis{height:130px;margin-bottom:62px}}
+
+/* HOME cleanup r4: concise activity and legible stock/transaction details. */
+.pilot-dashboard>.activity-card .section-head p,
+.pilot-dashboard>.activity-card .section-head .text-link{display:none}
+.pilot-dashboard>.activity-card .section-head{min-height:38px;align-items:center;margin-top:10px}
+.pilot-dashboard .mobi-c-compact-list .mobi-c-stock-count{min-width:68px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pilot-dashboard .mobi-c-compact-list .mobi-c-stock-count small{font-size:11px;line-height:1.3;font-weight:500;color:#64748b}
+.pilot-dashboard .metric-body p{font-size:13px;color:#53647a}
+.pilot-dashboard .metric-body small{font-size:12px}
+.pilot-dashboard .mobi-c-compact-list small{font-size:12px}
+.pilot-dashboard .table-wrap th,.pilot-dashboard .table-wrap td{font-size:13px}
+.pilot-dashboard .text-link{display:inline-flex;align-items:center;gap:5px;min-height:32px}
+@media(max-width:640px){.pilot-dashboard .mobi-c-insight{padding:14px 12px}.pilot-dashboard .mobi-c-compact-list .mobi-c-stock-count{min-width:60px}}

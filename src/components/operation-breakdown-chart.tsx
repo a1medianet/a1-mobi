@@ -25,12 +25,11 @@ export function OperationBreakdownChart({ rows, locale }: { rows: readonly Opera
     <figure className="operation-breakdown-chart" aria-describedby="operation-breakdown-caption">
       <figcaption>
         <div className="operation-breakdown-heading">
-          <h2 id="operation-breakdown-title">{ar ? "توزيع العمليات التجريبية" : "Demo operation breakdown"}</h2>
-          <span className="operation-breakdown-demo">{ar ? "بيانات تجريبية" : "Demo data"}</span>
+          <h2 id="operation-breakdown-title">{ar ? "توزيع العمليات" : "Operation breakdown"}</h2>
         </div>
-        <p id="operation-breakdown-caption">{ar
-          ? "عدد العمليات حسب النوع من جميع العينات؛ ليست إيرادات أو أرباحًا، ولا تخص يومًا محددًا. النسب المعروضة مقربة ومجموعها 100% عند وجود بيانات."
-          : "Operation counts by type across all samples; not revenue, margin, or a specific day. Displayed shares are rounded to total 100% when data exists."}</p>
+        <p id="operation-breakdown-caption" className="sr-only">{ar
+          ? `توزيع ${total} عمليات تدريبية حسب النوع، وليس تقرير مبيعات يومية.`
+          : `Distribution of ${total} training operations by type, not a daily sales report.`}</p>
       </figcaption>
       {total === 0 && <p className="operation-breakdown-empty">{ar ? "لا توجد عمليات تجريبية؛ جميع الأعداد والنسب صفر." : "No demo operations; all counts and shares are zero."}</p>}
       <div className="operation-breakdown-axis" aria-hidden="true"><span>0%</span><span>50%</span><span>100%</span></div>
