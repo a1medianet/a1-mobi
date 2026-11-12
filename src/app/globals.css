@@ -1595,7 +1595,7 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 .operation-breakdown-columns{grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:clamp(10px,3vw,28px)}
 .operation-breakdown-columns>li{display:flex;flex-direction:column-reverse;gap:10px;min-width:0}
 .operation-breakdown-columns .operation-breakdown-track{height:170px;width:100%;border-radius:9px 9px 0 0;display:flex;align-items:flex-end;justify-content:center;background:repeating-linear-gradient(to top,#edf2f8 0px,#edf2f8 1px,transparent 1px,transparent 42.5px),#f8fbff}
-.operation-breakdown-columns .operation-breakdown-fill{height:0;width:min(100%,100px);border-radius:8px 8px 0 0;background:linear-gradient(180deg,#1265e8,#0a4ebf);flex:none}
+.operation-breakdown-columns .operation-breakdown-fill{width:min(100%,100px);border-radius:8px 8px 0 0;background:linear-gradient(180deg,#1265e8,#0a4ebf);flex:none}
 .operation-breakdown-columns>li:nth-child(2) .operation-breakdown-fill{background:linear-gradient(180deg,#ff9a44,#ff7a1a)}
 .operation-breakdown-columns>li:nth-child(3) .operation-breakdown-fill{background:linear-gradient(180deg,#44a9d9,#087eb2)}
 .operation-breakdown-columns .operation-breakdown-label{display:grid;gap:2px;justify-items:center;text-align:center;line-height:1.35}
@@ -1773,3 +1773,31 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 .sidebar-signout small[role="alert"]{display:block;color:#ffd2d2;font-size:12px;padding:4px 10px}
 .topbar-signout{display:none;border:1px solid #cbd5e1;background:#fff;color:#183452;border-radius:8px;min-height:40px;padding:0 10px;font-weight:700;cursor:pointer}
 @media(max-width:720px){.topbar-signout{display:inline-flex;align-items:center;justify-content:center}}
+
+/* HOME-01/02: vertical percentage ticks bottom-to-top; data-driven bar heights. */
+.operation-breakdown-chart{position:relative}
+.operation-breakdown-chart .operation-breakdown-axis{position:absolute;inset-inline-start:0;bottom:0;height:170px;display:flex;flex-direction:column-reverse;justify-content:space-between;align-items:flex-start;direction:ltr;font-variant-numeric:tabular-nums}
+.operation-breakdown-chart .operation-breakdown-columns{padding-inline-start:46px}
+@media(max-width:480px){.operation-breakdown-chart .operation-breakdown-axis{height:130px}}
+
+/* HOME-12: keep only shortcuts not already present in the spotlight, compact and responsive. */
+.pilot-dashboard>.quick-card{padding:0 16px 12px;margin-top:12px}
+.pilot-dashboard>.quick-card .section-head{margin:8px 0 9px}
+.pilot-dashboard>.quick-card .section-head p{display:none}
+.pilot-dashboard>.quick-card .pilot-quick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.pilot-dashboard>.quick-card .quick-action[href$="/pos"],
+.pilot-dashboard>.quick-card .quick-action[href$="/repairs"],
+.pilot-dashboard>.quick-card .quick-action[href$="/inventory"]{display:none}
+.pilot-dashboard>.quick-card .quick-action{min-width:0;min-height:54px;padding:10px 12px;display:flex;align-items:center;gap:10px}
+.pilot-dashboard>.quick-card .quick-action .quick-icon{flex:0 0 30px;width:30px;height:30px;margin:0}
+.pilot-dashboard>.quick-card .quick-action b{font-size:13px;line-height:1.35}
+.pilot-dashboard>.quick-card .quick-action small{display:none}
+@media(max-width:540px){.pilot-dashboard>.quick-card .pilot-quick-grid{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}.pilot-dashboard>.quick-card .quick-action{flex:0 0 135px}}
+
+/* HOME-01/02 final live alignment: chart ticks share the bar grid and scale. */
+.operation-breakdown-chart{display:grid;grid-template-columns:38px minmax(0,1fr);column-gap:8px;align-items:end}
+.operation-breakdown-chart>figcaption,.operation-breakdown-chart>.operation-breakdown-empty{grid-column:1/-1}
+.operation-breakdown-chart .operation-breakdown-axis{position:static;grid-column:1;grid-row:3;height:170px;margin-bottom:57px;display:flex;flex-direction:column-reverse;justify-content:space-between;align-items:flex-start;direction:ltr;border:0;padding:0}
+.operation-breakdown-chart .operation-breakdown-columns{grid-column:2;grid-row:3;padding:0}
+.operation-breakdown-chart .operation-breakdown-columns .operation-breakdown-fill{height:auto}
+@media(max-width:480px){.operation-breakdown-chart .operation-breakdown-axis{height:130px;margin-bottom:62px}}
