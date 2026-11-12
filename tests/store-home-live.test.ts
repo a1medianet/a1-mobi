@@ -28,10 +28,13 @@ describe("approved original dashboard uses live store records",()=>{
   expect(html.match(/class="mobi-c-action /g)?.length).toBe(4);
   expect(html).toContain("Actual branch");
   expect(html).toContain("0");
-  // Empty shops should not be forced through four large, repetitive blank sections.
-  expect(html).not.toContain('class="mobi-c-insight"');
-  expect(html).not.toContain('class="mobi-c-ops-grid"');
-  expect(html).not.toContain('class="activity-card"');
+  // Every original section stays visible; only the record rows and bars are empty.
+  expect(html).toContain('class="mobi-c-insight"');
+  expect(html).toContain('class="mobi-c-ops-grid"');
+  expect((html.match(/class="activity-card"/g)??[]).length).toBe(3);
+  expect(html).toContain('لا توجد عمليات');
+  expect(html).toContain('لا توجد تذاكر');
+  expect(html).toContain('لا توجد حركة');
   expect(html).toContain('href="/ar/inventory"');
   expect(html).not.toMatch(/2,284|1,612|REP-1042|INV-3108|mock|practice mode|demo-chip/);
   expect(m.products).toHaveBeenCalledWith({where:{tenantId:"tenant-a",isActive:true}});
