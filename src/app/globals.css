@@ -1862,3 +1862,11 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 
 /* HOME-TOOLS: restore inventory shortcut hidden by legacy demo CSS. */
 .store-home.pilot-dashboard > .quick-card .quick-action[href$="/inventory"]{display:flex}
+
+/* HOME-SCROLL-GATE: fit all sidebar actions at common desktop heights without hiding links. */
+@media (min-width:721px) {
+  .app-shell:has(.store-home) .nav-list{padding:8px 10px;min-height:0}
+  .app-shell:has(.store-home) .nav-item{height:42px;margin-bottom:2px;font-size:14px}
+  .app-shell:has(.store-home) .sidebar-foot{margin:8px 10px;padding:8px 10px}
+  .store-home .mobi-c-ops-grid[data-single="true"]{grid-template-columns:minmax(0,1fr)}
+}
