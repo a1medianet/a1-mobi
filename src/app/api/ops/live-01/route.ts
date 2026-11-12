@@ -82,18 +82,26 @@ export async function GET() {
   if (process.env.A1_MOBI_C_LIVE_01_ENABLED !== "1") return authJson({ error: "NOT_FOUND" }, 404);
   try {
     const ctx = await currentStoreContext("inventory.read");
-    const [products, variants, locations, devices, sales] = await Promise.all([
+    const [products, variants, locations, devices, sales, productsCount, availableCount, salesCount] = await Promise.all([
       db.product.findMany({ where: { tenantId: ctx.tenantId, isActive: true }, include: { barcodes: { select: { value: true } } },
-        orderBy: { createdAt: "desc" }, take: 100 }),
+        orderBy: { createdAt: "desc" }, take: 500 }),
       db.deviceVariant.findMany({ where: { tenantId: ctx.tenantId },
-        include: { model: true }, take: 100 }),
+        include: { model: true }, take: 500 }),
       db.stockLocation.findMany({ where: { tenantId: ctx.tenantId, branchId: ctx.branchId },
-        orderBy: { name: "asc" }, take: 100 }),
+        orderBy: { name: "asc" }, take: 500 }),
       db.serializedDevice.findMany({ where: {
         tenantId: ctx.tenantId, OR: [{ stockLocation: { branchId: ctx.branchId } }, { saleLines: { some: { sale: { branchId: ctx.branchId } } } }],
-      }, include: { product: true }, orderBy: { createdAt: "desc" }, take: 100 }),
+      }, include: { product: true }, orderBy: { createdAt: "desc" }, take: 500 }),
       ctx.permissions.has("reports.read") ? db.sale.findMany({ where: { tenantId: ctx.tenantId, branchId: ctx.branchId },
         include: { invoice: true }, orderBy: { occurredAt: "desc" }, take: 30 }) : Promise.resolve([]),
+      db.product.count({ where: { tenantId: ctx.tenantId, isActive: true } }),
+      db.serializedDevice.count({ where: {
+        tenantId: ctx.tenantId, status: "IN_STOCK",
+        stockLocation: { tenantId: ctx.tenantId, branchId: ctx.branchId },
+      } }),
+      ctx.permissions.has("reports.read")
+        ? db.sale.count({ where: { tenantId: ctx.tenantId, branchId: ctx.branchId } })
+        : Promise.resolve(0),
     ]);
     return authJson({
       mode: "LIVE_PILOT", branchId: ctx.branchId,
@@ -105,9 +113,14 @@ export async function GET() {
         imei: v.imei, status: v.status, locationId: v.stockLocationId })),
       sales: sales.map(s => ({ id: s.id, number: s.number, invoiceNumber: s.invoice?.number ?? "",
         total: Number(s.total), status: s.status, createdAt: s.occurredAt.toISOString() })),
-      counts: { products: products.length,
-        availableDevices: devices.filter(device => device.status === "IN_STOCK").length,
-        sales: sales.length },
+      counts: { products: productsCount,
+        availableDevices: availableCount,
+        sales: salesCount },
+      truncated: {
+        products: productsCount > products.length,
+        availableDevices: availableCount > devices.filter(device =>
+          device.status === "IN_STOCK" && locations.some(location => location.id === device.stockLocationId)).length,
+      },
     });
   } catch (error) {
     return controlError(error);

@@ -1891,3 +1891,61 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
  .app-shell .sidebar .nav-list{padding-block:4px}
  .app-shell .sidebar .nav-list .nav-item{height:34px;margin-bottom:1px;font-size:12px}
 }
+
+/* A1 MOBI Ops ABC: discoverable product -> stock -> sale workflow, no deleted tools. */
+.module-page:has(.mobi-operations-journey){box-sizing:border-box;width:100%;max-width:1460px;min-width:0;padding:22px 24px}
+.module-page:has(.mobi-operations-journey) .module-header{margin-bottom:14px;gap:10px}
+.module-page:has(.mobi-operations-journey):not(.mobi-live01) .module-header{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:end}
+.module-page:has(.mobi-operations-journey) .module-header h1{font-size:clamp(22px,2.1vw,28px);margin-block:5px}
+.module-page:has(.mobi-operations-journey) .module-header .soft-btn{white-space:normal;text-align:center}
+.mobi-operations-journey{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0 18px;min-width:0}
+.mobi-journey-link{min-width:0;display:flex;flex-direction:column;gap:4px;padding:12px 15px;background:#fff;border:1px solid #dce6f1;border-radius:12px;color:#223c59;text-decoration:none}
+.mobi-journey-link strong{font-size:13px;font-weight:750}
+.mobi-journey-link small{font-size:11px;color:#6b7e95;overflow-wrap:anywhere}
+.mobi-journey-link.is-current{border-color:#1265d8;background:#f0f6ff;box-shadow:inset 0 -3px #1265d8}
+.mobi-journey-link:hover{border-color:#8db7ea;background:#f5f9ff}
+.mobi-journey-link:focus-visible{outline:3px solid #1769e0;outline-offset:2px}
+.module-page:has(.mobi-operations-journey) .catalog-panel{min-width:0;margin-bottom:13px;padding:15px;border-radius:13px}
+.module-page:has(.mobi-operations-journey) .catalog-panel h2{margin:0 0 9px;font-size:18px}
+.module-page:has(.mobi-operations-journey) .mobi-catalog-form{grid-template-columns:repeat(3,minmax(0,1fr));padding:0;gap:12px;align-items:end}
+.module-page:has(.mobi-operations-journey) .mobi-catalog-form h2{grid-column:1/-1}
+.module-page:has(.mobi-operations-journey) .mobi-catalog-form button.primary{min-width:150px}
+.module-page:has(.mobi-operations-journey) .mobi-catalog-form label{font-size:13px;min-width:0}
+.module-page:has(.mobi-operations-journey) .mobi-catalog-form :is(input,select){height:42px;min-height:42px}
+.mobi-import-actions{display:flex;flex-wrap:wrap;align-items:end;gap:12px}
+.mobi-import-actions .soft-btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px}
+.mobi-import-actions label{display:flex;flex:1 1 260px;min-width:0;flex-direction:column;gap:5px;font-size:12px}
+.mobi-import-actions input[type=file]{box-sizing:border-box;max-width:100%;width:100%;min-height:42px;padding:7px 8px;border:1px solid #cad7e8;border-radius:8px}
+.mobi-import-actions input[type=file]::file-selector-button{border:1px solid #c7daee;background:#f5f9ff;border-radius:6px;padding:5px 10px;color:#194c83;font:inherit;cursor:pointer}
+.mobi-import-actions button.primary{min-height:42px}
+.mobi-catalog-feedback{margin:8px 0;padding:11px 14px;border-radius:9px;border:1px solid #f3c1c1;background:#fff5f5;color:#943b3b}
+.catalog-list-panel>label{display:flex;flex-direction:column;gap:7px;max-width:470px;font-size:13px;font-weight:650;margin-bottom:12px}
+.catalog-list-panel>label input{min-height:42px;border:1px solid #cad7e8;border-radius:8px;padding:8px 11px}
+.catalog-list-panel .catalog-card{min-width:0}
+.mobi-live01:has(.mobi-operations-journey) .mobi-live-steps{gap:13px}
+.mobi-live01:has(.mobi-operations-journey) .mobi-live-stats{gap:12px;margin:10px 0 14px}
+.mobi-live01:has(.mobi-operations-journey) .mobi-live-stats article{min-height:78px;padding:13px}
+.mobi-live01:has(.mobi-operations-journey) .mobi-live-stats strong{font-size:25px}
+.mobi-live01:has(.mobi-operations-journey) .mobi-live-steps form{padding:16px;gap:10px}
+.mobi-live01:has(.mobi-operations-journey) .mobi-task-panel>summary{min-height:46px;padding:12px 14px}
+.mobi-live01:has(.mobi-operations-journey) .mobi-live-details article{padding:16px}
+.mobi-live01:has(.mobi-operations-journey) .mobi-live-details{gap:12px}
+.mobi-live01:has(.mobi-operations-journey) .mobi-live-message{margin:8px 0}
+@media(max-width:940px){
+ .module-page:has(.mobi-operations-journey):not(.mobi-live01) .module-header{display:flex;flex-wrap:wrap;align-items:flex-start}
+ .module-page:has(.mobi-operations-journey):not(.mobi-live01) .module-header>div:first-child{flex:1 1 100%}
+ .module-page:has(.mobi-operations-journey) .mobi-catalog-form{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:720px){
+ .module-page:has(.mobi-operations-journey){max-width:100%;padding:14px 11px;overflow-x:clip}
+ .mobi-operations-journey{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:10px 0 13px}
+ .mobi-journey-link{padding:9px 7px;gap:4px;text-align:center}
+ .mobi-journey-link strong{font-size:11px}
+ .mobi-journey-link small{font-size:10px}
+ .module-page:has(.mobi-operations-journey) .catalog-panel{padding:11px}
+ .module-page:has(.mobi-operations-journey) .mobi-catalog-form{grid-template-columns:minmax(0,1fr);gap:10px}
+ .module-page:has(.mobi-operations-journey) .mobi-catalog-form h2{grid-column:auto}
+ .module-page:has(.mobi-operations-journey) .mobi-live-stats article{min-height:64px;padding:10px}
+ .module-page:has(.mobi-operations-journey) .mobi-live-steps form{padding:12px}
+ .module-page:has(.mobi-operations-journey) .mobi-live-steps{gap:11px}
+}

@@ -1,5 +1,6 @@
 "use client";
 import { formatUsd } from "@/core/config/number-format";
+import Link from "next/link";
 import { useRef, useState } from "react";
 import { addScannedCartProduct, setCartQuantity, type ScanCartLine, type ScanCartProduct } from "@/modules/sell/scan-cart";
 import { roundMoney } from "@/modules/sell/pricing";
@@ -41,8 +42,14 @@ export function StockPosCart({ products, locations, locale, onSaved }: { product
     finally { inFlight.current = false; setSaving(false); }
   }
   const locked = saving || uncertain;
+  const hasNonSerialized = products.some(product => !product.isSerialized);
   return <section className="mobi-purchase-scan-preview mobi-pos-stock-cart" aria-label={ar ? "بيع بالباركود" : "Barcode checkout"}>
     <h2>{ar ? "بيع أصناف بالباركود أو SKU" : "Sell items by barcode or SKU"}</h2>
+    {!hasNonSerialized&&<p className="mobi-live-hint" role="status">
+      {ar?"أضف أول صنف غير تسلسلي واستلم كميته قبل البيع.":"Create and receive a non-serialized product before selling."}{" "}
+      <Link href={"/"+locale+"/products"}>{ar?"إدارة المنتجات":"Manage products"}</Link>
+      {" · "}<Link href={"/"+locale+"/inventory"}>{ar?"استلام المخزون":"Receive inventory"}</Link>
+    </p>}
     <p>{ar ? "دفع نقدي بالدولار بالسعر المسجل. يتحقق الخادم من المخزون عند التأكيد." : "Exact USD cash at the registered price. Stock is checked on confirmation."}</p>
     <label>{ar ? "الباركود أو SKU" : "Barcode or SKU"}<input autoComplete="off" value={scan} disabled={locked} onChange={event => setScan(event.target.value)} onKeyDown={event => { if (event.key === "Enter") { event.preventDefault(); add(); } }} /></label>
     <button type="button" className="mobi-pos-secondary" disabled={locked || !scan.trim()} onClick={add}>{ar ? "إضافة" : "Add item"}</button>

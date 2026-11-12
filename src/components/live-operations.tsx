@@ -1,5 +1,6 @@
 "use client";
 import { formatUsd } from "@/core/config/number-format";
+import { OperationalJourney } from "@/components/operational-journey";
 import Link from "next/link";
 import { BarcodeLabelPanel } from "@/components/barcode-label-panel";
 import { StockCountPanel } from "@/components/stock-count-panel";
@@ -7,12 +8,13 @@ import { SaleReturnPanel } from "@/components/sale-return-panel";
 import { StockPosCart } from "@/components/stock-pos-cart";
 import { PurchaseScanPreview } from "@/components/purchase-scan-preview";
 import { selectScannedImei } from "@/modules/pilot/scanner";
+import { availableBranchDevices } from "@/modules/pilot/branch-stock";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
 type P = { id:string; sku:string; nameAr:string; nameEn:string; isSerialized:boolean; barcodes:string[]; price:number };
 type V = { id:string; model:string; name:string };
-type D = { id:string; productId:string; productName:string; productNameEn?:string; imei:string|null; status:string };
+type D = { id:string; productId:string; productName:string; productNameEn?:string; imei:string|null; status:string; locationId:string|null };
 
 export function liveOperationStatus(value:string,locale:"ar"|"en") {
  const labels:Record<string,{ar:string;en:string}>={
@@ -34,7 +36,7 @@ export function liveOperationStatus(value:string,locale:"ar"|"en") {
 }
 type State = { products:P[]; variants:V[]; locations:{id:string;name:string}[];
   devices:D[]; sales:{id:string;invoiceNumber:string;total:number;status:string}[];
-  counts:{products:number;availableDevices:number;sales:number} };
+  counts:{products:number;availableDevices:number;sales:number}; truncated?:{products:boolean;availableDevices:boolean} };
 const labels = {
  ar: { title:"البيع والمخزون", intro:"إنشاء المنتجات واستلام الأجهزة وبيعها عبر السجلات المحفوظة.",
    create:"1. إنشاء منتج", receive:"2. استلام جهاز", sell:"3. البيع والفاتورة", reload:"تحديث البيانات",
@@ -62,8 +64,8 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
  const locale=raw==="en"?"en":"ar"; const t=labels[locale];
  const [state,setState]=useState<State|null>(null),[error,setError]=useState("");
  const [busy,setBusy]=useState(false);
- const [product,setProduct]=useState({sku:"",brand:"",model:"",variant:"",nameAr:"",nameEn:"",unitCost:"300",price:"500"});
- const [stock,setStock]=useState({productId:"",variantId:"",locationId:"",imei:"",unitCost:"300"});
+ const [product,setProduct]=useState({sku:"",brand:"",model:"",variant:"",nameAr:"",nameEn:"",unitCost:"",price:""});
+ const [stock,setStock]=useState({productId:"",variantId:"",locationId:"",imei:"",unitCost:""});
  const [selectedDeviceIds,setSelectedDeviceIds]=useState<string[]>([]);
  const [scanInput,setScanInput]=useState("");
  async function refresh() {
@@ -88,7 +90,7 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
    }catch{setError(locale==="ar"?"تعذر الحفظ. تحقق من البيانات والصلاحيات ثم أعد المحاولة.":"Could not save. Check details and permissions, then retry.");}
    finally{setBusy(false);}
  }
- const available=state?.devices.filter(x=>x.status==="IN_STOCK")??[];
+ const available=availableBranchDevices(state?.devices??[],state?.locations??[]);
  const selectedDevices=available.filter(device=>selectedDeviceIds.includes(device.id));
  const cartTotal=selectedDevices.reduce((total,device)=>total+(state?.products.find(p=>p.id===device.productId)?.price??0),0);
  function toggleDevice(id:string,checked:boolean){setSelectedDeviceIds(previous=>checked?[...previous.filter(item=>item!==id),id]:previous.filter(item=>item!==id));}
@@ -111,7 +113,12 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
   <header className="module-header"><div><Link href={"/"+locale} className="back-link">{t.back}</Link>
    <p className="module-kicker">A1 MOBI · {mode==="pos"?(locale==="ar"?"نقطة البيع":"POINT OF SALE"):mode==="inventory"?(locale==="ar"?"المخزون":"INVENTORY"):(locale==="ar"?"العمليات":"OPERATIONS")}</p><h1>{mode==="pos"?(locale==="ar"?"نقطة البيع":"Point of sale"):mode==="inventory"?(locale==="ar"?"المخزون والأجهزة":"Inventory & devices"):t.title}</h1><p className="module-sub">{mode==="pos"?(locale==="ar"?"بيع الأجهزة المسجلة وإصدار فواتير محفوظة.":"Sell registered devices and issue stored invoices."):mode==="inventory"?(locale==="ar"?"تسجيل المنتجات واستلام أجهزة IMEI وإدارة حالتها.":"Register products and receive IMEI devices into inventory."):t.intro}</p></div>
    <button type="button" className="soft-btn" onClick={()=>void refresh().catch(()=>setError(locale==="ar"?"تعذّر تحديث البيانات. حاول مجددًا.":"Could not refresh records. Please retry."))}>{t.reload}</button></header>
+  {mode!=="all"&&<OperationalJourney locale={locale} active={mode==="pos"?"pos":"inventory"}/>}
+  {!state&&!error&&<p role="status" className="mobi-live-hint">{locale==="ar"?"جارٍ تحميل بيانات المتجر...":"Loading store records..."}</p>}
   {error&&<p role="status" className="mobi-live-message">{error}</p>}
+  {state&&(state.truncated?.products||state.truncated?.availableDevices)&&<p className="mobi-live-hint" role="status">
+    {locale==="ar"?"الكتالوج أو سجل الأجهزة كبير؛ تظهر أحدث 500 سجل فقط في هذه القائمة. الإحصاءات تشمل جميع السجلات.":"Large catalog or device history: only the latest 500 records are listed here; totals include all records."}
+  </p>}
   {state&&<section className="mobi-live-stats">
    {(mode==="pos"?[[t.stock,state.counts.availableDevices],[t.sales,state.counts.sales]]:mode==="inventory"?[[t.products,state.counts.products],[t.stock,state.counts.availableDevices]]:[[t.products,state.counts.products],[t.stock,state.counts.availableDevices],[t.sales,state.counts.sales]]).map(([name,value])=><article key={name}><span>{name}</span><strong>{value}</strong></article>)}
   </section>}
@@ -128,7 +135,7 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
    {mode!=="pos"&&<PurchaseScanPreview products={state?.products??[]} locations={state?.locations??[]} locale={locale} onSaved={refresh}/>}
    {mode!=="pos"&&<form onSubmit={e=>{e.preventDefault();void send({action:"receive",...stock,unitCost:Number(stock.unitCost),idempotencyKey:crypto.randomUUID()});}}>
     <h2>{mode==="inventory"?(locale==="ar"?"استلام جهاز":"Receive device"):t.receive}</h2>
-    <label>{t.product}<select required value={stock.productId} onChange={e=>setStock(old=>({...old,productId:e.target.value}))}>
+    <label>{t.product}<select required value={stock.productId} onChange={e=>setStock(old=>({...old,productId:e.target.value,variantId:""}))}>
      <option value="">—</option>{state?.products.filter(p=>p.isSerialized).map(p=><option key={p.id} value={p.id}>{locale==="ar"?p.nameAr:p.nameEn} · {p.sku}</option>)}</select></label>
     <label>{t.variant}<select required value={stock.variantId} onChange={e=>setStock(old=>({...old,variantId:e.target.value}))}>
      <option value="">—</option>{state?.variants.map(v=><option key={v.id} value={v.id}>{v.model} · {v.name}</option>)}</select></label>
