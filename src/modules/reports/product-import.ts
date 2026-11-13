@@ -1,5 +1,6 @@
 import { ProductType } from "@prisma/client";
 import { db } from "@/server/db";
+import { ensureCatalogDeviceVariant } from "@/modules/inventory/catalog-device-variant";
 import { normalizeBarcode } from "@/modules/catalog/barcode";
 import { parseCsv } from "./csv";
 
@@ -92,6 +93,12 @@ export async function importProductsCsv(input: {
           minimumPrice: row.minimumPrice, lowStockLevel: row.lowStock,
         },
       });
+      if (row.categoryCode === "DEVICE" && row.serialized && row.type === ProductType.DEVICE) {
+        await ensureCatalogDeviceVariant(tx, {
+          tenantId: input.tenantId, sku: row.sku, nameEn: row.nameEn,
+          previous: existing ? { sku: existing.sku, nameEn: existing.nameEn } : null,
+        });
+      }
       const claimedBarcode = await tx.barcode.findUnique({
         where: { tenantId_value: { tenantId: input.tenantId, value: row.barcode } },
         select: { productId: true },

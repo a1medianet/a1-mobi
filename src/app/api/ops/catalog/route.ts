@@ -4,6 +4,7 @@ import { authJson, currentStoreContext, sameOriginMutation } from "@/server/auth
 import { controlError } from "@/server/control-http";
 import { readAuthJson } from "@/core/auth/request";
 import { db } from "@/server/db";
+import { ensureCatalogDeviceVariant } from "@/modules/inventory/catalog-device-variant";
 
 export const dynamic = "force-dynamic";
 const fields = {
@@ -46,17 +47,17 @@ export async function POST(request:Request){
      type:input.type,isSerialized:input.type==="DEVICE",basePrice:input.price}});
     await tx.stockLocation.upsert({where:{tenantId_code:{tenantId:ctx.tenantId,code:"SHOP-"+ctx.branchId}},
      create:{tenantId:ctx.tenantId,branchId:ctx.branchId,code:"SHOP-"+ctx.branchId,name:"Store inventory"},update:{}});
-    if(input.type==="DEVICE"){
-     const manufacturer=await tx.manufacturer.upsert({where:{tenantId_code:{tenantId:ctx.tenantId,code:"UNSPECIFIED"}},
-      create:{tenantId:ctx.tenantId,code:"UNSPECIFIED",name:"Unspecified"},update:{}});
-     const family=await tx.deviceFamily.upsert({where:{tenantId_manufacturerId_name:{tenantId:ctx.tenantId,manufacturerId:manufacturer.id,name:"Phones"}},
-      create:{tenantId:ctx.tenantId,manufacturerId:manufacturer.id,name:"Phones"},update:{}});
-     const model=await tx.deviceModel.upsert({where:{tenantId_familyId_name:{tenantId:ctx.tenantId,familyId:family.id,name:input.nameEn}},
-      create:{tenantId:ctx.tenantId,familyId:family.id,name:input.nameEn},update:{}});
-     await tx.deviceVariant.upsert({where:{tenantId_modelId_name:{tenantId:ctx.tenantId,modelId:model.id,name:input.sku}},
-      create:{tenantId:ctx.tenantId,modelId:model.id,name:input.sku},update:{}});
+    if(input.type==="DEVICE") {
+     await ensureCatalogDeviceVariant(tx,{tenantId:ctx.tenantId,sku:input.sku,nameEn:input.nameEn});
     }
    }else{
+    if(input.action==="update" && before!.isSerialized) {
+     const category=await tx.category.findUnique({where:{id:before!.categoryId},select:{code:true}});
+     if(category?.code==="DEVICE") {
+      await ensureCatalogDeviceVariant(tx,{tenantId:ctx.tenantId,sku:input.sku,nameEn:input.nameEn,
+       previous:{sku:before!.sku,nameEn:before!.nameEn}});
+     }
+    }
     after=await tx.product.update({where:{id:before!.id,tenantId:ctx.tenantId},data:input.action==="setActive"?{isActive:input.isActive}:
      {sku:input.sku,nameAr:input.nameAr,nameEn:input.nameEn,basePrice:input.price}});
    }

@@ -9,10 +9,11 @@ import { StockPosCart } from "@/components/stock-pos-cart";
 import { PurchaseScanPreview } from "@/components/purchase-scan-preview";
 import { selectScannedImei } from "@/modules/pilot/scanner";
 import { availableBranchDevices } from "@/modules/pilot/branch-stock";
+import { allowedProductVariants } from "@/modules/inventory/variant-match";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
-type P = { id:string; sku:string; nameAr:string; nameEn:string; isSerialized:boolean; barcodes:string[]; price:number };
+type P = { id:string; sku:string; nameAr:string; nameEn:string; isSerialized:boolean; categoryCode:string; barcodes:string[]; price:number };
 type V = { id:string; model:string; name:string };
 type D = { id:string; productId:string; productName:string; productNameEn?:string; imei:string|null; status:string; locationId:string|null };
 
@@ -91,6 +92,8 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
    finally{setBusy(false);}
  }
  const available=availableBranchDevices(state?.devices??[],state?.locations??[]);
+ const receivingProduct=state?.products.find(product=>product.id===stock.productId);
+ const receivingVariants=allowedProductVariants(receivingProduct,state?.variants??[]);
  const selectedDevices=available.filter(device=>selectedDeviceIds.includes(device.id));
  const cartTotal=selectedDevices.reduce((total,device)=>total+(state?.products.find(p=>p.id===device.productId)?.price??0),0);
  function toggleDevice(id:string,checked:boolean){setSelectedDeviceIds(previous=>checked?[...previous.filter(item=>item!==id),id]:previous.filter(item=>item!==id));}
@@ -135,10 +138,17 @@ export default function LiveOperationsPage({mode="all"}:{mode?:"all"|"pos"|"inve
    {mode!=="pos"&&<PurchaseScanPreview products={state?.products??[]} locations={state?.locations??[]} locale={locale} onSaved={refresh}/>}
    {mode!=="pos"&&<form onSubmit={e=>{e.preventDefault();void send({action:"receive",...stock,unitCost:Number(stock.unitCost),idempotencyKey:crypto.randomUUID()});}}>
     <h2>{mode==="inventory"?(locale==="ar"?"استلام جهاز":"Receive device"):t.receive}</h2>
-    <label>{t.product}<select required value={stock.productId} onChange={e=>setStock(old=>({...old,productId:e.target.value,variantId:""}))}>
+    <label>{t.product}<select required value={stock.productId} onChange={e=>{
+      const chosen=state?.products.find(p=>p.id===e.target.value);
+      const matches=allowedProductVariants(chosen,state?.variants??[]);
+      setStock(old=>({...old,productId:e.target.value,variantId:chosen?.categoryCode==="DEVICE"&&matches.length===1?matches[0].id:""}));
+    }}>
      <option value="">—</option>{state?.products.filter(p=>p.isSerialized).map(p=><option key={p.id} value={p.id}>{locale==="ar"?p.nameAr:p.nameEn} · {p.sku}</option>)}</select></label>
-    <label>{t.variant}<select required value={stock.variantId} onChange={e=>setStock(old=>({...old,variantId:e.target.value}))}>
-     <option value="">—</option>{state?.variants.map(v=><option key={v.id} value={v.id}>{v.model} · {v.name}</option>)}</select></label>
+    <label>{t.variant}<select required disabled={!stock.productId} value={stock.variantId} onChange={e=>setStock(old=>({...old,variantId:e.target.value}))}>
+     <option value="">—</option>{receivingVariants.map(v=><option key={v.id} value={v.id}>{v.model} · {v.name}</option>)}</select></label>
+    {receivingProduct?.categoryCode==="DEVICE"&&receivingVariants.length===0&&<p role="status" className="mobi-live-hint">
+      {locale==="ar"?"لا توجد نسخة مرتبطة بهذا المنتج. راجع تعريف الجهاز قبل الاستلام.":"No matching device variant was found. Check the product record before receiving."}
+    </p>}
     <label>{t.location}<select required value={stock.locationId} onChange={e=>setStock(old=>({...old,locationId:e.target.value}))}>
      <option value="">—</option>{state?.locations.map(v=><option key={v.id} value={v.id}>{v.name}</option>)}</select></label>
     <label>{t.imei}<input required pattern="[0-9]{15}" inputMode="numeric" maxLength={15} value={stock.imei} onChange={e=>setStock(old=>({...old,imei:e.target.value}))}/></label>

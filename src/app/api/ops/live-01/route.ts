@@ -6,6 +6,7 @@ import { authJson, currentStoreContext, sameOriginMutation } from "@/server/auth
 import { controlError } from "@/server/control-http";
 import { db } from "@/server/db";
 import { registerProduct, receiveSerializedDevice } from "@/modules/inventory/inventory-service";
+import { matchesCatalogProductVariant } from "@/modules/inventory/variant-match";
 import { checkDeviceTrust } from "@/modules/device-trust/device-trust-service";
 import { checkoutSale } from "@/modules/sell/sell-service";
 import { roundMoney } from "@/modules/sell/pricing";
@@ -83,7 +84,7 @@ export async function GET() {
   try {
     const ctx = await currentStoreContext("inventory.read");
     const [products, variants, locations, devices, sales, productsCount, availableCount, salesCount] = await Promise.all([
-      db.product.findMany({ where: { tenantId: ctx.tenantId, isActive: true }, include: { barcodes: { select: { value: true } } },
+      db.product.findMany({ where: { tenantId: ctx.tenantId, isActive: true }, include: { barcodes: { select: { value: true } }, category: { select: { code: true } } },
         orderBy: { createdAt: "desc" }, take: 500 }),
       db.deviceVariant.findMany({ where: { tenantId: ctx.tenantId },
         include: { model: true }, take: 500 }),
@@ -106,7 +107,7 @@ export async function GET() {
     return authJson({
       mode: "LIVE_PILOT", branchId: ctx.branchId,
       products: products.map(p => ({ id: p.id, sku: p.sku, nameAr: p.nameAr, nameEn: p.nameEn,
-        isSerialized: p.isSerialized, barcodes: p.barcodes.map(b => b.value), price: Number(p.basePrice) })),
+        isSerialized: p.isSerialized, categoryCode: p.category.code, barcodes: p.barcodes.map(b => b.value), price: Number(p.basePrice) })),
       variants: variants.map(v => ({ id: v.id, name: v.name, model: v.model.name })),
       locations: locations.map(l => ({ id: l.id, name: l.name })),
       devices: devices.map(v => ({ id: v.id, productId: v.productId, productName: v.product.nameAr, productNameEn: v.product.nameEn,
@@ -183,6 +184,23 @@ export async function POST(request: Request) {
     }
 
     if (input.action === "receive") {
+      // Catalog products have a deterministic product/SKU-to-device-variant relationship.
+      // Reject a mismatched selection before an IMEI trust check or any write.
+      const receivedProduct = await db.product.findFirst({
+        where: { id: input.productId, tenantId: ctx.tenantId, isActive: true, isSerialized: true },
+        select: { sku: true, nameEn: true, category: { select: { code: true } } },
+      });
+      if (!receivedProduct) return authJson({ error: "SERIALIZED_PRODUCT_NOT_FOUND" }, 409);
+      if (receivedProduct.category.code === "DEVICE") {
+        const chosenVariant = await db.deviceVariant.findFirst({
+          where: { id: input.variantId, tenantId: ctx.tenantId },
+          select: { name: true, model: { select: { name: true } } },
+        });
+        if (!chosenVariant || !matchesCatalogProductVariant(
+          { sku: receivedProduct.sku, nameEn: receivedProduct.nameEn, categoryCode: receivedProduct.category.code },
+          { name: chosenVariant.name, model: chosenVariant.model.name },
+        )) return authJson({ error: "DEVICE_VARIANT_MISMATCH" }, 409);
+      }
       const trust = await checkDeviceTrust({
         tenantId: ctx.tenantId, branchId: ctx.branchId, actorId: ctx.actorId,
         context: DeviceServiceContext.STOCK_IN, devicePresent: true, imei: input.imei,
