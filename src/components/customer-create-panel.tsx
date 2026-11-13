@@ -35,7 +35,7 @@ export default function CustomerCreatePanel({locale}:{locale:"ar"|"en"}){
         (ar?"لم يُحفظ العميل: "+code:"Customer was not saved: "+code));
     }finally{setBusy(false);}
   }
-  return <details className="activity-card customer-create-panel" style={{marginBlock:"14px 16px"}}>
+  return <details className="activity-card customer-create-panel" style={{marginBlock:"14px 16px",padding:"16px"}}>
     <summary style={{cursor:"pointer",fontSize:"1.05rem",fontWeight:700,padding:"12px 16px",borderRadius:"10px",background:"#2375dc",color:"#fff",width:"fit-content",listStyle:"none"}}>
       {ar?"＋ إضافة عميل جديد":"＋ Register a customer"}</summary>
     <form onSubmit={event=>void submit(event)} dir={ar?"rtl":"ltr"}>
