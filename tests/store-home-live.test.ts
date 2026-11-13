@@ -84,7 +84,7 @@ describe("approved original dashboard uses live store records",()=>{
  it("with database failures preserves every section and uses unavailable placeholders without invented data",async()=>{
   m.products.mockRejectedValueOnce(new Error("DB unreachable"));
   const html=renderToStaticMarkup(await StoreHome({locale:"en"}));
-  expect(html).toContain("could not be loaded");
+  expect(html).toContain("Some store records could not be loaded");
   expect(html).toContain("Store overview");
   expect(html).toContain("Start here");
   expect(html).toContain("Operation breakdown");
@@ -93,7 +93,7 @@ describe("approved original dashboard uses live store records",()=>{
   expect(html).toContain("Store activity");
   expect(html).toContain("Data temporarily unavailable");
   expect(html).not.toContain("Completed sales</p><strong><bdi dir=\"ltr\">0");
-  expect(html).not.toContain("Actual branch");
+  expect(html).toContain("Actual branch");
   expect(html).not.toContain("2,284");
  });
 });

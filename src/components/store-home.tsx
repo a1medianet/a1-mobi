@@ -7,11 +7,11 @@ import { calculateLocationBalance } from "@/modules/inventory/balance";
 type Language = "ar" | "en";
 type Item = {id:string; label:string; at:Date; amount:number|null; currency:string; path:string; status:string};
 type Data = {
-  branch:string; products:number; devices:number; sales:number; total:number; repairs:number; ready:number;
-  saleCount:number; repairCount:number; topupCount:number;
-  recentRepairs:{id:string;number:string;device:string;name:string;status:string}[];
-  recentSales:{id:string;number:string;total:number;currency:string;status:string}[];
-  recentActivity:Item[];
+  branch:string; products:number|null; devices:number|null; sales:number|null; total:number|null; repairs:number|null; ready:number|null;
+  saleCount:number|null; repairCount:number|null; topupCount:number|null;
+  recentRepairs:{id:string;number:string;device:string;name:string;status:string}[]|null;
+  recentSales:{id:string;number:string;total:number;currency:string;status:string}[]|null;
+  recentActivity:Item[]|null;
 };
 const words = {
   ar:{
@@ -24,6 +24,7 @@ const words = {
     tools:"\u0627\u0628\u062f\u0623 \u0645\u0646 \u0647\u0646\u0627", chart:"\u062a\u0648\u0632\u064a\u0639 \u0627\u0644\u0639\u0645\u0644\u064a\u0627\u062a", chartNote:"\u062a\u0648\u0632\u064a\u0639 \u0627\u0644\u0639\u0645\u0644\u064a\u0627\u062a \u0627\u0644\u0645\u0633\u062c\u0651\u0644\u0629 \u0641\u064a \u0647\u0630\u0627 \u0627\u0644\u0641\u0631\u0639 \u0645\u0646\u0630 \u0628\u062f\u0621 \u0627\u0644\u0627\u0633\u062a\u062e\u062f\u0627\u0645.",
     noOperations:"\u0644\u0627 \u062a\u0648\u062c\u062f \u0639\u0645\u0644\u064a\u0627\u062a \u0645\u0633\u062c\u0651\u0644\u0629 \u0628\u0639\u062f.", recentRepairs:"\u0622\u062e\u0631 \u062a\u0630\u0627\u0643\u0631 \u0627\u0644\u0635\u064a\u0627\u0646\u0629", recentSales:"\u0622\u062e\u0631 \u0627\u0644\u0645\u0628\u064a\u0639\u0627\u062a",
     recentActivity:"\u062d\u0631\u0643\u0629 \u0627\u0644\u0645\u062a\u062c\u0631", emptyRepairs:"\u0644\u0627 \u062a\u0648\u062c\u062f \u062a\u0630\u0627\u0643\u0631 \u0635\u064a\u0627\u0646\u0629.", emptySales:"\u0644\u0627 \u062a\u0648\u062c\u062f \u0639\u0645\u0644\u064a\u0627\u062a \u0628\u064a\u0639.",
+    partialUnavailable:"تعذّر تحميل بعض بيانات المتجر؛ الأرقام الظاهرة هي القيم المؤكدة فقط.",
     unavailable:"\u062a\u0639\u0630\u0631 \u062a\u062d\u0645\u064a\u0644 \u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0645\u062a\u062c\u0631. \u0644\u0645 \u0646\u0639\u0631\u0636 \u0623\u0631\u0642\u0627\u0645\u064b\u0627 \u063a\u064a\u0631 \u0645\u0624\u0643\u062f\u0629\u061b \u0623\u0639\u062f \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0635\u0641\u062d\u0629.",
     reference:"\u0627\u0644\u0645\u0631\u062c\u0639", timestamp:"\u0627\u0644\u062a\u0627\u0631\u064a\u062e", amount:"\u0627\u0644\u0645\u0628\u0644\u063a", status:"\u0627\u0644\u062d\u0627\u0644\u0629", records:"\u0633\u062c\u0644\u0627\u062a \u062d\u0642\u064a\u0642\u064a\u0629",
     noActivity:"\u0644\u0627 \u062a\u0648\u062c\u062f \u062d\u0631\u0643\u0629 \u0645\u0633\u062c\u0651\u0644\u0629 \u0628\u0639\u062f.", viewAll:"\u0639\u0631\u0636 \u0627\u0644\u0643\u0644", unavailableShort:"البيانات غير متاحة حاليًا", sample:"", count:"\u0645\u0646"
@@ -38,6 +39,7 @@ const words = {
     tools:"Start here",chart:"Operation breakdown",chartNote:"Recorded operations in this branch since first use.",
     noOperations:"No operations recorded yet.",recentRepairs:"Recent repairs",recentSales:"Recent sales",
     recentActivity:"Store activity",emptyRepairs:"No repair tickets recorded.",emptySales:"No recorded sales.",
+    partialUnavailable:"Some store records could not be loaded. Only verified values are displayed.",
     unavailable:"Store data could not be loaded. No unverified figures were shown. Reload this page.",
     reference:"Reference",timestamp:"Date",amount:"Amount",status:"Status",records:"Actual records",
     noActivity:"No store activity recorded yet.",viewAll:"View all", unavailableShort:"Data temporarily unavailable", sample:"",count:"of"
@@ -54,33 +56,38 @@ export async function StoreHome({locale}:{locale:Language}) {
   const scope={tenantId:ctx.tenantId,branchId:ctx.branchId};
   const href=(path:string)=>"/"+locale+"/"+path;
   let data:Data|null=null;
+  let readFailed=false;
   try {
     const [branch,products,devices,saleSummary,allSales,repairs,ready,repairCount,topupCount,recentRepairs,recentSales,recentTopups]=await Promise.all([
-      db.branch.findFirst({where:{id:ctx.branchId,tenantId:ctx.tenantId},select:{name:true}}),
-      db.product.count({where:{tenantId:ctx.tenantId,isActive:true}}),
-      db.serializedDevice.count({where:{tenantId:ctx.tenantId,status:"IN_STOCK",stockLocation:{is:{tenantId:ctx.tenantId,branchId:ctx.branchId}}}}),
-      db.sale.aggregate({where:{...scope,status:"COMPLETED",baseCurrency:"USD"},_count:{_all:true},_sum:{total:true}}),
-      db.sale.count({where:{...scope,status:"COMPLETED"}}),
-      db.repairOrder.count({where:{...scope,status:{notIn:["CANCELLED","DELIVERED"]}}}),
-      db.repairOrder.count({where:{...scope,status:"READY"}}),
-      db.repairOrder.count({where:{...scope,status:{not:"CANCELLED"}}}),
-      db.topUpTransaction.count({where:{...scope,status:"POSTED"}}),
-      db.repairOrder.findMany({where:scope,orderBy:{intakeAt:"desc"},take:4,select:{id:true,number:true,customerName:true,deviceDescription:true,status:true,intakeAt:true,finalPrice:true}}),
-      db.sale.findMany({where:scope,orderBy:{occurredAt:"desc"},take:5,select:{id:true,number:true,total:true,baseCurrency:true,status:true,occurredAt:true}}),
-      db.topUpTransaction.findMany({where:{...scope,status:"POSTED"},orderBy:{occurredAt:"desc"},take:3,select:{id:true,occurredAt:true,collectionAmount:true,collectionCurrency:true}}),
+      db.branch.findFirst({where:{id:ctx.branchId,tenantId:ctx.tenantId},select:{name:true}}).catch(()=>null),
+      db.product.count({where:{tenantId:ctx.tenantId,isActive:true}}).catch(()=>null),
+      db.serializedDevice.count({where:{tenantId:ctx.tenantId,status:"IN_STOCK",stockLocation:{is:{tenantId:ctx.tenantId,branchId:ctx.branchId}}}}).catch(()=>null),
+      db.sale.aggregate({where:{...scope,status:"COMPLETED",baseCurrency:"USD"},_count:{_all:true},_sum:{total:true}}).catch(()=>null),
+      db.sale.count({where:{...scope,status:"COMPLETED"}}).catch(()=>null),
+      db.repairOrder.count({where:{...scope,status:{notIn:["CANCELLED","DELIVERED"]}}}).catch(()=>null),
+      db.repairOrder.count({where:{...scope,status:"READY"}}).catch(()=>null),
+      db.repairOrder.count({where:{...scope,status:{not:"CANCELLED"}}}).catch(()=>null),
+      db.topUpTransaction.count({where:{...scope,status:"POSTED"}}).catch(()=>null),
+      db.repairOrder.findMany({where:scope,orderBy:{intakeAt:"desc"},take:4,select:{id:true,number:true,customerName:true,deviceDescription:true,status:true,intakeAt:true,finalPrice:true}}).catch(()=>null),
+      db.sale.findMany({where:scope,orderBy:{occurredAt:"desc"},take:5,select:{id:true,number:true,total:true,baseCurrency:true,status:true,occurredAt:true}}).catch(()=>null),
+      db.topUpTransaction.findMany({where:{...scope,status:"POSTED"},orderBy:{occurredAt:"desc"},take:3,select:{id:true,occurredAt:true,collectionAmount:true,collectionCurrency:true}}).catch(()=>null),
     ]);
     const activities:Item[]=[
-      ...recentSales.map(x=>({id:x.id,label:x.number,at:x.occurredAt,amount:Number(x.total),currency:x.baseCurrency,path:"pos",status:x.status})),
-      ...recentRepairs.map(x=>({id:x.id,label:x.number,at:x.intakeAt,amount:null,currency:"USD",path:"repairs",status:x.status})),
-      ...recentTopups.map(x=>({id:x.id,label:x.id.slice(0,10),at:x.occurredAt,amount:Number(x.collectionAmount),currency:x.collectionCurrency,path:"topup",status:"POSTED"})),
+      ...(recentSales??[]).map(x=>({id:x.id,label:x.number,at:x.occurredAt,amount:Number(x.total),currency:x.baseCurrency,path:"pos",status:x.status})),
+      ...(recentRepairs??[]).map(x=>({id:x.id,label:x.number,at:x.intakeAt,amount:null,currency:"USD",path:"repairs",status:x.status})),
+      ...(recentTopups??[]).map(x=>({id:x.id,label:x.id.slice(0,10),at:x.occurredAt,amount:Number(x.collectionAmount),currency:x.collectionCurrency,path:"topup",status:"POSTED"})),
     ];
+    readFailed=[branch,products,devices,saleSummary,allSales,repairs,ready,repairCount,topupCount,recentRepairs,recentSales,recentTopups].some(v=>v===null);
     data={
-      branch:branch?.name??"",products,devices,sales:allSales,total:Number(saleSummary._sum.total??0),repairs,ready,
+      branch:branch?.name??"",products,devices,sales:allSales,
+      total:saleSummary===null?null:Number(saleSummary._sum.total??0),repairs,ready,
       saleCount:allSales,repairCount,topupCount,
-      recentRepairs:recentRepairs.map(r=>({id:r.id,number:r.number,device:r.deviceDescription,name:r.customerName,status:r.status})),
-      recentSales:recentSales.map(s=>({id:s.id,number:s.number,total:Number(s.total),currency:s.baseCurrency,status:s.status})),
-      recentActivity:activities.sort((a,b)=>b.at.getTime()-a.at.getTime()).slice(0,6),
+      recentRepairs:recentRepairs?.map(r=>({id:r.id,number:r.number,device:r.deviceDescription,name:r.customerName,status:r.status}))??null,
+      recentSales:recentSales?.map(s=>({id:s.id,number:s.number,total:Number(s.total),currency:s.baseCurrency,status:s.status}))??null,
+      recentActivity:recentRepairs===null||recentSales===null||recentTopups===null?null:
+        activities.sort((a,b)=>b.at.getTime()-a.at.getTime()).slice(0,6),
     };
+    if([branch,products,devices,saleSummary,allSales,repairs,ready,repairCount,topupCount,recentRepairs,recentSales,recentTopups].every(v=>v===null))data=null;
   }catch {
     // Fail closed: never substitute sample records or zeros for an unavailable database.
   }
@@ -91,20 +98,21 @@ export async function StoreHome({locale}:{locale:Language}) {
     {path:"customers",title:t.customers,sub:"Customers",icon:"\u2659",tone:"orange",image:"https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=600&q=75"},
   ];
   const metrics=data?[
-    {label:t.completedSales,value:fmtMoney(data.total),detail:ar?"\u0645\u0628\u064a\u0639\u0627\u062a \u0628\u0627\u0644\u062f\u0648\u0644\u0627\u0631":"USD sales",tone:"blue",icon:"\u2197"},
-    {label:t.activeProducts,value:String(data.products),detail:ar?"\u0645\u0646\u062a\u062c \u0646\u0634\u0637":"Active products",tone:"green",icon:"\u25a6"},
-    {label:t.openRepairs,value:String(data.repairs),detail:`${data.ready} ${t.ready}`,tone:"amber",icon:"\u25c7"},
-    {label:t.inStock,value:String(data.devices),detail:ar?"\u0641\u064a \u0647\u0630\u0627 \u0627\u0644\u0641\u0631\u0639":"This branch",tone:"rose",icon:"#"},
+    {label:t.completedSales,value:data.total===null?"—":fmtMoney(data.total),detail:data.total===null?t.unavailableShort:(ar?"\u0645\u0628\u064a\u0639\u0627\u062a \u0628\u0627\u0644\u062f\u0648\u0644\u0627\u0631":"USD sales"),tone:"blue",icon:"\u2197"},
+    {label:t.activeProducts,value:data.products===null?"—":String(data.products),detail:data.products===null?t.unavailableShort:(ar?"\u0645\u0646\u062a\u062c \u0646\u0634\u0637":"Active products"),tone:"green",icon:"\u25a6"},
+    {label:t.openRepairs,value:data.repairs===null?"—":String(data.repairs),detail:data.ready===null?t.unavailableShort:`${data.ready} ${t.ready}`,tone:"amber",icon:"\u25c7"},
+    {label:t.inStock,value:data.devices===null?"—":String(data.devices),detail:data.devices===null?t.unavailableShort:(ar?"\u0641\u064a \u0647\u0630\u0627 \u0627\u0644\u0641\u0631\u0639":"This branch"),tone:"rose",icon:"#"},
   ]:[
     {label:t.completedSales,value:"—",detail:t.unavailableShort,tone:"blue",icon:"↗"},
     {label:t.activeProducts,value:"—",detail:t.unavailableShort,tone:"green",icon:"▫"},
     {label:t.openRepairs,value:"—",detail:t.unavailableShort,tone:"amber",icon:"◇"},
     {label:t.inStock,value:"—",detail:t.unavailableShort,tone:"rose",icon:"#"},
   ];
-  const chartItems=data?[
-    {label:ar?"\u0628\u064a\u0639":"Sales",count:data.saleCount},
-    {label:ar?"\u0635\u064a\u0627\u0646\u0629":"Repairs",count:data.repairCount},
-    {label:ar?"\u062a\u0639\u0628\u0626\u0629":"Top-up",count:data.topupCount}
+  const chartReady=!!data&&data.saleCount!==null&&data.repairCount!==null&&data.topupCount!==null;
+  const chartItems=chartReady&&data?[
+    {label:ar?"\u0628\u064a\u0639":"Sales",count:data.saleCount!},
+    {label:ar?"\u0635\u064a\u0627\u0646\u0629":"Repairs",count:data.repairCount!},
+    {label:ar?"\u062a\u0639\u0628\u0626\u0629":"Top-up",count:data.topupCount!}
   ]:[];
   const chartTotal=chartItems.reduce((s,x)=>s+x.count,0);
   const rawShares=chartItems.map(x=>chartTotal?x.count*100/chartTotal:0);
@@ -167,7 +175,7 @@ export async function StoreHome({locale}:{locale:Language}) {
         <img src={a.image} alt="" loading="lazy"/><span className="mobi-c-action-copy"><b>{a.icon}</b><strong>{a.title}</strong><small>{a.sub}</small></span><span className="mobi-c-action-arrow" aria-hidden="true">{"\u2197"}</span>
       </Link>)}
     </section>
-    {!data&&<section className="activity-card" role="alert"><p>{t.unavailable}</p></section>}
+    {(!data||readFailed)&&<section className="activity-card" role="alert"><p>{data?t.partialUnavailable:t.unavailable}</p></section>}
       <section className="section-head"><h2>{t.overview}</h2></section>
       <section className="metrics" aria-label={t.overview}>{metrics.map(m=><article key={m.label} className="metric">
         <div className={"metric-icon "+m.tone} aria-hidden="true">{m.icon}</div>
@@ -181,7 +189,7 @@ export async function StoreHome({locale}:{locale:Language}) {
       <section className="mobi-c-insight">
         <figure className="operation-breakdown-chart" aria-labelledby="store-ops-heading">
           <figcaption><h2 id="store-ops-heading">{t.chart}</h2><p className="sr-only">{t.chartNote}</p></figcaption>
-          {chartTotal===0&&<p className="operation-breakdown-empty">{data?t.noOperations:t.unavailableShort}</p>}
+          {chartTotal===0&&<p className="operation-breakdown-empty">{chartReady?t.noOperations:t.unavailableShort}</p>}
           {chartTotal>0&&<><div className="operation-breakdown-axis" aria-hidden="true"><span>0%</span><span>50%</span><span>100%</span></div>
           <ul className="operation-breakdown-rows operation-breakdown-columns">{chartItems.map((x,index)=>{
             const width=chartTotal?x.count*100/chartTotal:0;
@@ -192,14 +200,14 @@ export async function StoreHome({locale}:{locale:Language}) {
       </section>
       <section className="mobi-c-ops-grid">
         <article className="activity-card"><div className="section-head"><h2>{t.recentRepairs}</h2><Link className="text-link" href={href("repairs")}>{t.viewAll}</Link></div>
-          <div className="mobi-c-compact-list">{data?.recentRepairs.length?data.recentRepairs.map(r=><div key={r.id}>
+          <div className="mobi-c-compact-list">{data?.recentRepairs?.length?data.recentRepairs.map(r=><div key={r.id}>
             <span className="mobi-c-list-icon orange">\u2301</span><div><b><bdi dir="ltr">{r.number}</bdi> \u2014 {r.device}</b><small>{r.name}</small></div><span className="pill pending">{r.status.replaceAll("_"," ")}</span>
-          </div>):<p className="store-empty">{data?t.emptyRepairs:t.unavailableShort}</p>}</div>
+          </div>):<p className="store-empty">{data?.recentRepairs?t.emptyRepairs:t.unavailableShort}</p>}</div>
         </article>
         <article className="activity-card"><div className="section-head"><h2>{t.recentSales}</h2><Link className="text-link" href={href("pos")}>{t.viewAll}</Link></div>
-          <div className="mobi-c-compact-list">{data?.recentSales.length?data.recentSales.map(s=><div key={s.id}>
+          <div className="mobi-c-compact-list">{data?.recentSales?.length?data.recentSales.map(s=><div key={s.id}>
             <span className="mobi-c-list-icon blue">\u25a3</span><div><b dir="ltr">{s.number}</b><small>{s.status.replaceAll("_"," ")}</small></div><span className="pill done" dir="ltr">{fmtMoney(s.total,s.currency)}</span>
-          </div>):<p className="store-empty">{data?t.emptySales:t.unavailableShort}</p>}</div>
+          </div>):<p className="store-empty">{data?.recentSales?t.emptySales:t.unavailableShort}</p>}</div>
         </article>
       </section>
       <section className="activity-card">
@@ -213,12 +221,12 @@ export async function StoreHome({locale}:{locale:Language}) {
       </section>
       <section className="activity-card">
         <div className="section-head"><h2>{t.recentActivity}</h2></div>
-        {data?.recentActivity.length?<div className="table-wrap"><table>
+        {data?.recentActivity?.length?<div className="table-wrap"><table>
           <thead><tr><th>{t.reference}</th><th>{t.timestamp}</th><th>{t.amount}</th><th>{t.status}</th></tr></thead>
           <tbody>{data.recentActivity.map(a=><tr key={a.path+a.id}>
             <td><Link className="invoice" href={href(a.path)}><bdi dir="ltr">{a.label}</bdi></Link></td><td>{fmtDate(a.at,locale)}</td>
             <td><bdi dir="ltr">{a.amount===null?"\u2014":fmtMoney(a.amount,a.currency)}</bdi></td><td>{a.status.replaceAll("_"," ")}</td></tr>)}</tbody>
-        </table></div>:<p className="store-empty">{data?t.noActivity:t.unavailableShort}</p>}
+        </table></div>:<p className="store-empty">{data?.recentActivity?t.noActivity:t.unavailableShort}</p>}
       </section>
   </main>;
 }
