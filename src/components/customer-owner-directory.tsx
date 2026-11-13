@@ -45,6 +45,7 @@ export default async function CustomerOwnerDirectory({locale}:{locale:"ar"|"en"}
     </div></header>
     {ctx.permissions.has("foundation.manage") && <>
       <CustomerCreatePanel locale={locale} />
+      <p style={{marginBlock:"0 10px"}}><Link className="soft-btn" href={"/"+locale+"/debts"}>{locale==="ar"?"الديون والتحصيل":"Debts and collections"}</Link></p>
       <div style={{display:"flex",justifyContent:locale==="ar"?"flex-start":"flex-start",marginBlock:"0 16px"}}>
         <a className="soft-btn" href="/api/ops/customers/export" download="mobi-customers.csv" style={{display:"inline-flex",alignItems:"center",gap:"8px",padding:"10px 16px",textDecoration:"none",border:"1px solid #cbd9ed",borderRadius:"9px",background:"#fff",fontWeight:700}}>{locale==="ar"?"↓ تصدير العملاء إلى Excel":"↓ Export customers to Excel"}</a>
       </div>
