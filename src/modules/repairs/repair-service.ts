@@ -138,7 +138,7 @@ export async function advanceRepair(input: {
     }
 
     const updated = await tx.repairOrder.update({
-      where: { id: repair.id },
+      where: { id: repair.id, status: repair.status },
       data: {
         status: input.toStatus,
         diagnosis: input.diagnosis?.trim() ?? repair.diagnosis,
@@ -188,6 +188,7 @@ export async function approveRepairEstimate(input: {
     const repair = await tx.repairOrder.findUniqueOrThrow({ where: { id: input.repairOrderId } });
     const actor = await tx.user.findUniqueOrThrow({ where: { id: input.actorId } });
     assertTenant([repair.tenantId, actor.tenantId], input.tenantId, "Cross-tenant approval is forbidden");
+    if (repair.branchId !== input.branchId) throw new Error("Cross-branch approval is forbidden");
     if (repair.status !== RepairStatus.ESTIMATE_PENDING || !repair.estimateAmount) {
       throw new Error("Repair is not waiting for an estimate approval");
     }
@@ -205,7 +206,7 @@ export async function approveRepairEstimate(input: {
       },
     });
     return tx.repairOrder.update({
-      where: { id: repair.id },
+      where: { id: repair.id, status: repair.status },
       data: {
         status: target,
         approvedAt: input.approved ? new Date() : undefined,
@@ -241,6 +242,7 @@ export async function addRepairPart(input: {
     const repair = await tx.repairOrder.findUniqueOrThrow({ where: { id: input.repairOrderId } });
     const actor = await tx.user.findUniqueOrThrow({ where: { id: input.actorId } });
     assertTenant([repair.tenantId, actor.tenantId], input.tenantId, "Cross-tenant repair part is forbidden");
+    if (repair.branchId !== input.branchId) throw new Error("Cross-branch repair part is forbidden");
     if (repair.status !== RepairStatus.APPROVED && repair.status !== RepairStatus.IN_PROGRESS) {
       throw new Error("Parts can only be added to an approved or active repair");
     }
@@ -250,6 +252,7 @@ export async function addRepairPart(input: {
       product = await tx.product.findUniqueOrThrow({ where: { id: input.productId! } });
       const location = await tx.stockLocation.findUniqueOrThrow({ where: { id: input.stockLocationId! } });
       assertTenant([product.tenantId, location.tenantId], input.tenantId, "Cross-tenant stock part is forbidden");
+      if (product.isSerialized) throw new Error("Serialized device cannot be consumed as a non-serialized repair part");
       if (location.branchId !== input.branchId) throw new Error("Cross-branch stock part is forbidden");
       const movements = await tx.stockMovement.findMany({
         where: {
@@ -359,6 +362,7 @@ export async function recordRepairPayment(input: {
 
 export async function finalizeRepairFinancials(input: {
   tenantId: string;
+  branchId: string;
   actorId: string;
   repairOrderId: string;
   finalPrice: number;
@@ -372,6 +376,8 @@ export async function finalizeRepairFinancials(input: {
     });
     const actor = await tx.user.findUniqueOrThrow({ where: { id: input.actorId } });
     assertTenant([repair.tenantId, actor.tenantId], input.tenantId, "Cross-tenant financial finalization is forbidden");
+    if (repair.branchId !== input.branchId) throw new Error("Cross-branch financial finalization is forbidden");
+    if (repair.status !== RepairStatus.IN_PROGRESS) throw new Error("REPAIR_NOT_IN_PROGRESS");
     const truth = calculateRepairTruth({
       finalPrice: input.finalPrice,
       partCosts: repair.parts.map((part) => Number(part.totalCost)),
@@ -380,7 +386,7 @@ export async function finalizeRepairFinancials(input: {
       paidTotal: Number(repair.paidTotal),
     });
     const updated = await tx.repairOrder.update({
-      where: { id: repair.id },
+      where: { id: repair.id, status: RepairStatus.IN_PROGRESS },
       data: {
         finalPrice: input.finalPrice,
         serviceAmount: input.finalPrice - truth.partsCost,

@@ -106,6 +106,7 @@ export default function RepairLivePage({backToDashboard=false}:{backToDashboard?
  const {locale:raw}=useParams<{locale:string}>();const locale=raw==="en"?"en":"ar";const t=dict[locale];
  const [orders,setOrders]=useState<Order[]>([]),[busy,setBusy]=useState(false);
  const [message,setMessage]=useState(""),[loading,setLoading]=useState(true);
+ const [loadFailed,setLoadFailed]=useState(false);
  const [cashOpen,setCashOpen]=useState(false);
  const [totalOrders,setTotalOrders]=useState(0);
  const [overview,setOverview]=useState({total:0,active:0,ready:0,balanceDue:0});
@@ -139,16 +140,18 @@ export default function RepairLivePage({backToDashboard=false}:{backToDashboard?
    orders:Order[];cashOpen:boolean;totalOrders:number;matchedCount:number;hasMore:boolean;
    overview:{total:number;active:number;ready:number;balanceDue:number};
  }){
-  setOrders(data.orders);setCashOpen(Boolean(data.cashOpen));
+  setOrders(data.orders);setCashOpen(Boolean(data.cashOpen));setLoadFailed(false);
   setOverview(data.overview);
   setTotalOrders(Number(data.totalOrders));setMatchedCount(Number(data.matchedCount));
   setHasMore(Boolean(data.hasMore));
  }
  async function reload(){
-  const res=await fetch(queryUrl,{cache:"no-store"});
-  const data=await res.json();
-  if(!res.ok)throw new Error(data.error||"READ_FAILED");
-  acceptPage(data);
+  try {
+   const res=await fetch(queryUrl,{cache:"no-store"});
+   const data=await res.json();
+   if(!res.ok)throw new Error(data.error||"READ_FAILED");
+   acceptPage(data);
+  }catch(error){setLoadFailed(true);throw error;}
  }
  useEffect(()=>{
   let active=true;
@@ -159,20 +162,25 @@ export default function RepairLivePage({backToDashboard=false}:{backToDashboard?
     const data=await response.json();
     if(!response.ok)throw new Error(data.error||"READ_FAILED");
     if(active){acceptPage(data);setMessage("");}
-   }).catch(e=>{if(active&&e.name!=="AbortError")setMessage(locale==="ar"?"تعذّر تحميل بيانات الصيانة. تحقق من تسجيل الدخول ثم أعد المحاولة.":"Could not load repair records. Check sign-in and retry.");})
+   }).catch(e=>{if(active&&e.name!=="AbortError"){setLoadFailed(true);setMessage(locale==="ar"?"تعذّر تحميل بيانات الصيانة. تحقق من تسجيل الدخول ثم أعد المحاولة.":"Could not load repair records. Check sign-in and retry.");}})
    .finally(()=>{if(active)setLoading(false);});
   },search?320:0);
   return()=>{active=false;controller.abort();clearTimeout(job);};
  },[queryUrl,search,locale]);
  async function send(payload:Record<string,unknown>){
-  if(busy)return false;
+  // Never submit a second mutation when the current order/cash state is unknown.
+  if(busy||loading||loadFailed)return false;
   setBusy(true);setMessage("");
   try{
    const res=await fetch("/api/ops/live-02",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
    const data=await res.json();
    if(!res.ok)throw new Error(data.error||"REQUEST_REJECTED");
-   await reload();
-   setMessage(t.save);
+   // The server may have committed successfully even if the subsequent read fails.
+   let refreshed=true;
+   try{await reload();}catch{refreshed=false;}
+   setMessage(refreshed?t.save:(locale==="ar"?
+    "تم حفظ العملية، لكن تعذّر تحديث القائمة. أعد التحميل للتحقق من السجل.":
+    "Operation saved, but the list could not refresh. Reload to verify the record."));
    if(payload.action==="intake"){
     setCustomerName("");setCustomerPhone("");setDeviceDescription("");setImei("");setCondition("");setReportedIssue("");
    }
@@ -186,7 +194,7 @@ export default function RepairLivePage({backToDashboard=false}:{backToDashboard?
   <header className="module-header"><div>
    <Link href={"/"+locale+(backToDashboard?"":"/repairs")} className="back-link">{backToDashboard?(locale==="ar"?"لوحة التحكم":"Dashboard"):t.back}</Link>
    <h1>{t.title}</h1><p className="module-sub">{t.intro}</p>
-  </div><button className="soft-btn" type="button" disabled={busy}
+  </div><button className="soft-btn" type="button" disabled={busy||loading}
    onClick={()=>void reload().catch(()=>setMessage(locale==="ar"?"تعذّر تحميل بيانات الصيانة. تحقق من تسجيل الدخول ثم أعد المحاولة.":"Could not load repair records. Check sign-in and retry."))}>{t.refresh}</button></header>
   {message&&<p role="status" className="mobi-live-message">{message}</p>}
   <nav onClick={event=>{const link=(event.target as HTMLElement).closest("a");if(!link)return;const target=document.getElementById(link.hash.slice(1));const panel=target?.closest("details");if(panel)panel.open=true;}} className="mobi-live02-flow" aria-label={locale==="ar"?"خطوات العمل":"Repair process"}>
@@ -196,11 +204,11 @@ export default function RepairLivePage({backToDashboard=false}:{backToDashboard?
    <a href="#mobi-repair-cash"><b>04</b>{locale==="ar"?"التحصيل والتسليم":"Collect & deliver"}</a>
   </nav>
   <section className="mobi-live02-forms">
-   <details className="mobi-task-panel"><summary>{t.new}</summary><form id="mobi-repair-intake" onSubmit={event=>{
+   <details className="mobi-task-panel" name="mobi-repair-task" open><summary>{t.new}</summary><form id="mobi-repair-intake" onSubmit={event=>{
     event.preventDefault();
     void send({action:"intake",customerName,customerPhone,deviceDescription,imei,condition,reportedIssue,accessories:[]});
    }}>
-    <h2>{t.new}</h2>
+
     {([
       [t.name,customerName,setCustomerName],[t.phone,customerPhone,setCustomerPhone],
       [t.device,deviceDescription,setDeviceDescription],[t.imei,imei,setImei],
@@ -210,14 +218,14 @@ export default function RepairLivePage({backToDashboard=false}:{backToDashboard?
      pattern={label===t.imei?"[0-9]{15}":undefined}
      maxLength={label===t.imei?15:200}
      value={value} onChange={e=>update(e.target.value)}/></label>)}
-    <button className="primary" type="submit" disabled={busy}>{t.receive}</button>
+    <button className="primary" type="submit" disabled={busy||loading||loadFailed}>{t.receive}</button>
    </form></details>
-   <details className="mobi-task-panel"><summary>{t.diagnosis}</summary><form id="mobi-repair-diagnosis" onSubmit={event=>{
+   <details className="mobi-task-panel" name="mobi-repair-task"><summary>{t.diagnosis}</summary><form id="mobi-repair-diagnosis" onSubmit={event=>{
     event.preventDefault();
     if(!selected)return;
     void send({action:"estimate",repairId:selected.id,diagnosis,estimateAmount:Number(estimate)});
    }}>
-    <h2>{t.diagnosis}</h2>
+
     <label>{t.select}
      <select required value={selectedId} onChange={e=>setSelectedId(e.target.value)}>
       <option value="">{t.selectPlaceholder}</option>
@@ -226,10 +234,10 @@ export default function RepairLivePage({backToDashboard=false}:{backToDashboard?
     </label>
     <label>{t.diagnosis}<input required minLength={2} value={diagnosis} onChange={e=>setDiagnosis(e.target.value)}/></label>
     <label>{t.estimate}<input required min={1} step="0.01" type="number" value={estimate} onChange={e=>setEstimate(e.target.value)}/></label>
-    <button className="primary" type="submit" disabled={busy||!selected}>{t.saveEstimate}</button>
+    <button className="primary" type="submit" disabled={busy||loading||loadFailed||!selected}>{t.saveEstimate}</button>
    </form></details>
   </section>
-  {!loading&&<details id="mobi-repair-cash" className="mobi-live02-cash">
+  {!loading&&!loadFailed&&<details id="mobi-repair-cash" className="mobi-live02-cash">
    <summary><span className="mobi-live02-cash-marker">●</span>{cashOpen?t.cashOpen:t.cashClosed}</summary>
    {!cashOpen&&<form onSubmit={event=>{event.preventDefault();
     if(!window.confirm(locale==="ar"?"هل تريد فتح صندوق الفرع بالقيم المدخلة؟":"Open this branch's cash drawer with these balances?"))return;
@@ -246,14 +254,14 @@ export default function RepairLivePage({backToDashboard=false}:{backToDashboard?
    </form>}
   </details>}
   <section className="mobi-live02-stats" aria-label={t.orders}>
-   <article><span>{t.total}</span><strong>{overview.total}</strong></article>
-   <article><span>{t.activeTotal}</span><strong>{overview.active}</strong></article>
-   <article><span>{t.readyTotal}</span><strong>{overview.ready}</strong></article>
-   <article><span>{t.dueTotal}</span><strong dir="ltr">{overview.balanceDue.toFixed(2)} <small>USD</small></strong></article>
+   <article><span>{t.total}</span><strong>{loading||loadFailed?"—":overview.total}</strong></article>
+   <article><span>{t.activeTotal}</span><strong>{loading||loadFailed?"—":overview.active}</strong></article>
+   <article><span>{t.readyTotal}</span><strong>{loading||loadFailed?"—":overview.ready}</strong></article>
+   <article><span>{t.dueTotal}</span><strong dir="ltr">{loading||loadFailed?"—":overview.balanceDue.toFixed(2)+" USD"}</strong></article>
   </section>
   <section id="mobi-repair-orders" className="activity-card mobi-live02-orders">
    <div className="mobi-live02-orders-head">
-    <div><h2>{t.orders}</h2><p>{matchedCount} / {totalOrders}</p></div>
+    <div><h2>{t.orders}</h2><p>{loading||loadFailed?"—":matchedCount+" / "+totalOrders}</p></div>
     <div className="mobi-live02-filters">
      <label><span className="visually-hidden">{t.search}</span><input
        type="search" aria-label={t.search} value={search} placeholder={t.search}
@@ -269,6 +277,9 @@ export default function RepairLivePage({backToDashboard=false}:{backToDashboard?
     </div>
    </div>
    {loading?<p className="module-sub">{locale==="ar"?"جارٍ تحميل الطلبات...":"Loading orders..."}</p>:null}
+   {!loading&&loadFailed&&<p className="store-empty" role="alert">{locale==="ar"?
+     "تعذّر التأكد من طلبات الصيانة الحالية. لا تعني هذه الحالة عدم وجود طلبات.":
+     "Repair records could not be verified. This does not mean that no orders exist."}</p>}
    <div className="table-wrap"><table><thead><tr>
     <th>{t.ticket}</th><th>{t.customer} / {t.deviceLabel}</th><th>{t.ticketState}</th>
     <th>{t.estimate} / {t.balance}</th><th>{t.action}</th></tr></thead>
@@ -291,8 +302,8 @@ export default function RepairLivePage({backToDashboard=false}:{backToDashboard?
        aria-expanded={selectedOrderId===o.id} aria-controls="mobi-repair-selected"
        onClick={()=>{setSelectedOrderId(o.id);if(selectedOrderId===o.id)document.getElementById("mobi-repair-selected")?.scrollIntoView({behavior:"smooth",block:"start"});}}>
        {t.openTicket}</button>      </td></tr>)}
-     {!loading&&visibleOrders.length===0?<tr><td colSpan={5} className="mobi-live02-noorders">
-      {orders.length===0?t.empty:t.noMatch}
+     {!loading&&!loadFailed&&visibleOrders.length===0?<tr><td colSpan={5} className="mobi-live02-noorders">
+      {totalOrders===0?t.empty:t.noMatch}
      </td></tr>:null}
     </tbody></table></div>
    {matchedCount>75&&<nav className="mobi-live02-pagination" aria-label={t.orders}>

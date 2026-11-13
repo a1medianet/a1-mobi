@@ -196,6 +196,7 @@ runDb("owner operational journey", () => {
     });
     const repairTruth = await finalizeRepairFinancials({
       tenantId: provisioned.tenantId,
+      branchId: provisioned.branchId,
       actorId: owner.id,
       repairOrderId: repair.id,
       finalPrice: 80,

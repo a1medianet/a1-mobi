@@ -14,11 +14,11 @@ describe("canonical repairs navigation stage gate", () => {
     expect(LiveAliasPage().type).toBe(RepairLivePage);
   });
 
-  it.each(["ar", "en"])("keeps /%s/repairs in explicitly labelled demo mode when disabled", async locale => {
+  it.each(["ar", "en"])("keeps canonical /%s/repairs without falling back to fabricated demos when disabled", async locale => {
     vi.stubEnv("A1_MOBI_C_LIVE_02_ENABLED", "0");
     const page = await RepairsPage({ params: Promise.resolve({ locale }) });
-    expect(page.type).toBe("main");
-    expect(page.props.className).toBe("module-page");
+    expect(page.type).toBe(RepairLivePage);
+    expect(page.props.backToDashboard).toBe(true);
     expect(() => LiveAliasPage()).toThrow();
   });
 

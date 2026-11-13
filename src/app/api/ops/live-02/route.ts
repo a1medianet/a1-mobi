@@ -54,7 +54,8 @@ function unavailable(error:unknown) {
 function enabled() { return process.env.A1_MOBI_C_LIVE_02_ENABLED==="1"; }
 
 export async function GET(request:Request) {
-  if(!enabled()) return authJson({error:"NOT_FOUND"},404);
+  // Read access is always permission-gated. A disabled write flag must not
+  // hide existing customer repairs or make read errors look like empty data.
   try {
     const ctx=await currentStoreContext("repair.manage");
     const params=new URL(request.url).searchParams;
@@ -197,7 +198,7 @@ export async function POST(request:Request) {
     }
     if(data.action!=="ready" || repair.status!==RepairStatus.IN_PROGRESS)
       return authJson({error:"STATUS_CONFLICT"},409);
-    await finalizeRepairFinancials({tenantId:ctx.tenantId,actorId:ctx.actorId,
+    await finalizeRepairFinancials({tenantId:ctx.tenantId,branchId:ctx.branchId,actorId:ctx.actorId,
       repairOrderId:repair.id,finalPrice:data.finalPrice,laborCost:data.laborCost,directCost:data.directCost});
     const next=await advanceRepair({tenantId:ctx.tenantId,branchId:ctx.branchId,
       actorId:ctx.actorId,repairOrderId:repair.id,toStatus:RepairStatus.READY});

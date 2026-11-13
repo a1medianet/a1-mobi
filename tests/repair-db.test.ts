@@ -114,7 +114,7 @@ runDb("repair database integration", () => {
       method: PaymentMethod.CASH, currency: "USD", amount: 50, exchangeRate: 1,
     });
     const truth = await finalizeRepairFinancials({
-      tenantId: tenant.id, actorId: user.id, repairOrderId: repair.id,
+      tenantId: tenant.id, branchId: branch.id, actorId: user.id, repairOrderId: repair.id,
       finalPrice: 120, laborCost: 20, directCost: 5,
     });
     repair = await advanceRepair({

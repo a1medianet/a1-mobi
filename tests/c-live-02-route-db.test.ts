@@ -198,7 +198,7 @@ runDb("C-LIVE-02 repair HTTP route / PostgreSQL",()=>{
   expect((await post({action:"intake",customerName:"Bad",customerPhone:"123",deviceDescription:"A",
    condition:"B",reportedIssue:"C",imei:"123"})).status).toBe(400);
   process.env.A1_MOBI_C_LIVE_02_ENABLED="0";
-  expect((await route.GET(new Request(base+"/api/ops/live-02"))).status).toBe(404);
+  expect((await route.GET(new Request(base+"/api/ops/live-02"))).status).toBe(200);
   expect((await post({action:"approve",repairId})).status).toBe(404);
   process.env.A1_MOBI_C_LIVE_02_ENABLED="1";
  },50000);
