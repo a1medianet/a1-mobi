@@ -57,13 +57,13 @@ describe("C-13 owner customer directory gate",()=>{
     expect(db.customer.findMany).not.toHaveBeenCalled();
   });
 
-  it("leaves original demo route untouched when feature gate is off",async ()=>{
+  it("routes to the real customer directory regardless of the legacy demo flag",async ()=>{
     const before=process.env.A1_MOBI_C_LIVE_01_ENABLED;
     try{
-      process.env.A1_MOBI_C_LIVE_01_ENABLED="0";
-      expect((await CustomersPage({params:Promise.resolve({locale:"ar"})})).type).toBe("main");
-      process.env.A1_MOBI_C_LIVE_01_ENABLED="1";
-      expect((await CustomersPage({params:Promise.resolve({locale:"ar"})})).type).toBe(CustomerOwnerDirectory);
+      for(const flag of ["0","1"]){
+        process.env.A1_MOBI_C_LIVE_01_ENABLED=flag;
+        expect((await CustomersPage({params:Promise.resolve({locale:"ar"})})).type).toBe(CustomerOwnerDirectory);
+      }
     } finally {
       if(before===undefined)delete process.env.A1_MOBI_C_LIVE_01_ENABLED;
       else process.env.A1_MOBI_C_LIVE_01_ENABLED=before;

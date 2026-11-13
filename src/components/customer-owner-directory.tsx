@@ -1,4 +1,5 @@
 import Link from "next/link";
+import CustomerCreatePanel from "@/components/customer-create-panel";
 import { currentStoreContext } from "@/server/auth-http";
 import { getBranchCustomerDirectory } from "@/modules/customers/customer-owner-directory";
 
@@ -43,6 +44,7 @@ export default async function CustomerOwnerDirectory({locale}:{locale:"ar"|"en"}
       <p className="module-kicker">A1 MOBI · CUSTOMERS</p>
       <h1>{t.title}</h1><p className="module-sub">{t.sub}</p>
     </div></header>
+    {ctx.permissions.has("foundation.manage") && <CustomerCreatePanel locale={locale} />}
     <section className="metrics ops-metrics" aria-label={t.title}>
       {[[t.total,rows.total],[t.shown,rows.shown]].map(([label,count])=>
         <article key={label} className="metric"><div className="metric-icon blue">♙</div>
