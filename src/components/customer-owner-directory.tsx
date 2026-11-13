@@ -45,9 +45,9 @@ export default async function CustomerOwnerDirectory({locale}:{locale:"ar"|"en"}
     </div></header>
     {ctx.permissions.has("foundation.manage") && <>
       <CustomerCreatePanel locale={locale} />
-      <p style={{textAlign:locale==="ar"?"right":"left",marginBlock:"0 12px"}}>
-        <a className="back-link" href="/api/ops/customers/export">{locale==="ar"?"تصدير قائمة العملاء إلى Excel (CSV)":"Export customers for Excel (CSV)"}</a>
-      </p>
+      <div style={{display:"flex",justifyContent:locale==="ar"?"flex-start":"flex-start",marginBlock:"0 16px"}}>
+        <a className="soft-btn" href="/api/ops/customers/export" download="mobi-customers.csv" style={{display:"inline-flex",alignItems:"center",gap:"8px",padding:"10px 16px",textDecoration:"none",border:"1px solid #cbd9ed",borderRadius:"9px",background:"#fff",fontWeight:700}}>{locale==="ar"?"↓ تصدير العملاء إلى Excel":"↓ Export customers to Excel"}</a>
+      </div>
     </>}
     <section className="metrics ops-metrics" aria-label={t.title}>
       {[[t.total,rows.total],[t.shown,rows.shown]].map(([label,count])=>

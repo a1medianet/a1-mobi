@@ -61,14 +61,11 @@ export default async function BranchOwnerReport({locale,period="month"}:{locale:
     <nav className="mobi-report-periods" aria-label={locale==="ar"?"الفترة":"Period"}>
       {(["day","week","month","year"] as const).map(key=><Link key={key} href={"/"+locale+"/reports?period="+key} aria-current={period===key?"page":undefined} className={period===key?"active":""}>{({ar:{day:"يوم",week:"أسبوع",month:"شهر",year:"سنة"},en:{day:"Day",week:"Week",month:"Month",year:"Year"}} as const)[locale][key]}</Link>)}
     </nav>
-    <section className="mobi-report-comparison" aria-label={locale==="ar"?"مقارنة المبيعات":"Sales comparison"}>
+    <section className="mobi-report-comparison" style={{gridTemplateColumns:"repeat(3,minmax(0,1fr))"}} aria-label={locale==="ar"?"مقارنة المبيعات":"Sales comparison"}>
       <div><small>{locale==="ar"?"المبيعات بعد المرتجعات":"Sales after returns"} · {locale==="ar"?"الفترة الحالية":"Current period"}</small><strong>{money(data.salesAfterReturnsUsd)}</strong></div>
       <div><small>{locale==="ar"?"الفترة السابقة المماثلة":"Previous equal-length period"}</small><strong>{money(previous.salesAfterReturnsUsd)}</strong></div>
       <div><small>{locale==="ar"?"التغير":"Change"}</small><strong>{percent===null?(locale==="ar"?"غير متاح":"N/A"):(percent>=0?"+":"")+percent.toFixed(1)+"%"}</strong><span>{money(delta)} {locale==="ar"?"فرق القيمة":"difference"}</span></div>
-      <div><small>{locale==="ar"?"الأزرق: الحالية · البرتقالي: السابقة. القيم الموجبة فقط؛ المبالغ أعلاه بالدولار.":"Blue: current period · orange: previous period. Positive values only; exact USD amounts above."}</small><div className="mobi-report-compare-bars" aria-hidden="true">
-        {[data.salesAfterReturnsUsd,previous.salesAfterReturnsUsd].map((value,i)=><span key={i} className={i===0?"current":"previous"} style={{height:(Math.max(0,value)/Math.max(1,data.salesAfterReturnsUsd,previous.salesAfterReturnsUsd)*100)+"%"}} />)}
-      </div>
-    </div></section>    <section className="report-grid" aria-label={t.title}>{cards.map(([label,value,tone])=>
+    </section>    <section className="report-grid" aria-label={t.title}>{cards.map(([label,value,tone])=>
       <article className="report-card" key={label}>
         <small>{label}</small><strong><bdi dir="auto">{value}</bdi></strong>
         <span className={"report-tone "+tone}/>
