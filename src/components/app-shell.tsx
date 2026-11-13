@@ -6,11 +6,11 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 const labels = {
-  ar: ["الرئيسية","نقطة البيع","المنتجات","المخزون والأجهزة","الصيانة","العملاء والديون","طلبات المتجر","الصندوق","التعبئة","فحص IMEI","المفقودات والبلاغات","التقارير","الإدارة","الفريق والصلاحيات","الحساب والاشتراك"],
-  en: ["Dashboard","Point of sale","Products","Inventory & devices","Repairs","Customers & debt","Store orders","Cash","Top-up","IMEI check","Lost & found","Reports","Admin","Team & access","Account & subscription"],
+  ar: ["الرئيسية","نقطة البيع","المنتجات","المخزون والأجهزة","الصيانة","العملاء والديون","طلبات المتجر","الصندوق","التعبئة","فحص IMEI","المفقودات والبلاغات","التقارير","الإدارة","الفريق والصلاحيات","الحساب والاشتراك","الديون والتحصيل","الإشعارات والمتابعة","التسويق والحملات"],
+  en: ["Dashboard","Point of sale","Products","Inventory & devices","Repairs","Customers & debt","Store orders","Cash","Top-up","IMEI check","Lost & found","Reports","Admin","Team & access","Account & subscription","Debts and collections","Notifications and follow-up","Marketing and campaigns"],
 };
-const paths = ["","/pos","/products","/inventory","/repairs","/customers","/orders","/cash","/topup","/device-trust","/lost-found","/reports","/admin","/settings/team","/account"];
-const icons = ["⌂","▣","▦","◇","⌁","♙","▣","▤","↗","⌕","⌖","▥","⚙","♜","◎"];
+const paths = ["","/pos","/products","/inventory","/repairs","/customers","/orders","/cash","/topup","/device-trust","/lost-found","/reports","/admin","/settings/team","/account","/debts","/notifications","/campaigns"];
+const icons = ["⌂","▣","▦","◇","⌁","♙","▣","▤","↗","⌕","⌖","▥","⚙","♜","◎","▤","♧","◉"];
 
 export function AppShell({ locale, children, live = false }: {
   locale: "ar" | "en";
@@ -99,11 +99,11 @@ export function AppShell({ locale, children, live = false }: {
         <Link href={"/"+locale} className="mobile-brand" aria-label="A1 Mobi">
           <Image src="/brand/a1-mobi-icon.svg" alt="" className="a1-mobi-brand-icon" width={33} height={33} unoptimized />
         </Link>
-        <span className="workspace-title">{labels[locale][activeIndex] ?? "A1 Mobi"}</span>
+        <span className="workspace-title">{activeIndex >= 0 ? labels[locale][activeIndex] : ""}</span>
         <select className="mobile-workspaces" aria-label={ar ? "انتقل إلى قسم" : "Go to workspace"}
           value={activeIndex >= 0 ? "/"+locale+paths[activeIndex] : ""}
           onChange={event=>router.push(event.target.value)}>
-          {activeIndex < 0 && <option value="" disabled>A1 Mobi</option>}
+          {activeIndex < 0 && <option value="" disabled>{ar?"اختر القسم":"Choose section"}</option>}
           {labels[locale].map((label,index)=><option key={paths[index]} value={"/"+locale+paths[index]}>{label}</option>)}
         </select>
         <div className="top-actions">

@@ -1,6 +1,7 @@
 "use client";
 import { useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import styles from "./operation-forms.module.css";
 
 export default function ManualDebtForm({locale,customers,enabled}:{
   locale:"ar"|"en";enabled:boolean;customers:{id:string;name:string}[];
@@ -48,7 +49,7 @@ export default function ManualDebtForm({locale,customers,enabled}:{
   return <section className="activity-card" style={{padding:20,marginBlock:18}}>
     <h2>{ar?"إضافة مبلغ مستحق":"Add amount due"}</h2>
     {!enabled&&<p role="status">{ar?"إضافة مبالغ جديدة غير متاحة حاليًا.":"New amount entry is currently unavailable."}</p>}
-    <form onSubmit={event=>void submit(event)} style={{display:"grid",gap:14,marginTop:14}}>
+    <form className={styles.form} onSubmit={event=>void submit(event)}>
       <fieldset disabled={!enabled||busy} style={{border:0,padding:0,margin:0,display:"grid",gap:14}}>
       <label>{ar?"العميل":"Customer"}
         <select name="customerId" required defaultValue="" style={{display:"block",width:"100%",minHeight:44}}>
@@ -56,7 +57,7 @@ export default function ManualDebtForm({locale,customers,enabled}:{
           {customers.map(c=><option value={c.id} key={c.id}>{c.name}</option>)}
         </select>
       </label>
-      <div className="cash-close-fields">
+      <div className={styles.twoColumns}>
         <label>{ar?"المبلغ":"Amount"}<input name="amount" type="number" min="0.0001" step="0.0001" required/></label>
         <label>{ar?"العملة":"Currency"}<select name="currency" defaultValue="USD" style={{width:"100%",minHeight:43}}><option value="USD">USD</option><option value="LBP">LBP</option></select></label>
       </div>

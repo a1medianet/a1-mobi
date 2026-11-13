@@ -1,6 +1,7 @@
 "use client";
 import {useState,type FormEvent} from "react";
 import {useRouter} from "next/navigation";
+import styles from "./operation-forms.module.css";
 import type {EngagementRecord} from "@/modules/engagement/engagement-store";
 export default function EngagementPanel({locale,type,initial,customers}:{
   locale:"ar"|"en";type:"FOLLOWUP"|"CAMPAIGN";initial:EngagementRecord[];
@@ -53,7 +54,7 @@ export default function EngagementPanel({locale,type,initial,customers}:{
   return <div style={{display:"grid",gap:18}}>
     <section className="activity-card" style={{padding:20}}>
       <h2>{follow?(ar?"متابعة جديدة":"New follow-up"):(ar?"حملة جديدة":"New campaign")}</h2>
-      <form onSubmit={e=>void submit(e)} style={{display:"grid",gap:12,marginTop:12}}>
+      <form className={styles.form} onSubmit={e=>void submit(e)}>
         <label>{ar?"العنوان":"Title"}<input name="title" required minLength={3} maxLength={120}/></label>
         {follow&&<label>{ar?"العميل":"Customer"}<select name="customerId" style={{display:"block",width:"100%",minHeight:43}}>
           <option value="">{ar?"متابعة عامة":"General follow-up"}</option>
