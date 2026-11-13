@@ -31,7 +31,7 @@ describe("repair read-only safety when write feature gate is closed", () => {
     const response = await GET(new Request(url+"?status=ALL"));
     expect(response.status).toBe(200);
     expect(await response.json()).toMatchObject({
-      orders:[], cashOpen:false, matchedCount:0,
+      orders:[], cashOpen:false, writesEnabled:false, matchedCount:0,
       overview:{ total:0, active:0, ready:0, balanceDue:0 },
     });
     expect(m.ctx).toHaveBeenCalledWith("repair.manage");
@@ -41,6 +41,13 @@ describe("repair read-only safety when write feature gate is closed", () => {
     expect(m.group).toHaveBeenCalledWith(expect.objectContaining({
       where:{tenantId:"t-safe", branchId:"b-safe"},
     }));
+  });
+  it("explicitly announces write availability only for enabled branch repair workflows", async () => {
+    vi.stubEnv("A1_MOBI_C_LIVE_02_ENABLED", "1");
+    const response = await GET(new Request(url));
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({writesEnabled:true});
+    expect(m.ctx).toHaveBeenCalledWith("repair.manage");
   });
   it("never allows a repair mutation while the live-write gate is disabled", async () => {
     const response = await POST(new Request(url,{

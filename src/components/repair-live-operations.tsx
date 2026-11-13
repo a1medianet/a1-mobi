@@ -69,6 +69,7 @@ const dict={
    openTicket:"فتح الطلب",caseDetails:"تفاصيل طلب الصيانة",closeTicket:"إغلاق التفاصيل",
    nextAction:"الإجراء التالي",noAction:"لا توجد إجراءات متاحة لهذه الحالة",
    previousPage:"السابق",nextPage:"التالي",pageLabel:"صفحة",
+   accessories:"الملحقات المستلمة (افصل بينها بفاصلة)",readOnly:"عرض الطلبات متاح، لكن تسجيل عمليات الصيانة غير مفعّل حاليًا. تواصل مع مسؤول النظام.",
  },
  en:{back:"Repairs",title:"Repair orders",intro:"Receive devices, diagnose faults, approve estimates and manage repairs in one place.",
  warning:"Test environment — do not enter real customer details.",
@@ -99,6 +100,7 @@ const dict={
    openTicket:"Open ticket",caseDetails:"Repair ticket details",closeTicket:"Close details",
    nextAction:"Next action",noAction:"No further action for this status",
    previousPage:"Previous",nextPage:"Next",pageLabel:"Page",
+   accessories:"Received accessories (comma-separated)",readOnly:"Repair records are available to view, but saving repair operations is currently disabled. Contact the administrator.",
  },
 } as const;
 
@@ -108,6 +110,7 @@ export default function RepairLivePage({backToDashboard=false}:{backToDashboard?
  const [message,setMessage]=useState(""),[loading,setLoading]=useState(true);
  const [loadFailed,setLoadFailed]=useState(false);
  const [cashOpen,setCashOpen]=useState(false);
+ const [writesEnabled,setWritesEnabled]=useState(false);
  const [totalOrders,setTotalOrders]=useState(0);
  const [overview,setOverview]=useState({total:0,active:0,ready:0,balanceDue:0});
  const [matchedCount,setMatchedCount]=useState(0);
@@ -118,6 +121,7 @@ export default function RepairLivePage({backToDashboard=false}:{backToDashboard?
  const [customerName,setCustomerName]=useState(""),[customerPhone,setCustomerPhone]=useState("");
  const [deviceDescription,setDeviceDescription]=useState(""),[imei,setImei]=useState("");
  const [condition,setCondition]=useState(""),[reportedIssue,setReportedIssue]=useState("");
+ const [accessories,setAccessories]=useState("");
  const [selectedId,setSelectedId]=useState(""),[diagnosis,setDiagnosis]=useState("");
  const [estimate,setEstimate]=useState(""),[labor,setLabor]=useState("0"),[direct,setDirect]=useState("0");
  const [finalPrice,setFinalPrice]=useState("");
@@ -137,10 +141,10 @@ export default function RepairLivePage({backToDashboard=false}:{backToDashboard?
  if(search.trim())listParams.set("q",search.trim());
  const queryUrl="/api/ops/live-02?"+listParams.toString();
  function acceptPage(data:{
-   orders:Order[];cashOpen:boolean;totalOrders:number;matchedCount:number;hasMore:boolean;
+   orders:Order[];cashOpen:boolean;writesEnabled:boolean;totalOrders:number;matchedCount:number;hasMore:boolean;
    overview:{total:number;active:number;ready:number;balanceDue:number};
  }){
-  setOrders(data.orders);setCashOpen(Boolean(data.cashOpen));setLoadFailed(false);
+  setOrders(data.orders);setCashOpen(Boolean(data.cashOpen));setWritesEnabled(data.writesEnabled===true);setLoadFailed(false);
   setOverview(data.overview);
   setTotalOrders(Number(data.totalOrders));setMatchedCount(Number(data.matchedCount));
   setHasMore(Boolean(data.hasMore));
@@ -169,7 +173,7 @@ export default function RepairLivePage({backToDashboard=false}:{backToDashboard?
  },[queryUrl,search,locale]);
  async function send(payload:Record<string,unknown>){
   // Never submit a second mutation when the current order/cash state is unknown.
-  if(busy||loading||loadFailed)return false;
+  if(busy||loading||loadFailed||!writesEnabled)return false;
   setBusy(true);setMessage("");
   try{
    const res=await fetch("/api/ops/live-02",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
@@ -182,7 +186,7 @@ export default function RepairLivePage({backToDashboard=false}:{backToDashboard?
     "تم حفظ العملية، لكن تعذّر تحديث القائمة. أعد التحميل للتحقق من السجل.":
     "Operation saved, but the list could not refresh. Reload to verify the record."));
    if(payload.action==="intake"){
-    setCustomerName("");setCustomerPhone("");setDeviceDescription("");setImei("");setCondition("");setReportedIssue("");
+    setCustomerName("");setCustomerPhone("");setDeviceDescription("");setImei("");setCondition("");setReportedIssue("");setAccessories("");
    }
    if(payload.action==="estimate")setSelectedId("");
    return true;
@@ -197,6 +201,7 @@ export default function RepairLivePage({backToDashboard=false}:{backToDashboard?
   </div><button className="soft-btn" type="button" disabled={busy||loading}
    onClick={()=>void reload().catch(()=>setMessage(locale==="ar"?"تعذّر تحميل بيانات الصيانة. تحقق من تسجيل الدخول ثم أعد المحاولة.":"Could not load repair records. Check sign-in and retry."))}>{t.refresh}</button></header>
   {message&&<p role="status" className="mobi-live-message">{message}</p>}
+  {!loading&&!loadFailed&&!writesEnabled&&<p role="status" className="mobi-live-message">{t.readOnly}</p>}
   <nav onClick={event=>{const link=(event.target as HTMLElement).closest("a");if(!link)return;const target=document.getElementById(link.hash.slice(1));const panel=target?.closest("details");if(panel)panel.open=true;}} className="mobi-live02-flow" aria-label={locale==="ar"?"خطوات العمل":"Repair process"}>
    <a href="#mobi-repair-intake"><b>01</b>{locale==="ar"?"الاستلام":"Receive"}</a>
    <a href="#mobi-repair-diagnosis"><b>02</b>{locale==="ar"?"التشخيص":"Diagnose"}</a>
@@ -206,7 +211,9 @@ export default function RepairLivePage({backToDashboard=false}:{backToDashboard?
   <section className="mobi-live02-forms">
    <details className="mobi-task-panel" name="mobi-repair-task" open><summary>{t.new}</summary><form id="mobi-repair-intake" onSubmit={event=>{
     event.preventDefault();
-    void send({action:"intake",customerName,customerPhone,deviceDescription,imei,condition,reportedIssue,accessories:[]});
+    const received=accessories.split(/[,،\n]/).map(x=>x.trim()).filter(Boolean);
+    if(received.length>12||received.some(x=>x.length>70)){setMessage(t.error);return;}
+    void send({action:"intake",customerName,customerPhone,deviceDescription,imei,condition,reportedIssue,accessories:received});
    }}>
 
     {([
@@ -218,7 +225,8 @@ export default function RepairLivePage({backToDashboard=false}:{backToDashboard?
      pattern={label===t.imei?"[0-9]{15}":undefined}
      maxLength={label===t.imei?15:200}
      value={value} onChange={e=>update(e.target.value)}/></label>)}
-    <button className="primary" type="submit" disabled={busy||loading||loadFailed}>{t.receive}</button>
+    <label>{t.accessories}<input maxLength={1000} value={accessories} onChange={e=>setAccessories(e.target.value)}/></label>
+    <button className="primary" type="submit" disabled={busy||loading||loadFailed||!writesEnabled}>{t.receive}</button>
    </form></details>
    <details className="mobi-task-panel" name="mobi-repair-task"><summary>{t.diagnosis}</summary><form id="mobi-repair-diagnosis" onSubmit={event=>{
     event.preventDefault();
@@ -234,10 +242,10 @@ export default function RepairLivePage({backToDashboard=false}:{backToDashboard?
     </label>
     <label>{t.diagnosis}<input required minLength={2} value={diagnosis} onChange={e=>setDiagnosis(e.target.value)}/></label>
     <label>{t.estimate}<input required min={1} step="0.01" type="number" value={estimate} onChange={e=>setEstimate(e.target.value)}/></label>
-    <button className="primary" type="submit" disabled={busy||loading||loadFailed||!selected}>{t.saveEstimate}</button>
+    <button className="primary" type="submit" disabled={busy||loading||loadFailed||!writesEnabled||!selected}>{t.saveEstimate}</button>
    </form></details>
   </section>
-  {!loading&&!loadFailed&&<details id="mobi-repair-cash" className="mobi-live02-cash">
+  {!loading&&!loadFailed&&writesEnabled&&<details id="mobi-repair-cash" className="mobi-live02-cash">
    <summary><span className="mobi-live02-cash-marker">●</span>{cashOpen?t.cashOpen:t.cashClosed}</summary>
    {!cashOpen&&<form onSubmit={event=>{event.preventDefault();
     if(!window.confirm(locale==="ar"?"هل تريد فتح صندوق الفرع بالقيم المدخلة؟":"Open this branch's cash drawer with these balances?"))return;
@@ -334,11 +342,11 @@ export default function RepairLivePage({backToDashboard=false}:{backToDashboard?
      <div className="mobi-live02-panel-actions">
       <h4>{t.nextAction}</h4>
 
-       {selectedOrder.status==="ESTIMATE_PENDING"?<button type="button" disabled={busy}
+       {writesEnabled&&selectedOrder.status==="ESTIMATE_PENDING"?<button type="button" disabled={busy}
         onClick={()=>void send({action:"approve",repairId:selectedOrder.id})}>{t.approve}</button>:null}
-       {selectedOrder.status==="APPROVED"?<button type="button" disabled={busy}
+       {writesEnabled&&selectedOrder.status==="APPROVED"?<button type="button" disabled={busy}
         onClick={()=>void send({action:"start",repairId:selectedOrder.id})}>{t.start}</button>:null}
-       {selectedOrder.status==="IN_PROGRESS"?<details className="mobi-live02-ready" open={readyId===selectedOrder.id} onToggle={e=>{
+       {writesEnabled&&selectedOrder.status==="IN_PROGRESS"?<details className="mobi-live02-ready" open={readyId===selectedOrder.id} onToggle={e=>{
          if(e.currentTarget.open){
           setReadyId(selectedOrder.id);setFinalPrice("");setLabor("0");setDirect("0");
          }else if(readyId===selectedOrder.id){setReadyId(null);}
@@ -359,7 +367,7 @@ export default function RepairLivePage({backToDashboard=false}:{backToDashboard?
          <button type="submit" disabled={busy||readyId!==selectedOrder.id||!finalPrice.trim()}>{t.submitReady}</button>
         </form>
        </details>:null}
-       {(selectedOrder.status==="READY"||selectedOrder.status==="DELIVERED")&&<RepairSettlementControls
+       {(selectedOrder.status==="DELIVERED"||(writesEnabled&&selectedOrder.status==="READY"))&&<RepairSettlementControls
         order={selectedOrder} locale={locale} t={t} cashOpen={cashOpen} busy={busy} send={send}/>}
      {["INTAKE","DIAGNOSIS","DELIVERED","CANCELLED"].includes(selectedOrder.status)&&
        <p className="module-sub">{t.noAction}</p>}

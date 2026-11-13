@@ -107,7 +107,7 @@ export async function GET(request:Request) {
       balanceDue:Math.round(Number(statusTotals.find(row=>row.status===RepairStatus.READY)
         ?._sum.balanceDue??0)*100)/100,
     };
-    return authJson({cashOpen:Boolean(cashOpen),totalOrders,matchedCount,overview,
+    return authJson({cashOpen:Boolean(cashOpen),writesEnabled:enabled(),totalOrders,matchedCount,overview,
       page,pageSize,hasMore:(page+1)*pageSize<matchedCount,
       orders:rows.map(row=>({
       id:row.id,number:row.number,customerName:row.customerName,device:row.deviceDescription,
