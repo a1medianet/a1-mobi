@@ -44,7 +44,7 @@ export default async function DebtsPage({params}:{params:Promise<{locale:string}
         <p className="module-sub">{ar?"حسابات العملاء والمبالغ المستحقة":"Customer accounts and amounts due"}</p>
       </div>
     </header>
-    <ManualDebtForm locale={locale} customers={rows.map(x=>({id:x.id,name:x.name}))}/>
+    <ManualDebtForm locale={locale} enabled={process.env.A1_MOBI_MANUAL_DEBT_ENABLED==="1"} customers={rows.map(x=>({id:x.id,name:x.name}))}/>
     <section className="activity-card" style={{padding:18}}>
       <h2>{ar?"أرصدة العملاء":"Customer balances"}</h2>
       <div className="table-wrap"><table><thead><tr>

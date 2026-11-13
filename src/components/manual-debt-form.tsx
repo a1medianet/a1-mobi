@@ -2,15 +2,15 @@
 import { useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
-export default function ManualDebtForm({locale,customers}:{
-  locale:"ar"|"en";customers:{id:string;name:string}[];
+export default function ManualDebtForm({locale,customers,enabled}:{
+  locale:"ar"|"en";enabled:boolean;customers:{id:string;name:string}[];
 }){
   const ar=locale==="ar",router=useRouter();
   const [busy,setBusy]=useState(false),[notice,setNotice]=useState("");
   const pending=useRef<{fingerprint:string;idempotencyKey:string}|null>(null);
   async function submit(event:FormEvent<HTMLFormElement>){
     event.preventDefault();
-    if(busy)return;
+    if(busy||!enabled)return;
     const form=event.currentTarget,data=new FormData(form);
     const reason=String(data.get("reason")||"").trim();
     const customerId=String(data.get("customerId")||"");
@@ -47,7 +47,9 @@ export default function ManualDebtForm({locale,customers}:{
   }
   return <section className="activity-card" style={{padding:20,marginBlock:18}}>
     <h2>{ar?"إضافة مبلغ مستحق":"Add amount due"}</h2>
+    {!enabled&&<p role="status">{ar?"إضافة مبالغ جديدة غير متاحة حاليًا.":"New amount entry is currently unavailable."}</p>}
     <form onSubmit={event=>void submit(event)} style={{display:"grid",gap:14,marginTop:14}}>
+      <fieldset disabled={!enabled||busy} style={{border:0,padding:0,margin:0,display:"grid",gap:14}}>
       <label>{ar?"العميل":"Customer"}
         <select name="customerId" required defaultValue="" style={{display:"block",width:"100%",minHeight:44}}>
           <option value="" disabled>{ar?"اختر العميل":"Choose customer"}</option>
@@ -62,6 +64,7 @@ export default function ManualDebtForm({locale,customers}:{
         <textarea name="reason" minLength={8} maxLength={300} required rows={2} style={{display:"block",width:"100%"}}/>
       </label>
       <button className="primary" disabled={busy||customers.length===0} type="submit">{busy?(ar?"جارٍ الحفظ":"Saving"):(ar?"تسجيل الدين":"Record amount due")}</button>
+      </fieldset>
       {notice&&<p role="status">{notice}</p>}
     </form>
   </section>;

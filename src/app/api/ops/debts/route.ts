@@ -15,7 +15,8 @@ const payload=z.object({
 }).strict();
 
 export async function POST(request:Request){
-  if(process.env.A1_MOBI_C_LIVE_01_ENABLED!=="1")return authJson({error:"NOT_AVAILABLE"},404);
+  if(process.env.A1_MOBI_C_LIVE_01_ENABLED!=="1"||process.env.A1_MOBI_MANUAL_DEBT_ENABLED!=="1")
+    return authJson({error:"NOT_AVAILABLE"},404);
   if(!sameOriginMutation(request))return authJson({error:"FORBIDDEN_ORIGIN"},403);
   if(!request.headers.get("content-type")?.toLowerCase().startsWith("application/json"))
     return authJson({error:"INVALID_REQUEST"},400);
