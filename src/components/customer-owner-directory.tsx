@@ -44,7 +44,12 @@ export default async function CustomerOwnerDirectory({locale}:{locale:"ar"|"en"}
       <p className="module-kicker">A1 MOBI · CUSTOMERS</p>
       <h1>{t.title}</h1><p className="module-sub">{t.sub}</p>
     </div></header>
-    {ctx.permissions.has("foundation.manage") && <CustomerCreatePanel locale={locale} />}
+    {ctx.permissions.has("foundation.manage") && <>
+      <CustomerCreatePanel locale={locale} />
+      <p style={{textAlign:locale==="ar"?"right":"left",marginBlock:"0 12px"}}>
+        <a className="back-link" href="/api/ops/customers/export">{locale==="ar"?"تصدير قائمة العملاء إلى Excel (CSV)":"Export customers for Excel (CSV)"}</a>
+      </p>
+    </>}
     <section className="metrics ops-metrics" aria-label={t.title}>
       {[[t.total,rows.total],[t.shown,rows.shown]].map(([label,count])=>
         <article key={label} className="metric"><div className="metric-icon blue">♙</div>
