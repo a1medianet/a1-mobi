@@ -41,7 +41,6 @@ export default async function CustomerOwnerDirectory({locale}:{locale:"ar"|"en"}
   return <main className="module-page">
     <header className="module-header"><div>
       <Link href={"/"+locale} className="back-link">{t.back}</Link>
-      <p className="module-kicker">A1 MOBI · CUSTOMERS</p>
       <h1>{t.title}</h1><p className="module-sub">{t.sub}</p>
     </div></header>
     {ctx.permissions.has("foundation.manage") && <>
@@ -69,6 +68,5 @@ export default async function CustomerOwnerDirectory({locale}:{locale:"ar"|"en"}
         </tr>)}
       </tbody></table></div>
     </section>
-    <p className="mobi-live-hint" role="note">{t.debt}</p>
   </main>;
 }

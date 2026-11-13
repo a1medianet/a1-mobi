@@ -56,10 +56,8 @@ export default async function BranchOwnerReport({locale,period="month"}:{locale:
   return <main className="module-page">
     <header className="module-header"><div>
       <Link href={"/"+locale} className="back-link">{t.back}</Link>
-      <p className="module-kicker">A1 MOBI · REPORTS</p>
       <h1>{t.title}</h1><p className="module-sub">{t.sub}</p>
     </div></header>
-    <p className="preview-notice">{locale==="ar"?`بيئة اختبار: مؤشرات آخر ${durationDays} يومًا من سجلات الفرع؛ ليست حسابات معتمدة.`:`Test environment: metrics from branch records over the past ${durationDays} ${durationDays===1?"day":"days"}; not certified accounts.`}</p>
     <nav className="mobi-report-periods" aria-label={locale==="ar"?"الفترة":"Period"}>
       {(["day","week","month","year"] as const).map(key=><Link key={key} href={"/"+locale+"/reports?period="+key} aria-current={period===key?"page":undefined} className={period===key?"active":""}>{({ar:{day:"يوم",week:"أسبوع",month:"شهر",year:"سنة"},en:{day:"Day",week:"Week",month:"Month",year:"Year"}} as const)[locale][key]}</Link>)}
     </nav>
