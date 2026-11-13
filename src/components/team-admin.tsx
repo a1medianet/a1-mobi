@@ -222,7 +222,7 @@ export function TeamAdmin({ locale }: { locale: "ar" | "en" }) {
   return <section className="module-page">
     <header className="module-header">
       <div>
-        <p className="module-kicker">A1 MOBI · FOUNDATION CONTROL</p>
+
         <h1>{t.title}</h1>
         <p className="module-sub">{t.intro}</p>
       </div>

@@ -22,8 +22,8 @@ export function AppShell({ locale, children, live = false }: {
   const mobileNav = useRef<HTMLElement>(null);
   const [signingOut,setSigningOut] = useState(false);
   const [signOutError,setSignOutError] = useState(false);
-  const [sidebarPreference,setSidebarPreference] = useState<{path:string;collapsed:boolean}|null>(null);
-  const sidebarCollapsed=sidebarPreference?.path===pathname?sidebarPreference.collapsed:pathname.endsWith("/pos");
+  // Navigation must never auto-collapse the desktop menu; only its toggle may do so.
+  const [sidebarCollapsed,setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     mobileNav.current?.querySelector<HTMLElement>('[aria-current="page"]')?.scrollIntoView({ block:"nearest", inline:"center" });
@@ -75,7 +75,7 @@ export function AppShell({ locale, children, live = false }: {
         <button className="sidebar-toggle" type="button"
           aria-label={sidebarCollapsed ? (ar?"توسيع القائمة":"Expand sidebar") : (ar?"طي القائمة":"Collapse sidebar")}
           aria-pressed={sidebarCollapsed}
-          onClick={()=>setSidebarPreference({path:pathname,collapsed:!sidebarCollapsed})}>
+          onClick={()=>setSidebarCollapsed(value=>!value)}>
           <span aria-hidden="true">{sidebarCollapsed ? "»" : "«"}</span>
         </button>
       </div>
