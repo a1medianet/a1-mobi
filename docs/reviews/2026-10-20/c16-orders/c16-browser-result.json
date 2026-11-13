@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "reference": "WEB-D422A432F6C1",
+  "customerTotal": 425.5,
+  "ownerStatus": "CONFIRMED",
+  "mobile": {
+    "width": 375,
+    "innerWidth": 390
+  },
+  "ownerMobile": {
+    "width": 375,
+    "innerWidth": 390
+  },
+  "store": "synthetic UAT only",
+  "scenarios": [
+    "inventory intake",
+    "owner enables link",
+    "customer sees catalog",
+    "mobile shop",
+    "browser checkout",
+    "order reference",
+    "owner inbox receipt",
+    "owner confirmation",
+    "mobile owner view"
+  ]
+}

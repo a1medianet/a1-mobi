@@ -1,0 +1,139 @@
+{
+  "origin": "http://127.0.0.1:3226",
+  "build": "Preview served at configured origin; no hardcoded build identity",
+  "database": "mobi_uat",
+  "viewportSizes": [
+    "1440x900",
+    "390x844"
+  ],
+  "results": [
+    {
+      "name": "invalid-form-en",
+      "status": "PASS",
+      "ms": 1334
+    },
+    {
+      "name": "bootstrap-isolated-uat",
+      "status": "PASS",
+      "ms": 879,
+      "detail": {
+        "database": "mobi_uat",
+        "synthetic": true
+      }
+    },
+    {
+      "name": "actual-ar-form-login",
+      "status": "PASS",
+      "ms": 1775,
+      "detail": {
+        "serverSession": 200,
+        "httpOnlyCookie": true,
+        "redirect": "/ar"
+      }
+    },
+    {
+      "name": "C-ar-1440-settings-team",
+      "status": "PASS",
+      "ms": 1515,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 1368,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-390-settings-team",
+      "status": "PASS",
+      "ms": 1557,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 1338,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-1440-settings-team",
+      "status": "PASS",
+      "ms": 1601,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 1402,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-390-settings-team",
+      "status": "PASS",
+      "ms": 1190,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 1388,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-key-navigation-actual-clicks",
+      "status": "PASS",
+      "ms": 11705
+    },
+    {
+      "name": "gate-visible-image-negative-control",
+      "status": "PASS",
+      "ms": 1670,
+      "detail": {
+        "undecodableVisibleImage": "rejected; temporary DOM control removed"
+      }
+    },
+    {
+      "name": "ar-logout-revokes-session",
+      "status": "PASS",
+      "ms": 3660
+    },
+    {
+      "name": "actual-en-form-login-fresh-session",
+      "status": "PASS",
+      "ms": 2053,
+      "detail": {
+        "serverSession": 200,
+        "httpOnlyCookie": true,
+        "redirect": "/en"
+      }
+    },
+    {
+      "name": "en-logout-revokes-session",
+      "status": "PASS",
+      "ms": 1368
+    },
+    {
+      "name": "B-en-reading-direction",
+      "status": "PASS",
+      "ms": 1358
+    },
+    {
+      "name": "no-uncaught-js-or-console-errors",
+      "status": "PASS",
+      "ms": 0
+    },
+    {
+      "name": "isolated-fixture-cleanup",
+      "status": "PASS",
+      "ms": 1712
+    }
+  ],
+  "errors": [],
+  "blocked": 0,
+  "passed": 15,
+  "failed": 0
+}

@@ -16,6 +16,8 @@ export type PostReturnInput = {
   actorId: string;
   saleId: string;
   number: string;
+  invoiceNumber?: string;
+  nonserializedOnly?: boolean;
   reason: string;
   idempotencyKey: string;
   lines: Array<{
@@ -29,6 +31,9 @@ export type PostReturnInput = {
 export async function postSaleReturn(input: PostReturnInput) {
   if (!input.lines.length) throw new Error("Return must contain at least one line");
   const reason = requireReturnReason(input.reason);
+  if (!input.idempotencyKey.trim() || !input.number.trim()) throw new Error("Return number and idempotency key are required");
+  if (new Set(input.lines.map(line => line.originalSaleLineId)).size !== input.lines.length) throw new Error("Duplicate original return line");
+  input = { ...input, idempotencyKey: input.idempotencyKey.trim() };
 
   return db.$transaction(
     async (tx) => {
@@ -36,14 +41,23 @@ export async function postSaleReturn(input: PostReturnInput) {
         where: { tenantId_idempotencyKey: { tenantId: input.tenantId, idempotencyKey: input.idempotencyKey } },
         include: { lines: true },
       });
-      if (existing) return existing;
+      if (existing) {
+        const lineKey = (line: { originalSaleLineId: string; stockLocationId: string; quantity: unknown }) =>
+          JSON.stringify([line.originalSaleLineId, line.stockLocationId, Number(line.quantity)]);
+        if (existing.branchId !== input.branchId || existing.actorId !== input.actorId || existing.saleId !== input.saleId || existing.reason !== reason ||
+          JSON.stringify(existing.lines.map(lineKey).sort()) !== JSON.stringify(input.lines.map(lineKey).sort())) {
+          throw new Error("RETURN_IDEMPOTENCY_CONFLICT");
+        }
+      }
 
       const [sale, actor, branch] = await Promise.all([
         tx.sale.findUniqueOrThrow({
           where: { id: input.saleId },
           include: {
+            invoice: true,
             lines: {
               include: {
+                product: true,
                 returnLines: {
                   where: { saleReturn: { status: "POSTED" } },
                 },
@@ -58,6 +72,12 @@ export async function postSaleReturn(input: PostReturnInput) {
         throw new Error("Cross-tenant return is forbidden");
       }
       if (sale.branchId !== branch.id) throw new Error("Cross-branch return is forbidden");
+
+      if (!actor.isActive || (actor.branchId && actor.branchId !== branch.id)) throw new Error("Invalid return actor branch");
+      if (input.invoiceNumber !== undefined && (!sale.invoice || sale.invoice.number !== input.invoiceNumber || sale.invoice.status !== "ISSUED")) throw new Error("INVALID_RETURN_INVOICE");
+      if (input.nonserializedOnly && input.lines.some(line => sale.lines.some(original => original.id === line.originalSaleLineId && (original.serializedDeviceId || original.product.isSerialized)))) throw new Error("SERIALIZED_RETURN_REQUIRES_TRUST_WORKFLOW");
+      if (existing) return existing;
+      if (sale.status !== SaleStatus.COMPLETED && sale.status !== SaleStatus.PARTIALLY_RETURNED) throw new Error("INVALID_RETURN_SALE_STATUS");
 
       const saleLineMap = new Map(sale.lines.map((line) => [line.id, line]));
       const locations = await tx.stockLocation.findMany({
@@ -183,7 +203,16 @@ export async function postSaleReturn(input: PostReturnInput) {
           entityType: "SaleReturn",
           entityId: saleReturn.id,
           reason,
-          after: { saleId: sale.id, refundBase, status },
+          before: {
+            saleId: sale.id, status: sale.status,
+            lines: prepared.map(({ original }) => ({ originalSaleLineId: original.id,
+              returnedQuantity: original.returnLines.reduce((sum, line) => sum + Number(line.quantity), 0) })),
+          },
+          after: { saleId: sale.id, refundBase, status,
+            lines: prepared.map(({ requested, original }) => ({ originalSaleLineId: original.id,
+              stockLocationId: requested.stockLocationId, quantity: requested.quantity,
+              returnedQuantity: original.returnLines.reduce((sum, line) => sum + Number(line.quantity), 0) + requested.quantity })),
+          },
         },
       });
 

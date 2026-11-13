@@ -1,0 +1,901 @@
+{
+  "origin": "http://127.0.0.1:3226",
+  "build": "Preview served at configured origin; no hardcoded build identity",
+  "database": "mobi_uat",
+  "viewportSizes": [
+    "1440x900",
+    "390x844"
+  ],
+  "results": [
+    {
+      "name": "login-ar-1440-hydration",
+      "status": "PASS",
+      "ms": 1305,
+      "detail": {
+        "width": 1440,
+        "scroll": 1440,
+        "heading": true,
+        "text": 349,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "login-ar-390-hydration",
+      "status": "PASS",
+      "ms": 535,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 349,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "login-en-1440-hydration",
+      "status": "PASS",
+      "ms": 661,
+      "detail": {
+        "width": 1440,
+        "scroll": 1440,
+        "heading": true,
+        "text": 343,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "login-en-390-hydration",
+      "status": "PASS",
+      "ms": 480,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 343,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "invalid-form-ar",
+      "status": "PASS",
+      "ms": 1348
+    },
+    {
+      "name": "invalid-form-en",
+      "status": "PASS",
+      "ms": 1111
+    },
+    {
+      "name": "pending-timeout-browser-recovery",
+      "status": "PASS",
+      "ms": 12626
+    },
+    {
+      "name": "bootstrap-isolated-uat",
+      "status": "PASS",
+      "ms": 2059,
+      "detail": {
+        "database": "mobi_uat",
+        "synthetic": true
+      }
+    },
+    {
+      "name": "actual-ar-form-login",
+      "status": "PASS",
+      "ms": 4760,
+      "detail": {
+        "serverSession": 200,
+        "httpOnlyCookie": true,
+        "redirect": "/ar"
+      }
+    },
+    {
+      "name": "C-ar-1440-admin",
+      "status": "PASS",
+      "ms": 1844,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 1447,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-1440-settings-team",
+      "status": "PASS",
+      "ms": 2482,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 1368,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-1440-account",
+      "status": "PASS",
+      "ms": 2467,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 767,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-1440-pos",
+      "status": "PASS",
+      "ms": 991,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 742,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-1440-products",
+      "status": "PASS",
+      "ms": 2400,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 2210,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-1440-inventory",
+      "status": "PASS",
+      "ms": 1658,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 725,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-1440-repairs",
+      "status": "PASS",
+      "ms": 1483,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 1099,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-1440-customers",
+      "status": "PASS",
+      "ms": 1350,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 707,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-1440-cash",
+      "status": "PASS",
+      "ms": 1689,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 621,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-1440-reports",
+      "status": "PASS",
+      "ms": 1127,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 887,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-390-admin",
+      "status": "PASS",
+      "ms": 1290,
+      "detail": {
+        "width": 558,
+        "scroll": 558,
+        "heading": true,
+        "text": 1427,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-390-settings-team",
+      "status": "PASS",
+      "ms": 1128,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 1338,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-390-account",
+      "status": "PASS",
+      "ms": 898,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 738,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-390-pos",
+      "status": "PASS",
+      "ms": 1011,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 719,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-390-products",
+      "status": "PASS",
+      "ms": 947,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 2189,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-390-inventory",
+      "status": "PASS",
+      "ms": 981,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 696,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-390-repairs",
+      "status": "PASS",
+      "ms": 804,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 1079,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-390-customers",
+      "status": "PASS",
+      "ms": 1517,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 680,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-390-cash",
+      "status": "PASS",
+      "ms": 904,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 602,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-ar-390-reports",
+      "status": "PASS",
+      "ms": 744,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 867,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-1440-admin",
+      "status": "PASS",
+      "ms": 1426,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 1497,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-1440-settings-team",
+      "status": "PASS",
+      "ms": 1006,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 1402,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-1440-account",
+      "status": "PASS",
+      "ms": 1317,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 836,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-1440-pos",
+      "status": "PASS",
+      "ms": 890,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 749,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-1440-products",
+      "status": "PASS",
+      "ms": 1226,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 2343,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-1440-inventory",
+      "status": "PASS",
+      "ms": 986,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 752,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-1440-repairs",
+      "status": "PASS",
+      "ms": 1508,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 1095,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-1440-customers",
+      "status": "PASS",
+      "ms": 1265,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 742,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-1440-cash",
+      "status": "PASS",
+      "ms": 873,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 648,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-1440-reports",
+      "status": "PASS",
+      "ms": 882,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 962,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-390-admin",
+      "status": "PASS",
+      "ms": 890,
+      "detail": {
+        "width": 595,
+        "scroll": 595,
+        "heading": true,
+        "text": 1491,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-390-settings-team",
+      "status": "PASS",
+      "ms": 1464,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 1388,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-390-account",
+      "status": "PASS",
+      "ms": 758,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 813,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-390-pos",
+      "status": "PASS",
+      "ms": 678,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 850,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-390-products",
+      "status": "PASS",
+      "ms": 735,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 2334,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-390-inventory",
+      "status": "PASS",
+      "ms": 737,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 732,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-390-repairs",
+      "status": "PASS",
+      "ms": 837,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 1087,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-390-customers",
+      "status": "PASS",
+      "ms": 1099,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 726,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-390-cash",
+      "status": "PASS",
+      "ms": 745,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 644,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-en-390-reports",
+      "status": "PASS",
+      "ms": 561,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 955,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "C-key-navigation-actual-clicks",
+      "status": "PASS",
+      "ms": 9472
+    },
+    {
+      "name": "ar-logout-revokes-session",
+      "status": "PASS",
+      "ms": 911
+    },
+    {
+      "name": "actual-en-form-login-fresh-session",
+      "status": "PASS",
+      "ms": 1352,
+      "detail": {
+        "serverSession": 200,
+        "httpOnlyCookie": true,
+        "redirect": "/en"
+      }
+    },
+    {
+      "name": "en-logout-revokes-session",
+      "status": "PASS",
+      "ms": 667
+    },
+    {
+      "name": "A-ar-1440-home",
+      "status": "PASS",
+      "ms": 1515,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 1513,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "A-ar-1440-pricing",
+      "status": "PASS",
+      "ms": 1165,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 1019,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "A-ar-1440-demo",
+      "status": "PASS",
+      "ms": 995,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 1625,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "A-ar-390-home",
+      "status": "PASS",
+      "ms": 1099,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 1464,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "A-ar-390-pricing",
+      "status": "PASS",
+      "ms": 1106,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 970,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "A-ar-390-demo",
+      "status": "PASS",
+      "ms": 893,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 1576,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "A-en-1440-home",
+      "status": "PASS",
+      "ms": 1584,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 2031,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "A-en-1440-pricing",
+      "status": "PASS",
+      "ms": 1205,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 1144,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "A-en-1440-demo",
+      "status": "PASS",
+      "ms": 997,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 1744,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "A-en-390-home",
+      "status": "PASS",
+      "ms": 1271,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 1993,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "A-en-390-pricing",
+      "status": "PASS",
+      "ms": 781,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 1106,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "A-en-390-demo",
+      "status": "PASS",
+      "ms": 827,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 1706,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "A-ar-actual-links-and-pricing-subjects",
+      "status": "PASS",
+      "ms": 4890,
+      "detail": {
+        "mailtoSubjects": [
+          "A1 Mobi — متجر واحد",
+          "A1 Mobi — عدة فروع"
+        ],
+        "mailClick": "default intercepted; no email sent"
+      }
+    },
+    {
+      "name": "A-en-actual-links-and-pricing-subjects",
+      "status": "PASS",
+      "ms": 4513,
+      "detail": {
+        "mailtoSubjects": [
+          "A1 Mobi — Single store",
+          "A1 Mobi — Multiple branches"
+        ],
+        "mailClick": "default intercepted; no email sent"
+      }
+    },
+    {
+      "name": "B-layout-ar-1440",
+      "status": "PASS",
+      "ms": 2224,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 2460,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "B-layout-ar-390",
+      "status": "PASS",
+      "ms": 1542,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 2406,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "B-layout-en-1440",
+      "status": "PASS",
+      "ms": 2141,
+      "detail": {
+        "width": 1440,
+        "scroll": 1425,
+        "heading": true,
+        "text": 2765,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "B-layout-en-390",
+      "status": "PASS",
+      "ms": 1382,
+      "detail": {
+        "width": 390,
+        "scroll": 390,
+        "heading": true,
+        "text": 2714,
+        "badImages": [],
+        "fatal": false
+      }
+    },
+    {
+      "name": "B-en-reading-direction",
+      "status": "PASS",
+      "ms": 755
+    },
+    {
+      "name": "B-en-reading-direction-source-correction",
+      "status": "PASS",
+      "ms": 930,
+      "detail": {
+        "validation": "Source CSS injected into fixed preview for focused verification; no rebuilt application or server modification"
+      }
+    },
+    {
+      "name": "no-uncaught-js-or-console-errors",
+      "status": "PASS",
+      "ms": 1
+    },
+    {
+      "name": "isolated-fixture-cleanup",
+      "status": "PASS",
+      "ms": 520
+    }
+  ],
+  "errors": [],
+  "blocked": 0,
+  "passed": 75,
+  "failed": 0
+}

@@ -45,6 +45,7 @@ model Tenant {
   warranties            Warranty[]
   attachments           Attachment[]
   customers             Customer[]
+  storeOrderRequests     StoreOrderRequest[]
   customerDevices       CustomerDevice[]
   debtAccounts          DebtAccount[]
   debtEntries           DebtEntry[]
@@ -85,6 +86,9 @@ model Branch {
   warranties          Warranty[]
   attachments         Attachment[]
   createdCustomers    Customer[]
+  storeOrderRequests   StoreOrderRequest[]
+  publicStoreSlug      String?              @unique
+  acceptingStoreOrders Boolean              @default(false)
   debtEntries         DebtEntry[]
   cashSessions        CashSession[]
   cashMovements       CashMovement[]
@@ -1380,4 +1384,30 @@ model AuthAttempt {
   windowStart DateTime @default(now())
 
   @@index([windowStart])
+}
+
+// Customer's web order request is deliberately NOT a paid Sale, an Invoice, or
+// a stock reservation. Owner must confirm against real inventory and complete
+// fulfillment in the existing POS. All amounts are snapshotted server-side.
+model StoreOrderRequest {
+  id             String   @id @default(cuid())
+  tenantId       String
+  branchId       String
+  idempotencyKey String
+  number         String
+  customerName   String
+  customerPhone  String
+  customerNote   String?
+  status         String   @default("NEW")
+  items          Json
+  totalAmount    Decimal  @db.Decimal(18, 4)
+  currency       String   @default("USD")
+  tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch         Branch   @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([tenantId, idempotencyKey])
+  @@unique([tenantId, number])
+  @@index([tenantId, branchId, createdAt])
 }

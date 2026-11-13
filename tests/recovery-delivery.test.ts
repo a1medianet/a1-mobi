@@ -23,7 +23,7 @@ beforeEach(() => {
   vi.stubEnv("A1_MOBI_SMTP_PORT", "587");
   vi.stubEnv("A1_MOBI_SMTP_USER", "smtp-user");
   vi.stubEnv("A1_MOBI_SMTP_PASSWORD", "test-only-password");
-  vi.stubEnv("A1_MOBI_SMTP_FROM", "noreply@example.test");
+  vi.stubEnv("A1_MOBI_SMTP_FROM", "hi@a1medianet.com");
   mocks.createTransport.mockReturnValue({ sendMail: mocks.sendMail, close: mocks.close });
   mocks.sendMail.mockResolvedValue({});
 });
@@ -86,9 +86,24 @@ describe("internal recovery delivery", () => {
       tls: { minVersion: "TLSv1.2", rejectUnauthorized: true }, logger: false, debug: false,
     }));
     expect(mocks.sendMail).toHaveBeenCalledWith(expect.objectContaining({
+      from: "hi@a1medianet.com",
       to: "owner@example.test", text: expect.stringContaining(token), html: expect.stringContaining('dir="rtl"'),
     }));
     expect(mocks.close).toHaveBeenCalledTimes(2);
+  });
+  it("uses the approved A1 Mobi sender when SMTP_FROM is not configured", async () => {
+    vi.stubEnv("A1_MOBI_SMTP_FROM", "");
+    expect(recoveryConfigurationStatus().ready).toBe(true);
+    expect((await POST(request())).status).toBe(200);
+    expect(mocks.sendMail).toHaveBeenCalledWith(expect.objectContaining({
+      from: "hi@a1medianet.com", to: "owner@example.test",
+    }));
+  });
+  it("rejects malformed custom SMTP sender instead of delivering mail", async () => {
+    vi.stubEnv("A1_MOBI_SMTP_FROM", "wrong\r\nBcc: victim@example.test");
+    expect(recoveryConfigurationStatus().ready).toBe(false);
+    expect((await POST(request())).status).toBe(503);
+    expect(mocks.sendMail).not.toHaveBeenCalled();
   });
   it("returns a generic failure and closes transport without exposing SMTP error data", async () => {
     mocks.sendMail.mockRejectedValue(new Error(`sensitive ${token}`));

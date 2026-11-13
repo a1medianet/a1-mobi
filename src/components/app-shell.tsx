@@ -1,23 +1,29 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const labels = {
-  ar: ["الرئيسية","نقطة البيع","المنتجات","المخزون والأجهزة","الصيانة","العملاء والديون","الصندوق","التعبئة","فحص IMEI","التقارير","الإدارة","الفريق والصلاحيات","الحساب والاشتراك"],
-  en: ["Dashboard","Point of sale","Products","Inventory & devices","Repairs","Customers & debt","Cash","Top-up","IMEI check","Reports","Admin","Team & access","Account & subscription"],
+  ar: ["الرئيسية","نقطة البيع","المنتجات","المخزون والأجهزة","الصيانة","العملاء والديون","طلبات المتجر","الصندوق","التعبئة","فحص IMEI","المفقودات والبلاغات","التقارير","الإدارة","الفريق والصلاحيات","الحساب والاشتراك","الديون والتحصيل","الإشعارات والمتابعة","التسويق والحملات"],
+  en: ["Dashboard","Point of sale","Products","Inventory & devices","Repairs","Customers & debt","Store orders","Cash","Top-up","IMEI check","Lost & found","Reports","Admin","Team & access","Account & subscription","Debts and collections","Notifications and follow-up","Marketing and campaigns"],
 };
-const paths = ["","/pos","/products","/inventory","/repairs","/customers","/cash","/topup","/device-trust","/reports","/admin","/settings/team","/account"];
-const icons = ["⌂","▣","▦","◇","⌁","♙","▤","↗","⌕","▥","⚙","♜","◎"];
+const paths = ["","/pos","/products","/inventory","/repairs","/customers","/orders","/cash","/topup","/device-trust","/lost-found","/reports","/admin","/settings/team","/account","/debts","/notifications","/campaigns"];
+const icons = ["⌂","▣","▦","◇","⌁","♙","▣","▤","↗","⌕","⌖","▥","⚙","♜","◎","▤","♧","◉"];
 
-export function AppShell({ locale, children }: {
+export function AppShell({ locale, children, live = false }: {
   locale: "ar" | "en";
   children: React.ReactNode;
+  live?: boolean;
 }) {
   const pathname = usePathname();
   const router = useRouter();
   const mobileNav = useRef<HTMLElement>(null);
+  const [signingOut,setSigningOut] = useState(false);
+  const [signOutError,setSignOutError] = useState(false);
+  // Navigation must never auto-collapse the desktop menu; only its toggle may do so.
+  const [sidebarCollapsed,setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     mobileNav.current?.querySelector<HTMLElement>('[aria-current="page"]')?.scrollIntoView({ block:"nearest", inline:"center" });
@@ -28,8 +34,23 @@ export function AppShell({ locale, children }: {
   const otherPath = pathname.replace(/^\/(ar|en)(?=\/|$)/,"/"+other);
   const activeIndex = paths.findIndex(path => pathname === "/"+locale+path);
 
+  async function signOut() {
+    if (signingOut) return;
+    setSigningOut(true);
+    setSignOutError(false);
+    try {
+      const response = await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
+      if (!response.ok) throw new Error("Logout failed");
+      router.replace("/" + locale + "/login");
+      router.refresh();
+    } catch {
+      setSignOutError(true);
+      setSigningOut(false);
+    }
+  }
+
   const navigation = (mobile: boolean) => {
-    const indexes = mobile ? [0,1,2,4,12] : labels[locale].map((_,index)=>index);
+    const indexes = mobile ? [0,1,2,4,6,14] : labels[locale].map((_,index)=>index);
     return indexes.map(index => {
       const label = labels[locale][index];
       const active = index === activeIndex;
@@ -42,38 +63,54 @@ export function AppShell({ locale, children }: {
     });
   };
 
-  return <div lang={locale} dir={ar ? "rtl" : "ltr"} className="app-shell">
+  return <div lang={locale} dir={ar ? "rtl" : "ltr"} className={"app-shell"+(sidebarCollapsed?" sidebar-collapsed":"")}>
     <a className="skip-link" href="#main-content">{ar ? "انتقل إلى المحتوى" : "Skip to content"}</a>
 
     <aside className="sidebar">
-      <Link href={"/"+locale} className="brand" aria-label="A1 Mobi">
-        <span className="brand-mark" aria-hidden="true">A1</span>
-        <span><b>Mobi</b><small>{ar ? "منصة المتجر" : "Store platform"}</small></span>
-      </Link>
+      <div className="brand-row">
+        <Link href={"/"+locale} className="brand" aria-label="A1 Mobi">
+          <Image src="/brand/a1-mobi-logo-white.svg" alt="" className="a1-mobi-sidebar-logo" width={170} height={55} unoptimized priority />
+          <Image src="/brand/a1-mobi-icon-white.svg" alt="" className="a1-mobi-sidebar-icon" width={42} height={42} unoptimized />
+        </Link>
+        <button className="sidebar-toggle" type="button"
+          aria-label={sidebarCollapsed ? (ar?"توسيع القائمة":"Expand sidebar") : (ar?"طي القائمة":"Collapse sidebar")}
+          aria-pressed={sidebarCollapsed}
+          onClick={()=>setSidebarCollapsed(value=>!value)}>
+          <span aria-hidden="true">{sidebarCollapsed ? "»" : "«"}</span>
+        </button>
+      </div>
       <nav className="nav-list" aria-label={ar ? "أقسام المتجر" : "Store workspaces"}>{navigation(false)}</nav>
+      <div className="sidebar-signout">
+        <button className="nav-item" type="button" onClick={signOut} disabled={signingOut} aria-busy={signingOut}>
+          <span className="nav-icon" aria-hidden="true">↪</span>
+          <span>{signingOut ? (ar ? "جارٍ تسجيل الخروج…" : "Signing out…") : (ar ? "تسجيل الخروج" : "Log out")}</span>
+        </button>
+        {signOutError && <small role="alert">{ar ? "تعذر تسجيل الخروج. حاول مجددًا." : "Could not log out. Please try again."}</small>}
+      </div>
       <div className="sidebar-foot">
         <div className="status-dot pilot" aria-hidden="true" />
-        <div><b>{ar ? "بيئة تدريب" : "Practice workspace"}</b>
-          <small>{ar ? "أمثلة للتدريب فقط · ليست مبيعات حقيقية" : "Samples only · not real sales"}</small></div>
+        <div><b>{live?(ar?"مساحة المتجر":"Store workspace"):(ar ? "بيئة تدريب" : "Practice workspace")}</b>
+          <small>{live?(ar?"إدارة عمليات متجرك":"Manage your store operations"):(ar ? "أمثلة للتدريب فقط · ليست مبيعات حقيقية" : "Samples only · not real sales")}</small></div>
       </div>
     </aside>
 
     <div className="workspace">
       <header className="topbar">
         <Link href={"/"+locale} className="mobile-brand" aria-label="A1 Mobi">
-          <span className="brand-mark" aria-hidden="true">A1</span><b>Mobi</b>
+          <Image src="/brand/a1-mobi-icon.svg" alt="" className="a1-mobi-brand-icon" width={33} height={33} unoptimized />
         </Link>
-        <span className="workspace-title">{labels[locale][activeIndex] ?? "A1 Mobi"}</span>
+        <span className="workspace-title">{activeIndex >= 0 ? labels[locale][activeIndex] : ""}</span>
         <select className="mobile-workspaces" aria-label={ar ? "انتقل إلى قسم" : "Go to workspace"}
           value={activeIndex >= 0 ? "/"+locale+paths[activeIndex] : ""}
           onChange={event=>router.push(event.target.value)}>
-          {activeIndex < 0 && <option value="" disabled>A1 Mobi</option>}
+          {activeIndex < 0 && <option value="" disabled>{ar?"اختر القسم":"Choose section"}</option>}
           {labels[locale].map((label,index)=><option key={paths[index]} value={"/"+locale+paths[index]}>{label}</option>)}
         </select>
         <div className="top-actions">
+          <button className="locale topbar-signout" type="button" onClick={signOut} disabled={signingOut} aria-busy={signingOut}>{signingOut ? (ar ? "جارٍ الخروج…" : "Signing out…") : (ar ? "خروج" : "Log out")}</button>
           <Link className="locale account-link" href={"/"+locale+"/account"}>{ar ? "الحساب" : "Account"}</Link>
           <Link className="locale" href={"/product/"+locale} title={ar?"صفحة المنتج":"Product site"}>{ar?"الموقع":"Site"}</Link>
-          <span className="environment-label pilot-label">{ar?"بيئة تجربة":"Demo mode"}</span>
+          <span className="environment-label pilot-label">{live?(ar?"المتجر":"Store"):(ar?"بيئة تجربة":"Demo mode")}</span>
           <Link className="locale" href={otherPath} hrefLang={other}
             aria-label={ar ? "Switch to English" : "التبديل إلى العربية"}>{ar ? "EN" : "العربية"}</Link>
         </div>

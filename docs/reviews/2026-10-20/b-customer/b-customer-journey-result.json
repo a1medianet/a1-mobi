@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "mobile": {
+    "width": 375,
+    "viewport": 390
+  },
+  "scenarios": [
+    "add to cart",
+    "prepare sample inquiry",
+    "copy summary",
+    "clear",
+    "contact shortcut",
+    "mobile 390",
+    "English"
+  ]
+}

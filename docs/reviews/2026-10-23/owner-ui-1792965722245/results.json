@@ -1,0 +1,39 @@
+{
+  "scope": "Thaghr local 5437 only",
+  "status": "INCOMPLETE",
+  "generatedAt": "2026-10-25T22:05:39.699Z",
+  "fixtureTenantId": "cmvodkmpv000ki0tw9yd1zsom",
+  "results": [
+    {
+      "name": "local-database-preflight",
+      "status": "PASS",
+      "detail": "Literal loopback PostgreSQL port 5437; SELECT 1"
+    },
+    {
+      "name": "local-dev-server",
+      "status": "PASS",
+      "detail": "Dedicated loopback app, explicit local DB and pilot flag"
+    },
+    {
+      "name": "isolated-fixture-and-authentication",
+      "status": "PASS",
+      "detail": "Real login, HttpOnly cookie, permissions, isolated tenant catalog and anonymous rejection"
+    },
+    {
+      "name": "http-purchase-sale-return-count",
+      "status": "PASS",
+      "detail": "Balances 0 → 5 → 2 → 3 → 4; exact replays do not duplicate; stale count and foreign origin rejected; before/after audits verified"
+    },
+    {
+      "name": "authenticated-browser-journey",
+      "status": "BLOCKED_OR_FAILED",
+      "errorClass": "Error",
+      "reason": "CDP_TIMEOUT"
+    }
+  ],
+  "limits": [
+    "No physical scanner or printer validation",
+    "No release approval",
+    "Synthetic business records retained; fixture sessions revoked when reachable"
+  ]
+}

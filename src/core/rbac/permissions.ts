@@ -7,6 +7,7 @@ export const PERMISSIONS = [
   "catalog.read",
   "inventory.read",
   "sell.create",
+  "sell.return",
   "repair.manage",
   "customers.read",
   "debt.manage",

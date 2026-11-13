@@ -1,0 +1,166 @@
+{
+  "scope": "Thaghr local 5437 only",
+  "status": "PASS",
+  "generatedAt": "2026-10-26T05:03:51.398Z",
+  "fixtureTenantId": "cmvoruf3j000ki0usgqppl296",
+  "results": [
+    {
+      "name": "local-database-preflight",
+      "status": "PASS",
+      "detail": "Literal loopback PostgreSQL port 5437; SELECT 1"
+    },
+    {
+      "name": "local-dev-server",
+      "status": "PASS",
+      "detail": "Dedicated loopback app, explicit local DB and pilot flag"
+    },
+    {
+      "name": "isolated-fixture-and-authentication",
+      "status": "PASS",
+      "detail": "Real login, HttpOnly cookie, permissions, isolated tenant catalog and anonymous rejection"
+    },
+    {
+      "name": "http-purchase-sale-return-count",
+      "status": "PASS",
+      "detail": "Balances 0 → 5 → 2 → 3 → 4; exact replays do not duplicate; stale count and foreign origin rejected; before/after audits verified"
+    },
+    {
+      "name": "browser-real-form-login",
+      "status": "PASS",
+      "detail": "Server session 200 and HttpOnly cookie; no authentication mocks"
+    },
+    {
+      "name": "browser-purchase-receipt",
+      "status": "PASS",
+      "detail": "Two EAN+Enter scans persisted: 4 → 6"
+    },
+    {
+      "name": "browser-scanned-quantity-sale",
+      "status": "PASS",
+      "detail": "Two scans create quantity 2 and a persisted invoice: 6 → 4"
+    },
+    {
+      "name": "browser-sale-return",
+      "status": "PASS",
+      "detail": "Invoice lookup and reasoned quantity 1 return: 4 → 5; cash payout not tested"
+    },
+    {
+      "name": "browser-stock-count",
+      "status": "PASS",
+      "detail": "Recorded 5, counted 4; persisted variance −1"
+    },
+    {
+      "name": "browser-print-render-en",
+      "status": "PASS",
+      "detail": "Three isolated 80×40mm PDF pages; CSS dimensions and overflow checked. No physical hardware claim."
+    },
+    {
+      "name": "browser-print-render-ar",
+      "status": "PASS",
+      "detail": "Three isolated 80×40mm PDF pages; CSS dimensions and overflow checked. No physical hardware claim."
+    },
+    {
+      "name": "closure-storefront-owner-customer",
+      "status": "PASS",
+      "detail": "Catalog create/update/archive with three audits; public availability; real customer basket/form → saved owner request → confirmation; stock unchanged; paused storefront 404 without loading contradiction"
+    },
+    {
+      "name": "closure-cash-open-browser",
+      "status": "PASS",
+      "detail": "Opening form → real authenticated cash.manage API → persisted OPEN session and audit → refreshed cash page"
+    },
+    {
+      "name": "closure-repair-step-navigation",
+      "status": "PASS",
+      "detail": "Process links actually open their collapsed intake and diagnosis panels"
+    },
+    {
+      "name": "pos-ar-390",
+      "status": "PASS",
+      "detail": {
+        "collapsed": {
+          "overflow": false,
+          "width": 390,
+          "collapsed": true
+        },
+        "expanded": {
+          "overflow": false,
+          "width": 390,
+          "collapsed": false
+        },
+        "scanCartCheckout": "Exercised through real EN controls earlier in this journey"
+      }
+    },
+    {
+      "name": "pos-ar-1440",
+      "status": "PASS",
+      "detail": {
+        "collapsed": {
+          "overflow": false,
+          "width": 1349,
+          "collapsed": true
+        },
+        "expanded": {
+          "overflow": false,
+          "width": 1181,
+          "collapsed": false
+        },
+        "scanCartCheckout": "Exercised through real EN controls earlier in this journey"
+      }
+    },
+    {
+      "name": "pos-en-390",
+      "status": "PASS",
+      "detail": {
+        "collapsed": {
+          "overflow": false,
+          "width": 390,
+          "collapsed": true
+        },
+        "expanded": {
+          "overflow": false,
+          "width": 390,
+          "collapsed": false
+        },
+        "scanCartCheckout": "Exercised through real EN controls earlier in this journey"
+      }
+    },
+    {
+      "name": "pos-en-1440",
+      "status": "PASS",
+      "detail": {
+        "collapsed": {
+          "overflow": false,
+          "width": 1349,
+          "collapsed": true
+        },
+        "expanded": {
+          "overflow": false,
+          "width": 1181,
+          "collapsed": false
+        },
+        "scanCartCheckout": "Exercised through real EN controls earlier in this journey"
+      }
+    },
+    {
+      "name": "closure-reports-labels",
+      "status": "PASS",
+      "detail": "Day/month range labels; both series and explicit color/value semantics; ASCII digits in Arabic report"
+    },
+    {
+      "name": "closure-team-account-labels",
+      "status": "PASS",
+      "detail": "Standard owner role translated in Arabic; unconfigured billing shows a readable state without internal error codes. Configured remote billing remains unverified."
+    },
+    {
+      "name": "browser-completion",
+      "status": "PASS",
+      "detail": "No uncaught JavaScript exceptions; browser is terminated by owned-process teardown, without waiting for a reply from a closed CDP endpoint"
+    }
+  ],
+  "limits": [
+    "No physical scanner or printer validation",
+    "No release approval",
+    "Synthetic business records retained; fixture sessions revoked when reachable"
+  ]
+}
