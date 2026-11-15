@@ -1411,3 +1411,26 @@ model StoreOrderRequest {
   @@unique([tenantId, number])
   @@index([tenantId, branchId, createdAt])
 }
+
+// Platform authentication is intentionally separate from tenant users and roles.
+model PlatformAdmin {
+  id           String            @id @default(cuid())
+  email        String            @unique
+  passwordHash String
+  isActive     Boolean           @default(true)
+  sessions     PlatformSession[]
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+}
+
+model PlatformSession {
+  id        String        @id @default(cuid())
+  adminId   String
+  tokenHash String        @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime      @default(now())
+  admin     PlatformAdmin @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId, expiresAt])
+}
