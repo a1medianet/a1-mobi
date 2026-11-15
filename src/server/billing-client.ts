@@ -51,5 +51,52 @@ export async function getMobiEntitlements(billingTenantKey:string){
 }
 
 export function featureEnabled(snapshot:MobiEntitlementSnapshot,feature:string){
+  if(!["trialing","active"].includes(snapshot.status)) return false;
+  if(snapshot.expiresAt){
+    const end=Date.parse(snapshot.expiresAt);
+    if(!Number.isFinite(end)||end<=Date.now()) return false;
+  }
   return snapshot.features[feature]==="true";
+}
+
+/** Billing commit 1117b60 seeds mobi.users / mobi.branches; retain older keys. */
+export function mobiEntitlementLimit(snapshot:MobiEntitlementSnapshot,kind:"users"|"branches"){
+  if(!["trialing","active"].includes(snapshot.status)) return 0;
+  if(snapshot.expiresAt){
+    const end=Date.parse(snapshot.expiresAt);
+    if(!Number.isFinite(end)||end<=Date.now()) return 0;
+  }
+  const candidates=kind==="users"?["mobi.users","staff.max"]:["mobi.branches","branches.max"];
+  const raw=candidates.map(key=>snapshot.features[key]).find(v=>v!==undefined);
+  const value=Number(raw);
+  return Number.isSafeInteger(value)&&value>0?value:0;
+}
+
+export async function createMobiCheckout(input:{
+  tenantId:string;
+  planCode:"mobi-monthly"|"mobi-annual";
+  email:string;
+  returnUrl:string;
+}){
+  const response=await billingRequest("/api/checkout",{
+    method:"POST",
+    body:JSON.stringify({
+      tenantId:input.tenantId,productKey:"mobi",planCode:input.planCode,
+      email:input.email,returnUrl:input.returnUrl,
+    }),
+  });
+  const urlString=response?.checkoutUrl;
+  const checkoutId=response?.checkoutId;
+  const permitted=process.env.A1_BILLING_CHECKOUT_ORIGIN||process.env.A1_BILLING_CORE_URL;
+  if(typeof urlString!=="string"||typeof checkoutId!=="string"||!permitted)
+    throw new Error("CHECKOUT_URL_INVALID");
+  try{
+    const url=new URL(urlString);
+    if(url.origin!==new URL(permitted).origin||
+       url.pathname!=="/checkout/mobi"||
+       url.searchParams.get("r")!==checkoutId||
+       !checkoutId.trim()||url.username||url.password)
+      throw new Error("CHECKOUT_URL_INVALID");
+  }catch{throw new Error("CHECKOUT_URL_INVALID");}
+  return {checkoutId,checkoutUrl:urlString};
 }

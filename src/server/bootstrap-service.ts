@@ -27,13 +27,12 @@ export async function bootstrapStore(input: {
   a1OrganizationId?: string | null;
 }) {
   const tenantSlug = input.tenantSlug.trim().toLowerCase();
-  const billingTenantKey = "mobi:" + tenantSlug;
   const passwordHash = await hashPassword(input.ownerPassword);
 
   try {
     return await db.$transaction(async tx => {
       const existing = await tx.tenant.findFirst({
-        where: { OR: [{ slug: tenantSlug }, { billingTenantKey }] },
+        where: { slug: tenantSlug },
         select: { id: true },
       });
       if (existing) throw new ControlFailure("CONFLICT");
@@ -46,8 +45,10 @@ export async function bootstrapStore(input: {
         defaultLocale: input.locale,
         a1AccountId: input.a1AccountId?.trim() || null,
         a1OrganizationId: input.a1OrganizationId?.trim() || null,
-        billingTenantKey,
       } });
+      // Stable per-store Billing identity; the slug can change without starting a second trial.
+      const billingTenantKey = "mobi:" + tenant.id;
+      await tx.tenant.update({ where: { id: tenant.id }, data: { billingTenantKey } });
 
       const branch = await tx.branch.create({ data: {
         tenantId: tenant.id,

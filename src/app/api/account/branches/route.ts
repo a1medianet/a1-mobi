@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { currentStoreContext, authJson, sameOriginMutation } from "@/server/auth-http";
 import { db } from "@/server/db";
-import { getMobiEntitlements } from "@/server/billing-client";
+import { getMobiEntitlements, mobiEntitlementLimit } from "@/server/billing-client";
 
 export const runtime="nodejs";
 
@@ -49,7 +49,7 @@ export async function POST(request:Request){
     catch{return authJson({error:"ENTITLEMENT_UNAVAILABLE"},503)}
 
     if(!["trialing","active"].includes(entitlement.status)) return authJson({error:"SUBSCRIPTION_REQUIRED"},402);
-    const max=Number(entitlement.features["branches.max"]||0);
+    const max=mobiEntitlementLimit(entitlement,"branches");
     if(!Number.isFinite(max)||max<1) return authJson({error:"BRANCH_ENTITLEMENT_REQUIRED"},403);
 
     const existing=await db.branch.count({where:{tenantId:context.tenantId}});

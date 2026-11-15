@@ -6,6 +6,7 @@ import { currentStoreContext } from "@/server/auth-http";
 import { db } from "@/server/db";
 import { getMobiEntitlements } from "@/server/billing-client";
 import { BranchManager } from "@/components/branch-manager";
+import { MobiBillingPanel } from "@/components/mobi-billing-panel";
 
 export const dynamic="force-dynamic";
 
@@ -27,6 +28,7 @@ export default async function AccountPage({params}:{params:Promise<{locale:strin
     catch{ /* Subscription details are temporarily unavailable. */ }
   }
 
+  const owner = await db.user.findFirst({where:{id:context.actorId,tenantId:context.tenantId,isActive:true,userRoles:{some:{role:{tenantId:context.tenantId,code:"owner"}}}},select:{id:true}});
   const enabled=Object.entries(billing?.features||{}).filter(([,value])=>value==="true");
   const limits=Object.entries(billing?.features||{}).filter(([,value])=>value!=="true"&&value!=="false");
   const portal=process.env.A1_BILLING_PORTAL_URL;
@@ -47,6 +49,7 @@ export default async function AccountPage({params}:{params:Promise<{locale:strin
       <article className="account-card"><span className="module-kicker">SUBSCRIPTION</span><h2>{ar?"الخطة والصلاحيات":"Plan & entitlements"}</h2>{billing?<><div className="subscription-status"><span className={"pill "+(billing.status==="active"||billing.status==="trialing"?"done":"pending")}>{billingStatusLabel(billing.status,locale)}</span><strong>{planLabel(billing.planCode,locale)}</strong></div>{billing.expiresAt?<p>{ar?"الاستحقاق الحالي حتى":"Current access through"} <bdi dir="ltr">{formatDate(billing.expiresAt,locale,{dateStyle:"medium"})}</bdi></p>:null}<div className="entitlement-list">{enabled.map(([feature])=><span key={feature}>✓ {entitlementLabel(feature,locale)}</span>)}{limits.map(([feature,value])=><span key={feature}>{entitlementLabel(feature,locale)}: {/^\d+(\.\d+)?$/.test(value)?value:(ar?"حسب الخطة":"Per plan")}</span>)}</div></>:<div className="module-banner"><strong>{ar?"تفاصيل الاشتراك غير متاحة":"Subscription details unavailable"}</strong><p>{ar?"تعذّر عرض تفاصيل الاشتراك حاليًا. حاول لاحقًا أو تواصل مع الدعم.":"Subscription details cannot be displayed right now. Try later or contact support."}</p></div>}</article>
     </section>
 
+    {owner && <section className="account-card" style={{marginTop:18}}><MobiBillingPanel locale={locale} initial={billing ? {...billing,tenantId:tenant.id,productKey:"mobi"} : null}/></section>}
     <BranchManager locale={locale}/>
   </main>;
 }

@@ -4,7 +4,7 @@ import { authJson, currentStoreContext, sameOriginMutation } from "@/server/auth
 import { controlError } from "@/server/control-http";
 import { createStoreUser, listStoreUsers } from "@/server/foundation-control";
 import { db } from "@/server/db";
-import { getMobiEntitlements } from "@/server/billing-client";
+import { getMobiEntitlements, mobiEntitlementLimit } from "@/server/billing-client";
 
 export const runtime = "nodejs";
 const createSchema = z.object({
@@ -42,7 +42,7 @@ async function enforceStaffEntitlement(tenantId:string){
   if(!["trialing","active"].includes(entitlement.status)){
     return {ok:false as const,status:402,error:"SUBSCRIPTION_REQUIRED"};
   }
-  const max=Number(entitlement.features["staff.max"]||0);
+  const max=mobiEntitlementLimit(entitlement,"users");
   if(!Number.isFinite(max)||max<1){
     return {ok:false as const,status:403,error:"STAFF_ENTITLEMENT_REQUIRED"};
   }

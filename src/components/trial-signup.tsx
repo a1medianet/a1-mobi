@@ -95,7 +95,7 @@ export function TrialSignup({locale}:{locale:"ar"|"en"}){
     </section>}
 
     {step===4&&<section className="signup-panel review-panel">
-      <span className="product-eyebrow">{ar?"الخطوة 4 · المراجعة":"STEP 4 · REVIEW"}</span><h2>{ar?"راجع ثم ابدأ 7 أيام":"Review and start seven days"}</h2>
+      <span className="product-eyebrow">{ar?"الخطوة 4 · المراجعة":"STEP 4 · REVIEW"}</span><h2>{ar?"راجع ثم ابدأ تجربتك المجانية لمدة 14 يومًا":"Review and start your 14-day free trial"}</h2>
       <div className="review-grid">
         <div><small>{ar?"الجهة":"Organization"}</small><strong>{store}</strong></div>
         <div><small>{ar?"معرّف المتجر":"Store ID"}</small><strong dir="ltr">{effectiveSlug}</strong></div>

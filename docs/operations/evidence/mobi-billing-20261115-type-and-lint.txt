@@ -1,0 +1,4 @@
+﻿TypeScript: .\node_modules\.bin\tsc.cmd --noEmit
+BILLING_FINAL_TSC_EXIT:0 (observed PID 1748)
+ESLint targeted: src/components/mobi-billing-panel.tsx
+BILLING_UI_LINT_EXIT:0 (observed PID 1748)

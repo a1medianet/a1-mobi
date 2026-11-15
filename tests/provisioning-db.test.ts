@@ -27,8 +27,8 @@ runDb("multi-tenant foundation provisioning", () => {
 
     try {
       expect(first.tenantId).not.toBe(second.tenantId);
-      expect(first.billingTenantKey).toBe("mobi:boot-" + suffix);
-      expect(second.billingTenantKey).toBe("mobi:boot-" + secondSuffix);
+      expect(first.billingTenantKey).toBe("mobi:" + first.tenantId);
+      expect(second.billingTenantKey).toBe("mobi:" + second.tenantId);
 
       for (const result of [first, second]) {
         const owner = await db.user.findUniqueOrThrow({
