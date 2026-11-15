@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { MobiEntitlementSnapshot } from "@/server/billing-client";
+import type { MobiBillingAccount } from "@/server/mobi-billing-account";
 
 type Plan = "mobi-monthly" | "mobi-annual";
 const prices: Record<Plan, number> = { "mobi-monthly": 20, "mobi-annual": 200 };
@@ -10,16 +11,18 @@ export function MobiBillingPanel({ locale, initial }: {
 }) {
   const ar = locale === "ar";
   const [snapshot, setSnapshot] = useState(initial);
+  const [account, setAccount] = useState<MobiBillingAccount | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [asOf, setAsOf] = useState(Date.now);
   async function fetchStatus() {
     setBusy(true); setError("");
     try {
-      const response = await fetch("/api/billing/mobi", { cache: "no-store" });
+      const response = await fetch("/api/billing/mobi/account", { cache: "no-store" });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "SERVICE_UNAVAILABLE");
-      setSnapshot(data.entitlement);
+      setAccount(data.account);
+      setSnapshot(data.account.entitlement);
       setAsOf(Date.now());
     } catch (cause) { setError(cause instanceof Error ? cause.message : "SERVICE_UNAVAILABLE"); }
     finally { setBusy(false); }
@@ -34,7 +37,7 @@ export function MobiBillingPanel({ locale, initial }: {
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "SERVICE_UNAVAILABLE");
-      if (data.action === "START_TRIAL") { setSnapshot(result.entitlement); setAsOf(Date.now()); }
+      if (data.action === "START_TRIAL") { setSnapshot(result.entitlement); setAsOf(Date.now()); await fetchStatus(); }
       else if (typeof result.checkoutUrl === "string") window.location.assign(result.checkoutUrl);
     } catch (cause) { setError(cause instanceof Error ? cause.message : "SERVICE_UNAVAILABLE"); }
     finally { setBusy(false); }
@@ -52,6 +55,8 @@ export function MobiBillingPanel({ locale, initial }: {
       <span role="status">{status}</span>
       <button type="button" className="soft-btn" onClick={()=>void fetchStatus()} disabled={busy}>{ar ? "تحديث الحالة" : "Refresh status"}</button>
     </div>
+    {account?.plan && <p>{ar ? "الخطة: " : "Plan: "}{account.plan.name} · {account.plan.amountMinor / 100} {account.plan.currency}</p>}
+    {account?.renewal && <p>{ar ? "التجديد التلقائي: " : "Auto-renewal: "}{account.renewal.autoRenew === null ? (ar ? "غير متاح" : "Not available") : account.renewal.autoRenew ? (ar ? "مفعّل" : "Enabled") : (ar ? "متوقف عند نهاية الفترة" : "Off at period end")}</p>}
     {snapshot?.expiresAt && <p>{ar ? "تاريخ انتهاء الصلاحية: " : "Access until: "}<time dateTime={snapshot.expiresAt}>{new Intl.DateTimeFormat(ar?"ar-LB":"en-US",{dateStyle:"medium",timeZone:"Asia/Beirut"}).format(new Date(snapshot.expiresAt))}</time></p>}
     {access && <p>{ar ? "المزايا المسموح بها فعّالة حاليًا." : "Your current plan entitlements are active."}</p>}
     {!snapshot || snapshot.status === "none" ? <div>
