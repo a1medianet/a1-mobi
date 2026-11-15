@@ -69,3 +69,6 @@ next-env.d.ts
 
 /.next-c16/
 /.next-c16-prod/
+
+# Private production backups (never commit)
+/private-backups/

@@ -50,7 +50,7 @@ export function AppShell({ locale, children, live = false }: {
   }
 
   const navigation = (mobile: boolean) => {
-    const indexes = mobile ? [0,1,2,4,6,14] : labels[locale].map((_,index)=>index);
+    const indexes = mobile ? [0,1,2,4,6,14] : labels[locale].map((_,index)=>index).filter(index=>![12,13,14].includes(index));
     return indexes.map(index => {
       const label = labels[locale][index];
       const active = index === activeIndex;
@@ -87,11 +87,26 @@ export function AppShell({ locale, children, live = false }: {
         </button>
         {signOutError && <small role="alert">{ar ? "تعذر تسجيل الخروج. حاول مجددًا." : "Could not log out. Please try again."}</small>}
       </div>
-      <div className="sidebar-foot">
-        <div className="status-dot pilot" aria-hidden="true" />
-        <div><b>{live?(ar?"مساحة المتجر":"Store workspace"):(ar ? "بيئة تدريب" : "Practice workspace")}</b>
-          <small>{live?(ar?"إدارة عمليات متجرك":"Manage your store operations"):(ar ? "أمثلة للتدريب فقط · ليست مبيعات حقيقية" : "Samples only · not real sales")}</small></div>
-      </div>
+      <details className="sidebar-admin-menu">
+        <summary aria-label={ar?"إدارة الجهة والحساب":"Organization and account management"}>
+          <span className="sidebar-admin-avatar" aria-hidden="true">⚙</span>
+          <span className="sidebar-admin-label">
+            <strong>{ar?"إدارة الجهة":"Organization"}</strong>
+            <small>{ar?"الحساب والإعدادات":"Account & settings"}</small>
+          </span>
+          <span className="sidebar-admin-chevron" aria-hidden="true">⌃</span>
+        </summary>
+        <nav className="sidebar-admin-popover" aria-label={ar?"إدارة الجهة والحساب":"Organization management"}>
+          <Link href={"/"+locale+"/admin"}>{ar?"إدارة الجهة":"Organization management"}</Link>
+          <Link href={"/"+locale+"/settings/team"}>{ar?"الفريق والصلاحيات":"Team & permissions"}</Link>
+          <Link href={"/"+locale+"/settings/security"}>{ar?"أمان الحساب":"Account security"}</Link>
+          <Link href={"/"+locale+"/account"}>{ar?"الحساب والاشتراك":"Account & subscription"}</Link>
+          <button type="button" onClick={signOut} disabled={signingOut}>
+            {ar?"تسجيل الخروج":"Log out"}
+          </button>
+          {signOutError&&<small role="alert">{ar?"تعذر تسجيل الخروج.":"Could not log out."}</small>}
+        </nav>
+      </details>
     </aside>
 
     <div className="workspace">

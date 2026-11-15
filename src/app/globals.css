@@ -1773,6 +1773,21 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 .sidebar-signout small[role="alert"]{display:block;color:#ffd2d2;font-size:12px;padding:4px 10px}
 .topbar-signout{display:none;border:1px solid #cbd5e1;background:#fff;color:#183452;border-radius:8px;min-height:40px;padding:0 10px;font-weight:700;cursor:pointer}
 @media(max-width:720px){.topbar-signout{display:inline-flex;align-items:center;justify-content:center}}
+/* A1 Mobi: store task tiles, visual depth and keyboard accessibility. */
+.module-page .owner-task-grid>.quick-action{display:flex;align-items:center;justify-content:center;text-align:center;min-height:108px;padding:20px 18px;background:linear-gradient(150deg,#fff 0%,#f8fbff 100%);border:1px solid #dce6f3;border-radius:16px;box-shadow:0 5px 15px rgba(19,47,88,.075),0 1px 3px rgba(19,47,88,.055);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background .18s ease}
+.module-page .owner-task-grid>.quick-action b{font-size:15px;font-weight:750;line-height:1.6;color:#172d4d;position:relative;z-index:1}
+.module-page .owner-task-grid>.quick-action:hover,.module-page .owner-task-grid>.quick-action:focus-visible{transform:translateY(-4px);border-color:#78a9e9;background:linear-gradient(150deg,#fff 0%,#edf5ff 100%);box-shadow:0 14px 30px rgba(28,79,145,.16),0 3px 8px rgba(28,79,145,.08)}
+.module-page .owner-task-grid>.quick-action:active{transform:translateY(-1px)}
+.module-page .owner-task-grid>.quick-action:focus-visible{outline:3px solid #337be8;outline-offset:3px}
+/* Cash drawer opening: keep each amount directly under its own label in RTL. */
+.module-page .activity-card:has(form input[name="usd"]):has(form input[name="lbp"]) form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:end}
+.module-page .activity-card:has(form input[name="usd"]) form>label{display:flex;flex-direction:column;gap:8px;min-width:0;font-weight:650;line-height:1.5}
+.module-page .activity-card:has(form input[name="usd"]) form>label>input{display:block;box-sizing:border-box;width:100%;min-width:0;height:44px;padding:8px 12px;border:1px solid #cad7e7;border-radius:9px;background:#fff;color:#172d4d;font:inherit;direction:ltr;text-align:start}
+.module-page .activity-card:has(form input[name="usd"]) form>button{justify-self:start;min-height:42px}
+.module-page .activity-card:has(form input[name="usd"]) form>[role="alert"]{grid-column:1/-1}
+@media(max-width:760px){.module-page .activity-card:has(form input[name="usd"]) form{grid-template-columns:1fr}.module-page .owner-task-grid>.quick-action{min-height:90px;padding:14px}}
+@media(prefers-reduced-motion:reduce){.module-page .owner-task-grid>.quick-action{transition:none}.module-page .owner-task-grid>.quick-action:hover{transform:none}}
+.account-hierarchy[dir="rtl"] > span{transform:scaleX(-1)}
 
 /* HOME-01/02: vertical percentage ticks bottom-to-top; data-driven bar heights. */
 .operation-breakdown-chart{position:relative}
@@ -1870,6 +1885,7 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
   .app-shell:has(.store-home) .sidebar-foot{margin:8px 10px;padding:8px 10px}
   .store-home .mobi-c-ops-grid[data-single="true"]{grid-template-columns:minmax(0,1fr)}
 }
+
 
 /* SIDEBAR-NOSCROLL-20261113: account and logout in topbar, compact full desktop navigation. */
 @media (min-width:721px) {

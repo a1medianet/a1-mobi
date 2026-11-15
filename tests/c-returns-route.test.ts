@@ -1,0 +1,25 @@
+import { randomUUID } from "node:crypto";
+import { Prisma } from "@prisma/client";
+import { beforeEach,afterEach,describe,it,expect,vi } from "vitest";
+const mocks=vi.hoisted(()=>({context:vi.fn(),post:vi.fn(),sale:vi.fn(),locations:vi.fn()}));
+vi.mock("@/server/db",()=>({db:{sale:{findFirst:mocks.sale},stockLocation:{findMany:mocks.locations}}}));
+vi.mock("@/modules/sell/return-service",()=>({postSaleReturn:mocks.post}));
+vi.mock("@/server/auth-http",()=>({currentStoreContext:mocks.context,sameOriginMutation:(r:Request)=>r.headers.get("origin")==="http://localhost",authJson:(b:unknown,s=200)=>Response.json(b,{status:s})}));
+import {GET,POST} from "@/app/api/ops/returns/route";
+const ctx={tenantId:"tenant-a",branchId:"branch-a",actorId:"owner-a"};
+const input=()=>({saleId:"sale-a",invoiceNumber:"INV-1",reason:"Wrong size",idempotencyKey:randomUUID(),lines:[{originalSaleLineId:"line-a",stockLocationId:"location-a",quantity:1}]});
+const post=(body:object,origin="http://localhost")=>POST(new Request("http://localhost/api/ops/returns",{method:"POST",headers:{origin,"content-type":"application/json"},body:JSON.stringify(body)}));
+describe("returns route",()=>{
+ beforeEach(()=>{vi.resetAllMocks();vi.stubEnv("A1_MOBI_C_LIVE_01_ENABLED","1");mocks.context.mockResolvedValue(ctx);mocks.post.mockResolvedValue({id:"return-a",number:"R-1",refundBase:3,status:"POSTED"});});afterEach(()=>vi.unstubAllEnvs());
+ it("requires return permission and sends only session scope and server number",async()=>{const body=input();expect((await post(body)).status).toBe(200);expect(mocks.context).toHaveBeenCalledWith("sell.return");expect(mocks.post).toHaveBeenCalledWith({...body,...ctx,number:"R-"+body.idempotencyKey.replaceAll("-","").toUpperCase(),nonserializedOnly:true});});
+ it.each(["tenantId","actorId","branchId","refundBase"])("rejects injected %s",async key=>{expect((await post({...input(),[key]:"other"})).status).toBe(400);expect(mocks.post).not.toHaveBeenCalled();});
+ it.each([0,-1,1.5,10001,null])("rejects invalid quantity %s",async quantity=>{const body=input();expect((await post({...body,lines:[{...body.lines[0],quantity}]})).status).toBe(400);});
+ it("rejects duplicate lines and empty reason",async()=>{const body=input();expect((await post({...body,lines:[...body.lines,...body.lines]})).status).toBe(400);expect((await post({...body,reason:" "})).status).toBe(400);});
+ it("rejects origins before auth",async()=>{expect((await post(input(),"https://foreign.test")).status).toBe(403);expect(mocks.context).not.toHaveBeenCalled();});
+ it.each(["AUTH_REQUIRED","PERMISSION_DENIED"])("blocks %s",async code=>{mocks.context.mockRejectedValue(new Error(code));expect((await post(input())).status).toBe(code==="AUTH_REQUIRED"?401:403);expect(mocks.post).not.toHaveBeenCalled();});
+ it.each(["P2034","P2002"])("preserves retry on %s",async code=>{mocks.post.mockRejectedValue(new Prisma.PrismaClientKnownRequestError("private SQL",{code,clientVersion:"test"}));const response=await post(input());expect(response.status).toBe(409);expect(await response.json()).toEqual({error:"RETRY_SAME_REQUEST"});});
+ it("sanitizes failures and reports payload conflict",async()=>{mocks.post.mockRejectedValue(new Error("private SQL"));const failed=await post(input());expect(failed.status).toBe(503);expect(await failed.json()).toEqual({error:"RETURN_REJECTED"});mocks.post.mockRejectedValue(new Error("RETURN_IDEMPOTENCY_CONFLICT"));expect((await post(input())).status).toBe(409);});
+ it("scopes invoice lookup and exposes only eligible line quantities",async()=>{mocks.sale.mockResolvedValue({id:"sale-a",invoice:{number:"INV-1"},lines:[{id:"line-a",serializedDeviceId:null,product:{isSerialized:false,nameAr:"Item",nameEn:"Item"},quantity:3,finalUnitPrice:3,returnLines:[{quantity:1}]},{id:"device",serializedDeviceId:"dev",product:{isSerialized:true},returnLines:[]}]});mocks.locations.mockResolvedValue([]);const response=await GET(new Request("http://localhost/api/ops/returns?invoice=INV-1"));expect(response.status).toBe(200);expect(mocks.context).toHaveBeenCalledWith("sell.return");expect(mocks.sale.mock.calls[0][0].where).toMatchObject({tenantId:ctx.tenantId,branchId:ctx.branchId,invoice:{number:"INV-1",status:"ISSUED"}});expect((await response.json()).lines).toEqual([{id:"line-a",nameAr:"Item",nameEn:"Item",remaining:2,unitPrice:3}]);});
+ it("does not disclose missing or foreign invoices",async()=>{mocks.sale.mockResolvedValue(null);expect((await GET(new Request("http://localhost/api/ops/returns?invoice=INV-1"))).status).toBe(404);});
+ it("honors pilot switch",async()=>{vi.stubEnv("A1_MOBI_C_LIVE_01_ENABLED","0");expect((await post(input())).status).toBe(404);expect(mocks.context).not.toHaveBeenCalled();});
+});

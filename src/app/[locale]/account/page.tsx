@@ -36,7 +36,7 @@ export default async function AccountPage({params}:{params:Promise<{locale:strin
   return <main className="module-page account-center">
     <header className="module-header"><div><Link href={"/"+locale} className="back-link">{ar?"لوحة التحكم":"Dashboard"}</Link><p className="module-kicker">A1 MOBI · ACCOUNT CENTER</p><h1>{tenant.name}</h1><p className="module-sub">{ar?"إدارة الجهة والفرع والاشتراك والوصول.":"Organization, branch, subscription and access overview."}</p></div>{portal?<Link className="soft-btn" href={portal}>{ar?"إدارة الفوترة":"Billing portal"}</Link>:null}</header>
 
-    <section className="account-hierarchy">
+    <section className="account-hierarchy" dir={ar ? "rtl" : "ltr"}>
       <article><small>A1 Account</small><strong>{tenant.a1AccountId|| (ar?"محلي حاليًا":"Local identity")}</strong></article>
       <span>→</span><article><small>{ar?"الجهة":"Organization"}</small><strong>{tenant.a1OrganizationId||tenant.name}</strong></article>
       <span>→</span><article><small>Tenant</small><strong>{tenant.slug}</strong></article>

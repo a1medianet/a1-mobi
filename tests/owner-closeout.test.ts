@@ -12,20 +12,22 @@ vi.mock("@/server/billing-client",()=>({getMobiEntitlements:mocks.billing}));
 vi.mock("@/components/branch-manager",()=>({BranchManager:()=>null}));
 import AccountPage from "@/app/[locale]/account/page";
 import OrdersPage from "@/app/[locale]/orders/page";
-import Dashboard from "@/app/[locale]/page";
+import { StoreHome } from "@/components/store-home";
 import AdminPage from "@/app/[locale]/admin/page";
 import LiveOperationsPage from "@/components/live-operations";
 import RepairLivePage from "@/components/repair-live-operations";
 describe("owner correction states",()=>{
  it.each(["ar","en"] as const)("keeps live home and admin free of sample data in %s",async locale=>{
   vi.stubEnv("A1_MOBI_C_LIVE_01_ENABLED","1");
-  for(const Page of [Dashboard,AdminPage]){
-   const html=renderToStaticMarkup(await Page({params:Promise.resolve({locale})}));
-   expect(html).not.toMatch(/2,284|612.40|HARDENING|PARTIAL|Pilot Demo|operation-breakdown-chart|techzone/i);
-   expect(html).toContain(`href="/${locale}/products"`);
-   expect(html).toContain(`href="/${locale}/orders"`);
+  const home=renderToStaticMarkup(await StoreHome({locale}));
+  const admin=renderToStaticMarkup(await AdminPage({params:Promise.resolve({locale})}));
+  for(const html of [home,admin]){
+   expect(html).not.toMatch(/2,284|612.40|HARDENING|PARTIAL|Pilot Demo|techzone/i);
   }
- });
+  expect(home).toContain(`href="/${locale}/products/manage"`);
+  expect(home).toContain(`href="/${locale}/repairs"`);
+  expect(admin).toContain(`href="/${locale}/products"`);
+  expect(admin).toContain(`href="/${locale}/orders"`); });
  it("retains inventory and repair forms inside expandable task sections",()=>{
   const inventory=renderToStaticMarkup(createElement<{mode?:"all"|"pos"|"inventory"}>(LiveOperationsPage,{mode:"inventory"}));
   expect(inventory).toContain("<details class=\"mobi-task-panel\"><summary>Add a new product</summary>");
@@ -33,7 +35,7 @@ describe("owner correction states",()=>{
   expect(inventory).toContain("Print barcode labels");
   const repair=renderToStaticMarkup(createElement(RepairLivePage));
   for(const id of ["mobi-repair-intake","mobi-repair-diagnosis"])expect(repair).toContain(`id="${id}"`);
-  expect(repair.match(/<details class="mobi-task-panel">/g)).toHaveLength(2);
+  expect(repair.match(/name="mobi-repair-task"/g)).toHaveLength(2);
  });
  beforeEach(()=>{mocks.billing.mockReset();});
  afterEach(()=>vi.unstubAllEnvs());

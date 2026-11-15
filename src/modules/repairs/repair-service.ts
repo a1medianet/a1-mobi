@@ -11,6 +11,7 @@ import { db } from "@/server/db";
 import { assertTrustCheckForWorkflow } from "@/modules/device-trust/workflow-guard";
 import { calculateLocationBalance } from "@/modules/inventory/balance";
 import { paymentToBase } from "@/modules/sell/payments";
+import { normalizePhone } from "@/modules/customers/customer-rules";
 import {
   assertRepairTransition,
   calculateRepairTruth,
@@ -39,6 +40,7 @@ export async function createRepairIntake(input: {
   reportedIssue: string;
 }) {
   const clean = validateIntake(input);
+  const phoneNormalized = normalizePhone(clean.customerPhone);
   return db.$transaction(async (tx) => {
     const [tenant, branch, actor, device] = await Promise.all([
       tx.tenant.findUniqueOrThrow({ where: { id: input.tenantId } }),
@@ -58,12 +60,31 @@ export async function createRepairIntake(input: {
       tenant.id,
       "Cross-tenant repair intake is forbidden",
     );
+    // Keep the repair, its customer and its device on one transactional timeline.
+    // Reuse an existing tenant customer by normalized phone, never a customer
+    // from another tenant, and never attach an explicit mismatched customer ID.
+    const customer = input.customerId
+      ? await tx.customer.findFirst({ where: { id: input.customerId, tenantId: input.tenantId } })
+      : await tx.customer.upsert({
+        where: { tenantId_phoneNormalized: { tenantId: input.tenantId, phoneNormalized } },
+        update: {},
+        create: {
+          tenantId: input.tenantId, createdBranchId: input.branchId,
+          name: clean.customerName.trim(), phone: clean.customerPhone, phoneNormalized,
+          debtAccount: { create: { tenantId: input.tenantId, currency: tenant.baseCurrency } },
+        },
+      });
+    if (!customer) throw new Error("CUSTOMER_NOT_FOUND");
+    if (normalizePhone(customer.phone) !== phoneNormalized) throw new Error("CUSTOMER_PHONE_MISMATCH");
+    const repairImei = input.imei?.trim() || device?.imei;
+    if (device?.imei && repairImei && device.imei !== repairImei)
+      throw new Error("DEVICE_IMEI_MISMATCH");
     const repair = await tx.repairOrder.create({
       data: {
         tenantId: tenant.id,
         branchId: branch.id,
         createdById: actor.id,
-        customerId: input.customerId,
+        customerId: customer.id,
         serializedDeviceId: device?.id,
         number: input.number.trim(),
         customerName: clean.customerName.trim(),
@@ -84,6 +105,17 @@ export async function createRepairIntake(input: {
         },
       },
     });
+    if (repairImei) {
+      await tx.customerDevice.upsert({
+        where: { customerId_imei: { customerId: customer.id, imei: repairImei } },
+        update: {},
+        create: {
+          tenantId: input.tenantId, customerId: customer.id,
+          description: clean.deviceDescription.trim(),
+          imei: repairImei, serializedDeviceId: device?.id,
+        },
+      });
+    }
     await tx.deviceTrustCheck.update({
       where: { id: input.trustCheckId },
       data: { referenceType: "RepairOrder", referenceId: repair.id },
@@ -96,7 +128,9 @@ export async function createRepairIntake(input: {
         action: "repair.intake.created",
         entityType: "RepairOrder",
         entityId: repair.id,
-        after: { number: repair.number, status: repair.status, imei: repair.imei },
+        after: { number: repair.number, status: repair.status,
+          customerId: customer.id, serializedDeviceId: device?.id,
+          imeiLast4: repair.imei?.slice(-4) },
       },
     });
     return repair;

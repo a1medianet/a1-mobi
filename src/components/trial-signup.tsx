@@ -78,7 +78,7 @@ export function TrialSignup({locale}:{locale:"ar"|"en"}){
     {step===1&&<section className="signup-panel">
       <span className="product-eyebrow">{ar?"الخطوة 1 · المتجر":"STEP 1 · STORE"}</span><h2>{ar?"أنشئ جهة المتجر":"Create store organization"}</h2><p>{ar?"هذه هي الجهة التجارية التي ستحتوي الفروع والأعضاء وصلاحيات الاشتراك.":"This is the commercial organization that owns branches, members and subscription entitlements."}</p>
       <label>{ar?"اسم المتجر / الجهة":"Store / organization name"}<input value={store} onChange={e=>{setStore(e.target.value);if(!slug)setSlug(slugify(e.target.value))}} placeholder={ar?"مثال: A1 Mobi":"e.g. A1 Mobi"} required/></label>
-      <label>{ar?"معرّف المتجر":"Store identifier"}<input value={effectiveSlug} onChange={e=>setSlug(slugify(e.target.value))} dir="ltr" placeholder="a1-mobi" required/></label>
+      <label>{ar?"معرّف المتجر":"Store identifier"}<input value={effectiveSlug} onChange={e=>setSlug(slugify(e.target.value))} dir="ltr" lang="en" autoCapitalize="none" autoCorrect="off" spellCheck={false} placeholder="a1-mobi" required/></label>
     </section>}
 
     {step===2&&<section className="signup-panel">
@@ -111,6 +111,7 @@ export function TrialSignup({locale}:{locale:"ar"|"en"}){
 
     <div className="signup-actions">
       {step>1&&<button type="button" className="product-secondary" onClick={()=>setStep(step-1)}>{ar?"السابق":"Back"}</button>}
+      {!canNext&&<p className="signup-help" role="status">{ar?(step===1?"أدخل اسم المتجر ومعرّفًا من 3 أحرف على الأقل.":step===2?"أدخل اسم الفرع وكوده للمتابعة.":"أدخل اسم المالك وبريدًا صحيحًا وكلمة مرور من 12 حرفًا على الأقل."):(step===1?"Enter a store name and an identifier of at least 3 characters.":step===2?"Enter a branch name and code to continue.":"Enter the owner name, a valid email and a password of at least 12 characters.")}</p>}
       <button className="product-cta" disabled={!canNext||busy}>{busy?(ar?"جارٍ الإنشاء…":"Creating…"):step===4?(ar?"ابدأ التجربة":"Start trial"):(ar?"التالي":"Continue")}</button>
     </div>
   </form>;
