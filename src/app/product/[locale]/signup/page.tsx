@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { TrialSignup } from "@/components/trial-signup";
+import "./signup-theme.css";
 
 export default async function SignupPage({params}:{params:Promise<{locale:string}>}){
   const {locale}=await params;if(locale!=="ar"&&locale!=="en")notFound();

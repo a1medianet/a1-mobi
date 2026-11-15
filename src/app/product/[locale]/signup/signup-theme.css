@@ -1,0 +1,49 @@
+/* Registration follows A1 Mobi's shared application design tokens. Scoped to signup only. */
+.product-site:has(.signup-page) {
+  --signup-primary: var(--mobi-primary, #1265e8);
+  --signup-navy: var(--mobi-navy, #14233d);
+  --signup-border: #dce6f2;
+  --signup-surface: #fff;
+  --signup-muted: #60748e;
+}
+.product-site .signup-page {background:linear-gradient(180deg,#f7faff 0%,#fff 72%);padding-block:34px 64px}
+.product-site .signup-page .signup-layout{align-items:start;gap:20px}
+.product-site .signup-page .trial-signup,
+.product-site .signup-page .signup-side {
+  border:1px solid var(--signup-border);border-radius:18px;
+  background:var(--signup-surface);box-shadow:0 10px 35px rgba(20,35,61,.045);
+}
+.product-site .signup-page .trial-signup{padding:clamp(18px,2vw,28px)}
+.product-site .signup-page .signup-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.product-site .signup-page .signup-steps button{min-width:0;border-radius:11px;transition:background-color .15s,border-color .15s}
+.product-site .signup-page .signup-steps button.active{background:var(--signup-primary);color:#fff}
+.product-site .signup-page .signup-panel h2{color:var(--signup-navy);font-weight:800}
+.product-site .signup-page .signup-panel>p{color:var(--signup-muted);line-height:1.8}
+.product-site .signup-page .signup-panel label{color:#233b59;font-weight:700}
+.product-site .signup-page .signup-panel input{
+  min-height:46px;background:#fff;border:1px solid #cfdced;
+  border-radius:11px;color:var(--signup-navy);font:inherit;
+}
+.product-site .signup-page .signup-panel input:focus-visible{
+  border-color:var(--signup-primary);outline:3px solid rgba(18,101,232,.16);outline-offset:1px;
+}
+.product-site .signup-page .signup-actions{border-top:1px solid #edf1f7;padding-top:16px}
+.product-site .signup-page .signup-actions .product-cta{background:var(--signup-primary);border-radius:11px;min-height:44px}
+.product-site .signup-page .signup-actions .product-cta:disabled{opacity:.55;cursor:not-allowed}
+.product-site .signup-page .signup-side{padding:clamp(18px,2vw,26px)}
+.product-site .signup-page .signup-side h2{color:var(--signup-navy)}
+.product-site .signup-page .signup-side p,.product-site .signup-page .signup-side li{color:var(--signup-muted)}
+.product-site .signup-page .signup-error{border-radius:11px}
+.product-site .signup-page .signup-success{border:1px solid var(--signup-border);border-radius:18px;background:#fff;padding:clamp(18px,3vw,34px)}
+@media(max-width:800px){
+  .product-site .signup-page .signup-layout{grid-template-columns:minmax(0,1fr)}
+  .product-site .signup-page .signup-steps{gap:5px}
+  .product-site .signup-page .signup-steps button{font-size:12px;padding-inline:4px}
+  .product-site .signup-page .signup-side{position:static}
+}
+@media(max-width:480px){
+  .product-site .signup-page{padding-block:18px 38px}
+  .product-site .signup-page .trial-signup{padding:14px}
+  .product-site .signup-page .signup-steps button{font-size:11px}
+  .product-site .signup-page .signup-panel input{font-size:16px}
+}
