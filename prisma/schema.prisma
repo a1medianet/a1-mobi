@@ -1417,6 +1417,8 @@ model PlatformAdmin {
   id           String            @id @default(cuid())
   email        String            @unique
   passwordHash String
+  totpSecretCipher String
+  lastTotpCounter Int?
   isActive     Boolean           @default(true)
   sessions     PlatformSession[]
   createdAt    DateTime          @default(now())
