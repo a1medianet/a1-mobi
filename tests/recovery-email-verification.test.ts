@@ -12,7 +12,7 @@ const tx = {
 vi.mock("@/server/db", () => ({db: {
   user: {findFirst:mocks.userFind},
   recoveryEmailToken: {create:mocks.tokenCreate, updateMany:mocks.tokenUpdate},
-  $transaction: async (fn:(tx:typeof tx)=>unknown) => fn(tx),
+  $transaction: async (fn:(transaction:typeof tx)=>unknown) => fn(tx),
 }}));
 import { requestRecoveryEmailVerification, confirmRecoveryEmailVerification } from "@/server/recovery-email-verification";
 const user={userId:"u1",tenantId:"tenant-1",locale:"ar"};
