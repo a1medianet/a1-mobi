@@ -49,3 +49,10 @@ Never commit actual values. Do not enable in production or on VPS.
 - **G2.8.1 isolated integration:** 3/3 PASS. Together with route regression 6/6 and local feature/contract tests 7/7, **16/16 PASS, 0 FAIL, 0 SKIP**.
 - **Important qualification:** this validates a *database-backed Mobi session and actual Next route* with a mocked Next cookie accessor, NOT a browser login through Mobi's UI or live Top Mobile account. The browser, full Mobi typecheck/build, backup/restore, approved production transport, real operator identity and VPS pilot remain **OPEN**. G2.8 is **PARTIAL**; release NO-GO.
 - No work was merged into the actively edited Mobi worktree; no Count or VPS changes; test credentials are dynamically loaded by temporary external-only runner and are never committed.
+
+## G2.8.2 — Explicit one-click local acceptance gate
+- Added `scripts/support-g28-local-gate.cjs` and `npm run gate:support:local` in this isolated Mobi integration branch. The runner reads its two isolated PostgreSQL credentials directly from the local Docker test containers at runtime; it does not print them, persist them, migrate a database, deploy code, or provision identities.
+- **Fail-closed by default:** `A1_SUPPORT_LOCAL_TEST_GATE=enabled` is required and `NODE_ENV=production` is denied. Verified default run returns `SUPPORT_G28_GATE_DISABLED`.
+- On Thaghr with only the ephemeral environment flag enabled, ran `npm run gate:support:local`; observed `SUPPORT_G28_ONE_CLICK_LOCAL_ACCEPTANCE_PASS (7 node + 9 vitest)`, **16/16 PASS, 0 FAIL, 0 SKIP**.
+- Prerequisites: isolated `a1_mobi_support_g28_isolated` database with its 17 migrations, local `a1-support-g1-db`, and dependencies installed in the worktree. No production or VPS flags enabled. Do not run using customer data.
+- This gate proves local contracts and database-backed host route, but not full browser login, UI acceptance, deployment, or cross-instance production cryptography. G2.8 remains PARTIAL / production NO-GO.
