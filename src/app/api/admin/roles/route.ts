@@ -20,6 +20,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  if (process.env.A1_MOBI_MERCHANT_ADVANCED_ROLES_ENABLED !== "1") return authJson({ error: "ADVANCED_ROLES_PLATFORM_ONLY" }, 403);
   if (!sameOriginMutation(request)) return authJson({ error: "FORBIDDEN_ORIGIN" }, 403);
   if (!request.headers.get("content-type")?.toLowerCase().startsWith("application/json")) {
     return authJson({ error: "INVALID_REQUEST" }, 400);

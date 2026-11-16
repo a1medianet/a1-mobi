@@ -3,6 +3,7 @@ import { Prisma } from "@prisma/client";
 import { hashPassword } from "@/core/auth/password";
 import { normalizeAccountHandle, internalAccountAddress } from "./account-handle";
 import { PERMISSION_SEEDS } from "@/core/rbac/permission-seeds";
+import { STAFF_ROLE_PRESETS } from "@/core/rbac/staff-role-presets";
 import { db } from "./db";
 import { ControlFailure } from "./control-http";
 
@@ -94,6 +95,25 @@ export async function bootstrapStore(input: {
         skipDuplicates: true,
       });
 
+      await tx.role.createMany({
+        data: STAFF_ROLE_PRESETS.map(preset => ({
+          tenantId: tenant.id, code: preset.code, name: preset.name, isSystem: true,
+        })),
+        skipDuplicates: true,
+      });
+      const staffRoles = await tx.role.findMany({
+        where: { tenantId: tenant.id, code: { in: STAFF_ROLE_PRESETS.map(preset => preset.code) } },
+        select: { id: true, code: true },
+      });
+      const permissionIds = await tx.permission.findMany({ select: { id: true, code: true } });
+      await tx.rolePermission.createMany({
+        data: staffRoles.flatMap(staffRole => {
+          const preset = STAFF_ROLE_PRESETS.find(preset => preset.code === staffRole.code);
+          return permissionIds.filter(permission => preset?.permissions.some(code => code === permission.code))
+            .map(permission => ({ roleId: staffRole.id, permissionId: permission.id }));
+        }),
+        skipDuplicates: true,
+      });
       await tx.userRole.create({ data: { userId: owner.id, roleId: role.id } });
       await tx.auditEvent.create({ data: {
         tenantId: tenant.id,

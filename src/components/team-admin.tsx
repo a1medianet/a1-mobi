@@ -96,6 +96,7 @@ async function readError(response: Response) {
 }
 
 export function TeamAdmin({ locale }: { locale: "ar" | "en" }) {
+  const advancedRolesEnabled = false; // Reserved for future authenticated platform controls. Merchant UI shows preset staff roles only.
   const t = copy[locale];
   const [users, setUsers] = useState<StoreUser[]>([]);
   const [roles, setRoles] = useState<Role[]>([]);
@@ -250,14 +251,14 @@ export function TeamAdmin({ locale }: { locale: "ar" | "en" }) {
           </table></div>
         </article>
 
-        <article className="activity-card" style={{ marginTop: 0 }}>
+        {advancedRolesEnabled &&         <article className="activity-card" style={{ marginTop: 0 }}>
           <div className="section-head"><h2>{t.roles}</h2><p>{roles.length}</p></div>
           <div style={{ display: "grid", gap: 12 }}>
             {roles.map(role => <RoleEditor
               key={role.id + ":" + role.permissions.map(x => x.permission.code).sort().join("|")}
               role={role} registry={registry} locale={locale} onSaved={load} />)}
           </div>
-        </article>
+        </article>}
       </div>
 
       <aside style={{ display: "grid", gap: 18 }}>
@@ -276,7 +277,7 @@ export function TeamAdmin({ locale }: { locale: "ar" | "en" }) {
           </div>
         </form>
 
-        <form className="activity-card" style={{ marginTop: 0 }} onSubmit={createRole}>
+        {advancedRolesEnabled &&         <form className="activity-card" style={{ marginTop: 0 }} onSubmit={createRole}>
           <div className="section-head"><h2>{t.newRole}</h2></div>
           <div style={{ display: "grid", gap: 13 }}>
             <label>{t.code}<input name="code" dir="ltr" required minLength={2} maxLength={50}
@@ -289,7 +290,7 @@ export function TeamAdmin({ locale }: { locale: "ar" | "en" }) {
             <small style={{ color: "#718096" }}>{t.delegation}</small>
             <button className="primary" disabled={busy === "role"}>{t.create}</button>
           </div>
-        </form>
+        </form>}
       </aside>
     </div>
   </section>;
