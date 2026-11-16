@@ -164,7 +164,7 @@ export function TeamAdmin({ locale }: { locale: "ar" | "en" }) {
   }, []);
 
   const roleOptions = useMemo(() => roles.filter(role => role.code !== "owner").map(role => ({
-    id: role.id, label: roleLabel(role, locale) + (role.isSystem ? " · " + t.system : ""),
+    id: role.id, code: role.code, label: roleLabel(role, locale) + (role.isSystem ? " · " + t.system : ""),
   })), [roles, t.system, locale]);
 
   async function createUser(event: FormEvent<HTMLFormElement>) {
@@ -270,8 +270,8 @@ export function TeamAdmin({ locale }: { locale: "ar" | "en" }) {
             <label>{t.password}<input name="password" type="password" required minLength={12} maxLength={256} style={fieldStyle} />
               <small style={{ display: "block", marginTop: 5, color: "#718096" }}>{t.passwordHint}</small></label>
             <label>{t.language}<select name="locale" defaultValue={locale} style={fieldStyle}><option value="ar">العربية</option><option value="en">English</option></select></label>
-            <label>{t.role}<select name="roleId" defaultValue="" style={fieldStyle}>
-              <option value="">{t.noRole}</option>{roleOptions.map(role => <option key={role.id} value={role.id}>{role.label}</option>)}
+            <label>{t.role}<select name="roleId" defaultValue={roleOptions.find(role => role.code === "cashier")?.id || ""} required style={fieldStyle}>
+              <option value="" disabled>{locale === "ar" ? "اختر دور الموظف" : "Choose staff role"}</option>{roleOptions.map(role => <option key={role.id} value={role.id}>{role.label}</option>)}
             </select></label>
             <button className="primary" disabled={busy === "user"}>{t.create}</button>
           </div>
