@@ -106,12 +106,14 @@ export async function createStoreUser(ctx: ControlContext, input: {
   if (input.roleIds?.length && !ctx.permissions.has("roles.manage")) {
     throw new ControlFailure("PERMISSION_DENIED");
   }
+  if (normalizeEmail(input.email).endsWith("@a1mobi.app")) throw new ControlFailure("ACCOUNT_IDENTITY_IMMUTABLE");
   const passwordHash = await hashPassword(input.password);
   try {
     return await db.$transaction(async tx => {
       const branch = await tx.branch.findFirst({ where: { id: ctx.branchId, tenantId: ctx.tenantId } });
       if (!branch) throw new ControlFailure("NOT_FOUND");
       const roles = await rolesForTenant(tx, ctx.tenantId, input.roleIds ?? []);
+      if (roles.some(role => role.code === "owner")) throw new ControlFailure("OWNER_ROLE_RESERVED");
       assertAssignableRoles(ctx, roles);
       const user = await tx.user.create({ data: {
         tenantId: ctx.tenantId,
@@ -146,6 +148,7 @@ export async function updateStoreUser(ctx: ControlContext, userId: string, input
   if (userId === ctx.actorId && (input.isActive === false || input.roleIds !== undefined)) {
     throw new ControlFailure("SELF_PROTECTION");
   }
+  if (input.email?.toLowerCase().endsWith("@a1mobi.app")) throw new ControlFailure("ACCOUNT_IDENTITY_IMMUTABLE");
   const passwordHash = input.password ? await hashPassword(input.password) : undefined;
   try {
     return await db.$transaction(async tx => {
@@ -154,7 +157,10 @@ export async function updateStoreUser(ctx: ControlContext, userId: string, input
         include: { userRoles: { include: { role: true } } },
       });
       if (!before) throw new ControlFailure("NOT_FOUND");
+      if (input.email !== undefined && before.email.endsWith("@a1mobi.app")) throw new ControlFailure("ACCOUNT_IDENTITY_IMMUTABLE");
       const roles = input.roleIds ? await rolesForTenant(tx, ctx.tenantId, input.roleIds) : undefined;
+      if (roles?.some(role => role.code === "owner")) throw new ControlFailure("OWNER_ROLE_RESERVED");
+      if (before.userRoles.some(item => item.role.code === "owner") && ctx.actorId !== before.id) throw new ControlFailure("OWNER_ACCOUNT_PROTECTED");
       if (roles) assertAssignableRoles(ctx, roles);
       await tx.user.update({ where: { id: before.id }, data: {
         displayName: input.displayName?.trim(),

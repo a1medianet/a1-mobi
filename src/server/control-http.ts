@@ -8,6 +8,9 @@ export class ControlFailure extends Error {
     | "CONFLICT"
     | "INVALID_ROLE"
     | "INVALID_ACCOUNT_HANDLE"
+    | "OWNER_ROLE_RESERVED"
+    | "OWNER_ACCOUNT_PROTECTED"
+    | "ACCOUNT_IDENTITY_IMMUTABLE"
     | "INVALID_PERMISSION"
     | "SYSTEM_ROLE_IMMUTABLE"
     | "SELF_PROTECTION"
@@ -22,7 +25,7 @@ export function controlError(error: unknown) {
     error instanceof Error ? error.message : "SERVICE_UNAVAILABLE";
   const status =
     code === "AUTH_REQUIRED" ? 401 :
-    code === "PERMISSION_DENIED" || code === "BOOTSTRAP_FORBIDDEN" ? 403 :
+    code === "PERMISSION_DENIED" || code === "BOOTSTRAP_FORBIDDEN" || code === "OWNER_ROLE_RESERVED" || code === "OWNER_ACCOUNT_PROTECTED" || code === "ACCOUNT_IDENTITY_IMMUTABLE" ? 403 :
     code === "NOT_FOUND" ? 404 :
     code === "CONFLICT" || code === "ALREADY_PROVISIONED" ? 409 :
     code === "INVALID_ROLE" || code === "INVALID_ACCOUNT_HANDLE" || code === "INVALID_PERMISSION" ||

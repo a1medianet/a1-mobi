@@ -45,18 +45,24 @@ export default async function AccountPage({params}:{params:Promise<{locale:strin
       <span>→</span><article><small>{ar?"الفرع":"Branch"}</small><strong>{branch.name} · {branch.code}</strong></article>
     </section>
 
-    {recoveryAccount?.email.endsWith("@a1mobi.app") && <section className="account-card" style={{marginTop:18}}>
-      <span className="module-kicker">ACCOUNT RECOVERY</span>
-      <h2>{ar?"البريد البديل لاسترداد الحساب":"Recovery email"}</h2>
-      <p><bdi dir="ltr">{recoveryAccount.email}</bdi></p>
-      <p>{recoveryAccount.recoveryEmail ? <bdi dir="ltr">{recoveryAccount.recoveryEmail}</bdi> : (ar?"لم يحدد بريد بديل بعد":"No recovery email configured")}</p>
-      {recoveryAccount.recoveryEmailVerifiedAt
-        ? <p>{ar?"تم التحقق من البريد البديل":"Recovery email verified"}</p>
-        : recoveryAccount.recoveryEmail
-          ? <RecoveryEmailRequestButton locale={locale}/>
-          : <p>{ar?"أضف بريد استرداد قبل تفعيل الاسترداد":"Add a recovery email to enable recovery"}</p>}
+    {recoveryAccount?.email.endsWith("@a1mobi.app") && <section className="account-card mobi-account-identity" aria-label={ar ? "هوية الحساب والاسترداد" : "Account identity and recovery"}>
+      <span className="module-kicker">ACCOUNT IDENTITY</span>
+      <h2>{ar ? "هوية الدخول واسترداد الحساب" : "Sign-in identity and account recovery"}</h2>
+      <p className="module-sub">{ar ? "عنوان الدخول داخل A1 MOBI مختلف عن البريد الخارجي المخصص لاسترداد الحساب." : "Your A1 MOBI sign-in address and your external recovery mailbox serve different purposes."}</p>
+      <div className="mobi-identity-fields">
+        <div className="mobi-identity-field">
+          <strong>{ar ? "عنوان تسجيل الدخول" : "Sign-in account"}</strong>
+          <bdi dir="ltr">{recoveryAccount.email}</bdi>
+          <small>{ar ? "معرّف داخلي لتسجيل الدخول، وليس صندوق بريد إلكتروني حقيقيًا." : "Internal sign-in identifier, not an Internet mailbox."}</small>
+        </div>
+        <div className="mobi-identity-field">
+          <strong>{ar ? "بريد الاسترداد الخارجي" : "External recovery email"}</strong>
+          <bdi dir="ltr">{recoveryAccount.recoveryEmail || (ar ? "غير محدد" : "Not configured")}</bdi>
+          <small>{recoveryAccount.recoveryEmailVerifiedAt ? (ar ? "تم التحقق من البريد" : "Email verified") : (ar ? "لم يُتحقق من البريد بعد؛ الاسترداد غير مفعّل." : "Not yet verified; recovery is not enabled.")}</small>
+          {recoveryAccount.recoveryEmail && !recoveryAccount.recoveryEmailVerifiedAt ? <RecoveryEmailRequestButton locale={locale}/> : null}
+        </div>
+      </div>
     </section>}
-
     <section className="account-grid">
       <article className="account-card"><span className="module-kicker">ORGANIZATION</span><h2>{ar?"بنية الحساب":"Account structure"}</h2><div className="account-facts"><div><small>{ar?"الفروع":"Branches"}</small><strong>{tenant._count.branches}</strong></div><div><small>{ar?"الأعضاء النشطون":"Active members"}</small><strong>{userCount}</strong></div><div><small>{ar?"العملة":"Currency"}</small><strong>{tenant.baseCurrency}</strong></div><div><small>{ar?"اللغة":"Locale"}</small><strong>{tenant.defaultLocale.toUpperCase()}</strong></div></div><div className="account-links"><Link href={"/"+locale+"/settings/team"}>{ar?"الفريق والصلاحيات":"Team & access"}</Link><Link href={"/"+locale+"/settings/security"}>{ar?"أمان الحساب":"Account security"}</Link></div></article>
 

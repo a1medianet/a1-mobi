@@ -162,7 +162,7 @@ export function TeamAdmin({ locale }: { locale: "ar" | "en" }) {
     return () => controller.abort();
   }, []);
 
-  const roleOptions = useMemo(() => roles.map(role => ({
+  const roleOptions = useMemo(() => roles.filter(role => role.code !== "owner").map(role => ({
     id: role.id, label: roleLabel(role, locale) + (role.isSystem ? " · " + t.system : ""),
   })), [roles, t.system, locale]);
 
@@ -229,6 +229,7 @@ export function TeamAdmin({ locale }: { locale: "ar" | "en" }) {
     </header>
 
     {error && <div className="module-banner" role="alert"><strong>{error}</strong></div>}
+    <div className="module-banner" role="note">{locale === "ar" ? "المالك محمي. أنشئ حسابات الموظفين بصلاحيات محددة، دون منحهم صفة مالك المتجر." : "The store owner is protected. Create staff accounts with limited permissions, not owner status."}</div>
 
     <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(300px,.72fr)", gap: 18, alignItems: "start" }}
       className="team-admin-grid">
@@ -242,9 +243,9 @@ export function TeamAdmin({ locale }: { locale: "ar" | "en" }) {
               <td dir="ltr">{user.email}</td>
               <td>{user.userRoles.map(x => roleLabel(x.role, locale)).join(", ") || t.noRole}</td>
               <td><span className={"pill " + (user.isActive ? "done" : "pending")}>{user.isActive ? t.active : t.inactive}</span></td>
-              <td><button className="soft-btn" disabled={busy === user.id} onClick={() => void toggleUser(user)}>
+              <td>{user.userRoles.some(x => x.role.code === "owner") ? <span className="pill pending">{locale === "ar" ? "حساب المالك محمي" : "Protected owner"}</span> : <button className="soft-btn" disabled={busy === user.id} onClick={() => void toggleUser(user)}>
                 {user.isActive ? t.deactivate : t.activate}
-              </button></td>
+              </button>}</td>
             </tr>)}</tbody>
           </table></div>
         </article>
