@@ -27,6 +27,9 @@ export async function POST(request:Request){
 
   const parsed=schema.safeParse(await request.json().catch(()=>null));
   if(!parsed.success) return authJson({error:"INVALID_REQUEST",issues:parsed.error.issues},400);
+  // The platform owner address is reserved exclusively for platform authentication.
+  if(parsed.data.ownerEmail.trim().toLowerCase()==="admin@a1mobi.app")
+    return authJson({error:"PLATFORM_EMAIL_RESERVED"},400);
 
   const forwarded=request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()||"unknown";
   try{
