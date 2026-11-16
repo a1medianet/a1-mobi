@@ -118,6 +118,10 @@ model User {
   sessions                    Session[]
   mfaCredential               MfaCredential?
   passwordResetTokens         PasswordResetToken[]
+  accountHandle               AccountHandle?
+  recoveryEmail               String?
+  recoveryEmailVerifiedAt     DateTime?
+  forwardNotifications        Boolean                @default(false)
   auditEvents                 AuditEvent[]           @relation("AuditActor")
   sales                       Sale[]                 @relation("SaleActor")
   approvedSaleLines           SaleLine[]             @relation("PriceOverrideActor")
@@ -141,6 +145,14 @@ model User {
 
   @@unique([tenantId, email])
   @@index([tenantId, branchId])
+}
+
+// Globally unique in-app identity; separate from merchant names and outbound email.
+model AccountHandle {
+  handle    String   @id @db.VarChar(30)
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 }
 
 model Session {

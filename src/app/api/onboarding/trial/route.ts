@@ -2,6 +2,7 @@ import { z } from "zod";
 import { sameOriginMutation, authJson } from "@/server/auth-http";
 import { consumeSensitiveActionBudget, AttemptBudgetExceeded } from "@/server/attempt-budget";
 import { onboardMobiTrial } from "@/server/trial-onboarding-service";
+import { normalizeAccountHandle, internalAccountAddress } from "@/server/account-handle";
 
 export const runtime="nodejs";
 
@@ -13,6 +14,8 @@ const schema=z.object({
   ownerEmail:z.string().trim().email().max(254),
   ownerDisplayName:z.string().trim().min(2).max(120),
   ownerPassword:z.string().min(12).max(256),
+  username:z.string().min(3).max(30).optional(),
+  recoveryEmail:z.email().max(254).optional(),
   locale:z.enum(["ar","en"]),
 }).strict();
 
@@ -27,9 +30,18 @@ export async function POST(request:Request){
 
   const parsed=schema.safeParse(await request.json().catch(()=>null));
   if(!parsed.success) return authJson({error:"INVALID_REQUEST",issues:parsed.error.issues},400);
+  if(parsed.data.username !== undefined) {
+    const handle=normalizeAccountHandle(parsed.data.username);
+    if(!handle || parsed.data.ownerEmail.trim().toLowerCase() !== internalAccountAddress(handle) ||
+      !parsed.data.recoveryEmail || parsed.data.recoveryEmail.toLowerCase() === parsed.data.ownerEmail.toLowerCase())
+      return authJson({error:"INVALID_ACCOUNT_IDENTITY"},400);
+  }
   // The platform owner address is reserved exclusively for platform authentication.
   if(parsed.data.ownerEmail.trim().toLowerCase()==="admin@a1mobi.app")
     return authJson({error:"PLATFORM_EMAIL_RESERVED"},400);
+  // Production public signup must never bypass the internal identity requirement.
+  if(process.env.NODE_ENV==="production" && !parsed.data.username)
+    return authJson({error:"ACCOUNT_HANDLE_REQUIRED"},400);
 
   const forwarded=request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()||"unknown";
   try{
@@ -53,7 +65,8 @@ export async function POST(request:Request){
       return response;
     }
     const code=error instanceof Error?error.message:"SERVICE_UNAVAILABLE";
-    const status=code==="CONFLICT"?409:
+    const status=code==="INVALID_ACCOUNT_HANDLE"?400:
+      code==="CONFLICT"?409:
       code==="SUBSCRIPTION_EXISTS"?409:
       code==="A1_BILLING_NOT_CONFIGURED"||code==="A1_BILLING_UNAVAILABLE"?503:500;
     return authJson({error:status<500?code:"SERVICE_UNAVAILABLE"},status);

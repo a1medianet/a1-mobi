@@ -162,6 +162,9 @@ export async function preparePasswordRecovery(
   });
 
   if (!user?.branch || user.branch.tenantId !== user.tenantId) return null;
+  // Internal @a1mobi.app identity has no external mailbox. Deliver only to a verified recovery address.
+  const internalIdentity = user.email.endsWith("@a1mobi.app");
+  if (internalIdentity && (!user.recoveryEmail || !user.recoveryEmailVerifiedAt)) return null;
 
   const token = randomBytes(32).toString("base64url");
   const tokenHash = hashToken(token);
@@ -181,7 +184,7 @@ export async function preparePasswordRecovery(
     userId: user.id,
     tenantId: user.tenantId,
     branchId: user.branchId!,
-    email: user.email,
+    email: internalIdentity ? user.recoveryEmail! : user.email,
     tenantSlug: user.tenant.slug,
     locale: user.locale,
     token,

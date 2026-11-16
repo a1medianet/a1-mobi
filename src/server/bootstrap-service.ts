@@ -1,6 +1,7 @@
 import { timingSafeEqual } from "node:crypto";
 import { Prisma } from "@prisma/client";
 import { hashPassword } from "@/core/auth/password";
+import { normalizeAccountHandle, internalAccountAddress } from "./account-handle";
 import { PERMISSION_SEEDS } from "@/core/rbac/permission-seeds";
 import { db } from "./db";
 import { ControlFailure } from "./control-http";
@@ -22,11 +23,16 @@ export async function bootstrapStore(input: {
   ownerEmail: string;
   ownerDisplayName: string;
   ownerPassword: string;
+  username?: string;
+  recoveryEmail?: string;
   locale: "ar" | "en";
   a1AccountId?: string | null;
   a1OrganizationId?: string | null;
 }) {
   const tenantSlug = input.tenantSlug.trim().toLowerCase();
+  const handle = input.username === undefined ? null : normalizeAccountHandle(input.username);
+  if (input.username !== undefined && !handle) throw new ControlFailure("INVALID_ACCOUNT_HANDLE");
+  const ownerEmail = handle ? internalAccountAddress(handle) : input.ownerEmail.trim().toLowerCase();
   const passwordHash = await hashPassword(input.ownerPassword);
 
   try {
@@ -59,11 +65,21 @@ export async function bootstrapStore(input: {
       const owner = await tx.user.create({ data: {
         tenantId: tenant.id,
         branchId: branch.id,
-        email: input.ownerEmail.trim().toLowerCase(),
+        email: ownerEmail,
+        recoveryEmail: handle ? (input.recoveryEmail?.trim().toLowerCase() || null) : null,
+        recoveryEmailVerifiedAt: null,
+        forwardNotifications: false,
         displayName: input.ownerDisplayName.trim(),
         passwordHash,
         locale: input.locale,
       } });
+
+      if (handle) {
+        // Unique DB constraint guarantees atomic handle reservation across tenants.
+        const previous = await tx.user.findFirst({ where: { email: ownerEmail, id: { not: owner.id } }, select: { id: true } });
+        if (previous) throw new ControlFailure("CONFLICT");
+        await tx.accountHandle.create({ data: { handle, userId: owner.id } });
+      }
 
       const role = await tx.role.create({ data: {
         tenantId: tenant.id,
@@ -92,6 +108,7 @@ export async function bootstrapStore(input: {
           branchCode: branch.code,
           ownerId: owner.id,
           ownerEmail: owner.email,
+          accountHandle: handle,
           a1AccountId: tenant.a1AccountId,
           a1OrganizationId: tenant.a1OrganizationId,
         },

@@ -7,6 +7,7 @@ export class ControlFailure extends Error {
     | "NOT_FOUND"
     | "CONFLICT"
     | "INVALID_ROLE"
+    | "INVALID_ACCOUNT_HANDLE"
     | "INVALID_PERMISSION"
     | "SYSTEM_ROLE_IMMUTABLE"
     | "SELF_PROTECTION"
@@ -24,7 +25,7 @@ export function controlError(error: unknown) {
     code === "PERMISSION_DENIED" || code === "BOOTSTRAP_FORBIDDEN" ? 403 :
     code === "NOT_FOUND" ? 404 :
     code === "CONFLICT" || code === "ALREADY_PROVISIONED" ? 409 :
-    code === "INVALID_ROLE" || code === "INVALID_PERMISSION" ||
+    code === "INVALID_ROLE" || code === "INVALID_ACCOUNT_HANDLE" || code === "INVALID_PERMISSION" ||
     code === "SYSTEM_ROLE_IMMUTABLE" || code === "SELF_PROTECTION" ? 400 :
     code === "BOOTSTRAP_NOT_CONFIGURED" ? 503 : 503;
   const exposed = status < 500 ? code : "SERVICE_UNAVAILABLE";

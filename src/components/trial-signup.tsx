@@ -3,7 +3,7 @@ import { formatDate } from "@/core/config/number-format";
 import { billingStatusLabel, planLabel } from "@/core/config/display-labels";
 
 import Link from "next/link";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 
 type Result={tenant:string;loginPath:string;trial:{status:string;planCode:string;expiresAt?:string;features:Record<string,string>}};
 
@@ -19,16 +19,31 @@ export function TrialSignup({locale}:{locale:"ar"|"en"}){
   const [branch,setBranch]=useState("");
   const [branchCode,setBranchCode]=useState("MAIN");
   const [ownerName,setOwnerName]=useState("");
-  const [email,setEmail]=useState("");
+  const [username,setUsername]=useState("");
+  const [recoveryEmail,setRecoveryEmail]=useState("");
+  const [available,setAvailable]=useState<boolean|null>(null);
+  const email=username ? `${username.toLowerCase()}@a1mobi.app` : "";
   const [password,setPassword]=useState("");
   const [busy,setBusy]=useState(false);
   const [error,setError]=useState("");
   const [result,setResult]=useState<Result|null>(null);
 
   const effectiveSlug=useMemo(()=>slug||slugify(store),[slug,store]);
+  useEffect(()=>{
+    if(!/^[a-z][a-z0-9_]{2,29}$/.test(username)) return;
+    const controller=new AbortController();
+    const timer=setTimeout(async()=>{
+      try {
+        const response=await fetch(`/api/onboarding/username?username=${encodeURIComponent(username)}`,{signal:controller.signal,cache:"no-store"});
+        const body=await response.json();
+        if(!controller.signal.aborted) setAvailable(response.ok && body.available===true);
+      } catch {if(!controller.signal.aborted) setAvailable(false);}
+    },350);
+    return ()=>{clearTimeout(timer);controller.abort();};
+  },[username]);
   const canNext=step===1?(store.trim().length>=2&&effectiveSlug.length>=3):
     step===2?(branch.trim().length>=2&&branchCode.trim().length>=1):
-    step===3?(ownerName.trim().length>=2&&email.includes("@")&&password.length>=12):true;
+    step===3?(ownerName.trim().length>=2&&available===true&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recoveryEmail)&&password.length>=12):true;
 
   async function submit(event:FormEvent){
     event.preventDefault();
@@ -44,6 +59,8 @@ export function TrialSignup({locale}:{locale:"ar"|"en"}){
           branchCode,
           branchName:branch,
           ownerEmail:email,
+          username,
+          recoveryEmail,
           ownerDisplayName:ownerName,
           ownerPassword:password,
           locale,
@@ -90,7 +107,9 @@ export function TrialSignup({locale}:{locale:"ar"|"en"}){
     {step===3&&<section className="signup-panel">
       <span className="product-eyebrow">{ar?"الخطوة 3 · المالك":"STEP 3 · OWNER"}</span><h2>{ar?"حساب مالك المتجر":"Store owner account"}</h2><p>{ar?"يحصل هذا الحساب على صلاحيات مالك المتجر. فعّل التحقق بخطوتين بعد أول دخول.":"This account receives store owner permissions. Enable two-step verification after first sign-in."}</p>
       <label>{ar?"اسم المالك":"Owner name"}<input value={ownerName} onChange={e=>setOwnerName(e.target.value)} autoComplete="name" required/></label>
-      <label>{ar?"البريد":"Email"}<input value={email} onChange={e=>setEmail(e.target.value)} type="email" dir="ltr" autoComplete="email" required/></label>
+      <label>{ar?"اسم المستخدم الرسمي":"Account username"}<div className="account-handle-input"><input value={username} onChange={e=>{setAvailable(null);setUsername(e.target.value.trim().toLowerCase());}} dir="ltr" autoCapitalize="none" autoComplete="off" maxLength={30} spellCheck={false} placeholder="topmobile" required/><strong dir="ltr">@a1mobi.app</strong></div></label>
+      <p role="status" aria-live="polite">{available===true?(ar?"الاسم متاح حاليًا؛ يُحجز عند إنشاء الحساب.":"Name currently available; reserved upon signup."):available===false?(ar?"الاسم غير متاح أو تعذر التحقق؛ جرّب اسمًا آخر.":"Unavailable or check failed; try another username."):(ar?"اكتب اسمًا من 3 إلى 30 حرفًا إنكليزيًا أو رقمًا أو _، يبدأ بحرف.":"Enter 3–30 letters, digits or _, starting with a letter.")}</p>
+      <label>{ar?"البريد البديل للاسترداد (يحتاج التحقق لاحقًا)":"Recovery email (verification required)"}<input value={recoveryEmail} onChange={e=>setRecoveryEmail(e.target.value)} type="email" dir="ltr" autoComplete="email" required/></label>
       <label>{ar?"كلمة المرور":"Password"}<input value={password} onChange={e=>setPassword(e.target.value)} type="password" minLength={12} autoComplete="new-password" required/><small>{ar?"12 محرفًا على الأقل. لا تستخدم كلمة مرور مهمة في تجربة عامة.":"At least 12 characters. Do not reuse an important password in a public trial."}</small></label>
     </section>}
 
@@ -102,7 +121,8 @@ export function TrialSignup({locale}:{locale:"ar"|"en"}){
         <div><small>{ar?"الفرع":"Branch"}</small><strong>{branch}</strong></div>
         <div><small>{ar?"الكود":"Code"}</small><strong dir="ltr">{branchCode}</strong></div>
         <div><small>{ar?"المالك":"Owner"}</small><strong>{ownerName}</strong></div>
-        <div><small>{ar?"البريد":"Email"}</small><strong dir="ltr">{email}</strong></div>
+        <div><small>{ar?"هوية الدخول":"Login identity"}</small><strong dir="ltr">{email}</strong></div>
+        <div><small>{ar?"بريد الاسترداد قيد التحقق":"Recovery email pending verification"}</small><strong dir="ltr">{recoveryEmail}</strong></div>
       </div>
       <div className="trial-entitlements"><b>{ar?"يشمل الـPilot":"Pilot includes"}</b><span>POS</span><span>Inventory</span><span>Repairs</span><span>Customers</span><span>Cash</span><span>Top-up</span><span>Reports</span><span>Device Trust</span><span>5 Staff</span><span>1 Branch</span></div>
     </section>}
@@ -111,7 +131,7 @@ export function TrialSignup({locale}:{locale:"ar"|"en"}){
 
     <div className="signup-actions">
       {step>1&&<button type="button" className="product-secondary" onClick={()=>setStep(step-1)}>{ar?"السابق":"Back"}</button>}
-      {!canNext&&<p className="signup-help" role="status">{ar?(step===1?"أدخل اسم المتجر ومعرّفًا من 3 أحرف على الأقل.":step===2?"أدخل اسم الفرع وكوده للمتابعة.":"أدخل اسم المالك وبريدًا صحيحًا وكلمة مرور من 12 حرفًا على الأقل."):(step===1?"Enter a store name and an identifier of at least 3 characters.":step===2?"Enter a branch name and code to continue.":"Enter the owner name, a valid email and a password of at least 12 characters.")}</p>}
+      {!canNext&&<p className="signup-help" role="status">{ar?(step===1?"أدخل اسم المتجر ومعرّفًا من 3 أحرف على الأقل.":step===2?"أدخل اسم الفرع وكوده للمتابعة.":"أدخل اسم المالك واسم مستخدم متاحًا وبريد استرداد صحيحًا وكلمة مرور من 12 حرفًا على الأقل."):(step===1?"Enter a store name and an identifier of at least 3 characters.":step===2?"Enter a branch name and code to continue.":"Enter an owner, available username, recovery email, and a password of at least 12 characters.")}</p>}
       <button className="product-cta" disabled={!canNext||busy}>{busy?(ar?"جارٍ الإنشاء…":"Creating…"):step===4?(ar?"ابدأ التجربة":"Start trial"):(ar?"التالي":"Continue")}</button>
     </div>
   </form>;

@@ -9,6 +9,8 @@ export async function onboardMobiTrial(input:{
   ownerEmail:string;
   ownerDisplayName:string;
   ownerPassword:string;
+  username?:string;
+  recoveryEmail?:string;
   locale:"ar"|"en";
 }){
   const provisioned=await bootstrapStore(input);
