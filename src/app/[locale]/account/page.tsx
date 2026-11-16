@@ -7,6 +7,7 @@ import { db } from "@/server/db";
 import { getMobiEntitlements } from "@/server/billing-client";
 import { BranchManager } from "@/components/branch-manager";
 import { MobiBillingPanel } from "@/components/mobi-billing-panel";
+import { RecoveryEmailRequestButton } from "@/components/recovery-email-request-button";
 
 export const dynamic="force-dynamic";
 
@@ -15,10 +16,11 @@ export default async function AccountPage({params}:{params:Promise<{locale:strin
   const context=await currentStoreContext();
   if(!context)return <main className="module-page account-center"><section className="account-empty"><span className="module-kicker">A1 MOBI · ACCOUNT</span><h1>{ar?"سجّل الدخول لعرض حساب الجهة":"Sign in to view organization account"}</h1><p>{ar?"الحساب التجاري يعرض Tenant والفرع والأعضاء وحالة الاشتراك والأمان.":"The commercial account shows tenant, branch, members, subscription state and security."}</p><Link className="primary" href={"/"+locale+"/login"}>{ar?"تسجيل الدخول":"Sign in"}</Link></section></main>;
 
-  const [tenant,branch,userCount]=await Promise.all([
+  const [tenant,branch,userCount,recoveryAccount]=await Promise.all([
     db.tenant.findUnique({where:{id:context.tenantId},select:{id:true,slug:true,name:true,defaultLocale:true,baseCurrency:true,billingTenantKey:true,a1AccountId:true,a1OrganizationId:true,_count:{select:{branches:true}}}}),
     db.branch.findUnique({where:{id:context.branchId},select:{id:true,code:true,name:true}}),
     db.user.count({where:{tenantId:context.tenantId,isActive:true}}),
+    db.user.findUnique({where:{id:context.actorId},select:{email:true,recoveryEmail:true,recoveryEmailVerifiedAt:true}}),
   ]);
   if(!tenant||!branch)return <main className="module-page"><div className="module-banner">Account context unavailable.</div></main>;
 
@@ -42,6 +44,18 @@ export default async function AccountPage({params}:{params:Promise<{locale:strin
       <span>→</span><article><small>Tenant</small><strong>{tenant.slug}</strong></article>
       <span>→</span><article><small>{ar?"الفرع":"Branch"}</small><strong>{branch.name} · {branch.code}</strong></article>
     </section>
+
+    {recoveryAccount?.email.endsWith("@a1mobi.app") && <section className="account-card" style={{marginTop:18}}>
+      <span className="module-kicker">ACCOUNT RECOVERY</span>
+      <h2>{ar?"البريد البديل لاسترداد الحساب":"Recovery email"}</h2>
+      <p><bdi dir="ltr">{recoveryAccount.email}</bdi></p>
+      <p>{recoveryAccount.recoveryEmail ? <bdi dir="ltr">{recoveryAccount.recoveryEmail}</bdi> : (ar?"لم يحدد بريد بديل بعد":"No recovery email configured")}</p>
+      {recoveryAccount.recoveryEmailVerifiedAt
+        ? <p>{ar?"تم التحقق من البريد البديل":"Recovery email verified"}</p>
+        : recoveryAccount.recoveryEmail
+          ? <RecoveryEmailRequestButton locale={locale}/>
+          : <p>{ar?"أضف بريد استرداد قبل تفعيل الاسترداد":"Add a recovery email to enable recovery"}</p>}
+    </section>}
 
     <section className="account-grid">
       <article className="account-card"><span className="module-kicker">ORGANIZATION</span><h2>{ar?"بنية الحساب":"Account structure"}</h2><div className="account-facts"><div><small>{ar?"الفروع":"Branches"}</small><strong>{tenant._count.branches}</strong></div><div><small>{ar?"الأعضاء النشطون":"Active members"}</small><strong>{userCount}</strong></div><div><small>{ar?"العملة":"Currency"}</small><strong>{tenant.baseCurrency}</strong></div><div><small>{ar?"اللغة":"Locale"}</small><strong>{tenant.defaultLocale.toUpperCase()}</strong></div></div><div className="account-links"><Link href={"/"+locale+"/settings/team"}>{ar?"الفريق والصلاحيات":"Team & access"}</Link><Link href={"/"+locale+"/settings/security"}>{ar?"أمان الحساب":"Account security"}</Link></div></article>

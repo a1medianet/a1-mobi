@@ -119,6 +119,7 @@ model User {
   mfaCredential               MfaCredential?
   passwordResetTokens         PasswordResetToken[]
   accountHandle               AccountHandle?
+  recoveryEmailTokens         RecoveryEmailToken[]
   recoveryEmail               String?
   recoveryEmailVerifiedAt     DateTime?
   forwardNotifications        Boolean                @default(false)
@@ -153,6 +154,20 @@ model AccountHandle {
   userId    String   @unique
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+}
+
+model RecoveryEmailToken {
+  id           String    @id @default(cuid())
+  userId       String
+  tokenHash    String    @unique
+  email        String
+  expiresAt    DateTime
+  deliveredAt  DateTime?
+  usedAt       DateTime?
+  createdAt    DateTime  @default(now())
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
 }
 
 model Session {
