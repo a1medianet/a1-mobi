@@ -64,7 +64,7 @@ export default async function BranchOwnerReport({locale,period="month"}:{locale:
     <section className="mobi-report-comparison" style={{gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,220px),1fr))"}} aria-label={locale==="ar"?"مقارنة المبيعات":"Sales comparison"}>
       <div><small>{locale==="ar"?"المبيعات بعد المرتجعات":"Sales after returns"} · {locale==="ar"?"الفترة الحالية":"Current period"}</small><strong>{money(data.salesAfterReturnsUsd)}</strong></div>
       <div><small>{locale==="ar"?"الفترة السابقة المماثلة":"Previous equal-length period"}</small><strong>{money(previous.salesAfterReturnsUsd)}</strong></div>
-      <div><small>{locale==="ar"?"التغير":"Change"}</small><strong>{percent===null?(locale==="ar"?"غير متاح":"N/A"):(percent>=0?"+":"")+percent.toFixed(1)+"%"}</strong><span>{money(delta)} {locale==="ar"?"فرق القيمة":"difference"}</span></div>
+      <div><small>{locale==="ar"?"التغير":"Change"}</small><strong>{percent===null?(locale==="ar"?"لا توجد مبيعات سابقة للمقارنة":"No previous sales to compare"):(percent>=0?"+":"")+percent.toFixed(1)+"%"}</strong><span>{money(delta)} {locale==="ar"?"فرق القيمة":"difference"}</span></div>
     </section>    <section className="report-grid" aria-label={t.title}>{cards.map(([label,value,tone])=>
       <article className="report-card" key={label}>
         <small>{label}</small><strong><bdi dir="auto">{value}</bdi></strong>
