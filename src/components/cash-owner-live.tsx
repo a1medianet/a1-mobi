@@ -73,7 +73,7 @@ export default async function CashOwnerLivePage({ locale }: { locale: "ar" | "en
       <Link href={"/" + locale} className="back-link">{t.back}</Link>
       <h1>{t.title}</h1><p className="module-sub">{t.sub}</p>
     </div></header>
-    <p className="preview-notice">{t.notice}</p>
+    <details className="mobi-accounting-note"><summary>{locale === "ar" ? "حول أرصدة الصندوق" : "About drawer balances"}</summary><p>{t.notice}</p></details>
     <section className="metrics ops-metrics" aria-label={t.title}>
       {([
         [t.status, statusLabel, "blue", "▤"],

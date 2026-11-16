@@ -2020,3 +2020,10 @@ body,[lang="ar"],html[lang="ar"] body,.mobi-store{font-family:"Noto Sans Arabic 
 .mobi-topup-live .activity-card .primary{width:100%;justify-content:center;min-height:43px}
 @media(max-width:1000px){.mobi-topup-grid{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:580px){.mobi-topup-live .mobi-topup-two{grid-template-columns:minmax(0,1fr)}}
+
+/* Merchant-facing operational notes: clear but visually quiet, not demo banners. */
+.mobi-accounting-note{font-size:12px;color:#62758c;margin:10px 0 16px}
+.mobi-accounting-note>summary{cursor:pointer;display:inline-flex;padding:6px 0;text-decoration:underline;text-underline-offset:3px}
+.mobi-accounting-note>p{max-width:70ch;margin:4px 0 0;line-height:1.7}
+.mobi-topup-live .mobi-topup-disclaimer{padding:10px 14px;border-inline-start:3px solid #708eac;background:#f4f7fb;color:#405a75;border-radius:7px;font-size:12px;line-height:1.75;margin:13px 0}
+.trust-page .trust-status{padding:6px 10px;font-size:11px;background:#f0f3f8;color:#5c6b80;border:1px solid #dde5f1;border-radius:9px;box-shadow:none}

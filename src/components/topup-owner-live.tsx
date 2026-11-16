@@ -59,9 +59,9 @@ export default function TopupOwnerLive({locale}:{locale:"ar"|"en"}){
    <h1>{ar?"التعبئة والتشريج":"Recharge & Top-up"}</h1>
    <p className="module-sub">{ar?"سجل التعبئة الفعلي والمزوّدين والتسويات، دون مخزون افتراضي.":"Actual recharge records, providers and settlements without artificial stock."}</p>
   </div></header>
-  <div className="module-banner" role="note">{ar
+  <p className="mobi-topup-disclaimer" role="note">{ar
    ?"تسجيل يدوي فقط: لا يرسل هذا النظام تعبئة إلى Alfa أو touch أو أي مزوّد. سجّل العملية بعد تنفيذها لدى المزوّد واستلام ثمنها من الزبون."
-   :"Manual recording only: this system does not send credit to any operator. Record a transaction only after provider fulfillment and customer payment."}</div>
+   :"Manual recording only: this system does not send credit to any operator. Record a transaction only after provider fulfillment and customer payment."}</p>
   {error&&<p className="preview-notice" role="alert">{error}</p>}
   {notice&&<p className="module-banner" role="status">{notice}</p>}
   {!data?<p>{ar?"جارٍ تحميل بيانات المتجر...":"Loading store data..."}</p>:<>
