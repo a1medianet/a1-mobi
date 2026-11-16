@@ -6,19 +6,33 @@ const db = new PrismaClient();
 async function readSecret(label = 'New platform admin password (hidden): ') {
   if (!process.stdin.isTTY || !process.stdin.setRawMode) throw Error('INTERACTIVE_TERMINAL_REQUIRED');
   process.stdout.write(label);
-  process.stdin.setRawMode(true); process.stdin.resume();
-  let secret = '';
-  try {
-    for await (const chunk of process.stdin) {
+  return new Promise((resolve, reject) => {
+    let secret = '';
+    const cleanup = () => {
+      process.stdin.removeListener('data', onData);
+      process.stdin.removeListener('end', onEnd);
+      process.stdin.setRawMode(false);
+      process.stdin.pause();
+    };
+    const onEnd = () => { cleanup(); reject(Error('INPUT_CLOSED')); };
+    const onData = (chunk) => {
       for (const char of chunk.toString('utf8')) {
-        if (char === '\r' || char === '\n') { process.stdout.write('\n'); return secret; }
-        if (char === '\u0003') throw Error('CANCELLED');
+        if (char === '\r' || char === '\n') {
+          cleanup();
+          process.stdout.write('\n');
+          resolve(secret);
+          return;
+        }
+        if (char === '\u0003') { cleanup(); reject(Error('CANCELLED')); return; }
         if (char === '\u007f' || char === '\b') { secret = secret.slice(0, -1); continue; }
         if (secret.length < 256) secret += char;
       }
-    }
-  } finally { process.stdin.setRawMode(false); process.stdin.pause(); }
-  throw Error('INPUT_CLOSED');
+    };
+    process.stdin.setRawMode(true);
+    process.stdin.on('data', onData);
+    process.stdin.once('end', onEnd);
+    process.stdin.resume();
+  });
 }
 (async () => {
   const email = 'admin@a1mobi.app';
