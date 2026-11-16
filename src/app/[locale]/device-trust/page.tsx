@@ -7,7 +7,7 @@ import { isValidImei, normalizeImei } from "@/modules/devices/imei";
 const copy = {
   ar: {
     back:"لوحة التحكم", title:"فحص موثوقية الجهاز", subtitle:"فحص الجهاز جزء من البيع والاستلام والصيانة والتعبئة",
-    status:"معاينة · سجل البلاغات غير متصل", enter:"أدخل رقم IMEI",
+    status:"التحقق من البلاغات غير متاح حاليًا", enter:"أدخل رقم IMEI",
     intro:"هذه الواجهة تتحقق من صيغة الرقم فقط. فحص سجل البلاغات وحالة الجهاز غير متاحين هنا بعد.",
     hint:"استخدم رقمًا من 15 خانة. الأرقام العربية مدعومة.",
     invalid:"صيغة الرقم غير صحيحة؛ تحقق من الخانات ورقم التحقق.",
@@ -19,7 +19,7 @@ const copy = {
   },
   en: {
     back:"Dashboard", title:"Device trust check", subtitle:"Device checks belong in sales, intake, repairs and top-ups",
-    status:"Preview · incident registry disconnected", enter:"Enter the IMEI",
+    status:"Incident registry checks not available yet", enter:"Enter the IMEI",
     intro:"This interface checks number format only. Incident lookup and device status are not available here yet.",
     hint:"Use a 15-digit number. Arabic numerals are supported.",
     invalid:"Invalid number format; check the digits and checksum.",

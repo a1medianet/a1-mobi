@@ -6,7 +6,7 @@ import { getBranchOperatingReport } from "@/modules/reports/branch-operating-rep
 const copy = {
   ar: {
     back:"لوحة التحكم",title:"تقرير الفرع",sub:"مؤشرات البيع والتحصيل والحركات المعتمدة لهذا الفرع",
-    notice:"بيئة اختبار: المؤشرات من سجلات الفرع خلال آخر 30 يومًا، وليست تقريرًا محاسبيًا معتمدًا.",
+    notice:"مؤشرات تشغيلية من سجلات هذا الفرع للفترة المحددة؛ ليست قوائم مالية مدقّقة.",
     gross:"المبيعات المسجلة",returns:"المرتجعات المنفذة",
     net:"المبيعات بعد المرتجعات",repair:"تحصيل الصيانة",variance:"فروق الصندوق المغلق",
     saleCount:"عدد عمليات البيع",returnCount:"عدد المرتجعات",
@@ -16,7 +16,7 @@ const copy = {
   },
   en: {
     back:"Dashboard",title:"Branch report",sub:"Recorded sales, collections and operating figures for this branch",
-    notice:"Test environment: metrics come from branch records over the past 30 days, not certified accounts.",
+    notice:"Operating metrics from this branch for the selected period; not audited financial statements.",
     gross:"Recorded sales",returns:"Posted returns",
     net:"Sales less returns",repair:"Repair collections",variance:"Closed drawer variances",
     saleCount:"Sales records",returnCount:"Posted returns count",

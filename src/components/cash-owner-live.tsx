@@ -11,7 +11,7 @@ const labels = {
   ar: {
     title: "الصندوق", back: "لوحة التحكم",
     sub: "الجلسة والحركات المالية المسجلة في فرعك",
-    notice: "بيئة اختبار: البيانات من سجلات الصندوق المحفوظة وليست أرصدة مصرفية أو أرقامًا افتراضية.",
+    notice: "تعرض الأرصدة المحسوبة من سجلات الصندوق المحفوظة لهذا الفرع؛ وليست كشفًا مصرفيًا.",
     status: "حالة الجلسة", open: "مفتوحة", closed: "مغلقة", none: "لا توجد جلسة",
     usd: "الرصيد المتوقع USD", lbp: "الرصيد المتوقع LBP",
     variance: "فرق الإغلاق بالدولار", notClosed: "يُحسب عند الإغلاق",
@@ -22,7 +22,7 @@ const labels = {
   en: {
     title: "Cash drawer", back: "Dashboard",
     sub: "Recorded drawer session and movements for your branch",
-    notice: "Test environment: these values come from saved drawer entries, not a bank balance or demo figures.",
+    notice: "Balances are calculated from saved cash drawer records for this branch, not a bank statement.",
     status: "Drawer session", open: "Open", closed: "Closed", none: "No session",
     usd: "Expected USD", lbp: "Expected LBP",
     variance: "Closing variance USD", notClosed: "Calculated on closing",

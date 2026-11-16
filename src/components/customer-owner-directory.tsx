@@ -7,7 +7,7 @@ const copy={
   ar: {
     back:"لوحة التحكم", title:"عملاء الفرع",
     sub:"ملفات العملاء المسجلين في هذا الفرع، من قاعدة المتجر المحفوظة",
-    notice:"بيئة اختبار: هذه قائمة فعلية من سجلات الفرع، وليست قائمة أسماء وأرقام تجريبية ثابتة.",
+    notice:"تُعرض هنا بيانات العملاء المسجلة لهذا الفرع فقط.",
     total:"إجمالي المسجلين", shown:"السجلات المعروضة", table:"دليل العملاء",
     name:"العميل", phone:"الهاتف", created:"تاريخ التسجيل",
     empty:"لا يوجد عملاء مسجلون في هذا الفرع بعد.",
@@ -17,7 +17,7 @@ const copy={
   en: {
     back:"Dashboard", title:"Branch customers",
     sub:"Saved customer profiles registered at this branch",
-    notice:"Test environment: these are saved branch records, not fixed sample customer cards.",
+    notice:"Shows only customers saved for this branch.",
     total:"Registered customers", shown:"Displayed records", table:"Customer directory",
     name:"Customer", phone:"Phone", created:"Registered",
     empty:"No customers registered at this branch yet.",
