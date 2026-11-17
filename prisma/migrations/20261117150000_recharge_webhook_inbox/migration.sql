@@ -15,5 +15,5 @@ CREATE TABLE "RechargeWebhookInbox" (
 );
 CREATE INDEX "RechargeWebhookInbox_tenantId_branchId_receivedAt_idx"
   ON "RechargeWebhookInbox"("tenantId", "branchId", "receivedAt");
-CREATE INDEX "RechargeWebhookInbox_merchantId_rechargeOrderId_orderVersion_idx"
+CREATE INDEX "RechargeWebhookInbox_order_version_idx"
   ON "RechargeWebhookInbox"("merchantId", "rechargeOrderId", "orderVersion");

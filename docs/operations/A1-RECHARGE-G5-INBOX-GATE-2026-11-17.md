@@ -26,3 +26,11 @@ Status: **G5 M2 PARTIAL / NO-GO**. NAWA Way / A1 First / Evidence First.
 3. Build authenticated webhook route + committed inbox transaction and outbox reconciliation. No 2xx until verified durable persistence.
 4. Exercise separate services over HTTP with 201/200 replay, 409/410/422/503, timeout unknown, cancellation, order version ordering, cost ledger ownership and customer receipt idempotency.
 5. Keep feature OFF in production until controlled release and signed acceptance.
+
+## Isolated PostgreSQL 17 verification follow-up (same day)
+- Started disposable Docker container a1-mobi-g5-inbox-lab-20261117 using cached postgres:17-alpine image, with no host port exposed and no bind mount to production. Never touched existing Mobi PostgreSQL instances.
+- On first disposable database, migration created table and indexes but Postgres warned that its generated long index identifier had been truncated. Corrected schema via @@index(..., map: "RechargeWebhookInbox_order_version_idx") and updated migration SQL before approval.
+- Created second empty database g5_inbox_verified in this throwaway container. Ran corrected migration with psql ON_ERROR_STOP=1: CREATE TABLE, CREATE INDEX, CREATE INDEX, exit 0 without truncation warning.
+- Executed tests/recharge-inbox-postgres-gate.sql with psql ON_ERROR_STOP=1: initial INSERT, identical event replay ON CONFLICT DO NOTHING (0 rows), global eventId collision from a different merchant rejected with unique_violation, exact index name verified, ROLLBACK verified to leave no synthetic rows. EXIT 0 and G5 inbox sandbox SQL checks PASS.
+- Stopped and automatically removed the --rm test container. No host port or real database modified; no telecom or cash transactions.
+- Note: this tests PostgreSQL DDL and uniqueness in an isolated disposable database, NOT Prisma's authenticated request handler, cross-app OAuth, provider settlements or actual durable webhook delivery.

@@ -1482,5 +1482,5 @@ model RechargeWebhookInbox {
   processingError  String?
 
   @@index([tenantId, branchId, receivedAt])
-  @@index([merchantId, rechargeOrderId, orderVersion])
+  @@index([merchantId, rechargeOrderId, orderVersion], map: "RechargeWebhookInbox_order_version_idx")
 }
