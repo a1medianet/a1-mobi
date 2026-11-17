@@ -28,6 +28,11 @@ if (enabled || login) {
 } else {
   checks.push("Turnstile switches remain OFF");
 }
+if (env.A1_MOBI_PASSKEYS_ENABLED === "1") {
+  check(Boolean(origin && origin.protocol === "https:" && !origin.port &&
+    env.A1_MOBI_PASSKEY_RP_ID?.trim().toLowerCase() === origin.hostname.toLowerCase()),
+    "WebAuthn RP pinned to HTTPS origin", "Passkeys require exact HTTPS origin and RP ID");
+} else checks.push("Passkeys switch remains OFF");
 const smtpNames = ["A1_MOBI_SMTP_HOST", "A1_MOBI_SMTP_PORT",
   "A1_MOBI_SMTP_USER", "A1_MOBI_SMTP_PASSWORD", "A1_MOBI_SMTP_FROM"];
 check(smtpNames.every(name => Boolean(env[name]?.trim())) &&

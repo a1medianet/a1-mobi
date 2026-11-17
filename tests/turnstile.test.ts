@@ -19,7 +19,7 @@ describe("Turnstile server-side verification",()=>{
    expect(args[0]).toBe("https://challenges.cloudflare.com/turnstile/v0/siteverify");
    const params=new URLSearchParams(args[1].body);
    expect(params.get("secret")).toBe(env.A1_MOBI_TURNSTILE_SECRET);
-   expect(params.get("remoteip")).toBe("192.0.2.1");
+   expect(params.has("remoteip")).toBe(false); // spoofable request headers are ignored
  });
  it("rejects false positives including mismatched action, hostname, and replay failures",async()=>{
    for(const response of [

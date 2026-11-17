@@ -23,9 +23,9 @@ export async function verifyTurnstile(input: {
   if (!secret || !expectedHostname) return "UNAVAILABLE";
   if (!input.token || input.token.length > 2048 || !/^[\x21-\x7e]+$/.test(input.token)) return "MISSING";
   const form = new URLSearchParams({secret, response: input.token});
-  // Never trust user-submitted forwarding headers for rate limiting or identity.
-  const cfIp = input.request.headers.get("cf-connecting-ip");
-  if (cfIp && /^(?:[a-fA-F\d:.]+)$/.test(cfIp) && cfIp.length <= 45) form.set("remoteip",cfIp);
+  // Omit remoteip: application headers are spoofable without a separately
+  // authenticated, trusted Cloudflare-to-origin proxy boundary. Siteverify
+  // validates tokens without remoteip, so this avoids trusting client input.
   try {
     const response = await (input.fetcher ?? fetch)("https://challenges.cloudflare.com/turnstile/v0/siteverify",{
       method:"POST",headers:{"content-type":"application/x-www-form-urlencoded"},
