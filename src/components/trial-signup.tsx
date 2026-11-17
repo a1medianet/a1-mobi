@@ -3,7 +3,8 @@ import { formatDate } from "@/core/config/number-format";
 import { billingStatusLabel, planLabel } from "@/core/config/display-labels";
 
 import Link from "next/link";
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { AuthTurnstile } from "@/components/auth-turnstile";
 
 type Result={tenant:string;loginPath:string;trial:{status:string;planCode:string;expiresAt?:string;features:Record<string,string>}};
 
@@ -24,6 +25,9 @@ export function TrialSignup({locale}:{locale:"ar"|"en"}){
   const [available,setAvailable]=useState<boolean|null>(null);
   const email=username ? `${username.toLowerCase()}@a1mobi.app` : "";
   const [password,setPassword]=useState("");
+  const [turnstileToken,setTurnstileToken]=useState("");
+  const [challengeVersion,setChallengeVersion]=useState(0);
+  const onTurnstileToken=useCallback((token:string)=>setTurnstileToken(token),[]);
   const [busy,setBusy]=useState(false);
   const [error,setError]=useState("");
   const [result,setResult]=useState<Result|null>(null);
@@ -63,6 +67,7 @@ export function TrialSignup({locale}:{locale:"ar"|"en"}){
           recoveryEmail,
           ownerDisplayName:ownerName,
           ownerPassword:password,
+          ...(turnstileToken?{turnstileToken}:{}),
           locale,
         }),
       });
@@ -71,7 +76,7 @@ export function TrialSignup({locale}:{locale:"ar"|"en"}){
       setResult(body);
     }catch(error){
       setError(error instanceof Error?error.message:"Unable to start trial");
-    }finally{setBusy(false)}
+    }finally{setBusy(false);setTurnstileToken("");setChallengeVersion(v=>v+1)}
   }
 
   if(result)return <section className="signup-success">
@@ -124,6 +129,7 @@ export function TrialSignup({locale}:{locale:"ar"|"en"}){
         <div><small>{ar?"هوية الدخول":"Login identity"}</small><strong dir="ltr">{email}</strong></div>
         <div><small>{ar?"بريد الاسترداد قيد التحقق":"Recovery email pending verification"}</small><strong dir="ltr">{recoveryEmail}</strong></div>
       </div>
+      <AuthTurnstile key={challengeVersion} surface="signup" onToken={onTurnstileToken}/>
       <div className="trial-entitlements"><b>{ar?"يشمل الـPilot":"Pilot includes"}</b><span>POS</span><span>Inventory</span><span>Repairs</span><span>Customers</span><span>Cash</span><span>Top-up</span><span>Reports</span><span>Device Trust</span><span>5 Staff</span><span>1 Branch</span></div>
     </section>}
 

@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, type FormEvent } from "react";
+import { useCallback, useState, type FormEvent } from "react";
+import { AuthTurnstile } from "@/components/auth-turnstile";
 
 const copy = {
   ar: {
@@ -68,6 +69,9 @@ export function RecoveryForm({
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [success, setSuccess] = useState(false);
+  const [turnstileToken,setTurnstileToken]=useState("");
+  const [challengeVersion,setChallengeVersion]=useState(0);
+  const onTurnstileToken=useCallback((token:string)=>setTurnstileToken(token),[]);
 
   async function requestRecovery(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -83,6 +87,7 @@ export function RecoveryForm({
         body: JSON.stringify({
           tenant: fields.get("tenant"),
           email: fields.get("email"),
+          ...(turnstileToken?{turnstileToken}:{}),
         }),
       });
       if (response.status === 202) {
@@ -94,7 +99,7 @@ export function RecoveryForm({
     } catch {
       setMessage(t.unavailable);
     } finally {
-      setBusy(false);
+      setBusy(false);setTurnstileToken("");setChallengeVersion(v=>v+1);
     }
   }
 
@@ -131,7 +136,7 @@ export function RecoveryForm({
     } catch {
       setMessage(t.unavailable);
     } finally {
-      setBusy(false);
+      setBusy(false);setTurnstileToken("");setChallengeVersion(v=>v+1);
     }
   }
 
@@ -171,6 +176,7 @@ export function RecoveryForm({
         <input name="email" type="email" required maxLength={254}
           autoComplete="username" dir="ltr" style={inputStyle} />
       </label>
+      <AuthTurnstile key={challengeVersion} surface="recovery" onToken={onTurnstileToken}/>
       <button className="primary" disabled={busy}>
         {busy ? t.busy : t.request}
       </button>

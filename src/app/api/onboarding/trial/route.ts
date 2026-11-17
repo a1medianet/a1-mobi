@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { verifyTurnstile } from "@/server/turnstile";
 import { sameOriginMutation, authJson } from "@/server/auth-http";
 import { consumeSensitiveActionBudget, AttemptBudgetExceeded } from "@/server/attempt-budget";
 import { onboardMobiTrial } from "@/server/trial-onboarding-service";
@@ -17,6 +18,7 @@ const schema=z.object({
   username:z.string().min(3).max(30).optional(),
   recoveryEmail:z.email().max(254).optional(),
   locale:z.enum(["ar","en"]),
+  turnstileToken:z.string().min(1).max(2048).optional(),
 }).strict();
 
 export async function POST(request:Request){
@@ -30,6 +32,8 @@ export async function POST(request:Request){
 
   const parsed=schema.safeParse(await request.json().catch(()=>null));
   if(!parsed.success) return authJson({error:"INVALID_REQUEST",issues:parsed.error.issues},400);
+  const turnstile=await verifyTurnstile({request,token:parsed.data.turnstileToken,surface:"signup"});
+  if(turnstile!=="DISABLED"&&turnstile!=="VERIFIED") return authJson({error:turnstile==="UNAVAILABLE"?"CHALLENGE_UNAVAILABLE":"CHALLENGE_REQUIRED"},turnstile==="UNAVAILABLE"?503:403);
   if(parsed.data.username !== undefined) {
     const handle=normalizeAccountHandle(parsed.data.username);
     if(!handle || parsed.data.ownerEmail.trim().toLowerCase() !== internalAccountAddress(handle) ||
@@ -46,7 +50,9 @@ export async function POST(request:Request){
   const forwarded=request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()||"unknown";
   try{
     await consumeSensitiveActionBudget("public-trial",[forwarded,parsed.data.ownerEmail.toLowerCase()],3);
-    const result=await onboardMobiTrial(parsed.data);
+    const {turnstileToken:_challenge,...trial}=parsed.data;
+    void _challenge;
+    const result=await onboardMobiTrial(trial);
     return authJson({
       ok:true,
       tenant:result.tenantSlug,

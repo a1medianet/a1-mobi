@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 
 import { authRequest, SESSION_TIMEOUT_MS, LOGIN_TIMEOUT_MS } from "@/core/auth/client-request";
+import { AuthTurnstile } from "@/components/auth-turnstile";
 
 const copy = {
   ar: {
@@ -71,6 +72,10 @@ export function LoginForm({ locale, initialTenant = "", initialEmail = "", retur
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [needsFactor, setNeedsFactor] = useState(false);
+  const [needsChallenge,setNeedsChallenge]=useState(false);
+  const [challengeToken,setChallengeToken]=useState("");
+  const [challengeVersion,setChallengeVersion]=useState(0);
+  const onChallengeToken=useCallback((token:string)=>setChallengeToken(token),[]);
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
@@ -104,6 +109,7 @@ export function LoginForm({ locale, initialTenant = "", initialEmail = "", retur
           tenant: fields.get("tenant"),
           email: fields.get("email"),
           password: fields.get("password"),
+          ...(challengeToken?{turnstileToken:challengeToken}:{}),
           ...(fields.get("secondFactor")
             ? { secondFactor: fields.get("secondFactor") }
             : {}),
@@ -113,7 +119,10 @@ export function LoginForm({ locale, initialTenant = "", initialEmail = "", retur
 
       if (!response.ok) {
         const body = response.body;
-        if (body.error === "MFA_REQUIRED") {
+        if(body.error === "CHALLENGE_REQUIRED" || body.error === "CHALLENGE_UNAVAILABLE") {
+          setNeedsChallenge(true);
+          setError(body.error==="CHALLENGE_UNAVAILABLE" ? (locale==="ar" ? "التحقق الأمني غير متاح مؤقتًا." : "Security verification is temporarily unavailable.") : (locale==="ar" ? "أكمل التحقق الأمني للمتابعة." : "Complete the security check to continue."));
+        } else if (body.error === "MFA_REQUIRED") {
           setNeedsFactor(true);
           setError(t.factorRequired);
         } else if (body.error === "INVALID_MFA") {
@@ -130,6 +139,7 @@ export function LoginForm({ locale, initialTenant = "", initialEmail = "", retur
         form.reset();
         setShowPassword(false);
         setNeedsFactor(false);
+        setNeedsChallenge(false);
         setActive(true);
         // Session cookie is set by the API; the protected page is rechecked by proxy.
         window.location.assign(returnTo);
@@ -137,7 +147,7 @@ export function LoginForm({ locale, initialTenant = "", initialEmail = "", retur
     } catch (cause) {
       if (!signal.aborted) setError(cause instanceof Error && cause.message === "TIMEOUT" ? t.timeout : t.unavailable);
     } finally {
-      if (!signal.aborted) setBusy(false);
+      if (!signal.aborted) {setBusy(false);if(needsChallenge){setChallengeToken("");setChallengeVersion(v=>v+1);}}
     }
   }
 
@@ -218,6 +228,7 @@ export function LoginForm({ locale, initialTenant = "", initialEmail = "", retur
           {t.factorHint}
         </small>
       </label>}
+      {needsChallenge && <AuthTurnstile key={challengeVersion} surface="login" onToken={onChallengeToken}/>}
       <button className="primary mobi-login-submit" disabled={busy}>{busy ? t.busy : t.submit}</button>
       <Link href={"/" + locale + "/recover"}>{t.recover}</Link>
     </form>}

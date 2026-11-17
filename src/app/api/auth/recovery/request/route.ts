@@ -1,4 +1,5 @@
 import { after } from "next/server";
+import { verifyTurnstile } from "@/server/turnstile";
 import { z } from "zod";
 import { readAuthJson } from "@/core/auth/request";
 import { authJson, sameOriginMutation } from "@/server/auth-http";
@@ -14,6 +15,7 @@ const RESPONSE_FLOOR_MS = 250;
 const schema = z.object({
   tenant: z.string().trim().min(1).max(80).regex(/^[a-zA-Z0-9-]+$/),
   email: z.string().trim().email().max(254),
+  turnstileToken: z.string().min(1).max(2048).optional(),
 }).strict();
 
 function floorDelay(startedAt: number) {
@@ -33,6 +35,8 @@ export async function POST(request: Request) {
     const input = schema.safeParse(await readAuthJson(request));
     if (!input.success) return authJson({ error: "INVALID_REQUEST" }, 400);
 
+    const challenge=await verifyTurnstile({request,token:input.data.turnstileToken,surface:"recovery"});
+    if(challenge!=="DISABLED"&&challenge!=="VERIFIED")return authJson({error:challenge==="UNAVAILABLE"?"CHALLENGE_UNAVAILABLE":"CHALLENGE_REQUIRED"},challenge==="UNAVAILABLE"?503:403);
     const prepared = await preparePasswordRecovery(input.data.tenant, input.data.email);
     if (prepared) {
       after(async () => {

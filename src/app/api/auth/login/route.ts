@@ -1,4 +1,7 @@
 import { z } from "zod";
+import { db } from "@/server/db";
+import { authBudgetKey } from "@/server/attempt-budget";
+import { turnstileEnabled, verifyTurnstile } from "@/server/turnstile";
 import { readAuthJson } from "@/core/auth/request";
 import { AuthFailure, loginToStore } from "@/server/auth-service";
 import { authJson, cookieOptions, sameOriginMutation, sessionCookieName } from "@/server/auth-http";
@@ -8,6 +11,7 @@ const schema = z.object({
   email: z.string().trim().email().max(254),
   password: z.string().min(1).max(256),
   secondFactor: z.string().trim().min(6).max(32).optional(),
+  turnstileToken: z.string().min(1).max(2048).optional(),
 }).strict();
 export async function POST(request: Request) {
   if (!sameOriginMutation(request)) return authJson({ error: "FORBIDDEN_ORIGIN" }, 403);
@@ -20,6 +24,13 @@ export async function POST(request: Request) {
   } catch { return authJson({ error: "INVALID_REQUEST" }, 400); }
   if (!input.success) return authJson({ error: "INVALID_REQUEST" }, 400);
   try {
+    if(turnstileEnabled("login")){
+      const attempts=await db.authAttempt.findUnique({where:{key:authBudgetKey("account",[input.data.tenant.toLowerCase(),input.data.email.toLowerCase()])}});
+      if(attempts && attempts.attempts>=2 && Date.now()-attempts.windowStart.getTime()<900000){
+        const verdict=await verifyTurnstile({request,token:input.data.turnstileToken,surface:"login"});
+        if(verdict!=="VERIFIED")return authJson({error:verdict==="UNAVAILABLE"?"CHALLENGE_UNAVAILABLE":"CHALLENGE_REQUIRED"},verdict==="UNAVAILABLE"?503:403);
+      }
+    }
     const result = await loginToStore(
       input.data.tenant,
       input.data.email,
