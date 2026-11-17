@@ -1463,3 +1463,24 @@ model PlatformSession {
 
   @@index([adminId, expiresAt])
 }
+
+/**
+ * G5 Recharge sandbox webhook inbox. No financial posting from receipt.
+ * eventId is globally unique; any cross-merchant collision must be rejected.
+ */
+model RechargeWebhookInbox {
+  eventId          String    @id
+  tenantId         String
+  branchId         String
+  merchantId       String
+  rechargeOrderId  String
+  orderVersion     Int
+  payloadHash      String
+  state            String
+  receivedAt       DateTime  @default(now())
+  processedAt      DateTime?
+  processingError  String?
+
+  @@index([tenantId, branchId, receivedAt])
+  @@index([merchantId, rechargeOrderId, orderVersion])
+}
