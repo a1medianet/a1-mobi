@@ -25,3 +25,8 @@ M1 next: verify HTTP contract conformance against versioned Recharge sandbox API
 M2: two-tenant/branch isolation with dedicated database, durable webhook inbox with unique event IDs, monotonic event processing, signed outbox replay; explicit OAuth2 server-side token audience/scopes.
 M3: verify ledger/receipt owner mapping including refunds and reconciliation; simulated merchant acceptance without touching production Top Mobile.
 M4/M5: rollout opt-in only after business sign-off, rollback proof, real provider capability and operator approval. Existing manual path remains sole production operation.
+
+## Local HTTP protocol follow-up (M1 fixture only)
+- tests/recharge-contract-http.test.ts starts an isolated loopback Node HTTP fixture with ephemeral port and fake service token; it is NOT a running A1 Recharge app and never accesses any external API.
+- Verifies 201/200 idempotent replay (one mock order), 409 same-key changed-payload conflict, 410 quote expiration, 503 provider unavailable, catalog and supplier-settlement read-only paths, and zero Mobi cash posting in fixture.
+- HTTP fixture 4/4 tests PASS (2026-11-17 14:42 Beirut), exit 0. Still requires actual two-application sandbox tests and settlement/receipt persistence to pass G5.
