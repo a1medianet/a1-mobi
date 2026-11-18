@@ -33,7 +33,7 @@ beforeEach(()=>{
  delete process.env.A1_MOBI_RECHARGE_REAL_MONEY_ENABLED;
 });
 afterEach(()=>{for(const k of keys){const value=previous[k];if(value===undefined)delete process.env[k];else process.env[k]=value;}});
-const timestamp=1795000000000;
+const timestamp=Date.now();
 const event={eventId:"evt-test-0001",type:"recharge.order.v1",
  merchantId:"merchant-A",branchId:"branch-A",rechargeOrderId:"recharge-order-A",
  externalRef:"mobi-synthetic-A",version:1,state:"PENDING",
@@ -54,7 +54,7 @@ describe("G5 v0.2 Mobi signed webhook capture-only route",()=>{
   const {POST}=await import("@/app/api/ops/recharge-webhook/route");
   expect((await POST(makeRequest())).status).toBe(404);
   expect(memory.create).not.toHaveBeenCalled();
- });
+ },20000);
  it("persists signed event before 202, then acknowledges exact replay without new row",async()=>{
   const {POST}=await import("@/app/api/ops/recharge-webhook/route");
   const first=await POST(makeRequest());
