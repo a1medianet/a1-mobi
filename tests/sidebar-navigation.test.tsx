@@ -1,25 +1,24 @@
-import { describe, expect, it, vi } from "vitest";
-import { createElement } from "react";
-import { renderToStaticMarkup } from "react-dom/server";
+import {describe, expect, it, vi} from "vitest";
+import {renderToStaticMarkup} from "react-dom/server";
 
-const state = vi.hoisted(() => ({ pathname: "/ar/pos" }));
+const state = vi.hoisted(() => ({pathname: "/ar/pos"}));
 vi.mock("next/navigation", () => ({
   usePathname: () => state.pathname,
-  useRouter: () => ({ replace: () => {}, refresh: () => {}, push: () => {} }),
+  useRouter: () => ({replace: () => {}, refresh: () => {}, push: () => {}}),
 }));
 
-import { AppShell } from "@/components/app-shell";
+import {AppShell} from "@/components/app-shell";
 
 describe("A1 Mobi sidebar navigation", () => {
   for (const locale of ["ar", "en"] as const) {
     for (const page of ["pos", "products", "inventory", "settings/team"] as const) {
       it(`keeps all desktop sidebar links expanded when opening ${locale}/${page}`, () => {
         state.pathname = `/${locale}/${page}`;
-        const html = renderToStaticMarkup(createElement(
-          AppShell,
-          {locale, live: true},
-          createElement("main", null, "Workspace"),
-        ));
+        const html = renderToStaticMarkup(
+          <AppShell locale={locale} live={true}>
+            <main>Workspace</main>
+          </AppShell>,
+        );
         expect(html).toContain('class="app-shell"');
         expect(html).not.toContain("sidebar-collapsed");
         expect(html).toContain(`href="/${locale}/pos"`);
