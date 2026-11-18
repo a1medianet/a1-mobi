@@ -11,7 +11,7 @@ import {resolveRechargeSandboxMapping} from "@/modules/recharge-bridge/sandbox-c
 import {collectSyntheticG5Sale} from "@/modules/recharge-bridge/mobi-finance";
 import {refundSyntheticG5Sale} from "@/modules/recharge-bridge/mobi-refund";
 import {db} from "@/server/db";
-import {summarizeRechargeReconciliation} from "@/modules/recharge-bridge/reconciliation";
+import {scanRechargeReconciliation} from "@/modules/recharge-bridge/reconciliation";
 
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
@@ -75,13 +75,16 @@ export async function GET(request:Request){
   }
   if(view==="reconcile"){
    if(!ctx.permissions.has("foundation.manage"))return authJson({error:"PERMISSION_DENIED"},403);
-   const cursor="0";
-   const page=await gatewayInstance.replayEvents(cursor);
-   const ids=page.items.map(e=>e.eventId);
-   const stored=await db.rechargeWebhookInbox.findMany({where:{tenantId:ctx.tenantId,
-     branchId:ctx.branchId,merchantId:resolveRechargeSandboxMapping(ctx.tenantId,ctx.branchId).mapping.merchantId,
-     eventId:{in:ids}},select:{eventId:true,orderVersion:true,state:true,rechargeOrderId:true}});
-   return authJson(summarizeRechargeReconciliation(page,stored));
+   const merchantId=resolveRechargeSandboxMapping(ctx.tenantId,ctx.branchId).mapping.merchantId;
+   const diagnostic=await scanRechargeReconciliation({
+    maxPages:20,
+    fetchPage:async cursor=>gatewayInstance.replayEvents(cursor),
+    findInbox:async eventIds=>db.rechargeWebhookInbox.findMany({where:{
+     tenantId:ctx.tenantId,branchId:ctx.branchId,merchantId,
+     eventId:{in:eventIds},
+    },select:{eventId:true,orderVersion:true,state:true,rechargeOrderId:true}}),
+   });
+   return authJson(diagnostic);
   }
   if(view==="settlements"){
    if(!ctx.permissions.has("cost.read")&&!ctx.permissions.has("foundation.manage"))
