@@ -9,6 +9,8 @@ import {createRechargeReceiver,RechargeBridgeError} from "@/modules/recharge-bri
 import {createRechargeSandboxTransport} from "@/modules/recharge-bridge/http";
 import {resolveRechargeSandboxMapping} from "@/modules/recharge-bridge/sandbox-config";
 import {collectSyntheticG5Sale} from "@/modules/recharge-bridge/mobi-finance";
+import {db} from "@/server/db";
+import {summarizeRechargeReconciliation} from "@/modules/recharge-bridge/reconciliation";
 
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
@@ -69,6 +71,16 @@ export async function GET(request:Request){
    const cursor=url.searchParams.get("cursor")??"0";
    return authJson(await gatewayInstance.replayEvents(cursor));
   }
+  if(view==="reconcile"){
+   if(!ctx.permissions.has("foundation.manage"))return authJson({error:"PERMISSION_DENIED"},403);
+   const cursor="0";
+   const page=await gatewayInstance.replayEvents(cursor);
+   const ids=page.items.map(e=>e.eventId);
+   const stored=await db.rechargeWebhookInbox.findMany({where:{tenantId:ctx.tenantId,
+     branchId:ctx.branchId,merchantId:resolveRechargeSandboxMapping(ctx.tenantId,ctx.branchId).mapping.merchantId,
+     eventId:{in:ids}},select:{eventId:true,orderVersion:true,state:true,rechargeOrderId:true}});
+   return authJson(summarizeRechargeReconciliation(page,stored));
+  }
   if(view==="settlements"){
    if(!ctx.permissions.has("cost.read")&&!ctx.permissions.has("foundation.manage"))
      return authJson({error:"PERMISSION_DENIED"},403);
@@ -93,6 +105,8 @@ export async function POST(request:Request){
  try{
   const command=parsed.data;
   const ctx=await currentStoreContext(command.action==="cancel"?"foundation.manage":"topup.manage");
+  if(command.action==="collect"&&!ctx.permissions.has("cash.manage"))
+   return authJson({error:"PERMISSION_DENIED"},403);
   const gatewayInstance=gateway(ctx.tenantId,ctx.branchId);
   if(command.action==="quote")
    return authJson(await gatewayInstance.createQuote({
