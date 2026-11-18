@@ -11,6 +11,7 @@ import {resolveRechargeSandboxMapping} from "@/modules/recharge-bridge/sandbox-c
 import {collectSyntheticG5Sale} from "@/modules/recharge-bridge/mobi-finance";
 import {refundSyntheticG5Sale} from "@/modules/recharge-bridge/mobi-refund";
 import {db} from "@/server/db";
+import {AttemptBudgetExceeded} from "@/server/attempt-budget";
 import {scanRechargeReconciliation} from "@/modules/recharge-bridge/reconciliation";
 
 export const runtime="nodejs";
@@ -39,6 +40,7 @@ function gateway(tenantId:string,branchId:string){
  });
 }
 function safeFailure(error:unknown){
+ if(error instanceof AttemptBudgetExceeded)return authJson({error:"RATE_LIMITED"},429);
  if(error instanceof RechargeBridgeError){
   const status=error.status>=400&&error.status<600?error.status:503;
   return authJson({error:error.code,retryAction:error.code==="RECHARGE_OUTCOME_UNKNOWN"
