@@ -6,7 +6,7 @@
 import {db} from "@/server/db";
 import {authJson} from "@/server/auth-http";
 import {acceptRechargeEventToInbox} from "@/modules/recharge-bridge/inbox";
-import {verifyIncomingRechargeEvent,IncomingRechargeEvent} from "@/modules/recharge-bridge/webhook";
+import {verifyRechargeOutboxEvent,RechargeOutboxEvent} from "@/modules/recharge-bridge/webhook";
 import {resolveRechargeSandboxMapping} from "@/modules/recharge-bridge/sandbox-config";
 import {RechargeBridgeError} from "@/modules/recharge-bridge/receiver";
 
@@ -50,13 +50,13 @@ export async function POST(request:Request){
   const rawBody=await boundedRaw(request);
   const eventId=request.headers.get("x-a1-event-id")??"";
   const timestamp=Number(request.headers.get("x-a1-event-timestamp")??"NaN");
-  const signature=request.headers.get("x-a1-event-signature")??"";
+  const signature=request.headers.get("x-a1-signature")??"";
   // Signature is checked *before* payload can be trusted as a merchant identity.
   const input={secret,timestamp,eventId,signature,rawBody};
   // These values are not trusted until verified; only use them to select a
   // configured test mapping, which the signature validator then checks.
-  let candidate:Partial<IncomingRechargeEvent>;
-  try{candidate=JSON.parse(rawBody.toString("utf8")) as Partial<IncomingRechargeEvent>;}
+  let candidate:Partial<RechargeOutboxEvent>;
+  try{candidate=JSON.parse(rawBody.toString("utf8")) as Partial<RechargeOutboxEvent>;}
   catch{throw new RechargeBridgeError("INVALID_EVENT_BODY",400);}
   if(!candidate||typeof candidate!=="object"||Array.isArray(candidate))
     throw new RechargeBridgeError("INVALID_EVENT_BODY",400);
@@ -70,17 +70,15 @@ export async function POST(request:Request){
   if(matches.length!==1)throw new RechargeBridgeError("WEBHOOK_SCOPE_MISMATCH",403);
   const enrolled=matches[0] as {tenantId:string;branchId:string};
   const {mapping}=resolveRechargeSandboxMapping(enrolled.tenantId,enrolled.branchId);
-  const {event,order,payloadHash}=verifyIncomingRechargeEvent({
+  const {event,payloadHash}=verifyRechargeOutboxEvent({
     ...input,scope:{merchantId:mapping.merchantId,branchId:mapping.rechargeBranchId},
   });
-  if((event as IncomingRechargeEvent&{type?:string}).type!=="recharge.order.v1")
-    throw new RechargeBridgeError("WEBHOOK_EVENT_TYPE_UNSUPPORTED",422);
   const persisted=await acceptRechargeEventToInbox({
     store:db.rechargeWebhookInbox,
     scope:{tenantId:mapping.tenantId,branchId:mapping.branchId,merchantId:mapping.merchantId},
     // Recharge branch IDs are external. After verifying the signature and remote
     // scope above, translate to the registered local Mobi branch for the inbox.
-    eventId:event.eventId,order:{...order,branchId:mapping.branchId},payloadHash,
+    eventId:event.eventId,order:{...event,branchId:mapping.branchId},payloadHash,
   });
   return authJson({accepted:true,outcome:persisted.outcome,eventId:persisted.eventId,
     financePosted:false},persisted.outcome==="INSERTED"?202:200);
