@@ -122,7 +122,7 @@ export default function RechargeG5Sandbox({locale}:{locale:"ar"|"en"}){
     <input value={recipient} onChange={e=>setRecipient(e.target.value)} required minLength={3} maxLength={80}
       placeholder="test-number-001" autoComplete="off"/>
    </label>
-   <button className="primary" type="submit" disabled={busy||uncertain||Date.now()>=quote.expiresAt}>
+   <button className="primary" type="submit" disabled={busy||uncertain}>
     {ar?"تأكيد طلب تجريبي بانتظار التنفيذ":"Confirm synthetic pending order"}
    </button>
   </form>}
