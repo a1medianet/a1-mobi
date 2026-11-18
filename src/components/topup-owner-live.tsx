@@ -17,7 +17,7 @@ export default function TopupOwnerLive({locale}:{locale:"ar"|"en"}){
   if(!r.ok)throw new Error(body.error||"READ_FAILED");
   setData(body);
  },[]);
- useEffect(()=>{let active=true;const load=async()=>{try{await refresh()}catch(e){if(active)setError(String(e.message))}};void load();return()=>{active=false}},[refresh]);
+ useEffect(()=>{let active=true;const load=async()=>{try{await refresh()}catch(e){if(active)setError(e instanceof Error?e.message:"READ_FAILED")}};void load();return()=>{active=false}},[refresh]);
  const availableServices=useMemo(()=>data?.services.filter(s=>s.isActive&&(!providerId||s.providerId===providerId))??[],[data,providerId]);
  const service=availableServices.find(s=>s.id===serviceId);
  const provider=data?.providers.find(p=>p.id===providerId);
