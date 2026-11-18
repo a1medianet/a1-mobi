@@ -69,6 +69,10 @@ export async function scanRechargeReconciliation(input:{
  const seenCursors=new Set<string>(),seenEventIds=new Set<string>();
  const missing=new Set<string>(),conflicting=new Set<string>(),gaps=new Set<string>();
  const versions=new Map<string,Set<number>>();
+ // A source must not publish two distinct events at the same order version.
+ // This remains a read-only anomaly; no webhook is replayed or ACKed here.
+ const seenOrderVersions=new Map<string,string>();
+ const conflictingVersionOrderIds=new Set<string>();
  let completed=false;
  while(pages<maxPages){
   if(seenCursors.has(cursor))throw new RechargeBridgeError("RECONCILIATION_CURSOR_LOOP",409);
@@ -85,6 +89,9 @@ export async function scanRechargeReconciliation(input:{
    if(seenEventIds.has(event.eventId))
     throw new RechargeBridgeError("DUPLICATE_SOURCE_EVENT",409);
    seenEventIds.add(event.eventId);
+   const versionKey=JSON.stringify([event.rechargeOrderId,event.version]);
+   if(seenOrderVersions.has(versionKey))conflictingVersionOrderIds.add(event.rechargeOrderId);
+   else seenOrderVersions.set(versionKey,event.eventId);
    const group=versions.get(event.rechargeOrderId)??new Set<number>();
    group.add(event.version);versions.set(event.rechargeOrderId,group);
   }
@@ -108,7 +115,8 @@ export async function scanRechargeReconciliation(input:{
   sourceExhausted:completed,diagnosticOnly:true as const,
   missingEventIds:[...missing],conflictingEventIds:[...conflicting],
   versionGapOrderIds:[...gaps],
-  status:conflicting.size||gaps.size?"REVIEW_REQUIRED" as const:
+  conflictingVersionOrderIds:[...conflictingVersionOrderIds],
+  status:conflicting.size||gaps.size||conflictingVersionOrderIds.size?"REVIEW_REQUIRED" as const:
    missing.size?"DELIVERY_BACKLOG" as const:
    !completed?"SCAN_LIMIT_REACHED" as const:"ALL_SCANNED_PAGES_MATCHED" as const,
   note:"Read-only bounded scan; does not reconcile money, source order intents, or commercial readiness.",

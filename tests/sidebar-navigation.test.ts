@@ -15,9 +15,11 @@ describe("A1 Mobi sidebar navigation", () => {
     for (const page of ["pos", "products", "inventory", "settings/team"] as const) {
       it(`keeps all desktop sidebar links expanded when opening ${locale}/${page}`, () => {
         state.pathname = `/${locale}/${page}`;
-        const html = renderToStaticMarkup(createElement(AppShell, {
-          locale, live: true, children: createElement("main", null, "Workspace")
-        }));
+        const html = renderToStaticMarkup(createElement(
+          AppShell,
+          {locale, live: true},
+          createElement("main", null, "Workspace"),
+        ));
         expect(html).toContain('class="app-shell"');
         expect(html).not.toContain("sidebar-collapsed");
         expect(html).toContain(`href="/${locale}/pos"`);
