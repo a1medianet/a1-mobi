@@ -6,13 +6,15 @@
 import {CashDirection,CashMovementType,CashSessionStatus,InvoiceStatus,
  PaymentStatus,Prisma,SaleStatus} from "@prisma/client";
 import {db} from "@/server/db";
+import {verifyUserSecondFactor} from "@/server/mfa-service";
+import {consumeSensitiveActionBudget} from "@/server/attempt-budget";
 import {RechargeBridgeError,type RechargeOrder} from "./receiver";
 
 type Source=RechargeOrder&{currency?:string;totalMinor?:number};
 const keyFor=(id:string)=>"g5-sandbox-sale-"+id;
 const returnKey=(id:string)=>"g5-sandbox-refund-"+id;
 export async function refundSyntheticG5Sale(input:{
- tenantId:string;branchId:string;actorId:string;order:Source;
+ tenantId:string;branchId:string;actorId:string;order:Source;mfaCode:string;
 }){
  const {tenantId,branchId,actorId,order}=input;
  if(process.env.A1_MOBI_RECHARGE_ADAPTER_ENABLED!=="true"||
@@ -48,6 +50,7 @@ export async function refundSyntheticG5Sale(input:{
  };
  const prior=await checkExisting();
  if(prior)return prior;
+ await consumeSensitiveActionBudget("g5-sandbox-refund",[tenantId,actorId],5);
  try{
   return await db.$transaction(async tx=>{
    const existing=await tx.saleReturn.findUnique({where:{tenantId_idempotencyKey:{
@@ -64,6 +67,21 @@ export async function refundSyntheticG5Sale(input:{
     throw new RechargeBridgeError("ORIGINAL_COLLECTION_NOT_REFUNDABLE",409);
    const cash=await tx.cashSession.findFirst({where:{tenantId,branchId,status:CashSessionStatus.OPEN}});
    if(!cash)throw new RechargeBridgeError("OPEN_G5_CASH_SESSION_REQUIRED",409);
+   // Step-up belongs inside the same serializable transaction as the cash reversal.
+   // A failed MFA check rolls back the entire write and cannot post a refund.
+   const credential=await tx.mfaCredential.findUnique({
+    where:{userId:actorId},select:{enabledAt:true},
+   });
+   if(!credential?.enabledAt)throw new RechargeBridgeError("REFUND_MFA_ENROLLMENT_REQUIRED",403);
+   try{
+    const verified=await verifyUserSecondFactor(tx,actorId,input.mfaCode);
+    if(verified.method==="none")throw new RechargeBridgeError("REFUND_MFA_REQUIRED",403);
+   }catch(error){
+    if(error instanceof RechargeBridgeError)throw error;
+    if(error instanceof Error&&["MFA_REQUIRED","INVALID_MFA"].includes(error.message))
+     throw new RechargeBridgeError("REFUND_MFA_INVALID",403);
+    throw error;
+   }
    const returned=await tx.saleReturn.create({data:{
     tenantId,branchId,saleId:sale.id,actorId,
     number:"G5-R-"+order.rechargeOrderId,status:"POSTED",
