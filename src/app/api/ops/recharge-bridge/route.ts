@@ -25,7 +25,7 @@ const action=z.discriminatedUnion("action",[
    externalRef:id,idempotencyKey:key}).strict(),
  z.object({action:z.literal("cancel"),rechargeOrderId:id,idempotencyKey:key}).strict(),
  z.object({action:z.literal("collect"),rechargeOrderId:id}).strict(),
- z.object({action:z.literal("refund"),rechargeOrderId:id,acknowledgeSandbox:z.literal(true)}).strict(),
+ z.object({action:z.literal("refund"),rechargeOrderId:id,acknowledgeSandbox:z.literal(true),mfaCode:z.string().trim().min(6).max(64)}).strict(),
 ]);
 function gateway(tenantId:string,branchId:string){
  const {baseUrl,mapping}=resolveRechargeSandboxMapping(tenantId,branchId);
@@ -123,7 +123,7 @@ export async function POST(request:Request){
    },command.idempotencyKey),201);
   if(command.action==="refund"){
    const order=await gatewayInstance.getOrder(command.rechargeOrderId);
-   const result=await refundSyntheticG5Sale({tenantId:ctx.tenantId,branchId:ctx.branchId,actorId:ctx.actorId,order});
+   const result=await refundSyntheticG5Sale({tenantId:ctx.tenantId,branchId:ctx.branchId,actorId:ctx.actorId,order,mfaCode:command.mfaCode});
    return authJson(result,result.replayed?200:201);
   }
   if(command.action==="collect"){
