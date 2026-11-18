@@ -51,6 +51,15 @@ export function createRechargeReceiver(input:{
       // Recharge supplier balances/settlements are read-only in Mobi.
       return transport("/v1/settlements?from="+from+"&to="+to+"&branchId="+identifier(branchId),{method:"GET"});
     },
+    createQuote:async(payload:{country:string;operator:string;sku:string;quantity:number},key:string)=>{
+      if(!/^[A-Za-z0-9_-]{12,128}$/.test(key))throw new RechargeBridgeError("INVALID_IDEMPOTENCY_KEY");
+      if(!/^[A-Z]{2}$/.test(payload.country)||!/^[A-Za-z0-9_-]{1,48}$/.test(payload.operator)||
+         !/^[A-Za-z0-9_-]{1,128}$/.test(payload.sku)||
+         !Number.isSafeInteger(payload.quantity)||payload.quantity<1||payload.quantity>100)
+        throw new RechargeBridgeError("INVALID_QUOTE_REQUEST");
+      return transport("/v1/quotes",{method:"POST",idempotencyKey:key,
+        body:{...payload,merchantId,branchId}});
+    },
     getOrder:async(id:string)=>checkedOrder(await transport("/v1/orders/"+identifier(id),{method:"GET"}),{merchantId,branchId}),
     createOrder:async(payload:{quoteId:string;recipient:string;externalRef:string},key:string)=>{
       if(!/^[A-Za-z0-9_-]{12,128}$/.test(key))throw new RechargeBridgeError("INVALID_IDEMPOTENCY_KEY");
