@@ -61,6 +61,38 @@ export function createRechargeReceiver(input:{
         body:{...payload,merchantId,branchId}});
     },
     getOrder:async(id:string)=>checkedOrder(await transport("/v1/orders/"+identifier(id),{method:"GET"}),{merchantId,branchId}),
+    cancelOrder:async(id:string,key:string)=>{
+      if(!/^[A-Za-z0-9_-]{12,128}$/.test(key))throw new RechargeBridgeError("INVALID_IDEMPOTENCY_KEY");
+      return checkedOrder(await transport("/v1/orders/"+identifier(id)+"/cancel",{
+        method:"POST",idempotencyKey:key,body:{merchantId,branchId},
+      }),{merchantId,branchId});
+    },
+    replayEvents:async(cursor:string)=>{
+      if(!/^(0|[1-9][0-9]{0,15})$/.test(cursor))
+        throw new RechargeBridgeError("INVALID_EVENT_CURSOR");
+      const result=await transport("/v1/events?cursor="+cursor,{method:"GET"});
+      if(!result||typeof result!=="object"||Array.isArray(result))
+        throw new RechargeBridgeError("INVALID_EVENT_FEED");
+      const feed=result as {items?:unknown;nextCursor?:unknown;hasMore?:unknown;sandbox?:unknown};
+      if(!Array.isArray(feed.items)||feed.items.length>50||
+         typeof feed.nextCursor!=="string"||!/^(0|[1-9][0-9]{0,15})$/.test(feed.nextCursor)||
+         typeof feed.hasMore!=="boolean"||feed.sandbox!==true)
+        throw new RechargeBridgeError("INVALID_EVENT_FEED");
+      const items=feed.items.map(item=>{
+        if(!item||typeof item!=="object"||Array.isArray(item))
+          throw new RechargeBridgeError("INVALID_EVENT_FEED");
+        const e=item as Record<string,unknown>;
+        if(typeof e.eventId!=="string"||!/^[A-Za-z0-9_-]{8,128}$/.test(e.eventId)||
+           e.merchantId!==merchantId||e.branchId!==branchId||
+           typeof e.rechargeOrderId!=="string"||!e.rechargeOrderId||
+           !Number.isSafeInteger(e.version)||Number(e.version)<1||
+           !["PENDING","PROCESSING","COMPLETED","FAILED","CANCELLED"].includes(String(e.state))||
+           typeof e.occurredAt!=="string"||!Number.isFinite(Date.parse(e.occurredAt)))
+          throw new RechargeBridgeError("EVENT_SCOPE_OR_SCHEMA_MISMATCH",403);
+        return item;
+      });
+      return {items,nextCursor:feed.nextCursor,hasMore:feed.hasMore,sandbox:true as const};
+    },
     createOrder:async(payload:{quoteId:string;recipient:string;externalRef:string},key:string)=>{
       if(!/^[A-Za-z0-9_-]{12,128}$/.test(key))throw new RechargeBridgeError("INVALID_IDEMPOTENCY_KEY");
       if(!payload.quoteId||!payload.recipient||!payload.externalRef)throw new RechargeBridgeError("INVALID_ORDER_REQUEST");
