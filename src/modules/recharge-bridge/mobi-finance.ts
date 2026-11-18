@@ -78,8 +78,13 @@ export async function collectSyntheticG5Sale(input:{
      amountMinor:Number(order.totalMinor),currency:"USD",replayed:false,financialOwner:"MOBI"};
   },{isolationLevel:Prisma.TransactionIsolationLevel.Serializable});
  }catch(error){
-  if(error instanceof Prisma.PrismaClientKnownRequestError&&
-    ["P2002","P2034"].includes(error.code)){
+  const isConcurrentReplay=error instanceof RechargeBridgeError&&
+    error.code==="COLLECTION_REPLAY_RACE";
+  const isStorageRace=error instanceof Prisma.PrismaClientKnownRequestError&&
+    ["P2002","P2034"].includes(error.code);
+  if(isConcurrentReplay||isStorageRace){
+    // The concurrent winner may have already committed its unique sale.
+    // Return the original Mobi receipt instead of asking the customer to pay again.
     const saved=await checkExisting();
     if(saved)return saved;
   }
