@@ -17,7 +17,7 @@ export default function TopupOwnerLive({locale}:{locale:"ar"|"en"}){
   if(!r.ok)throw new Error(body.error||"READ_FAILED");
   setData(body);
  },[]);
- useEffect(()=>{let active=true;void refresh().catch(e=>{if(active)setError(String(e.message))});return()=>{active=false}},[refresh]);
+ useEffect(()=>{let active=true;const load=async()=>{try{await refresh()}catch(e){if(active)setError(String(e.message))}};void load();return()=>{active=false}},[refresh]);
  const availableServices=useMemo(()=>data?.services.filter(s=>s.isActive&&(!providerId||s.providerId===providerId))??[],[data,providerId]);
  const service=availableServices.find(s=>s.id===serviceId);
  const provider=data?.providers.find(p=>p.id===providerId);
@@ -62,6 +62,11 @@ export default function TopupOwnerLive({locale}:{locale:"ar"|"en"}){
   <p className="mobi-topup-disclaimer" role="note">{ar
    ?"تسجيل يدوي فقط: لا يرسل هذا النظام تعبئة إلى Alfa أو touch أو أي مزوّد. سجّل العملية بعد تنفيذها لدى المزوّد واستلام ثمنها من الزبون."
    :"Manual recording only: this system does not send credit to any operator. Record a transaction only after provider fulfillment and customer payment."}</p>
+  <section className="activity-card" aria-label={ar?"طرق التعبئة":"Recharge methods"}>
+   <h2>{ar?"طرق التعبئة":"Recharge methods"}</h2>
+   <p className="module-sub">{ar?"التعبئة اليدوية متاحة الآن؛ سجّل فقط العمليات التي أكّد المزوّد تنفيذها.":"Manual top-up is available now; record only fulfillment confirmed by the supplier."}</p>
+   <p className="module-sub">{ar?"الربط المباشر مع A1 Recharge قيد الاختبار ولم يُفعّل لهذا المتجر بعد. لا تُنشئ هذه الصفحة تعبئة آلية أو طلبًا لدى المزوّد.":"A1 Recharge direct integration is being tested and is not enabled for this store. This page does not dispatch automatic top-ups or supplier requests."}</p>
+  </section>
   {error&&<p className="preview-notice" role="alert">{error}</p>}
   {notice&&<p className="module-banner" role="status">{notice}</p>}
   {!data?<p>{ar?"جارٍ تحميل بيانات المتجر...":"Loading store data..."}</p>:<>
