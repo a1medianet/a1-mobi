@@ -39,7 +39,7 @@ export default async function AccountPage({params}:{params:Promise<{locale:strin
     <header className="module-header"><div><Link href={"/"+locale} className="back-link">{ar?"لوحة التحكم":"Dashboard"}</Link><p className="module-kicker">A1 MOBI · ACCOUNT CENTER</p><h1>{tenant.name}</h1><p className="module-sub">{ar?"إدارة الجهة والفرع والاشتراك والوصول.":"Organization, branch, subscription and access overview."}</p></div>{portal?<Link className="soft-btn" href={portal}>{ar?"إدارة الفوترة":"Billing portal"}</Link>:null}</header>
 
     <section className="account-hierarchy" dir={ar ? "rtl" : "ltr"}>
-      <article><small>A1 Account</small><strong>{tenant.a1AccountId || (ar ? "لم يُربط بحساب A1 المركزي بعد" : "Not linked to a central A1 account yet")}</strong></article>
+      <article><small>A1 Account</small><strong>{tenant.a1AccountId || (ar ? "الربط مع A1 Login المركزي غير مفعّل بعد" : "Central A1 Login linking is not enabled yet")}</strong></article>
       <span>→</span><article><small>{ar?"الجهة":"Organization"}</small><strong>{tenant.a1OrganizationId||tenant.name}</strong></article>
       <span>→</span><article><small>Tenant</small><strong>{tenant.slug}</strong></article>
       <span>→</span><article><small>{ar?"الفرع":"Branch"}</small><strong>{branch.name} · {branch.code}</strong></article>
@@ -58,7 +58,7 @@ export default async function AccountPage({params}:{params:Promise<{locale:strin
         <div className="mobi-identity-field">
           <strong>{ar ? "بريد الاسترداد الخارجي" : "External recovery email"}</strong>
           <bdi dir="ltr">{recoveryAccount.recoveryEmail || (ar ? "غير محدد" : "Not configured")}</bdi>
-          <small>{recoveryAccount.recoveryEmailVerifiedAt ? (ar ? "تم التحقق من البريد" : "Email verified") : (ar ? "لم يُتحقق من البريد بعد؛ الاسترداد غير مفعّل." : "Not yet verified; recovery is not enabled.")}</small>
+          <small>{recoveryAccount.recoveryEmailVerifiedAt ? (ar ? "تم التحقق من البريد" : "Email verified") : (ar ? "البريد البديل غير موثّق. اضغط زر التفعيل لإرسال رابط التأكيد." : "Recovery address unverified. Use the activation button to request a verification link.")}</small>
           {recoveryAccount.recoveryEmail && !recoveryAccount.recoveryEmailVerifiedAt ? <RecoveryEmailRequestButton locale={locale}/> : null}
         </div>
       </div>
