@@ -9,6 +9,7 @@ import {createRechargeReceiver,RechargeBridgeError} from "@/modules/recharge-bri
 import {createRechargeSandboxTransport} from "@/modules/recharge-bridge/http";
 import {resolveRechargeSandboxMapping} from "@/modules/recharge-bridge/sandbox-config";
 import {collectSyntheticG5Sale} from "@/modules/recharge-bridge/mobi-finance";
+import {refundSyntheticG5Sale} from "@/modules/recharge-bridge/mobi-refund";
 import {db} from "@/server/db";
 import {summarizeRechargeReconciliation} from "@/modules/recharge-bridge/reconciliation";
 
@@ -24,6 +25,7 @@ const action=z.discriminatedUnion("action",[
    externalRef:id,idempotencyKey:key}).strict(),
  z.object({action:z.literal("cancel"),rechargeOrderId:id,idempotencyKey:key}).strict(),
  z.object({action:z.literal("collect"),rechargeOrderId:id}).strict(),
+ z.object({action:z.literal("refund"),rechargeOrderId:id,acknowledgeSandbox:z.literal(true)}).strict(),
 ]);
 function gateway(tenantId:string,branchId:string){
  const {baseUrl,mapping}=resolveRechargeSandboxMapping(tenantId,branchId);
@@ -104,8 +106,8 @@ export async function POST(request:Request){
  if(!parsed.success)return authJson({error:"INVALID_REQUEST"},400);
  try{
   const command=parsed.data;
-  const ctx=await currentStoreContext(command.action==="cancel"?"foundation.manage":"topup.manage");
-  if(command.action==="collect"&&!ctx.permissions.has("cash.manage"))
+  const ctx=await currentStoreContext(["cancel","refund"].includes(command.action)?"foundation.manage":"topup.manage");
+  if(["collect","refund"].includes(command.action)&&!ctx.permissions.has("cash.manage"))
    return authJson({error:"PERMISSION_DENIED"},403);
   const gatewayInstance=gateway(ctx.tenantId,ctx.branchId);
   if(command.action==="quote")
@@ -116,6 +118,11 @@ export async function POST(request:Request){
    return authJson(await gatewayInstance.createOrder({
     quoteId:command.quoteId,recipient:command.recipient,externalRef:command.externalRef,
    },command.idempotencyKey),201);
+  if(command.action==="refund"){
+   const order=await gatewayInstance.getOrder(command.rechargeOrderId);
+   const result=await refundSyntheticG5Sale({tenantId:ctx.tenantId,branchId:ctx.branchId,actorId:ctx.actorId,order});
+   return authJson(result,result.replayed?200:201);
+  }
   if(command.action==="collect"){
    const order=await gatewayInstance.getOrder(command.rechargeOrderId);
    const saved=await collectSyntheticG5Sale({tenantId:ctx.tenantId,branchId:ctx.branchId,actorId:ctx.actorId,order});
