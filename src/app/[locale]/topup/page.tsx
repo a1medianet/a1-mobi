@@ -9,5 +9,5 @@ export default async function TopupPage({params}:{params:Promise<{locale:string}
  await currentStoreContext("topup.manage");
  const enabled=process.env.A1_MOBI_RECHARGE_ADAPTER_ENABLED==="true" &&
   process.env.A1_RECHARGE_SANDBOX_ONLY==="true";
- return <><TopupOwnerLive locale={locale}/>{enabled&&<RechargeG5Sandbox locale={locale}/>}</>;
+ return <><TopupOwnerLive locale={locale} integrationSandboxEnabled={enabled}/>{enabled&&<RechargeG5Sandbox locale={locale}/>}</>;
 }
