@@ -44,7 +44,7 @@ function makeRequest(payload:object=event,sigOverride?:string){
  return new Request("http://localhost/api/ops/recharge-webhook",{
   method:"POST",headers:{"Content-Type":"application/json",
    "x-a1-event-id":eventId,"x-a1-event-timestamp":String(timestamp),
-   "x-a1-event-signature":sigOverride??signedEvent(secret,timestamp,eventId,raw)},
+   "x-a1-signature":sigOverride??signedEvent(secret,timestamp,eventId,raw)},
   body:raw,
  });
 }
@@ -57,11 +57,15 @@ describe("G5 v0.2 Mobi signed webhook capture-only route",()=>{
  },20000);
  it("persists signed event before 202, then acknowledges exact replay without new row",async()=>{
   const {POST}=await import("@/app/api/ops/recharge-webhook/route");
-  const first=await POST(makeRequest());
+  const {externalRef:unused, ...realOutboxEvent}=event;
+  expect(unused).toBeDefined();
+  const first=await POST(makeRequest(realOutboxEvent));
   expect(first.status).toBe(202);
   expect(await first.json()).toMatchObject({accepted:true,outcome:"INSERTED",financePosted:false});
   expect(memory.rows.size).toBe(1);
-  const replay=await POST(makeRequest());
+  const {externalRef:unused2, ...signedReplay}=event;
+  expect(unused2).toBeDefined();
+  const replay=await POST(makeRequest(signedReplay));
   expect(replay.status).toBe(200);
   expect(await replay.json()).toMatchObject({outcome:"DUPLICATE",financePosted:false});
   expect(memory.create).toHaveBeenCalledTimes(1);
