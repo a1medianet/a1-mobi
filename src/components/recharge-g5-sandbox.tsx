@@ -21,20 +21,22 @@ export default function RechargeG5Sandbox({locale}:{locale:"ar"|"en"}){
  const [items,setItems]=useState<CatalogItem[]>([]),[sku,setSku]=useState("");
  const [quote,setQuote]=useState<Quote|null>(null),[recipient,setRecipient]=useState("");
  const [order,setOrder]=useState<Order|null>(null),[busy,setBusy]=useState(false);
+ const [syntheticConfirmed,setSyntheticConfirmed]=useState(false);
+ const [receipt,setReceipt]=useState<{invoiceId:string;receiptId:string;amountMinor:number;currency:string;replayed:boolean}|null>(null);
  const [error,setError]=useState(""),[notice,setNotice]=useState("");
  const [uncertain,setUncertain]=useState(false);
  const [orderKey,setOrderKey]=useState(""),[externalRef,setExternalRef]=useState("");
  const [cursor,setCursor]=useState("0"),[events,setEvents]=useState<Array<{eventId:string;state:string;version:number}>>([]);
  const api="/api/ops/recharge-bridge";
  async function loadCatalog(){
-  setBusy(true);setError("");setNotice("");setQuote(null);setOrder(null);setSku("");setUncertain(false);
+  setBusy(true);setError("");setNotice("");setQuote(null);setOrder(null);setSku("");setUncertain(false);setReceipt(null);setSyntheticConfirmed(false);
   try{
    const body=await jsonRequest(api+"?view=catalog&country=LB&operator="+encodeURIComponent(operator));
    setItems((body.items as CatalogItem[]??[]).filter(x=>x.country==="LB"&&x.operator===operator));
   }catch(e){setError(e instanceof Error?e.message:"CATALOG_ERROR");}finally{setBusy(false);}
  }
  async function requestQuote(){
-  if(!sku)return;setBusy(true);setError("");setNotice("");setOrder(null);
+  if(!sku)return;setBusy(true);setError("");setNotice("");setOrder(null);setReceipt(null);setSyntheticConfirmed(false);
   try{
    const body=await jsonRequest(api,{method:"POST",headers:{"Content-Type":"application/json"},
     body:JSON.stringify({action:"quote",country:"LB",operator,sku,quantity:1,idempotencyKey:crypto.randomUUID()})});
@@ -46,7 +48,7 @@ export default function RechargeG5Sandbox({locale}:{locale:"ar"|"en"}){
   e.preventDefault();
   if(!quote||Date.now()>=quote.expiresAt||!recipient.trim()||uncertain)return;
   setBusy(true);setError("");setNotice("");
-  const key=orderKey||crypto.randomUUID(),reference=externalRef||"mobi-sandbox-"+crypto.randomUUID();
+  const key=orderKey||crypto.randomUUID(),reference=externalRef||"mobi-g5-test-ref-"+crypto.randomUUID();
   setOrderKey(key);setExternalRef(reference);
   try{
    const body=await jsonRequest(api,{method:"POST",headers:{"Content-Type":"application/json"},
@@ -68,6 +70,16 @@ export default function RechargeG5Sandbox({locale}:{locale:"ar"|"en"}){
     idempotencyKey:"cancel-"+order.rechargeOrderId})}) as unknown as Order);}
   catch(e){setError(e instanceof Error?e.message:"CANCEL_FAILED");}finally{setBusy(false);}
  }
+ async function collectSynthetic(){
+  if(!order||!syntheticConfirmed||["CANCELLED","FAILED"].includes(order.state))return;
+  setBusy(true);setError("");
+  try{
+   const value=await jsonRequest(api,{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({action:"collect",rechargeOrderId:order.rechargeOrderId})});
+   setReceipt(value as unknown as {invoiceId:string;receiptId:string;amountMinor:number;currency:string;replayed:boolean});
+   setNotice(ar?"تم تسجيل فاتورة وإيصال وتحصيل وهميين داخل Mobi فقط.":"Synthetic Mobi invoice, receipt and cash entry recorded.");
+  }catch(e){setError(e instanceof Error?e.message:"COLLECTION_ERROR");}finally{setBusy(false);}
+ }
  async function replay(){
   setBusy(true);setError("");
   try{
@@ -81,8 +93,8 @@ export default function RechargeG5Sandbox({locale}:{locale:"ar"|"en"}){
   dir={ar?"rtl":"ltr"}>
   <h2>{ar?"A1 Recharge — تجربة الربط":"A1 Recharge — integration sandbox"}</h2>
   <p className="module-sub">{ar?
-   "بيئة تجريبية فقط: هذه الطلبات لا تنفّذ شحنًا حقيقيًا ولا تحصّل مالًا ولا تنشئ إيصالًا في الصندوق.":
-   "Sandbox only: no carrier fulfillment, payment collection, cashier entry or receipt is created."}</p>
+   "بيئة تجريبية فقط: لا يحدث شحن حقيقي. اختبار تحصيل افتراضي داخل قاعدة Mobi المعزولة يتطلب تأكيدًا يدويًا منفصلًا.":
+   "Sandbox only: no carrier fulfillment. Synthetic Mobi cash acceptance requires separate explicit confirmation."}</p>
   <div className="mobi-topup-two">
    <label>{ar?"المشغّل":"Operator"}
     <select value={operator} onChange={e=>{setOperator(e.target.value);setItems([]);setQuote(null);setOrder(null);}}>
@@ -132,6 +144,22 @@ export default function RechargeG5Sandbox({locale}:{locale:"ar"|"en"}){
    <button type="button" onClick={()=>void refreshOrder()} disabled={busy}>{ar?"فحص الحالة":"Check status"}</button>
    {order.state==="PENDING"&&<button type="button" onClick={()=>void cancelOrder()} disabled={busy}>
     {ar?"طلب إلغاء — للمشرف فقط":"Cancel pending — supervisor only"}</button>}
+  </div>}
+  {order&&!["CANCELLED","FAILED"].includes(order.state)&&<div className="activity-card">
+    <label className="mobi-topup-check"><input type="checkbox" checked={syntheticConfirmed}
+      onChange={e=>setSyntheticConfirmed(e.target.checked)}/>
+      {ar?"أؤكد أن هذا اختبار تحصيل وهمي داخل قاعدة G5، وليس قبضًا حقيقيًا.":"I confirm this is an isolated G5 synthetic cash test, not a real customer payment."}
+    </label>
+    <button type="button" className="primary" disabled={busy||!syntheticConfirmed}
+      onClick={()=>void collectSynthetic()}>
+      {ar?"تسجيل فاتورة وإيصال تجريبيين في Mobi":"Create synthetic Mobi invoice and receipt"}
+    </button>
+  </div>}
+  {receipt&&<div className="module-banner" role="status">
+   <strong>{ar?"فاتورة وايصال تجريبيان في Mobi فقط":"Mobi synthetic invoice and receipt only"}</strong>
+   <p>{ar?"رقم الفاتورة":"Invoice ID"}: <span dir="ltr">{receipt.invoiceId}</span></p>
+   <p>{ar?"رقم الإيصال":"Receipt ID"}: <span dir="ltr">{receipt.receiptId}</span></p>
+   <p>{ar?"القيمة":"Amount"}: {money(receipt.amountMinor,receipt.currency)} · {receipt.replayed?(ar?"استرجاع دون تكرار":"Replayed without duplicate"):(ar?"قُيّدت مرة واحدة":"Posted once")}</p>
   </div>}
   {uncertain&&<p role="alert">{ar?
    "نتيجة الطلب غير مؤكدة. لا تُنشئ طلبًا آخر أو مفتاحًا جديدًا؛ اطلب المصالحة برقم المرجع الأصلي.":
