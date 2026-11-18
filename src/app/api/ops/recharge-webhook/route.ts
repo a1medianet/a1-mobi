@@ -78,7 +78,9 @@ export async function POST(request:Request){
   const persisted=await acceptRechargeEventToInbox({
     store:db.rechargeWebhookInbox,
     scope:{tenantId:mapping.tenantId,branchId:mapping.branchId,merchantId:mapping.merchantId},
-    eventId:event.eventId,order,payloadHash,
+    // Recharge branch IDs are external. After verifying the signature and remote
+    // scope above, translate to the registered local Mobi branch for the inbox.
+    eventId:event.eventId,order:{...order,branchId:mapping.branchId},payloadHash,
   });
   return authJson({accepted:true,outcome:persisted.outcome,eventId:persisted.eventId,
     financePosted:false},persisted.outcome==="INSERTED"?202:200);
