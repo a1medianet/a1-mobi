@@ -8,6 +8,7 @@ import {readAuthJson} from "@/core/auth/request";
 import {createRechargeReceiver,RechargeBridgeError} from "@/modules/recharge-bridge/receiver";
 import {createRechargeSandboxTransport} from "@/modules/recharge-bridge/http";
 import {resolveRechargeSandboxMapping} from "@/modules/recharge-bridge/sandbox-config";
+import {collectSyntheticG5Sale} from "@/modules/recharge-bridge/mobi-finance";
 
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
@@ -20,6 +21,7 @@ const action=z.discriminatedUnion("action",[
  z.object({action:z.literal("order"),quoteId:id,recipient:z.string().trim().min(3).max(80),
    externalRef:id,idempotencyKey:key}).strict(),
  z.object({action:z.literal("cancel"),rechargeOrderId:id,idempotencyKey:key}).strict(),
+ z.object({action:z.literal("collect"),rechargeOrderId:id}).strict(),
 ]);
 function gateway(tenantId:string,branchId:string){
  const {baseUrl,mapping}=resolveRechargeSandboxMapping(tenantId,branchId);
@@ -100,6 +102,11 @@ export async function POST(request:Request){
    return authJson(await gatewayInstance.createOrder({
     quoteId:command.quoteId,recipient:command.recipient,externalRef:command.externalRef,
    },command.idempotencyKey),201);
+  if(command.action==="collect"){
+   const order=await gatewayInstance.getOrder(command.rechargeOrderId);
+   const saved=await collectSyntheticG5Sale({tenantId:ctx.tenantId,branchId:ctx.branchId,actorId:ctx.actorId,order});
+   return authJson(saved,saved.replayed?200:201);
+  }
   return authJson(await gatewayInstance.cancelOrder(command.rechargeOrderId,command.idempotencyKey),202);
  }catch(error){return safeFailure(error);}
 }
