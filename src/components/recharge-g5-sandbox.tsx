@@ -22,6 +22,9 @@ export default function RechargeG5Sandbox({locale}:{locale:"ar"|"en"}){
  const [quote,setQuote]=useState<Quote|null>(null),[recipient,setRecipient]=useState("");
  const [order,setOrder]=useState<Order|null>(null),[busy,setBusy]=useState(false);
  const [syntheticConfirmed,setSyntheticConfirmed]=useState(false);
+ const [refundConfirmed,setRefundConfirmed]=useState(false);
+ const [refundMfaCode,setRefundMfaCode]=useState("");
+ const [refundResult,setRefundResult]=useState<{refundId:string;amountMinor:number;currency:string;replayed:boolean}|null>(null);
  const [receipt,setReceipt]=useState<{invoiceId:string;receiptId:string;amountMinor:number;currency:string;replayed:boolean}|null>(null);
  const [error,setError]=useState(""),[notice,setNotice]=useState("");
  const [uncertain,setUncertain]=useState(false);
@@ -29,14 +32,14 @@ export default function RechargeG5Sandbox({locale}:{locale:"ar"|"en"}){
  const [cursor,setCursor]=useState("0"),[events,setEvents]=useState<Array<{eventId:string;state:string;version:number}>>([]);
  const api="/api/ops/recharge-bridge";
  async function loadCatalog(){
-  setBusy(true);setError("");setNotice("");setQuote(null);setOrder(null);setSku("");setUncertain(false);setReceipt(null);setSyntheticConfirmed(false);
+  setBusy(true);setError("");setNotice("");setQuote(null);setOrder(null);setSku("");setUncertain(false);setReceipt(null);setSyntheticConfirmed(false);setRefundConfirmed(false);setRefundMfaCode("");setRefundResult(null);
   try{
    const body=await jsonRequest(api+"?view=catalog&country=LB&operator="+encodeURIComponent(operator));
    setItems((body.items as CatalogItem[]??[]).filter(x=>x.country==="LB"&&x.operator===operator));
   }catch(e){setError(e instanceof Error?e.message:"CATALOG_ERROR");}finally{setBusy(false);}
  }
  async function requestQuote(){
-  if(!sku)return;setBusy(true);setError("");setNotice("");setOrder(null);setReceipt(null);setSyntheticConfirmed(false);
+  if(!sku)return;setBusy(true);setError("");setNotice("");setOrder(null);setReceipt(null);setSyntheticConfirmed(false);setRefundConfirmed(false);setRefundMfaCode("");setRefundResult(null);
   try{
    const body=await jsonRequest(api,{method:"POST",headers:{"Content-Type":"application/json"},
     body:JSON.stringify({action:"quote",country:"LB",operator,sku,quantity:1,idempotencyKey:crypto.randomUUID()})});
@@ -79,6 +82,19 @@ export default function RechargeG5Sandbox({locale}:{locale:"ar"|"en"}){
    setReceipt(value as unknown as {invoiceId:string;receiptId:string;amountMinor:number;currency:string;replayed:boolean});
    setNotice(ar?"تم تسجيل فاتورة وإيصال وتحصيل وهميين داخل Mobi فقط.":"Synthetic Mobi invoice, receipt and cash entry recorded.");
   }catch(e){setError(e instanceof Error?e.message:"COLLECTION_ERROR");}finally{setBusy(false);}
+ }
+ async function requestSyntheticRefund(){
+  if(!order||!receipt||!["FAILED","CANCELLED"].includes(order.state)||
+     !refundConfirmed||refundMfaCode.trim().length<6||refundResult)return;
+  setBusy(true);setError("");setNotice("");
+  try{
+   const result=await jsonRequest(api,{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({action:"refund",rechargeOrderId:order.rechargeOrderId,
+     acknowledgeSandbox:true,mfaCode:refundMfaCode.trim()})});
+   setRefundResult(result as unknown as {refundId:string;amountMinor:number;currency:string;replayed:boolean});
+   setNotice(ar?"أُثبت استرداد تجريبي واحد بعد التحقق من الصلاحيات والعامل الثاني.":"Single synthetic refund recorded after authorization and MFA step-up.");
+  }catch(e){setError(e instanceof Error?e.message:"REFUND_FAILED");}
+  finally{setRefundMfaCode("");setBusy(false);}
  }
  async function replay(){
   setBusy(true);setError("");
@@ -161,6 +177,27 @@ export default function RechargeG5Sandbox({locale}:{locale:"ar"|"en"}){
    <p>{ar?"رقم الإيصال":"Receipt ID"}: <span dir="ltr">{receipt.receiptId}</span></p>
    <p>{ar?"القيمة":"Amount"}: {money(receipt.amountMinor,receipt.currency)} · {receipt.replayed?(ar?"استرجاع دون تكرار":"Replayed without duplicate"):(ar?"قُيّدت مرة واحدة":"Posted once")}</p>
   </div>}
+  {receipt&&order&&["FAILED","CANCELLED"].includes(order.state)&&!refundResult&&
+   <div className="activity-card" aria-label={ar?"استرداد تجريبي بإذن المدير":"Manager-authorized sandbox refund"}>
+    <p className="module-sub">{ar?
+     "استرداد تجريبي فقط لحالة FAILED أو CANCELLED بعد إثبات التحصيل السابق. يتطلب مديرًا مخولًا بالصندوق وMFA مُفعّلًا. لا تسترد نقدًا حقيقيًا.":"Synthetic FAILED/CANCELLED reversal of an already-collected test order. Requires manager, cashier permission and enrolled MFA. No real customer funds."}</p>
+    <label className="mobi-topup-check"><input type="checkbox" checked={refundConfirmed}
+      onChange={e=>setRefundConfirmed(e.target.checked)}/>
+      {ar?"أؤكد أن الاسترداد وهمي وعلى طلب الاختبار هذا فقط.":"I confirm this is a test-only reversal for this exact order."}
+    </label>
+    <label>{ar?"رمز التحقق الثنائي أو رمز الاسترداد الأحادي":"One-time MFA or recovery code"}
+      <input type="password" value={refundMfaCode} autoComplete="one-time-code"
+       onChange={e=>setRefundMfaCode(e.target.value)} minLength={6} maxLength={64}/>
+    </label>
+    <button type="button" className="primary" disabled={busy||!refundConfirmed||refundMfaCode.trim().length<6}
+      onClick={()=>void requestSyntheticRefund()}>{ar?"تنفيذ استرداد تجريبي مصرح":"Authorize synthetic refund"}</button>
+   </div>}
+  {refundResult&&<div className="module-banner" role="status">
+    <strong>{ar?"الاسترداد التجريبي مسجّل":"Synthetic reversal recorded"}</strong>
+    <p>{ar?"معرّف الاسترداد":"Refund ID"}: <span dir="ltr">{refundResult.refundId}</span></p>
+    <p>{ar?"القيمة":"Amount"}: {money(refundResult.amountMinor,refundResult.currency)}</p>
+    <p>{refundResult.replayed?(ar?"إعادة دون تكرار":"Idempotent replay"):(ar?"قيد عكسي واحد":"One reversal entry")}</p>
+   </div>}
   {uncertain&&<p role="alert">{ar?
    "نتيجة الطلب غير مؤكدة. لا تُنشئ طلبًا آخر أو مفتاحًا جديدًا؛ اطلب المصالحة برقم المرجع الأصلي.":
    "Outcome unknown. Do not create a new order or idempotency key; reconcile with the original reference."}
