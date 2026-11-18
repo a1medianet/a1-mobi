@@ -1447,9 +1447,32 @@ model PlatformAdmin {
   totpSecretCipher String
   lastTotpCounter Int?
   isActive     Boolean           @default(true)
+  recoveryEmail String?
+  recoveryEmailVerifiedAt DateTime?
+  recoveryTokens PlatformRecoveryToken[]
   sessions     PlatformSession[]
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
+}
+
+enum PlatformRecoveryPurpose {
+  VERIFY_EMAIL
+  RESET_PASSWORD
+}
+
+model PlatformRecoveryToken {
+  id String @id @default(cuid())
+  adminId String
+  tokenHash String @unique
+  purpose PlatformRecoveryPurpose
+  email String
+  expiresAt DateTime
+  deliveredAt DateTime?
+  usedAt DateTime?
+  createdAt DateTime @default(now())
+  admin PlatformAdmin @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId, purpose, expiresAt])
 }
 
 model PlatformSession {
