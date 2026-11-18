@@ -52,3 +52,65 @@ export function summarizeRechargeReconciliation(
   note:"Single page only. No persisted cursor, global reconciliation or financial posting.",
  };
 }
+
+/**
+ * A safe, bounded multi-page diagnostic. Failure is explicit rather than silently
+ * declaring an incomplete page set consistent. No cursor is persisted.
+ */
+export async function scanRechargeReconciliation(input:{
+ fetchPage:(cursor:string)=>Promise<{items:FeedEvent[];nextCursor:string;hasMore:boolean;sandbox:true}>;
+ findInbox:(eventIds:string[])=>Promise<InboxRow[]>;
+ maxPages?:number;
+}){
+ const maxPages=input.maxPages??20;
+ if(!Number.isSafeInteger(maxPages)||maxPages<1||maxPages>20)
+  throw new RechargeBridgeError("INVALID_PAGE_LIMIT",400);
+ let cursor="0",pages=0,events=0;
+ const seenCursors=new Set<string>(),seenEventIds=new Set<string>();
+ const missing=new Set<string>(),conflicting=new Set<string>(),gaps=new Set<string>();
+ const versions=new Map<string,Set<number>>();
+ let completed=false;
+ while(pages<maxPages){
+  if(seenCursors.has(cursor))throw new RechargeBridgeError("RECONCILIATION_CURSOR_LOOP",409);
+  seenCursors.add(cursor);
+  const page=await input.fetchPage(cursor);
+  if(page.sandbox!==true||!Array.isArray(page.items)||page.items.length>50||
+    typeof page.hasMore!=="boolean"||
+    !/^(0|[1-9]\d{0,14})$/.test(page.nextCursor))
+   throw new RechargeBridgeError("INVALID_SOURCE_PAGE",502);
+  const rows=await input.findInbox(page.items.map(e=>e.eventId));
+  const result=summarizeRechargeReconciliation(page,rows);
+  pages++;events+=page.items.length;
+  for(const event of page.items){
+   if(seenEventIds.has(event.eventId))
+    throw new RechargeBridgeError("DUPLICATE_SOURCE_EVENT",409);
+   seenEventIds.add(event.eventId);
+   const group=versions.get(event.rechargeOrderId)??new Set<number>();
+   group.add(event.version);versions.set(event.rechargeOrderId,group);
+  }
+  result.missingEventIds.forEach(v=>missing.add(v));
+  result.conflictingEventIds.forEach(v=>conflicting.add(v));
+  if(!page.hasMore){completed=true;break;}
+  if(page.nextCursor===cursor||page.items.length===0)
+   throw new RechargeBridgeError("RECONCILIATION_CURSOR_STALLED",409);
+  cursor=page.nextCursor;
+ }
+ for(const [id,group] of versions){
+  const sorted=[...group].sort((a,b)=>a-b);
+  if(sorted[0]>1)gaps.add(id);
+  for(let i=1;i<sorted.length;i++){
+   if(sorted[i]!==sorted[i-1]+1){gaps.add(id);break;}
+  }
+ }
+ return {
+  sandbox:true as const,readOnly:true as const,financePosted:false as const,
+  pagesScanned:pages,sourceEventsScanned:events,
+  sourceExhausted:completed,diagnosticOnly:true as const,
+  missingEventIds:[...missing],conflictingEventIds:[...conflicting],
+  versionGapOrderIds:[...gaps],
+  status:conflicting.size||gaps.size?"REVIEW_REQUIRED" as const:
+   missing.size?"DELIVERY_BACKLOG" as const:
+   !completed?"SCAN_LIMIT_REACHED" as const:"ALL_SCANNED_PAGES_MATCHED" as const,
+  note:"Read-only bounded scan; does not reconcile money, source order intents, or commercial readiness.",
+ };
+}
