@@ -17,7 +17,7 @@ async function jsonRequest(url:string,init?:RequestInit){
 }
 export default function RechargeG5Sandbox({locale}:{locale:"ar"|"en"}){
  const ar=locale==="ar";
- const [operator,setOperator]=useState("alfa"),[family,setFamily]=useState("DAYS");
+ const [operator,setOperator]=useState("alfa"),[family,setFamily]=useState("ALL");
  const [items,setItems]=useState<CatalogItem[]>([]),[sku,setSku]=useState("");
  const [quote,setQuote]=useState<Quote|null>(null),[recipient,setRecipient]=useState("");
  const [order,setOrder]=useState<Order|null>(null),[busy,setBusy]=useState(false);
@@ -75,7 +75,7 @@ export default function RechargeG5Sandbox({locale}:{locale:"ar"|"en"}){
    setEvents((body.items as typeof events)??[]);setCursor(String(body.nextCursor??cursor));
   }catch(e){setError(e instanceof Error?e.message:"REPLAY_FAILED");}finally{setBusy(false);}
  }
- const filtered=items.filter(x=>x.sku.toUpperCase().includes(family));
+ const filtered=items.filter(x=>family==="ALL"||x.sku.toUpperCase().includes(family));
  const selected=items.find(x=>x.sku===sku);
  return <section className="activity-card" aria-label={ar?"التعبئة التجريبية عبر Recharge":"Recharge sandbox integration"}
   dir={ar?"rtl":"ltr"}>
@@ -91,7 +91,7 @@ export default function RechargeG5Sandbox({locale}:{locale:"ar"|"en"}){
    </label>
    <label>{ar?"الفئة":"Service family"}
     <select value={family} onChange={e=>{setFamily(e.target.value);setSku("");setQuote(null);}}>
-     {["DAYS","DOLLARS","CARD","USHARE","INTERNET"].map(x=><option key={x} value={x}>{x}</option>)}
+     {["ALL","DAYS","DOLLARS","CARD","USHARE","INTERNET"].map(x=><option key={x} value={x}>{x}</option>)}
     </select>
    </label>
   </div>
