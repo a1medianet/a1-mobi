@@ -22,7 +22,7 @@ export function AuthTurnstile({surface,onToken}:{surface:Surface;onToken:(token:
     const render=()=>{
       if(disposed||!window.turnstile||!element.current||widgetId.current)return;
       widgetId.current=window.turnstile.render(element.current,{
-        sitekey:config.sitekey,action:surface,appearance:"interaction-only",
+        sitekey:config.sitekey,action:surface,appearance:"always",
         callback:(token:string)=>onToken(token),
         "expired-callback":()=>onToken(""),"error-callback":()=>onToken(""),
       });

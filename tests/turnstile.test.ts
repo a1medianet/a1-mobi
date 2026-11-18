@@ -1,6 +1,22 @@
 import {describe,expect,it,vi} from "vitest";
 vi.mock("server-only",()=>({}));
-import {verifyTurnstile} from "@/server/turnstile";
+import {turnstileEnabled,verifyTurnstile} from "@/server/turnstile";
+
+describe("visible login policy",()=>{
+ it("requires explicit opt-in for always-visible login checks",()=>{
+   expect(turnstileEnabled("login",{})).toBe(false);
+   expect(turnstileEnabled("login",{A1_MOBI_TURNSTILE_LOGIN_ALWAYS_ENABLED:"1"})).toBe(true);
+   expect(turnstileEnabled("login",{A1_MOBI_TURNSTILE_LOGIN_ALWAYS_ENABLED:"0"})).toBe(false);
+ });
+ it("verifies a visible login token on the server, not only in the browser",async()=>{
+   const env={A1_MOBI_TURNSTILE_LOGIN_ALWAYS_ENABLED:"1",A1_MOBI_TURNSTILE_SECRET:"testing-secret",A1_MOBI_TURNSTILE_HOSTNAME:"mobi.a1net.tech"};
+   const req=new Request("https://mobi.a1net.tech/api/auth/login",{method:"POST"});
+   expect(await verifyTurnstile({request:req,surface:"login",env})).toBe("MISSING");
+   const fetcher=vi.fn(async()=>new Response(JSON.stringify({success:true,hostname:"mobi.a1net.tech",action:"login"})));
+   expect(await verifyTurnstile({request:req,surface:"login",token:"test-token",env,fetcher:fetcher as unknown as typeof fetch})).toBe("VERIFIED");
+   expect(await verifyTurnstile({request:req,surface:"login",token:"test-token",env,fetcher:vi.fn(async()=>new Response(JSON.stringify({success:false,error_codes:["timeout-or-duplicate"]}))) as unknown as typeof fetch})).toBe("REJECTED");
+ });
+});
 const req=new Request("https://mobi.a1net.tech/api/onboarding/trial",{method:"POST",headers:{"cf-connecting-ip":"192.0.2.1"}});
 const env={A1_MOBI_TURNSTILE_ENABLED:"1",A1_MOBI_TURNSTILE_SECRET:"private-example",A1_MOBI_TURNSTILE_HOSTNAME:"mobi.a1net.tech"};
 describe("Turnstile server-side verification",()=>{

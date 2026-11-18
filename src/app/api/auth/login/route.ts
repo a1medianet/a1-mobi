@@ -25,8 +25,9 @@ export async function POST(request: Request) {
   if (!input.success) return authJson({ error: "INVALID_REQUEST" }, 400);
   try {
     if(turnstileEnabled("login")){
+      const alwaysRequired = process.env.A1_MOBI_TURNSTILE_LOGIN_ALWAYS_ENABLED === "1";
       const attempts=await db.authAttempt.findUnique({where:{key:authBudgetKey("account",[input.data.tenant.toLowerCase(),input.data.email.toLowerCase()])}});
-      if(attempts && attempts.attempts>=2 && Date.now()-attempts.windowStart.getTime()<900000){
+      if(alwaysRequired || (attempts && attempts.attempts>=2 && Date.now()-attempts.windowStart.getTime()<900000)){
         const verdict=await verifyTurnstile({request,token:input.data.turnstileToken,surface:"login"});
         if(verdict!=="VERIFIED")return authJson({error:verdict==="UNAVAILABLE"?"CHALLENGE_UNAVAILABLE":"CHALLENGE_REQUIRED"},verdict==="UNAVAILABLE"?503:403);
       }

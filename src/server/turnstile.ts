@@ -6,7 +6,7 @@ import "server-only";
 export type TurnstileSurface = "signup" | "recovery" | "login";
 
 export function turnstileEnabled(surface: TurnstileSurface, env: Record<string,string|undefined> = process.env) {
-  if (surface === "login") return env.A1_MOBI_TURNSTILE_LOGIN_ENABLED === "1";
+  if (surface === "login") return env.A1_MOBI_TURNSTILE_LOGIN_ENABLED === "1" || env.A1_MOBI_TURNSTILE_LOGIN_ALWAYS_ENABLED === "1";
   return env.A1_MOBI_TURNSTILE_ENABLED === "1";
 }
 

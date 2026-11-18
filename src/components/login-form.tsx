@@ -76,6 +76,15 @@ export function LoginForm({ locale, initialTenant = "", initialEmail = "", retur
   const [challengeToken,setChallengeToken]=useState("");
   const [challengeVersion,setChallengeVersion]=useState(0);
   const onChallengeToken=useCallback((token:string)=>setChallengeToken(token),[]);
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch("/api/auth/challenge-config", {cache:"no-store",signal:controller.signal})
+      .then(response => response.ok ? response.json() : Promise.reject(new Error("CONFIG")))
+      .then((config:{loginAlways?:boolean}) => {
+        if (!controller.signal.aborted && config.loginAlways === true) setNeedsChallenge(true);
+      }).catch(() => { /* Server remains authoritative; never bypass challenge on failure. */ });
+    return () => controller.abort();
+  }, []);
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {

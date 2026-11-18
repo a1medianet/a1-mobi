@@ -14,7 +14,8 @@ const hostname = (env.A1_MOBI_TURNSTILE_HOSTNAME || "").trim().toLowerCase();
 const siteKey = env.A1_MOBI_TURNSTILE_SITE_KEY || "";
 const secret = env.A1_MOBI_TURNSTILE_SECRET || "";
 const enabled = env.A1_MOBI_TURNSTILE_ENABLED === "1";
-const login = env.A1_MOBI_TURNSTILE_LOGIN_ENABLED === "1";
+const login = env.A1_MOBI_TURNSTILE_LOGIN_ENABLED === "1" ||
+  env.A1_MOBI_TURNSTILE_LOGIN_ALWAYS_ENABLED === "1";
 let origin;
 try { origin = new URL(env.APP_ORIGIN || ""); } catch { /* Report below. */ }
 check(Boolean(origin && origin.protocol === "https:" && !origin.username &&
