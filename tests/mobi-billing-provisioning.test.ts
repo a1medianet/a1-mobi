@@ -14,7 +14,7 @@ const tx={
   permission:{createMany:async()=>({}),findMany:async()=>[{id:"p1"}]},
   branch:{create:async()=>({id:"branch-one"})},
   user:{create:async()=>({id:"owner-one",email:"owner@example.test"})},
-  role:{create:async()=>({id:"role-one"})},
+  role:{create:async()=>({id:"role-one"}),createMany:async()=>({count:0}),findMany:async()=>[]},
   rolePermission:{createMany:async()=>({})},
   userRole:{create:async()=>({})},
   auditEvent:{create:async({data}:{data:unknown})=>{mock.auditData=data;return {};}},
