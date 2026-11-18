@@ -33,7 +33,7 @@ export async function refundSyntheticG5Sale(input:{
   if(!movement)return null;
   const record=await db.saleReturn.findUnique({where:{
    tenantId_idempotencyKey:{tenantId,idempotencyKey:refundKey}}});
-  if(!record||record.saleId!==movement.sourceId||
+  if(!record||record.id!==movement.sourceId||
     movement.direction!==CashDirection.OUT||movement.type!==CashMovementType.REFUND||
     movement.branchId!==branchId||!movement.baseAmount.equals(amount)||
     !record.refundBase.equals(amount))
