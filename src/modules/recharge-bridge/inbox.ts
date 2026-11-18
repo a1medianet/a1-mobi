@@ -5,6 +5,7 @@
  */
 import {RechargeBridgeError} from "./receiver";
 import type {RechargeOrder} from "./receiver";
+type InboxEventOrder=Pick<RechargeOrder,"rechargeOrderId"|"merchantId"|"branchId"|"version"|"state">;
 
 export type RechargeInboxRow = {
  eventId:string;tenantId:string;branchId:string;merchantId:string;
@@ -17,7 +18,7 @@ export type RechargeInboxStore = {
 export async function acceptRechargeEventToInbox(input:{
  store:RechargeInboxStore;
  scope:{tenantId:string;branchId:string;merchantId:string};
- order:RechargeOrder;eventId:string;payloadHash:string;
+ order:InboxEventOrder;eventId:string;payloadHash:string;
 }):Promise<{outcome:"INSERTED"|"DUPLICATE";eventId:string;financialPostingAllowed:false}>{
  const {store,scope,order,eventId,payloadHash}=input;
  if(!scope.tenantId||!scope.branchId||!scope.merchantId ||
