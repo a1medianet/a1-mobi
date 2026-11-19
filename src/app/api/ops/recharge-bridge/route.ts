@@ -1,5 +1,5 @@
 /**
- * G5 test-only, same-origin Mobi gateway. No customer invoice, POS or cash writes.
+ * G5 test-only, same-origin Mobi gateway. Cash writes require explicit sandbox action and RBAC.
  * Recharge's /v1 is a separate service; clients never learn its bearer token.
  */
 import {z} from "zod";
@@ -13,6 +13,7 @@ import {refundSyntheticG5Sale} from "@/modules/recharge-bridge/mobi-refund";
 import {db} from "@/server/db";
 import {AttemptBudgetExceeded} from "@/server/attempt-budget";
 import {scanRechargeReconciliation} from "@/modules/recharge-bridge/reconciliation";
+import {canViewRechargeCosts,projectRechargeForStore} from "@/modules/recharge-bridge/public-projection";
 
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
@@ -54,6 +55,7 @@ function safeFailure(error:unknown){
 export async function GET(request:Request){
  try{
   const ctx=await currentStoreContext("topup.manage");
+  const canReadCosts=canViewRechargeCosts(ctx.permissions);
   const gatewayInstance=gateway(ctx.tenantId,ctx.branchId);
   const url=new URL(request.url);
   const view=url.searchParams.get("view");
@@ -62,18 +64,32 @@ export async function GET(request:Request){
     country:url.searchParams.get("country"),operator:url.searchParams.get("operator"),
    });
    if(!parsed.success)return authJson({error:"INVALID_CATALOG_FILTER"},400);
-   return authJson(await gatewayInstance.listCatalog(parsed.data.country,parsed.data.operator));
+   return authJson(projectRechargeForStore(await gatewayInstance.listCatalog(parsed.data.country,parsed.data.operator),canReadCosts));
   }
   if(view==="order"){
    const parsed=id.safeParse(url.searchParams.get("id"));
    if(!parsed.success)return authJson({error:"INVALID_ORDER_ID"},400);
-   return authJson(await gatewayInstance.getOrder(parsed.data));
+   return authJson(projectRechargeForStore(await gatewayInstance.getOrder(parsed.data),canReadCosts));
+  }
+  if(view==="source-order"){
+   if(!ctx.permissions.has("foundation.manage"))
+     return authJson({error:"PERMISSION_DENIED"},403);
+   const parsed=id.safeParse(url.searchParams.get("id"));
+   if(!parsed.success)return authJson({error:"INVALID_ORDER_ID"},400);
+   return authJson(projectRechargeForStore(await gatewayInstance.sourceReconciliation(parsed.data),canReadCosts));
+  }
+  if(view==="dead-letters"){
+   if(!ctx.permissions.has("foundation.manage"))
+     return authJson({error:"PERMISSION_DENIED"},403);
+   const limit=z.coerce.number().int().min(1).max(100).safeParse(url.searchParams.get("limit")??"50");
+   if(!limit.success)return authJson({error:"INVALID_RECONCILIATION_LIMIT"},400);
+   return authJson(projectRechargeForStore(await gatewayInstance.sourceDeadLetters(limit.data),canReadCosts));
   }
   if(view==="events"){
    if(!ctx.permissions.has("foundation.manage"))
      return authJson({error:"PERMISSION_DENIED"},403);
    const cursor=url.searchParams.get("cursor")??"0";
-   return authJson(await gatewayInstance.replayEvents(cursor));
+   return authJson(projectRechargeForStore(await gatewayInstance.replayEvents(cursor),canReadCosts));
   }
   if(view==="reconcile"){
    if(!ctx.permissions.has("foundation.manage"))return authJson({error:"PERMISSION_DENIED"},403);
@@ -112,17 +128,18 @@ export async function POST(request:Request){
  try{
   const command=parsed.data;
   const ctx=await currentStoreContext(["cancel","refund"].includes(command.action)?"foundation.manage":"topup.manage");
+  const canReadCosts=canViewRechargeCosts(ctx.permissions);
   if(["collect","refund"].includes(command.action)&&!ctx.permissions.has("cash.manage"))
    return authJson({error:"PERMISSION_DENIED"},403);
   const gatewayInstance=gateway(ctx.tenantId,ctx.branchId);
   if(command.action==="quote")
-   return authJson(await gatewayInstance.createQuote({
+   return authJson(projectRechargeForStore(await gatewayInstance.createQuote({
     country:command.country,operator:command.operator,sku:command.sku,quantity:command.quantity,
-   },command.idempotencyKey),201);
+   },command.idempotencyKey),canReadCosts),201);
   if(command.action==="order")
-   return authJson(await gatewayInstance.createOrder({
+   return authJson(projectRechargeForStore(await gatewayInstance.createOrder({
     quoteId:command.quoteId,recipient:command.recipient,externalRef:command.externalRef,
-   },command.idempotencyKey),201);
+   },command.idempotencyKey),canReadCosts),201);
   if(command.action==="refund"){
    const order=await gatewayInstance.getOrder(command.rechargeOrderId);
    const result=await refundSyntheticG5Sale({tenantId:ctx.tenantId,branchId:ctx.branchId,actorId:ctx.actorId,order,mfaCode:command.mfaCode});
@@ -133,6 +150,6 @@ export async function POST(request:Request){
    const saved=await collectSyntheticG5Sale({tenantId:ctx.tenantId,branchId:ctx.branchId,actorId:ctx.actorId,order});
    return authJson(saved,saved.replayed?200:201);
   }
-  return authJson(await gatewayInstance.cancelOrder(command.rechargeOrderId,command.idempotencyKey),202);
+  return authJson(projectRechargeForStore(await gatewayInstance.cancelOrder(command.rechargeOrderId,command.idempotencyKey),canReadCosts),202);
  }catch(error){return safeFailure(error);}
 }

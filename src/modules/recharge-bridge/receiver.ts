@@ -61,6 +61,35 @@ export function createRechargeReceiver(input:{
         body:{...payload,merchantId,branchId}});
     },
     getOrder:async(id:string)=>checkedOrder(await transport("/v1/orders/"+identifier(id),{method:"GET"}),{merchantId,branchId}),
+    sourceReconciliation:async(id:string)=>{
+      const data=await transport("/v1/reconciliation/orders/"+identifier(id),{method:"GET"});
+      if(!data||typeof data!=="object"||Array.isArray(data))
+        throw new RechargeBridgeError("INVALID_SOURCE_RECONCILIATION",502);
+      const row=data as Record<string,unknown>;
+      if(row.merchantId!==merchantId||row.branchId!==branchId||
+         row.rechargeOrderId!==id)
+        throw new RechargeBridgeError("SCOPE_MISMATCH",403);
+      const state=row.transport as Record<string,unknown>|undefined;
+      if(row.sandboxOnly!==true||row.customerCashEntriesIncluded!==false||
+         !state||state.fulfillmentConfirmedByCarrier!==false||
+         !Array.isArray(row.events)||!Array.isArray(row.supplierEntries))
+        throw new RechargeBridgeError("INVALID_SOURCE_RECONCILIATION",502);
+      return data;
+    },
+    sourceDeadLetters:async(limit=50)=>{
+      if(!Number.isSafeInteger(limit)||limit<1||limit>100)
+        throw new RechargeBridgeError("INVALID_RECONCILIATION_LIMIT",400);
+      const data=await transport("/v1/reconciliation/dead-letters?limit="+limit,{method:"GET"});
+      if(!data||typeof data!=="object"||Array.isArray(data))
+        throw new RechargeBridgeError("INVALID_SOURCE_DEAD_LETTERS",502);
+      const result=data as Record<string,unknown>;
+      if(result.sandboxOnly!==true||result.immutableUntilReviewed!==true||
+         result.mayReplay!==false||result.mayAcknowledge!==false||
+         result.mayPostFinance!==false||!Array.isArray(result.items)||
+         result.items.length>limit)
+        throw new RechargeBridgeError("INVALID_SOURCE_DEAD_LETTERS",502);
+      return data;
+    },
     cancelOrder:async(id:string,key:string)=>{
       if(!/^[A-Za-z0-9_-]{12,128}$/.test(key))throw new RechargeBridgeError("INVALID_IDEMPOTENCY_KEY");
       return checkedOrder(await transport("/v1/orders/"+identifier(id)+"/cancel",{

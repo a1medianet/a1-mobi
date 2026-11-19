@@ -6,6 +6,15 @@ type CatalogItem={sku:string;operator:string;country:string;catalogVersionId:str
 type Quote={quoteId:string;catalogVersionId:string;currency:string;priceMinor:number;
  feeMinor:number;taxMinor:number;totalMinor:number;expiresAt:number};
 type Order={rechargeOrderId:string;state:string;version:number;requiresReconciliation?:boolean};
+type SourceReview={rechargeOrderId:string;state:string;version:number;providerEvidence:string;
+ transport:{allDelivered:boolean;needsOperatorReview:boolean;fulfillmentConfirmedByCarrier:boolean};
+ events:Array<{eventId:string;state:string;version:number;deliveryState?:string;lastError?:string}>;
+ supplierEntries:Array<{kind:string;currency:string;amountMinor:number}>};
+type DeadLetters={immutableUntilReviewed:boolean;mayReplay:false;mayAcknowledge:false;
+ mayPostFinance:false;items:Array<{eventId:string;rechargeOrderId:string;version:number;lastError?:string}>};
+type ScanReport={status:string;pagesScanned:number;sourceEventsScanned:number;
+ missingEventIds:string[];conflictingEventIds:string[];
+ versionGapOrderIds:string[];conflictingVersionOrderIds:string[];sourceExhausted:boolean};
 const money=(minor:number,currency:string)=>new Intl.NumberFormat("en-US",{
  style:"currency",currency,maximumFractionDigits:currency==="LBP"?0:2,
 }).format(minor/(currency==="LBP"?1:100));
@@ -15,7 +24,9 @@ async function jsonRequest(url:string,init?:RequestInit){
  if(!response.ok)throw new Error(String(body.error??"REQUEST_FAILED"));
  return body;
 }
-export default function RechargeG5Sandbox({locale}:{locale:"ar"|"en"}){
+export default function RechargeG5Sandbox({
+ locale,reviewAllowed=false,cashAllowed=false,costAllowed=false,
+}:{locale:"ar"|"en";reviewAllowed?:boolean;cashAllowed?:boolean;costAllowed?:boolean}){
  const ar=locale==="ar";
  const [operator,setOperator]=useState("alfa"),[family,setFamily]=useState("ALL");
  const [items,setItems]=useState<CatalogItem[]>([]),[sku,setSku]=useState("");
@@ -30,8 +41,13 @@ export default function RechargeG5Sandbox({locale}:{locale:"ar"|"en"}){
  const [uncertain,setUncertain]=useState(false);
  const [orderKey,setOrderKey]=useState(""),[externalRef,setExternalRef]=useState("");
  const [cursor,setCursor]=useState("0"),[events,setEvents]=useState<Array<{eventId:string;state:string;version:number}>>([]);
+ const [sourceReview,setSourceReview]=useState<SourceReview|null>(null);
+ const [deadLetters,setDeadLetters]=useState<DeadLetters|null>(null);
+ const [scanReport,setScanReport]=useState<ScanReport|null>(null);
  const api="/api/ops/recharge-bridge";
  async function loadCatalog(){
+  if(uncertain)return;
+  setOrderKey("");setExternalRef("");setSourceReview(null);setScanReport(null);
   setBusy(true);setError("");setNotice("");setQuote(null);setOrder(null);setSku("");setUncertain(false);setReceipt(null);setSyntheticConfirmed(false);setRefundConfirmed(false);setRefundMfaCode("");setRefundResult(null);
   try{
    const body=await jsonRequest(api+"?view=catalog&country=LB&operator="+encodeURIComponent(operator));
@@ -39,7 +55,9 @@ export default function RechargeG5Sandbox({locale}:{locale:"ar"|"en"}){
   }catch(e){setError(e instanceof Error?e.message:"CATALOG_ERROR");}finally{setBusy(false);}
  }
  async function requestQuote(){
-  if(!sku)return;setBusy(true);setError("");setNotice("");setOrder(null);setReceipt(null);setSyntheticConfirmed(false);setRefundConfirmed(false);setRefundMfaCode("");setRefundResult(null);
+  if(!sku||uncertain)return;
+  setOrderKey("");setExternalRef("");setSourceReview(null);
+  setBusy(true);setError("");setNotice("");setOrder(null);setReceipt(null);setSyntheticConfirmed(false);setRefundConfirmed(false);setRefundMfaCode("");setRefundResult(null);
   try{
    const body=await jsonRequest(api,{method:"POST",headers:{"Content-Type":"application/json"},
     body:JSON.stringify({action:"quote",country:"LB",operator,sku,quantity:1,idempotencyKey:crypto.randomUUID()})});
@@ -62,7 +80,7 @@ export default function RechargeG5Sandbox({locale}:{locale:"ar"|"en"}){
   }finally{setBusy(false);}
  }
  async function refreshOrder(){
-  if(!order)return;setBusy(true);setError("");
+  if(!order)return;setBusy(true);setError("");setSourceReview(null);
   try{setOrder(await jsonRequest(api+"?view=order&id="+encodeURIComponent(order.rechargeOrderId)) as unknown as Order);}
   catch(e){setError(e instanceof Error?e.message:"ORDER_READ_ERROR");}finally{setBusy(false);}
  }
@@ -96,7 +114,30 @@ export default function RechargeG5Sandbox({locale}:{locale:"ar"|"en"}){
   }catch(e){setError(e instanceof Error?e.message:"REFUND_FAILED");}
   finally{setRefundMfaCode("");setBusy(false);}
  }
+ async function inspectSourceOrder(){
+  if(!reviewAllowed||!order)return;
+  setBusy(true);setError("");
+  try{
+   setSourceReview(await jsonRequest(api+"?view=source-order&id="+encodeURIComponent(order.rechargeOrderId)) as unknown as SourceReview);
+  }catch(e){setError(e instanceof Error?e.message:"SOURCE_REVIEW_FAILED");}
+  finally{setBusy(false);}
+ }
+ async function inspectDeadLetters(){
+  if(!reviewAllowed)return;
+  setBusy(true);setError("");
+  try{setDeadLetters(await jsonRequest(api+"?view=dead-letters&limit=50") as unknown as DeadLetters);}
+  catch(e){setError(e instanceof Error?e.message:"DLQ_REVIEW_FAILED");}
+  finally{setBusy(false);}
+ }
+ async function inspectAllEvents(){
+  if(!reviewAllowed)return;
+  setBusy(true);setError("");
+  try{setScanReport(await jsonRequest(api+"?view=reconcile") as unknown as ScanReport);}
+  catch(e){setError(e instanceof Error?e.message:"RECONCILIATION_FAILED");}
+  finally{setBusy(false);}
+ }
  async function replay(){
+  if(!reviewAllowed)return;
   setBusy(true);setError("");
   try{
    const body=await jsonRequest(api+"?view=events&cursor="+encodeURIComponent(cursor));
@@ -113,28 +154,29 @@ export default function RechargeG5Sandbox({locale}:{locale:"ar"|"en"}){
    "Sandbox only: no carrier fulfillment. Synthetic Mobi cash acceptance requires separate explicit confirmation."}</p>
   <div className="mobi-topup-two">
    <label>{ar?"المشغّل":"Operator"}
-    <select value={operator} onChange={e=>{setOperator(e.target.value);setItems([]);setQuote(null);setOrder(null);}}>
+    <select value={operator} disabled={uncertain} onChange={e=>{setOperator(e.target.value);setItems([]);setQuote(null);setOrder(null);setOrderKey("");setExternalRef("");}}> 
      <option value="alfa">alfa</option><option value="touch">touch</option>
     </select>
    </label>
    <label>{ar?"الفئة":"Service family"}
-    <select value={family} onChange={e=>{setFamily(e.target.value);setSku("");setQuote(null);}}>
+    <select value={family} disabled={uncertain} onChange={e=>{setFamily(e.target.value);setSku("");setQuote(null);setOrderKey("");setExternalRef("");}}> 
      {["ALL","DAYS","DOLLARS","CARD","USHARE","INTERNET"].map(x=><option key={x} value={x}>{x}</option>)}
     </select>
    </label>
   </div>
-  <button type="button" className="primary" onClick={()=>void loadCatalog()} disabled={busy}>
+  <button type="button" className="primary" onClick={()=>void loadCatalog()} disabled={busy||uncertain}>
    {ar?"قراءة الخدمات المتاحة":"Load available services"}
   </button>
   <label>{ar?"الباقة المعتمدة":"Verified package"}
-   <select value={sku} onChange={e=>{setSku(e.target.value);setQuote(null);setOrder(null);}}>
+   <select value={sku} disabled={uncertain} onChange={e=>{setSku(e.target.value);setQuote(null);setOrder(null);setOrderKey("");setExternalRef("");}}> 
     <option value="">{ar?"اختر باقة":"Choose package"}</option>
     {filtered.map(x=><option key={x.sku} value={x.sku}>{x.sku} · {money(x.priceMinor,x.currency)}</option>)}
    </select>
   </label>
   {selected&&<p className="module-sub">{ar?"الإصدار":"Catalog version"}: {selected.catalogVersionId}
-   {" · "}{ar?"السعر":"Price"}: {money(selected.priceMinor,selected.currency)}</p>}
-  <button type="button" className="primary" onClick={()=>void requestQuote()} disabled={busy||!sku}>
+   {" · "}{ar?"السعر":"Price"}: {money(selected.priceMinor,selected.currency)}
+   {costAllowed&&typeof selected.costMinor==="number"&&<> · {ar?"تكلفة المورّد":"Supplier cost"}: {money(selected.costMinor,selected.currency)}</>}</p>}
+  <button type="button" className="primary" onClick={()=>void requestQuote()} disabled={busy||!sku||uncertain}>
    {ar?"طلب عرض سعر ثابت":"Request immutable quote"}
   </button>
   {quote&&<div className="module-banner">
@@ -158,10 +200,10 @@ export default function RechargeG5Sandbox({locale}:{locale:"ar"|"en"}){
    <p>{ar?"رقم الطلب":"Order ID"}: <span dir="ltr">{order.rechargeOrderId}</span></p>
    <p>{ar?"الحالة":"State"}: {order.state} · {ar?"الإصدار":"Version"}: {order.version}</p>
    <button type="button" onClick={()=>void refreshOrder()} disabled={busy}>{ar?"فحص الحالة":"Check status"}</button>
-   {order.state==="PENDING"&&<button type="button" onClick={()=>void cancelOrder()} disabled={busy}>
+   {reviewAllowed&&order.state==="PENDING"&&<button type="button" onClick={()=>void cancelOrder()} disabled={busy}>
     {ar?"طلب إلغاء — للمشرف فقط":"Cancel pending — supervisor only"}</button>}
   </div>}
-  {order&&!["CANCELLED","FAILED"].includes(order.state)&&<div className="activity-card">
+  {cashAllowed&&order&&!["CANCELLED","FAILED"].includes(order.state)&&<div className="activity-card">
     <label className="mobi-topup-check"><input type="checkbox" checked={syntheticConfirmed}
       onChange={e=>setSyntheticConfirmed(e.target.checked)}/>
       {ar?"أؤكد أن هذا اختبار تحصيل وهمي داخل قاعدة G5، وليس قبضًا حقيقيًا.":"I confirm this is an isolated G5 synthetic cash test, not a real customer payment."}
@@ -177,7 +219,7 @@ export default function RechargeG5Sandbox({locale}:{locale:"ar"|"en"}){
    <p>{ar?"رقم الإيصال":"Receipt ID"}: <span dir="ltr">{receipt.receiptId}</span></p>
    <p>{ar?"القيمة":"Amount"}: {money(receipt.amountMinor,receipt.currency)} · {receipt.replayed?(ar?"استرجاع دون تكرار":"Replayed without duplicate"):(ar?"قُيّدت مرة واحدة":"Posted once")}</p>
   </div>}
-  {receipt&&order&&["FAILED","CANCELLED"].includes(order.state)&&!refundResult&&
+  {reviewAllowed&&cashAllowed&&receipt&&order&&["FAILED","CANCELLED"].includes(order.state)&&!refundResult&&
    <div className="activity-card" aria-label={ar?"استرداد تجريبي بإذن المدير":"Manager-authorized sandbox refund"}>
     <p className="module-sub">{ar?
      "استرداد تجريبي فقط لحالة FAILED أو CANCELLED بعد إثبات التحصيل السابق. يتطلب مديرًا مخولًا بالصندوق وMFA مُفعّلًا. لا تسترد نقدًا حقيقيًا.":"Synthetic FAILED/CANCELLED reversal of an already-collected test order. Requires manager, cashier permission and enrolled MFA. No real customer funds."}</p>
@@ -202,9 +244,48 @@ export default function RechargeG5Sandbox({locale}:{locale:"ar"|"en"}){
    "نتيجة الطلب غير مؤكدة. لا تُنشئ طلبًا آخر أو مفتاحًا جديدًا؛ اطلب المصالحة برقم المرجع الأصلي.":
    "Outcome unknown. Do not create a new order or idempotency key; reconcile with the original reference."}
    {" "}<span dir="ltr">{externalRef}</span></p>}
-  <p className="module-sub">{ar?"مراجعة الأحداث — المدير فقط":"Reconcile events — manager only"}</p>
-  <button type="button" disabled={busy} onClick={()=>void replay()}>{ar?"استرجاع الأحداث":"Replay events"}</button>
-  {events.length>0&&<ul>{events.map(x=><li key={x.eventId}>{x.eventId} · {x.state} · v{x.version}</li>)}</ul>}
+  {reviewAllowed&&<section className="activity-card" aria-label={ar?"مراجعة مصدر Recharge":"Recharge source review"}>
+   <h3>{ar?"المصالحة والمراجعة — للمدير":"Reconciliation & review — manager"}</h3>
+   <p className="module-sub">{ar?
+    "قراءة فقط من Recharge ومن صندوق الوارد في Mobi. لا تعيد إرسال Webhooks ولا تعدّل الأموال أو أحداث DEAD.":
+    "Read-only Recharge and Mobi inbox review. Never retries webhooks, acknowledges DEAD, or posts funds."}</p>
+   <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+    <button type="button" disabled={busy||!order} onClick={()=>void inspectSourceOrder()}>
+     {ar?"فحص دليل الطلب من Recharge":"Inspect source order evidence"}</button>
+    <button type="button" disabled={busy} onClick={()=>void inspectAllEvents()}>
+     {ar?"مطابقة كل الصفحات":"Reconcile all source pages"}</button>
+    <button type="button" disabled={busy} onClick={()=>void inspectDeadLetters()}>
+     {ar?"عرض الأحداث المعلّقة DEAD":"Inspect held DEAD events"}</button>
+    <button type="button" disabled={busy} onClick={()=>void replay()}>
+     {ar?"قراءة صفحة الأحداث":"Read an event page"}</button>
+   </div>
+   {sourceReview&&<div className="module-banner" role="status">
+    <p>{ar?"الطلب":"Order"}: <span dir="ltr">{sourceReview.rechargeOrderId}</span> · {sourceReview.state} · v{sourceReview.version}</p>
+    <p>{ar?"الأحداث":"Events"}: {sourceReview.events.length} ·
+     {ar?"الأحداث مسلّمة للنظام":"Transport delivered"}: {String(sourceReview.transport.allDelivered)}</p>
+    <p>{ar?"مراجعة تشغيلية مطلوبة":"Needs operator review"}: {String(sourceReview.transport.needsOperatorReview)} ·
+     {ar?"إثبات تنفيذ مشغّل حقيقي":"Real carrier confirmation"}: {String(sourceReview.transport.fulfillmentConfirmedByCarrier)}</p>
+    <p>{ar?"دليل المزوّد":"Provider evidence"}: {sourceReview.providerEvidence}</p>
+    {costAllowed&&sourceReview.supplierEntries.length>0&&<p>{ar?"قيود مورّد تجريبية لدى Recharge":"Recharge sandbox supplier entries"}:
+     {" "}{sourceReview.supplierEntries.map(x=>x.kind+" "+money(x.amountMinor,x.currency)).join(" · ")}</p>}
+   </div>}
+   {scanReport&&<div className="module-banner" role="status">
+    <p>{ar?"نتيجة المطابقة":"Reconciliation status"}: {scanReport.status}</p>
+    <p>{ar?"الصفحات":"Pages"}: {scanReport.pagesScanned} · {ar?"الأحداث":"Events"}: {scanReport.sourceEventsScanned}</p>
+    <p>{ar?"أحداث مفقودة":"Missing"}: {scanReport.missingEventIds.length} ·
+     {ar?"تعارضات":"Conflicts"}: {scanReport.conflictingEventIds.length+scanReport.conflictingVersionOrderIds.length} ·
+     {ar?"فجوات الإصدارات":"Version gaps"}: {scanReport.versionGapOrderIds.length}</p>
+    {!scanReport.sourceExhausted&&<p role="alert">{ar?"لم تنتهِ قراءة جميع الأحداث؛ لا تعتمد اكتمال المطابقة.":"Not all source pages were read; do not declare complete reconciliation."}</p>}
+   </div>}
+   {deadLetters&&<div className="module-banner" role="status">
+    <p>{ar?"أحداث DEAD محفوظة للمراجعة":"Held DEAD events"}: {deadLetters.items.length}</p>
+    <p>{ar?"الحالة الرقابية: لا إعادة إرسال ولا إقرار ولا قيود مالية.":"Review hold: no replay, no ACK and no financial posting."}</p>
+    <ul>{deadLetters.items.map(x=><li key={x.eventId}>
+     <span dir="ltr">{x.eventId}</span> · v{x.version} · {x.lastError??"DEAD"}
+    </li>)}</ul>
+   </div>}
+   {events.length>0&&<ul>{events.map(x=><li key={x.eventId}>{x.eventId} · {x.state} · v{x.version}</li>)}</ul>}
+  </section>}
   {notice&&<p role="status">{notice}</p>}
   {error&&<p role="alert" className="preview-notice">{error}</p>}
  </section>;

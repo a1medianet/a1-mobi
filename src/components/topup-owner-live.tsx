@@ -66,7 +66,7 @@ export default function TopupOwnerLive({locale,integrationSandboxEnabled=false}:
    <h2>{ar?"طرق التعبئة":"Recharge methods"}</h2>
    <p className="module-sub">{ar?"التعبئة اليدوية متاحة الآن؛ سجّل فقط العمليات التي أكّد المزوّد تنفيذها.":"Manual top-up is available now; record only fulfillment confirmed by the supplier."}</p>
    <p className="module-sub">{integrationSandboxEnabled
-    ?(ar?"توجد أسفل هذه الصفحة مساحة A1 Recharge تجريبية منفصلة: الطلبات وهمية ولا تقيّد إيرادًا أو تنفّذ شحنًا.":"Below is an isolated A1 Recharge sandbox. Orders are synthetic, with no cash postings or carrier dispatch.")
+    ?(ar?"يتوفر مسار A1 Recharge منفصل عبر التبويب أعلاه. لا ينفّذ شحنًا حقيقيًا؛ وقد يسجّل تحصيلًا وهميًا داخل قاعدة G5 فقط بعد تأكيد صريح.":"Use the A1 Recharge tab above for isolated tests. No real carrier dispatch; explicitly approved synthetic transactions may post only to G5.")
     :(ar?"الربط المباشر مع A1 Recharge قيد الاختبار ولم يُفعّل لهذا المتجر بعد. لا تُنشئ هذه الصفحة تعبئة آلية أو طلبًا لدى المزوّد.":"A1 Recharge direct integration is being tested and is not enabled for this store. This page does not dispatch automatic top-ups or supplier requests.")}</p>
   </section>
   {error&&<p className="preview-notice" role="alert">{error}</p>}
