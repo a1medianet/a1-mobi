@@ -73,7 +73,8 @@ export async function GET(request:Request){
    const parsed=id.safeParse(url.searchParams.get("id"));
    if(!parsed.success)return authJson({error:"INVALID_INTENT_ID"},400);
    return authJson(projectRechargeForStore(await refreshStoredIntent(ctx,parsed.data,
-    orderId=>gatewayInstance.getOrder(orderId)),canReadCosts));
+    orderId=>gatewayInstance.getOrder(orderId),
+    externalRef=>gatewayInstance.getOrderByExternalRef(externalRef)),canReadCosts));
   }
   if(view==="catalog"){
    const parsed=z.object({country,operator}).safeParse({

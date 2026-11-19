@@ -103,22 +103,31 @@ export async function dispatchOriginalIntent(
 export async function refreshStoredIntent(
  scope:Scope,intentId:string,
  lookup:(rechargeOrderId:string)=>Promise<RechargeOrder>,
+ lookupReference?:(externalRef:string)=>Promise<RechargeOrder>,
 ){
  const current=await db.rechargeOrderIntent.findFirst({where:{
   id:intentId,tenantId:scope.tenantId,branchId:scope.branchId,actorId:scope.actorId,
  }});
  if(!current)throw new RechargeBridgeError("INTENT_NOT_FOUND",404);
+ let order:RechargeOrder;
  if(!current.rechargeOrderId){
-  // Recharge does not yet provide externalRef/idempotency scoped GET.
-  return {intent:publicIntent(current),sourceLookupAvailable:false};
- }
- const order=await lookup(current.rechargeOrderId);
+  if(!lookupReference)return {intent:publicIntent(current),sourceLookupAvailable:false};
+  try{order=await lookupReference(current.externalRef);}
+  catch(error){
+   // 404 is NOT definitive non-acceptance: source may still be committing.
+   if(error instanceof RechargeBridgeError&&error.status===404)
+    return {intent:publicIntent(current),sourceLookupAvailable:false};
+   throw error;
+  }
+ }else order=await lookup(current.rechargeOrderId);
+ if(current.rechargeOrderId&&order.rechargeOrderId!==current.rechargeOrderId)
+  throw new RechargeBridgeError("ORDER_IDENTITY_MISMATCH",409);
  if(order.externalRef!==current.externalRef)
   throw new RechargeBridgeError("ORDER_IDENTITY_MISMATCH",409);
  if(current.orderVersion!==null&&order.version<current.orderVersion)
   throw new RechargeBridgeError("SOURCE_VERSION_REGRESSION",409);
  const saved=await db.rechargeOrderIntent.update({where:{id:current.id},data:{
-  orderState:order.state,orderVersion:order.version,
+  rechargeOrderId:order.rechargeOrderId,orderState:order.state,orderVersion:order.version,
   status:"ACKNOWLEDGED",reconciliationStatus:"SOURCE_VERIFIED",
   lastCheckedAt:new Date(),auditEvents:{create:{
    action:"SOURCE_READ_VERIFIED",details:{version:order.version,state:order.state},

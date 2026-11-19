@@ -8,6 +8,7 @@ vi.mock("@/server/db",()=>({db:{
  rechargeOrderIntentAudit:{create:mock.auditCreate},
 }}));
 import {dispatchOriginalIntent,findOutstandingIntent,refreshStoredIntent} from "@/modules/recharge-bridge/order-intent";
+import {RechargeBridgeError} from "@/modules/recharge-bridge/receiver";
 const scope={tenantId:"tenant-a",branchId:"branch-a",actorId:"actor-a"};
 const req={quoteId:"quote-1",recipient:"test-number-001",externalRef:"ref-123456789012",idempotencyKey:"key-123456789012"};
 const row={id:"intent-1",...scope,quoteId:req.quoteId,externalRef:req.externalRef,idempotencyKey:req.idempotencyKey,
@@ -55,6 +56,40 @@ describe("G5 durable POST intent (fail-closed)",()=>{
   const value=await refreshStoredIntent(scope,"intent-1",getter);
   expect(value.sourceLookupAvailable).toBe(false);
   expect(getter).not.toHaveBeenCalled();
+ });
+
+ it("resolves a lost response by scoped externalRef GET after restart, never POSTs twice",async()=>{
+  mock.findFirst.mockResolvedValue({...row,status:"OUTCOME_UNKNOWN"});
+  mock.update.mockImplementation(async({data})=>({...row,...data,status:"ACKNOWLEDGED"}));
+  const accepted={rechargeOrderId:"source-order-1",merchantId:"merchant-a",branchId:"provider-a",
+   externalRef:req.externalRef,state:"PENDING" as const,version:1};
+  const lookupRef=vi.fn().mockResolvedValue(accepted);
+  const getById=vi.fn();
+  const restored=await refreshStoredIntent(scope,"intent-1",getById,lookupRef);
+  expect(restored).toMatchObject({sourceLookupAvailable:true,order:{rechargeOrderId:"source-order-1"},
+   intent:{rechargeOrderId:"source-order-1",status:"ACKNOWLEDGED"}});
+  expect(lookupRef).toHaveBeenCalledExactlyOnceWith(req.externalRef);
+  expect(getById).not.toHaveBeenCalled();
+  expect(mock.update).toHaveBeenCalledWith(expect.objectContaining({
+   where:{id:"intent-1"},data:expect.objectContaining({rechargeOrderId:"source-order-1",
+    status:"ACKNOWLEDGED",reconciliationStatus:"SOURCE_VERIFIED"}),
+  }));
+ });
+ it("404 read by original ref stays unresolved, without claiming a missing order",async()=>{
+  mock.findFirst.mockResolvedValue({...row,status:"OUTCOME_UNKNOWN"});
+  const byRef=vi.fn().mockRejectedValue(Object.assign(new RechargeBridgeError("NOT_FOUND",404),{code:"NOT_FOUND",status:404}));
+  const value=await refreshStoredIntent(scope,"intent-1",vi.fn(),byRef);
+  expect(value).toMatchObject({sourceLookupAvailable:false,intent:{status:"OUTCOME_UNKNOWN"}});
+  expect(mock.update).not.toHaveBeenCalled();
+ });
+ it("rejects cross-order original reference mismatch without updating durable intent",async()=>{
+  mock.findFirst.mockResolvedValue({...row,status:"OUTCOME_UNKNOWN"});
+  const byRef=vi.fn().mockResolvedValue({rechargeOrderId:"order-else",externalRef:"wrong-reference",
+    merchantId:"merchant-a",branchId:"branch-a",state:"PENDING",version:1});
+  await expect(refreshStoredIntent(scope,"intent-1",vi.fn(),byRef)).rejects.toMatchObject({
+   code:"ORDER_IDENTITY_MISMATCH",status:409,
+  });
+  expect(mock.update).not.toHaveBeenCalled();
  });
  it("limits outstanding lookups to tenant, branch and actor",async()=>{
   await findOutstandingIntent(scope);

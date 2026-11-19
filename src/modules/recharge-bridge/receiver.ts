@@ -61,6 +61,16 @@ export function createRechargeReceiver(input:{
         body:{...payload,merchantId,branchId}});
     },
     getOrder:async(id:string)=>checkedOrder(await transport("/v1/orders/"+identifier(id),{method:"GET"}),{merchantId,branchId}),
+    getOrderByExternalRef:async(reference:string)=>{
+      const raw=await transport("/v1/reconciliation/by-external-ref/"+identifier(reference),{method:"GET"});
+      if(!raw||typeof raw!=="object"||Array.isArray(raw))
+        throw new RechargeBridgeError("INVALID_REFERENCE_LOOKUP",502);
+      const result=raw as Record<string,unknown>;
+      if(result.sandboxOnly!==true||result.fulfillmentConfirmedByCarrier!==false||
+         result.externalRef!==reference||result.merchantId!==merchantId||result.branchId!==branchId)
+        throw new RechargeBridgeError("REFERENCE_SCOPE_MISMATCH",403);
+      return checkedOrder(raw,{merchantId,branchId});
+    },
     sourceReconciliation:async(id:string)=>{
       const data=await transport("/v1/reconciliation/orders/"+identifier(id),{method:"GET"});
       if(!data||typeof data!=="object"||Array.isArray(data))
