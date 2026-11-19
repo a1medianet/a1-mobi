@@ -6,7 +6,7 @@ type Service={id:string;providerId:string;code:string;nameAr:string;nameEn:strin
 type Entry={id:string;providerId:string;serviceId:string;customerPhone:string;costBase:number|null;saleBase:number;profitBase:number|null;status:string;settlementId:string|null;occurredAt:string};
 type Snapshot={providers:Provider[];services:Service[];transactions:Entry[];cashOpen:boolean;canConfigure:boolean};
 const usd=(value:number)=>new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(value);
-export default function TopupOwnerLive({locale}:{locale:"ar"|"en"}){
+export default function TopupOwnerLive({locale,integrationSandboxEnabled=false}:{locale:"ar"|"en";integrationSandboxEnabled?:boolean}){
  const ar=locale==="ar";
  const [data,setData]=useState<Snapshot|null>(null),[error,setError]=useState(""),[notice,setNotice]=useState(""),[busy,setBusy]=useState(false);
  const [providerId,setProviderId]=useState(""),[serviceId,setServiceId]=useState(""),[phone,setPhone]=useState("");
@@ -65,7 +65,9 @@ export default function TopupOwnerLive({locale}:{locale:"ar"|"en"}){
   <section className="activity-card" aria-label={ar?"طرق التعبئة":"Recharge methods"}>
    <h2>{ar?"طرق التعبئة":"Recharge methods"}</h2>
    <p className="module-sub">{ar?"التعبئة اليدوية متاحة الآن؛ سجّل فقط العمليات التي أكّد المزوّد تنفيذها.":"Manual top-up is available now; record only fulfillment confirmed by the supplier."}</p>
-   <p className="module-sub">{ar?"الربط المباشر مع A1 Recharge قيد الاختبار ولم يُفعّل لهذا المتجر بعد. لا تُنشئ هذه الصفحة تعبئة آلية أو طلبًا لدى المزوّد.":"A1 Recharge direct integration is being tested and is not enabled for this store. This page does not dispatch automatic top-ups or supplier requests."}</p>
+   <p className="module-sub">{integrationSandboxEnabled
+    ?(ar?"يتوفر مسار A1 Recharge منفصل عبر التبويب أعلاه. لا ينفّذ شحنًا حقيقيًا؛ وقد يسجّل تحصيلًا وهميًا داخل قاعدة G5 فقط بعد تأكيد صريح.":"Use the A1 Recharge tab above for isolated tests. No real carrier dispatch; explicitly approved synthetic transactions may post only to G5.")
+    :(ar?"الربط المباشر مع A1 Recharge قيد الاختبار ولم يُفعّل لهذا المتجر بعد. لا تُنشئ هذه الصفحة تعبئة آلية أو طلبًا لدى المزوّد.":"A1 Recharge direct integration is being tested and is not enabled for this store. This page does not dispatch automatic top-ups or supplier requests.")}</p>
   </section>
   {error&&<p className="preview-notice" role="alert">{error}</p>}
   {notice&&<p className="module-banner" role="status">{notice}</p>}

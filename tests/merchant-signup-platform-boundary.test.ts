@@ -5,6 +5,7 @@ vi.mock("@/server/attempt-budget", () => ({
   AttemptBudgetExceeded: class AttemptBudgetExceeded extends Error {},
 }));
 vi.mock("@/server/trial-onboarding-service", () => ({ onboardMobiTrial: mocked.onboard }));
+vi.mock("@/server/turnstile", () => ({verifyTurnstile: async () => "DISABLED"}));
 import { POST } from "@/app/api/onboarding/trial/route";
 
 const previousFlag = process.env.A1_MOBI_PUBLIC_TRIAL_ENABLED;

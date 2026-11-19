@@ -61,6 +61,77 @@ export function createRechargeReceiver(input:{
         body:{...payload,merchantId,branchId}});
     },
     getOrder:async(id:string)=>checkedOrder(await transport("/v1/orders/"+identifier(id),{method:"GET"}),{merchantId,branchId}),
+    getOrderByExternalRef:async(reference:string)=>{
+      const raw=await transport("/v1/reconciliation/by-external-ref/"+identifier(reference),{method:"GET"});
+      if(!raw||typeof raw!=="object"||Array.isArray(raw))
+        throw new RechargeBridgeError("INVALID_REFERENCE_LOOKUP",502);
+      const result=raw as Record<string,unknown>;
+      if(result.sandboxOnly!==true||result.fulfillmentConfirmedByCarrier!==false||
+         result.externalRef!==reference||result.merchantId!==merchantId||result.branchId!==branchId)
+        throw new RechargeBridgeError("REFERENCE_SCOPE_MISMATCH",403);
+      return checkedOrder(raw,{merchantId,branchId});
+    },
+    sourceReconciliation:async(id:string)=>{
+      const data=await transport("/v1/reconciliation/orders/"+identifier(id),{method:"GET"});
+      if(!data||typeof data!=="object"||Array.isArray(data))
+        throw new RechargeBridgeError("INVALID_SOURCE_RECONCILIATION",502);
+      const row=data as Record<string,unknown>;
+      if(row.merchantId!==merchantId||row.branchId!==branchId||
+         row.rechargeOrderId!==id)
+        throw new RechargeBridgeError("SCOPE_MISMATCH",403);
+      const state=row.transport as Record<string,unknown>|undefined;
+      if(row.sandboxOnly!==true||row.customerCashEntriesIncluded!==false||
+         !state||state.fulfillmentConfirmedByCarrier!==false||
+         !Array.isArray(row.events)||!Array.isArray(row.supplierEntries))
+        throw new RechargeBridgeError("INVALID_SOURCE_RECONCILIATION",502);
+      return data;
+    },
+    sourceDeadLetters:async(limit=50)=>{
+      if(!Number.isSafeInteger(limit)||limit<1||limit>100)
+        throw new RechargeBridgeError("INVALID_RECONCILIATION_LIMIT",400);
+      const data=await transport("/v1/reconciliation/dead-letters?limit="+limit,{method:"GET"});
+      if(!data||typeof data!=="object"||Array.isArray(data))
+        throw new RechargeBridgeError("INVALID_SOURCE_DEAD_LETTERS",502);
+      const result=data as Record<string,unknown>;
+      if(result.sandboxOnly!==true||result.immutableUntilReviewed!==true||
+         result.mayReplay!==false||result.mayAcknowledge!==false||
+         result.mayPostFinance!==false||!Array.isArray(result.items)||
+         result.items.length>limit)
+        throw new RechargeBridgeError("INVALID_SOURCE_DEAD_LETTERS",502);
+      return data;
+    },
+    cancelOrder:async(id:string,key:string)=>{
+      if(!/^[A-Za-z0-9_-]{12,128}$/.test(key))throw new RechargeBridgeError("INVALID_IDEMPOTENCY_KEY");
+      return checkedOrder(await transport("/v1/orders/"+identifier(id)+"/cancel",{
+        method:"POST",idempotencyKey:key,body:{merchantId,branchId},
+      }),{merchantId,branchId});
+    },
+    replayEvents:async(cursor:string)=>{
+      if(!/^(0|[1-9][0-9]{0,15})$/.test(cursor))
+        throw new RechargeBridgeError("INVALID_EVENT_CURSOR");
+      const result=await transport("/v1/events?cursor="+cursor,{method:"GET"});
+      if(!result||typeof result!=="object"||Array.isArray(result))
+        throw new RechargeBridgeError("INVALID_EVENT_FEED");
+      const feed=result as {items?:unknown;nextCursor?:unknown;hasMore?:unknown;sandbox?:unknown};
+      if(!Array.isArray(feed.items)||feed.items.length>50||
+         typeof feed.nextCursor!=="string"||!/^(0|[1-9][0-9]{0,15})$/.test(feed.nextCursor)||
+         typeof feed.hasMore!=="boolean"||feed.sandbox!==true)
+        throw new RechargeBridgeError("INVALID_EVENT_FEED");
+      const items=feed.items.map(item=>{
+        if(!item||typeof item!=="object"||Array.isArray(item))
+          throw new RechargeBridgeError("INVALID_EVENT_FEED");
+        const e=item as Record<string,unknown>;
+        if(typeof e.eventId!=="string"||!/^[A-Za-z0-9_-]{8,128}$/.test(e.eventId)||
+           e.merchantId!==merchantId||e.branchId!==branchId||
+           typeof e.rechargeOrderId!=="string"||!e.rechargeOrderId||
+           !Number.isSafeInteger(e.version)||Number(e.version)<1||
+           !["PENDING","PROCESSING","COMPLETED","FAILED","CANCELLED"].includes(String(e.state))||
+           typeof e.occurredAt!=="string"||!Number.isFinite(Date.parse(e.occurredAt)))
+          throw new RechargeBridgeError("EVENT_SCOPE_OR_SCHEMA_MISMATCH",403);
+        return item;
+      });
+      return {items,nextCursor:feed.nextCursor,hasMore:feed.hasMore,sandbox:true as const};
+    },
     createOrder:async(payload:{quoteId:string;recipient:string;externalRef:string},key:string)=>{
       if(!/^[A-Za-z0-9_-]{12,128}$/.test(key))throw new RechargeBridgeError("INVALID_IDEMPOTENCY_KEY");
       if(!payload.quoteId||!payload.recipient||!payload.externalRef)throw new RechargeBridgeError("INVALID_ORDER_REQUEST");

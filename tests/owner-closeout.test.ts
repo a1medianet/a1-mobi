@@ -6,7 +6,7 @@ vi.mock("next/navigation",async original=>({...await original<typeof import("nex
 vi.mock("@/server/auth-http", () => ({currentStoreContext:async()=>({tenantId:"tenant-a",branchId:"branch-a"})}));
 vi.mock("@/server/db", () => ({db:{
  tenant:{findUnique:async()=>({name:"Owner store",slug:"owner",billingTenantKey:"billing-a",_count:{branches:1},defaultLocale:"ar",baseCurrency:"USD"})},
- branch:{findUnique:async()=>({name:"Main",code:"MAIN"})},user:{count:async()=>1}
+ branch:{findUnique:async()=>({name:"Main",code:"MAIN"})},user:{count:async()=>1,findUnique:async()=>({email:"owner@a1mobi.app",recoveryEmail:null,recoveryEmailVerifiedAt:null}),findFirst:async()=>null}
 }}));
 vi.mock("@/server/billing-client",()=>({getMobiEntitlements:mocks.billing}));
 vi.mock("@/components/branch-manager",()=>({BranchManager:()=>null}));

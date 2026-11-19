@@ -94,5 +94,15 @@ describe.skipIf(!modulePath)("G5 Mobi-to-Recharge separate application HTTP sand
    const b=receiver("merchant-B","branch-B","sandbox-token-B");
    await expect(b.getOrder(first.rechargeOrderId)).rejects.toMatchObject({status:404});
    expect(await a.listSupplierSettlements("2026-11-01","2026-11-17")).toMatchObject({sandbox:true,items:[]});
+   const cancelled=await a.cancelOrder(first.rechargeOrderId,"cancel-key-A-123456");
+   expect(cancelled.state).toBe("CANCELLED");
+   expect(cancelled.version).toBe(2);
+   const cancelledReplay=await a.cancelOrder(first.rechargeOrderId,"cancel-key-A-123456");
+   expect(cancelledReplay.rechargeOrderId).toBe(first.rechargeOrderId);
+   const feed=await a.replayEvents("0");
+   expect(feed.items.some(x=>x.rechargeOrderId===first.rechargeOrderId&&x.state==="CANCELLED")).toBe(true);
+   expect(feed.hasMore).toBe(false);
+   await expect(b.getOrder(first.rechargeOrderId)).rejects.toMatchObject({status:404});
+   await expect(a.replayEvents("-1")).rejects.toThrow("INVALID_EVENT_CURSOR");
  });
 });
