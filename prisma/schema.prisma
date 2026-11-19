@@ -45,7 +45,7 @@ model Tenant {
   warranties            Warranty[]
   attachments           Attachment[]
   customers             Customer[]
-  storeOrderRequests     StoreOrderRequest[]
+  storeOrderRequests    StoreOrderRequest[]
   customerDevices       CustomerDevice[]
   debtAccounts          DebtAccount[]
   debtEntries           DebtEntry[]
@@ -55,6 +55,7 @@ model Tenant {
   topUpProviders        TopUpProvider[]
   topUpServices         TopUpService[]
   topUpTransactions     TopUpTransaction[]
+  rechargeOrderIntents  RechargeOrderIntent[]
   providerSettlements   ProviderSettlement[]
   deviceIncidentReports DeviceIncidentReport[]
   deviceTrustChecks     DeviceTrustCheck[]
@@ -63,41 +64,42 @@ model Tenant {
 }
 
 model Branch {
-  id                  String               @id @default(cuid())
-  tenantId            String
-  code                String
-  name                String
-  tenant              Tenant               @relation(fields: [tenantId], references: [id], onDelete: Restrict)
-  users               User[]
-  auditEvents         AuditEvent[]
-  purchases           Purchase[]
-  stockLocations      StockLocation[]
-  stockMovements      StockMovement[]
-  stockCounts         StockCount[]
-  sales               Sale[]
-  payments            Payment[]
-  invoices            Invoice[]
-  returns             SaleReturn[]
-  exchanges           Exchange[]
-  repairOrders        RepairOrder[]
-  repairParts         RepairPart[]
-  repairStatusEvents  RepairStatusEvent[]
-  repairApprovals     RepairApproval[]
-  warranties          Warranty[]
-  attachments         Attachment[]
-  createdCustomers    Customer[]
+  id                   String                @id @default(cuid())
+  tenantId             String
+  code                 String
+  name                 String
+  tenant               Tenant                @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  users                User[]
+  auditEvents          AuditEvent[]
+  purchases            Purchase[]
+  stockLocations       StockLocation[]
+  stockMovements       StockMovement[]
+  stockCounts          StockCount[]
+  sales                Sale[]
+  payments             Payment[]
+  invoices             Invoice[]
+  returns              SaleReturn[]
+  exchanges            Exchange[]
+  repairOrders         RepairOrder[]
+  repairParts          RepairPart[]
+  repairStatusEvents   RepairStatusEvent[]
+  repairApprovals      RepairApproval[]
+  warranties           Warranty[]
+  attachments          Attachment[]
+  createdCustomers     Customer[]
   storeOrderRequests   StoreOrderRequest[]
-  publicStoreSlug      String?              @unique
-  acceptingStoreOrders Boolean              @default(false)
-  debtEntries         DebtEntry[]
-  cashSessions        CashSession[]
-  cashMovements       CashMovement[]
-  exchangeRates       ExchangeRate[]
-  topUpTransactions   TopUpTransaction[]
-  providerSettlements ProviderSettlement[]
-  deviceTrustChecks   DeviceTrustCheck[]
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
+  publicStoreSlug      String?               @unique
+  acceptingStoreOrders Boolean               @default(false)
+  debtEntries          DebtEntry[]
+  cashSessions         CashSession[]
+  cashMovements        CashMovement[]
+  exchangeRates        ExchangeRate[]
+  topUpTransactions    TopUpTransaction[]
+  rechargeOrderIntents RechargeOrderIntent[]
+  providerSettlements  ProviderSettlement[]
+  deviceTrustChecks    DeviceTrustCheck[]
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
 
   @@unique([tenantId, code])
   @@index([tenantId])
@@ -137,6 +139,7 @@ model User {
   cashMovements               CashMovement[]
   setExchangeRates            ExchangeRate[]
   topUpTransactions           TopUpTransaction[]
+  rechargeOrderIntents        RechargeOrderIntent[]  @relation("RechargeIntentActor")
   providerSettlements         ProviderSettlement[]
   reportedDeviceIncidents     DeviceIncidentReport[] @relation("IncidentReporter")
   performedDeviceTrustChecks  DeviceTrustCheck[]     @relation("TrustCheckActor")
@@ -157,15 +160,15 @@ model AccountHandle {
 }
 
 model RecoveryEmailToken {
-  id           String    @id @default(cuid())
-  userId       String
-  tokenHash    String    @unique
-  email        String
-  expiresAt    DateTime
-  deliveredAt  DateTime?
-  usedAt       DateTime?
-  createdAt    DateTime  @default(now())
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String    @id @default(cuid())
+  userId      String
+  tokenHash   String    @unique
+  email       String
+  expiresAt   DateTime
+  deliveredAt DateTime?
+  usedAt      DateTime?
+  createdAt   DateTime  @default(now())
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, expiresAt])
 }
@@ -183,16 +186,16 @@ model Session {
 }
 
 model MfaCredential {
-  id                 String   @id @default(cuid())
-  userId             String   @unique
-  secretCipher       String
+  id                  String            @id @default(cuid())
+  userId              String            @unique
+  secretCipher        String
   enabledAt           DateTime?
   lastUsedTotpCounter Int?
-  version             Int      @default(0)
-  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  version             Int               @default(0)
+  user                User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   recoveryCodes       MfaRecoveryCode[]
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
 }
 
 model MfaRecoveryCode {
@@ -208,14 +211,14 @@ model MfaRecoveryCode {
 }
 
 model PasswordResetToken {
-  id        String    @id @default(cuid())
-  userId    String
-  tokenHash String    @unique
+  id          String    @id @default(cuid())
+  userId      String
+  tokenHash   String    @unique
   expiresAt   DateTime
   deliveredAt DateTime?
   usedAt      DateTime?
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime  @default(now())
+  createdAt   DateTime  @default(now())
 
   @@index([userId, expiresAt])
 }
@@ -1441,15 +1444,15 @@ model StoreOrderRequest {
 
 // Platform authentication is intentionally separate from tenant users and roles.
 model PlatformAdmin {
-  id           String            @id @default(cuid())
-  email        String            @unique
-  passwordHash String
+  id               String            @id @default(cuid())
+  email            String            @unique
+  passwordHash     String
   totpSecretCipher String
-  lastTotpCounter Int?
-  isActive     Boolean           @default(true)
-  sessions     PlatformSession[]
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
+  lastTotpCounter  Int?
+  isActive         Boolean           @default(true)
+  sessions         PlatformSession[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
 }
 
 model PlatformSession {
@@ -1469,18 +1472,66 @@ model PlatformSession {
  * eventId is globally unique; any cross-merchant collision must be rejected.
  */
 model RechargeWebhookInbox {
-  eventId          String    @id
-  tenantId         String
-  branchId         String
-  merchantId       String
-  rechargeOrderId  String
-  orderVersion     Int
-  payloadHash      String
-  state            String
-  receivedAt       DateTime  @default(now())
-  processedAt      DateTime?
-  processingError  String?
+  eventId         String    @id
+  tenantId        String
+  branchId        String
+  merchantId      String
+  rechargeOrderId String
+  orderVersion    Int
+  payloadHash     String
+  state           String
+  receivedAt      DateTime  @default(now())
+  processedAt     DateTime?
+  processingError String?
 
   @@index([tenantId, branchId, receivedAt])
   @@index([merchantId, rechargeOrderId, orderVersion], map: "RechargeWebhookInbox_order_version_idx")
+}
+
+/**
+ * Durable, fail-closed G5 sandbox POST intent. Records the original request
+ * BEFORE dispatch. An unknown response must NEVER automatically re-POST.
+ * Recipient is stored as a SHA-256 digest, not as a customer phone number.
+ */
+model RechargeOrderIntent {
+  id                   String                     @id @default(cuid())
+  tenantId             String
+  branchId             String
+  actorId              String
+  quoteId              String
+  externalRef          String
+  idempotencyKey       String
+  recipientHash        String
+  requestHash          String
+  rechargeOrderId      String?
+  orderState           String?
+  orderVersion         Int?
+  status               String                     @default("DISPATCHING")
+  reconciliationStatus String                     @default("NEEDS_SOURCE_LOOKUP")
+  lastCheckedAt        DateTime?
+  financialRef         String?
+  createdAt            DateTime                   @default(now())
+  updatedAt            DateTime                   @updatedAt
+  tenant               Tenant                     @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  branch               Branch                     @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  actor                User                       @relation("RechargeIntentActor", fields: [actorId], references: [id], onDelete: Restrict)
+  auditEvents          RechargeOrderIntentAudit[]
+
+  @@unique([tenantId, branchId, idempotencyKey], map: "RechargeIntent_scope_key_unique")
+  @@unique([tenantId, branchId, externalRef], map: "RechargeIntent_scope_ref_unique")
+  @@unique([tenantId, branchId, quoteId], map: "RechargeIntent_scope_quote_unique")
+  @@unique([tenantId, branchId, rechargeOrderId], map: "RechargeIntent_scope_order_unique")
+  @@index([tenantId, branchId, actorId, createdAt])
+  @@index([tenantId, branchId, status])
+}
+
+model RechargeOrderIntentAudit {
+  id        String              @id @default(cuid())
+  intentId  String
+  action    String
+  details   Json
+  createdAt DateTime            @default(now())
+  intent    RechargeOrderIntent @relation(fields: [intentId], references: [id], onDelete: Restrict)
+
+  @@index([intentId, createdAt])
 }

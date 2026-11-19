@@ -1,5 +1,5 @@
 "use client";
-import {useState,type FormEvent} from "react";
+import {useEffect,useState,type FormEvent} from "react";
 
 type CatalogItem={sku:string;operator:string;country:string;catalogVersionId:string;currency:string;
  priceMinor:number;feeMinor:number;taxMinor:number;costMinor?:number};
@@ -39,12 +39,42 @@ export default function RechargeG5Sandbox({
  const [receipt,setReceipt]=useState<{invoiceId:string;receiptId:string;amountMinor:number;currency:string;replayed:boolean}|null>(null);
  const [error,setError]=useState(""),[notice,setNotice]=useState("");
  const [uncertain,setUncertain]=useState(false);
+ const [intentChecked,setIntentChecked]=useState(false);
+ const [intentId,setIntentId]=useState("");
  const [orderKey,setOrderKey]=useState(""),[externalRef,setExternalRef]=useState("");
  const [cursor,setCursor]=useState("0"),[events,setEvents]=useState<Array<{eventId:string;state:string;version:number}>>([]);
  const [sourceReview,setSourceReview]=useState<SourceReview|null>(null);
  const [deadLetters,setDeadLetters]=useState<DeadLetters|null>(null);
  const [scanReport,setScanReport]=useState<ScanReport|null>(null);
  const api="/api/ops/recharge-bridge";
+ useEffect(()=>{
+  let alive=true;
+  void jsonRequest(api+"?view=outstanding-intent").then(async result=>{
+   if(!alive)return;
+   const intent=result.intent as {intentId:string;externalRef:string;idempotencyKey:string}|null;
+   if(intent){setUncertain(true);setIntentId(intent.intentId);
+    setExternalRef(intent.externalRef);setOrderKey(intent.idempotencyKey);return;}
+   const recent=await jsonRequest(api+"?view=recent-intent");
+   if(!alive)return;
+   const previous=recent.intent as {intentId:string;rechargeOrderId:string|null;status:string}|null;
+   if(previous?.status==="ACKNOWLEDGED"&&previous.rechargeOrderId){
+    const saved=await jsonRequest(api+"?view=order&id="+encodeURIComponent(previous.rechargeOrderId));
+    if(alive){setIntentId(previous.intentId);setOrder(saved as unknown as Order);}
+   }
+  }).catch(()=>{if(alive){setError("INTENT_RECOVERY_UNAVAILABLE");setUncertain(true);}})
+   .finally(()=>{if(alive)setIntentChecked(true);});
+  return ()=>{alive=false;};
+ },[]);
+ async function checkOriginalIntent(){
+  if(!intentId)return;
+  setBusy(true);setError("");
+  try{
+   const result=await jsonRequest(api+"?view=refresh-intent&id="+encodeURIComponent(intentId));
+   if(result.sourceLookupAvailable&&result.order){setOrder(result.order as Order);setUncertain(false);}
+   else setNotice(ar?"لم يتوفر بعد بحث Recharge بالمرجع الأصلي. الطلب معلّق بأمان.":"Source lookup by original reference is not available yet; this request remains safely held.");
+  }catch(e){setError(e instanceof Error?e.message:"INTENT_RECONCILIATION_FAILED");}
+  finally{setBusy(false);}
+ }
  async function loadCatalog(){
   if(uncertain)return;
   setOrderKey("");setExternalRef("");setSourceReview(null);setScanReport(null);
@@ -67,16 +97,31 @@ export default function RechargeG5Sandbox({
  }
  async function placeOrder(e:FormEvent<HTMLFormElement>){
   e.preventDefault();
-  if(!quote||Date.now()>=quote.expiresAt||!recipient.trim()||uncertain)return;
+  if(!quote||Date.now()>=quote.expiresAt||!recipient.trim()||uncertain||!intentChecked)return;
   setBusy(true);setError("");setNotice("");
   const key=orderKey||crypto.randomUUID(),reference=externalRef||"mobi-g5-test-ref-"+crypto.randomUUID();
   setOrderKey(key);setExternalRef(reference);
   try{
    const body=await jsonRequest(api,{method:"POST",headers:{"Content-Type":"application/json"},
     body:JSON.stringify({action:"order",quoteId:quote.quoteId,recipient,externalRef:reference,idempotencyKey:key})});
-   setOrder(body as unknown as Order);setNotice(ar?"تم إنشاء طلب تجريبي بانتظار التنفيذ فقط.":"Synthetic order created; awaiting fulfillment.");
+   const result=body as {intent:{intentId:string;status:string;rechargeOrderId:string|null};order:Order|null;replayed:boolean};
+   setIntentId(result.intent.intentId);
+   if(result.order){setOrder(result.order);setUncertain(false);}
+   else if(result.intent.rechargeOrderId){
+    setOrder(await jsonRequest(api+"?view=order&id="+encodeURIComponent(result.intent.rechargeOrderId)) as unknown as Order);
+    setUncertain(false);
+   }else setUncertain(true);
+   setNotice(result.order?(ar?"تم إنشاء طلب تجريبي بانتظار التنفيذ فقط.":"Synthetic order created; awaiting fulfillment."):
+    (ar?"المحاولة الأصلية محفوظة ولا يمكن تكرارها.":"Original attempt retained; duplicate dispatch blocked."));
   }catch(e){const message=e instanceof Error?e.message:"ORDER_ERROR";setError(message);
-   if(message==="RECHARGE_OUTCOME_UNKNOWN"||message==="OUTCOME_UNKNOWN")setUncertain(true);
+   // A failed order POST may still have reached Recharge: always hold.
+   {
+    setUncertain(true);
+    try{const pending=await jsonRequest(api+"?view=outstanding-intent");
+     const i=pending.intent as {intentId:string;externalRef:string;idempotencyKey:string}|null;
+     if(i){setIntentId(i.intentId);setExternalRef(i.externalRef);setOrderKey(i.idempotencyKey);}
+    }catch{/* fail closed until recovery endpoint is available */}
+   }
   }finally{setBusy(false);}
  }
  async function refreshOrder(){
@@ -164,7 +209,7 @@ export default function RechargeG5Sandbox({
     </select>
    </label>
   </div>
-  <button type="button" className="primary" onClick={()=>void loadCatalog()} disabled={busy||uncertain}>
+  <button type="button" className="primary" onClick={()=>void loadCatalog()} disabled={busy||uncertain||!intentChecked}>
    {ar?"قراءة الخدمات المتاحة":"Load available services"}
   </button>
   <label>{ar?"الباقة المعتمدة":"Verified package"}
@@ -243,7 +288,10 @@ export default function RechargeG5Sandbox({
   {uncertain&&<p role="alert">{ar?
    "نتيجة الطلب غير مؤكدة. لا تُنشئ طلبًا آخر أو مفتاحًا جديدًا؛ اطلب المصالحة برقم المرجع الأصلي.":
    "Outcome unknown. Do not create a new order or idempotency key; reconcile with the original reference."}
-   {" "}<span dir="ltr">{externalRef}</span></p>}
+   {" "}<span dir="ltr">{externalRef}</span>
+   {intentId&&<button type="button" disabled={busy} onClick={()=>void checkOriginalIntent()}>
+    {ar?"فحص المحاولة الأصلية":"Recheck original attempt"}</button>}
+  </p>}
   {reviewAllowed&&<section className="activity-card" aria-label={ar?"مراجعة مصدر Recharge":"Recharge source review"}>
    <h3>{ar?"المصالحة والمراجعة — للمدير":"Reconciliation & review — manager"}</h3>
    <p className="module-sub">{ar?

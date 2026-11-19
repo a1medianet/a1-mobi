@@ -14,6 +14,7 @@ import {db} from "@/server/db";
 import {AttemptBudgetExceeded} from "@/server/attempt-budget";
 import {scanRechargeReconciliation} from "@/modules/recharge-bridge/reconciliation";
 import {canViewRechargeCosts,projectRechargeForStore} from "@/modules/recharge-bridge/public-projection";
+import {dispatchOriginalIntent,findOutstandingIntent,findRecentIntent,findStoredIntent,refreshStoredIntent} from "@/modules/recharge-bridge/order-intent";
 
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
@@ -59,6 +60,21 @@ export async function GET(request:Request){
   const gatewayInstance=gateway(ctx.tenantId,ctx.branchId);
   const url=new URL(request.url);
   const view=url.searchParams.get("view");
+  if(view==="recent-intent")
+   return authJson({intent:await findRecentIntent(ctx)});
+  if(view==="outstanding-intent")
+   return authJson({intent:await findOutstandingIntent(ctx)});
+  if(view==="intent"){
+   const parsed=id.safeParse(url.searchParams.get("id"));
+   if(!parsed.success)return authJson({error:"INVALID_INTENT_ID"},400);
+   return authJson({intent:await findStoredIntent(ctx,parsed.data)});
+  }
+  if(view==="refresh-intent"){
+   const parsed=id.safeParse(url.searchParams.get("id"));
+   if(!parsed.success)return authJson({error:"INVALID_INTENT_ID"},400);
+   return authJson(projectRechargeForStore(await refreshStoredIntent(ctx,parsed.data,
+    orderId=>gatewayInstance.getOrder(orderId)),canReadCosts));
+  }
   if(view==="catalog"){
    const parsed=z.object({country,operator}).safeParse({
     country:url.searchParams.get("country"),operator:url.searchParams.get("operator"),
@@ -136,10 +152,14 @@ export async function POST(request:Request){
    return authJson(projectRechargeForStore(await gatewayInstance.createQuote({
     country:command.country,operator:command.operator,sku:command.sku,quantity:command.quantity,
    },command.idempotencyKey),canReadCosts),201);
-  if(command.action==="order")
-   return authJson(projectRechargeForStore(await gatewayInstance.createOrder({
-    quoteId:command.quoteId,recipient:command.recipient,externalRef:command.externalRef,
-   },command.idempotencyKey),canReadCosts),201);
+  if(command.action==="order"){
+   const result=await dispatchOriginalIntent(ctx,{
+    quoteId:command.quoteId,recipient:command.recipient,
+    externalRef:command.externalRef,idempotencyKey:command.idempotencyKey,
+   },original=>gatewayInstance.createOrder({quoteId:original.quoteId,
+    recipient:original.recipient,externalRef:original.externalRef},original.idempotencyKey));
+   return authJson(projectRechargeForStore(result,canReadCosts),result.replayed?200:201);
+  }
   if(command.action==="refund"){
    const order=await gatewayInstance.getOrder(command.rechargeOrderId);
    const result=await refundSyntheticG5Sale({tenantId:ctx.tenantId,branchId:ctx.branchId,actorId:ctx.actorId,order,mfaCode:command.mfaCode});
